@@ -1,4 +1,4 @@
 <!-- DSN -->
-<!ENTITY dsnInfo.label					"Determine la politique d'envoi du DSN">
+<!ENTITY dsnInfo.label					"Gestion des demandes de notification de délivrance">
 <!ENTITY showDSN.label					"Notification de délivrance...">
 <!ENTITY showDSN.accesskey				"D">
