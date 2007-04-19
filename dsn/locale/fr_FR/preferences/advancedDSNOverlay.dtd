@@ -1,0 +1,4 @@
+<!-- DSN -->
+<!ENTITY dsnInfo.label					"Determine la politique d'envoi du DSN">
+<!ENTITY showDSN.label					"Notification de délivrance...">
+<!ENTITY showDSN.accesskey				"D">

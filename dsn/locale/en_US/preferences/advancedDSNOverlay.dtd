@@ -1,0 +1,4 @@
+<!-- DSN -->
+<!ENTITY dsnInfo.label					"Determine how Mail handles Delivery Status Notification">
+<!ENTITY showDSN.label					"Delivery Status Notification...">
+<!ENTITY showDSN.accesskey				"D">

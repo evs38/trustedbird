@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://messenger/skin/accountManage.css" type="text/css"?>
+
+<!DOCTYPE page SYSTEM "chrome://milimail-dsn/locale/account/am-dsn.dtd">
+
+<page
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    onload="parent.onPanelLoaded('am-dsn.xul');">
+    <stringbundleset id="stringbundleset">
+        <stringbundle
+            id="string-bundle"
+            src="chrome://milimail-dsn/locale/am-dsn.properties" />
+    </stringbundleset>
+
+    <script
+        type="application/x-javascript"
+        src="chrome://milimail-dsn/content/am-dsn.js" />
+
+    <dialogheader title="&pane.title;" />
+
+    <groupbox>
+
+        <caption label="&pane.title;" />
+        <!-- User can choose beetween general preferences or customize -->
+        <hbox
+            id="prefChoices"
+            align="center">
+
+            <radiogroup
+                id="identity.dsn_use_custom_prefs"
+                wsm_persist="true"
+                genericattr="true"
+                preftype="bool"
+                prefstring="mail.identity.%identitykey%.dsn_use_custom_prefs"
+                oncommand="enableDisableCustomSettings()">
+
+                <!-- Selection of DSN global preferences -->
+                <radio
+                    id="identity.dsn_select_global_prefs"
+                    value="false"
+                    label="&useGlobalPrefs.label;"
+                    accesskey="&useGlobalPrefs.accesskey;" />
+
+                <!-- Selection of DSN custom preferences -->
+                <radio
+                    id="identity.dsn_select_custom_prefs"
+                    value="true"
+                    label="&useCustomPrefs.label;"
+                    accesskey="&useCustomPrefs.accesskey;" />
+
+            </radiogroup>
+
+        </hbox>
+
+        <!-- DSN Settings -->
+        <vbox
+            id="DSNSettings"
+            class="indent"
+            align="start">
+
+            <!-- Setting to ask DSN for each message sent -->
+            <checkbox
+                id="identity.dsn_always_request_on"
+                label="&requestAlways.label;"
+                accesskey="&requestAlways.accesskey;"
+                wsm_persist="true"
+                genericattr="true"
+                iscontrolcontainer="true"
+                preftype="bool"
+                prefstring="mail.identity.%identitykey%.dsn_always_request_on"
+                oncommand="checkParameters(event.target)" />
+
+
+
+            <!-- Description Title for extra options -->
+            <description>
+                &optionTitle.label;
+            </description>
+
+            <!-- When this checkbox is enabled, DSN request is sent with success option request -->
+            <checkbox
+                id="identity.dsn_request_on_success_on"
+                label="&requestOnSucess.label;"
+                prefstring="mail.identity.%identitykey%.dsn_request_on_success_on"
+                wsm_persist="true"
+                preftype="bool"
+                accesskey="&requestOnSucess.accesskey;"
+                genericattr="true"
+                iscontrolcontainer="true"
+                oncommand="checkParameters(event.target)" />
+
+
+            <!-- When this checkbox is enabled, DSN request is sent with failure option request -->
+            <checkbox
+                id="identity.dsn_request_on_failure_on"
+                label="&requestOnFailure.label;"
+                prefstring="mail.identity.%identitykey%.dsn_request_on_failure_on"
+                wsm_persist="true"
+                preftype="bool"
+                accesskey="&requestOnFailure.accesskey;"
+                genericattr="true"
+                iscontrolcontainer="true"
+                oncommand="checkParameters(event.target)" />
+
+            <!-- When this checkbox is enabled, DSN request is sent with delay option request -->
+            <checkbox
+                id="identity.dsn_request_on_delay_on"
+                label="&requestOnDelay.label;"
+                prefstring="mail.identity.%identitykey%.dsn_request_on_delay_on"
+                wsm_persist="true"
+                preftype="bool"
+                accesskey="&requestOnDelay.accesskey;"
+                genericattr="true"
+                iscontrolcontainer="true"
+                oncommand="checkParameters(event.target)" />
+
+        </vbox>
+
+
+
+    </groupbox>
+
+
+
+</page>

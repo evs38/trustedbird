@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+    -
+    - The contents of this file are subject to the Mozilla Public License Version
+    - 1.1 (the "License"); you may not use this file except in compliance with
+    - the License. You may obtain a copy of the License at
+    - http://www.mozilla.org/MPL/
+    -
+    - Software distributed under the License is distributed on an "AS IS" basis,
+    - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+    - for the specific language governing rights and limitations under the
+    - License.
+    -
+    - The Original Code is Mozilla Communicator client code, released
+    - March 31, 1998.
+    -
+    - The Initial Developer of the Original Code is
+    - Netscape Communications Corporation.
+    - Portions created by the Initial Developer are Copyright (C) 1999
+    - the Initial Developer. All Rights Reserved.
+    -
+    - Contributor(s):
+    -   Ben Goodger <ben@netscape.com> (ass'td polish fixes)
+    -   Håkan Waara <hwaara@chello.se>
+    -   Neil Rashbrook <neil@parkwaycc.co.uk> (ass'td polish fix)
+    -   Ian Neal <bugzilla@arlen.demon.co.uk>
+    -
+    - Alternatively, the contents of this file may be used under the terms of
+    - either of the GNU General Public License Version 2 or later (the "GPL"),
+    - or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+    - in which case the provisions of the GPL or the LGPL are applicable instead
+    - of those above. If you wish to allow use of your version of this file only
+    - under the terms of either the GPL or the LGPL, and not to allow others to
+    - use your version of this file under the terms of the MPL, indicate your
+    - decision by deleting the provisions above and replace them with the notice
+    - and other provisions required by the GPL or the LGPL. If you do not delete
+    - the provisions above, a recipient may use your version of this file under
+    - the terms of any one of the MPL, the GPL or the LGPL.
+    -
+    - ***** END LICENSE BLOCK ***** -->
+
+<!-- This XUL display an dialog to configure DSN General Preferences -->
+<!DOCTYPE window SYSTEM "chrome://milimail-dsn/locale/preferences/dsn.dtd">
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+
+<!--Initialization of the Dialog -->
+<prefwindow
+    id="DSNDialog"
+    type="child"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    dlgbuttons="accept,cancel"
+    title="&dsnTitle.label;">
+    
+    <stringbundleset id="stringbundleset">
+        <stringbundle
+            id="string-bundle"
+            src="chrome://milimail-dsn/locale/dsn.properties" />
+    </stringbundleset>
+    
+    <script
+        type="application/x-javascript"
+        src="chrome://milimail-dsn/content/preferences/dsn.js" />
+        
+    <!-- Preferences Definition to Store global preferences -->
+    <prefpane id="DSNDialogPane">
+        <preferences>
+            <preference
+                id="mail.dsn_always_request_on"
+                name="mail.dsn_always_request_on"
+                type="bool" />
+
+            <preference
+                id="mail.dsn_request_on_success_on"
+                name="mail.dsn_request_on_success_on"
+                type="bool" />
+
+            <preference
+                id="mail.dsn_request_on_failure_on"
+                name="mail.dsn_request_on_failure_on"
+                type="bool" />
+
+            <preference
+                id="mail.dsn_request_on_delay_on"
+                name="mail.dsn_request_on_delay_on"
+                type="bool" />
+        </preferences>
+
+        <vbox
+            id="DSNSettings"
+            align="start">
+
+            <!-- When this checkBox is checked, Delivery Status Notification are always asked when sending message -->
+            <checkbox
+                id="alwaysRequest"
+                label="&dsnAlwaysSend.label;"
+                preference="mail.dsn_always_request_on"
+                accesskey="&dsnAlwaysSend.accesskey;"
+                oncommand = "checkParameters(event.target)" />
+
+        </vbox>
+
+        <!-- Seperator to have a nice UI -->
+        <separator class="thin" />
+        <separator class="groove" />
+        <separator class="thin" />
+
+        <!-- Description Title for extra options -->
+        <description>
+            &dsnOptionTitle.label;
+        </description>
+
+        <!-- Three options that can ne enabled for DSN -->
+
+        <!-- When this checkbox is enabled, DSN request is sent with success option request -->
+        <checkbox
+            id="requestOnSuccess"
+            label="&dsnRequestOnSucess.label;"
+            preference="mail.dsn_request_on_success_on"
+            accesskey="&dsnRequestOnSucess.accesskey;"
+            oncommand = "checkParameters(event.target)" />
+
+        <!-- When this checkbox is enabled, DSN request is sent with failure option request -->
+        <checkbox
+            id="requestOnFailure"
+            label="&dsnRequestOnFailure.label;"
+            preference="mail.dsn_request_on_failure_on"
+            accesskey="&dsnRequestOnFailure.accesskey;"
+            oncommand = "checkParameters(event.target)" />
+
+        <!-- When this checkbox is enabled, DSN request is sent with delay option request -->
+        <checkbox
+            id="requestOnDelay"
+            label="&dsnRequestOnDelay.label;"
+            preference="mail.dsn_request_on_delay_on"
+            accesskey="&dsnRequestOnDelay.accesskey;"
+            oncommand = "checkParameters(event.target)" />
+
+        <separator />
+
+    </prefpane>
+</prefwindow>

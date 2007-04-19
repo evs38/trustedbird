@@ -1,0 +1,9 @@
+content milimail-dsn content/
+
+locale milimail-dsn en locale/en_US/
+locale milimail-dsn fr locale/fr_FR/
+
+overlay chrome://messenger/content/preferences/preferences.xul chrome://milimail-dsn/content/preferences/preferencesOverlay.xul
+overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://milimail-dsn/content/messengercompose/messengercomposeOverlayDSN.xul
+
+

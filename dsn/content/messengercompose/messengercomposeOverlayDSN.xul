@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE window SYSTEM "chrome://milimail-dsn/locale/messengercompose/messengercomposeOverlayDSN.dtd">
+<!-- Overlay to launch advanced panel -->
+<!-- it adds an entry in the option menu -->
+
+<overlay
+    id="messengercomposeOverlayDSN"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script
+        type="application/x-javascript"
+        src="chrome://milimail-dsn/content/messengercompose/messengercomposeOverlayDSN.js" />
+
+    <menupopup id="optionsMenuPopup">
+
+        <menuitem
+            id="requestDSNMenu"
+            insertafter="returnReceiptMenu"
+            type="checkbox"
+            label="&dsnMenu.label;"
+            accesskey="&dsnMenu.accesskey;"
+           oncommand="toggleDSN(event.target)" />
+        <menuseparator/>
+
+    </menupopup>
+
+
+</overlay>

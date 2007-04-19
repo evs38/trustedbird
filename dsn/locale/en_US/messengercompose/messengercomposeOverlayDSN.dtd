@@ -1,0 +1,3 @@
+<!-- DSN Menu item -->
+<!ENTITY dsnMenu.label "Ask a Delivery Status Notification">
+<!ENTITY dsnMenu.accesskey "D">

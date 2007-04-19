@@ -1,0 +1,13 @@
+<!-- General Setting -->
+<!ENTITY dsnTitle.label     "Notification de délivrance">
+<!ENTITY dsnAlwaysSend.label "A l'envoi, toujours demander une notification de délivrance">
+<!ENTITY dsnAlwaysSend.accesskey "T">
+
+<!-- Option Settings -->
+<!ENTITY dsnOptionTitle.label "Demander une notification en cas :">
+<!ENTITY dsnRequestOnSucess.label "de succés de la délivrance">
+<!ENTITY dsnRequestOnSucess.accesskey "S">
+<!ENTITY dsnRequestOnFailure.label "d'échec de la délivrance">
+<!ENTITY dsnRequestOnFailure.accesskey "E">
+<!ENTITY dsnRequestOnDelay.label "d'échec de la délivrance ayant pour cause un délai trop important">
+<!ENTITY dsnRequestOnDelay.accesskey "D">
