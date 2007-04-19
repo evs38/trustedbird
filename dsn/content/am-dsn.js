@@ -45,6 +45,7 @@
  var requestDSNOnSuccess;
  var requestDSNOnFailure;
  var requestDSNOnDelay;
+ var requestDSNNever;
  
  //This function is executed when am-dsn.xul is displayed
  function onInit()
@@ -58,7 +59,7 @@
 	requestDSNOnSuccess = document.getElementById("identity.dsn_request_on_success_on");
 	requestDSNOnFailure = document.getElementById("identity.dsn_request_on_failure_on");
 	requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
-	
+	requestDSNNever = document.getElementById("identity.dsn_request_never");
 	enableDisableCustomSettings();
 
 }
@@ -101,14 +102,14 @@ function onSave(){
 	dump("function onSave() -> Enter" + "\n");
 	
 	//Reset to default if there is not DSN options checked
-	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked ){
+	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked && !requestDSNNever.checked ){
 		
 		dump("function onSave() -> Reset to default options	" + "\n");
 		requestAlwaysDSN.setAttribute("checked",false);
 		requestDSNOnSuccess.setAttribute("checked",false);
 		requestDSNOnFailure.setAttribute("checked",false);
 		requestDSNOnDelay.setAttribute("checked",false);
-	
+		requestDSNNever.setAttribute("checked",false);
 	}
 
 }
@@ -123,12 +124,42 @@ function checkParameters(target){
 	requestDSNOnSuccess = document.getElementById("identity.dsn_request_on_success_on");
 	requestDSNOnFailure = document.getElementById("identity.dsn_request_on_failure_on");
 	requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
+	requestDSNNever = document.getElementById("identity.dsn_request_never");
 	
 	var stringsBundle = document.getElementById("string-bundle");
 	var alertString = stringsBundle.getString('alert-parameters') + " ";
 
-	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked ){
+	//One of the option must be checked
+	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked && !requestDSNNever.checked){
 		alert(alertString);
 		target.setAttribute("checked", !target.checked);
 	}
+	
+	//Never option is only possible when the others are unchecked
+	if (requestDSNNever.checked && (requestDSNOnSuccess.checked ||requestDSNOnFailure.checked ||requestDSNOnDelay.checked )){
+		requestDSNNever.setAttribute("checked",false);
+	}
 }
+
+function uncheckParameters(target){
+		requestDSNOnSuccess = document.getElementById("identity.dsn_request_on_success_on");
+		requestDSNOnFailure = document.getElementById("identity.dsn_request_on_failure_on");
+		requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
+
+	//When Never option is enabled, the others are unchecked
+	if (target.checked){
+		dump("checkParameters() -> reset Sucess, Failure, Delay values to false\n	");
+		requestDSNOnSuccess.setAttribute("checked",false);
+		requestDSNOnFailure.setAttribute("checked",false);
+		requestDSNOnDelay.setAttribute("checked",false);
+	}
+
+	var stringsBundle = document.getElementById("string-bundle");
+	var alertString = stringsBundle.getString('alert-parameters') + " ";
+	
+	//One of the option must be checked
+	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked && !target.checked){
+		alert(alertString);
+		target.setAttribute("checked", !target.checked);
+	}
+} 

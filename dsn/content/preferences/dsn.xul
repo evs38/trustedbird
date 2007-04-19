@@ -21,10 +21,7 @@
     - the Initial Developer. All Rights Reserved.
     -
     - Contributor(s):
-    -   Ben Goodger <ben@netscape.com> (ass'td polish fixes)
-    -   Håkan Waara <hwaara@chello.se>
-    -   Neil Rashbrook <neil@parkwaycc.co.uk> (ass'td polish fix)
-    -   Ian Neal <bugzilla@arlen.demon.co.uk>
+    -   Olivier PARNIERE <olivier.parniere@bt.com>
     -
     - Alternatively, the contents of this file may be used under the terms of
     - either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -53,39 +50,50 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     dlgbuttons="accept,cancel"
     title="&dsnTitle.label;">
-    
+
     <stringbundleset id="stringbundleset">
         <stringbundle
             id="string-bundle"
             src="chrome://milimail-dsn/locale/dsn.properties" />
     </stringbundleset>
-    
+
     <script
         type="application/x-javascript"
         src="chrome://milimail-dsn/content/preferences/dsn.js" />
-        
+
     <!-- Preferences Definition to Store global preferences -->
     <prefpane id="DSNDialogPane">
         <preferences>
             <preference
                 id="mail.dsn_always_request_on"
                 name="mail.dsn_always_request_on"
-                type="bool" />
+                type="bool"
+                onchange="checkParameters(event.target)" />
 
             <preference
                 id="mail.dsn_request_on_success_on"
                 name="mail.dsn_request_on_success_on"
-                type="bool" />
+                type="bool"
+                onchange="checkParameters(event.target)"  />
 
             <preference
                 id="mail.dsn_request_on_failure_on"
                 name="mail.dsn_request_on_failure_on"
-                type="bool" />
+                type="bool"
+                onchange="checkParameters(event.target)"  />
 
             <preference
                 id="mail.dsn_request_on_delay_on"
                 name="mail.dsn_request_on_delay_on"
-                type="bool" />
+                type="bool"
+                onchange="checkParameters(event.target)"  />
+            
+            <preference
+                id="mail.dsn_request_never"
+                name="mail.dsn_request_never"
+                type="bool"
+                onchange="uncheckParameters(event.target)"
+                  />
         </preferences>
 
         <vbox
@@ -98,7 +106,7 @@
                 label="&dsnAlwaysSend.label;"
                 preference="mail.dsn_always_request_on"
                 accesskey="&dsnAlwaysSend.accesskey;"
-                oncommand = "checkParameters(event.target)" />
+               />
 
         </vbox>
 
@@ -117,18 +125,17 @@
         <!-- When this checkbox is enabled, DSN request is sent with success option request -->
         <checkbox
             id="requestOnSuccess"
-            label="&dsnRequestOnSucess.label;"
+            label="&dsnRequestOnSuccess.label;"
             preference="mail.dsn_request_on_success_on"
-            accesskey="&dsnRequestOnSucess.accesskey;"
-            oncommand = "checkParameters(event.target)" />
+            accesskey="&dsnRequestOnSuccess.accesskey;"
+             />
 
         <!-- When this checkbox is enabled, DSN request is sent with failure option request -->
         <checkbox
             id="requestOnFailure"
             label="&dsnRequestOnFailure.label;"
             preference="mail.dsn_request_on_failure_on"
-            accesskey="&dsnRequestOnFailure.accesskey;"
-            oncommand = "checkParameters(event.target)" />
+            accesskey="&dsnRequestOnFailure.accesskey;" />
 
         <!-- When this checkbox is enabled, DSN request is sent with delay option request -->
         <checkbox
@@ -136,9 +143,20 @@
             label="&dsnRequestOnDelay.label;"
             preference="mail.dsn_request_on_delay_on"
             accesskey="&dsnRequestOnDelay.accesskey;"
-            oncommand = "checkParameters(event.target)" />
+          />
 
-        <separator />
+        <!-- Seperator to have a nice UI -->
+        <separator class="thin" />
+        <separator class="groove" />
+        <separator class="thin" />
+
+        <checkbox
+            id="requestNever"
+            label="&dsnRequestNever.label;"
+            preference="mail.dsn_request_never"
+            accesskey="&dsnRequestNever.accesskey;" />
+
+        <separator/>
 
     </prefpane>
 </prefwindow>

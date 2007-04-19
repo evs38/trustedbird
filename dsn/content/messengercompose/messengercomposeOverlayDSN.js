@@ -42,7 +42,7 @@ var prefService;
 var isDSNEnabled;
 
 
-
+//Oberser to set DSN State to the compFields
 var mailSendObserver =
 
 {
@@ -58,7 +58,7 @@ var mailSendObserver =
 
 }
 
- 
+//Hook's Definition  
 LoadIdentity = function LoadIdentityHook(startup){
 	LoadIdentityHookOriginal(startup);
 	dump("LoadIdentiy hooked " + "\n");
@@ -123,8 +123,9 @@ function defineDSNMenu(identityKey)
 	
 }
 
+//Setting DSN State to message's compFields
 function setDSNState(){
-	var onSuccess = false, onFailure = false, onDelay = false;
+	var onSuccess = false, onFailure = false, onDelay = false, never = false;
 	
 	var isCustomPrefsEnabled = false ;
 	
@@ -139,11 +140,13 @@ function setDSNState(){
 			onSuccess = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_on_success_on");
 			onFailure = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_on_failure_on");
 			onDelay = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_on_delay_on");
+			never = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_never");
 		
 		} else {
 			onSuccess = prefService.getBoolPref("mail.dsn_request_on_success_on");
 			onFailure = prefService.getBoolPref("mail.dsn_request_on_failure_on");
 			onDelay = prefService.getBoolPref("mail.dsn_request_on_delay_on");
+			never = prefService.getBoolPref("mail.dsn_request_never");
 		}
 	}
 	
@@ -169,6 +172,10 @@ function setDSNState(){
 		dump("setDSNState() -> Old msgCompFields.returnDSNOnDelay = " + msgCompFields.returnDSNOnDelay + "\n");
 		msgCompFields.returnDSNOnDelay = onDelay;
 		dump("setDSNState() -> New msgCompFields.returnDSNOnDelay = " + msgCompFields.returnDSNOnDelay + "\n");
+		
+		dump("setDSNState() -> Old msgCompFields.returnDSNNever = " + msgCompFields.returnDSNNever + "\n");
+		msgCompFields.returnDSNNever = never;
+		dump("setDSNState() -> New msgCompFields.returnDSNNever = " + msgCompFields.returnDSNNever + "\n");
 	}
 	
 }

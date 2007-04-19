@@ -14,3 +14,6 @@
 <!ENTITY requestOnFailure.accesskey "é">
 <!ENTITY requestOnDelay.label "délai trop long pendant la délivrance">
 <!ENTITY requestOnDelay.accesskey "D">
+
+<!ENTITY requestNever.label "Ne jamais recevoir de notification de délivrance">
+<!ENTITY requestNever.accesskey "N">

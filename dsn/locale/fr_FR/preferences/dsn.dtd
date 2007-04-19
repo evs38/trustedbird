@@ -5,9 +5,12 @@
 
 <!-- Option Settings -->
 <!ENTITY dsnOptionTitle.label "Demander une notification en cas :">
-<!ENTITY dsnRequestOnSucess.label "de succés de la délivrance">
-<!ENTITY dsnRequestOnSucess.accesskey "S">
+<!ENTITY dsnRequestOnSuccess.label "de succés de la délivrance">
+<!ENTITY dsnRequestOnSuccess.accesskey "S">
 <!ENTITY dsnRequestOnFailure.label "d'échec de la délivrance">
 <!ENTITY dsnRequestOnFailure.accesskey "E">
 <!ENTITY dsnRequestOnDelay.label "d'échec de la délivrance ayant pour cause un délai trop important">
 <!ENTITY dsnRequestOnDelay.accesskey "D">
+
+<!ENTITY dsnRequestNever.label "Ne jamais recevoir de notification de délivrance">
+<!ENTITY dsnRequestNever.accesskey "N">

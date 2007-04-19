@@ -114,6 +114,18 @@
                 iscontrolcontainer="true"
                 oncommand="checkParameters(event.target)" />
 
+            <!-- When this checkbox is enabled, DSN request is sent with never option request -->
+            <checkbox
+                id="identity.dsn_request_never"
+                label="&requestNever.label;"
+                prefstring="mail.identity.%identitykey%.dsn_request_never"
+                wsm_persist="true"
+                preftype="bool"
+                accesskey="&requestNever.accesskey;"
+                genericattr="true"
+                iscontrolcontainer="true"
+                oncommand="uncheckParameters(event.target)" />
+
         </vbox>
 
 

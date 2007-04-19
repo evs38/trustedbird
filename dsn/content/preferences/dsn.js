@@ -37,22 +37,46 @@
  
 //This function check parameters to be sure that at least one DSN option is checked
  function checkParameters(target){
-	requestAlwaysDSN = document.getElementById("alwaysRequest");
-	requestDSNOnSuccess = document.getElementById("requestOnSuccess");
-	requestDSNOnFailure = document.getElementById("requestOnFailure");
-	requestDSNOnDelay = document.getElementById("requestOnDelay");
-	
+	var requestAlwaysDSN = document.getElementById("mail.dsn_always_request_on");
+	var requestDSNOnSuccess = document.getElementById("mail.dsn_request_on_success_on");
+	var requestDSNOnFailure = document.getElementById("mail.dsn_request_on_failure_on");
+	var requestDSNOnDelay = document.getElementById("mail.dsn_request_on_delay_on");
+	var requestDSNNever = document.getElementById("mail.dsn_request_never");
 	
 	var stringsBundle = document.getElementById("string-bundle");
 	var alertString = stringsBundle.getString('alert-parameters') + " ";
 
-	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked ){
-		alert(alertString);
-		target.setAttribute("checked", !target.checked);
+	//One of the option must be checked
+	if ( requestAlwaysDSN.value && !requestDSNOnSuccess.value && !requestDSNOnFailure.value && !requestDSNOnDelay.value &&  !requestDSNNever.value){
+			alert(alertString);
+			target.value = !target.value;
+		}
+	
+	//Never option is only possible when the others are unchecked
+	if ( requestDSNNever.value && (target.value)){
+		requestDSNNever.value=false;
 	}
+}
 
+function uncheckParameters(target){
+	var requestAlwaysDSN = document.getElementById("mail.dsn_always_request_on");
+	var requestDSNOnSuccess = document.getElementById("mail.dsn_request_on_success_on");
+	var requestDSNOnFailure = document.getElementById("mail.dsn_request_on_failure_on");
+	var requestDSNOnDelay = document.getElementById("mail.dsn_request_on_delay_on");
 
-
-
-
+	//When Never option is enabled, the others are unchecked
+	if (target.value){
+		requestDSNOnSuccess.value=false;
+		requestDSNOnFailure.value=false;
+		requestDSNOnDelay.value=false;
+	}
+	
+	var stringsBundle = document.getElementById("string-bundle");
+	var alertString = stringsBundle.getString('alert-parameters') + " ";
+	
+	//One of the option must be checked
+	if ( requestAlwaysDSN.value && !requestDSNOnSuccess.value && !requestDSNOnFailure.value && !requestDSNOnDelay.value &&  !target.value){
+		alert(alertString);
+		target.value = !target.value;
+	}
 }
