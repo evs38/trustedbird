@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en"/>
+    <meta name="KEYWORDS" content="Image:icon.png,Custom Toolbar Button" />
+<meta name="robots" content="index,follow" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="copyright" href="/en/docs/MDC:Copyrights" />
+    <title>Image:icon.png - MDC</title>
+	<link rel="alternate" type="application/rss+xml" title="MDC Webwatch" href="http://developer.mozilla.org/webwatch/?feed=rss" />
+	<link rel="alternate" type="application/rss+xml" title="MDC DevNews" href="http://developer.mozilla.org/devnews/?feed=rss" />
+	<link rel="alternate" type="application/rss+xml" title="Recent Changes (en)" href="http://developer.mozilla.org/en/docs/index.php?title=Special:Recentchanges&amp;feed=rss" />
+	<link rel="alternate" type="application/rss+xml" title="New Pages (en)" href="http://developer.mozilla.org/en/docs/index.php?title=Special:Newpages&amp;feed=rss" />
+	<link rel="stylesheet" type="text/css" media="all" href="/css/base.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="/css/wiki.css" />
+	<link rel="stylesheet" type="text/css" media="print" href="/css/wikiprint.css" />
+	<!--[if gte IE 6]><style type="text/css">@import "/en/docs/skins/devmo/IE60Fixes.css";</style><![endif]-->
+	<!--[if IE]><script type="text/javascript" src="/en/docs/skins/common/IEFixes.js"></script>
+	<meta http-equiv="imagetoolbar" content="no" /><!{endif]-->
+    <script type="text/javascript" src="/en/docs/index.php?title=-&amp;action=raw&amp;gen=js"></script>    <script type="text/javascript" src="/en/docs/skins/common/wikibits.js"></script>
+    <script type="text/javascript" src="/en/docs/skins/devmo/devmo.js"></script>
+    <script type="text/javascript" src="/en/docs/skins/devmo/prototype.js"></script>
+    <script type="text/javascript" src="/en/docs/skins/devmo/scriptaculous.js"></script>
+    <style type="text/css">/*<![CDATA[*/
+@import "/en/docs/index.php?title=MediaWiki:Devmo.css&action=raw&ctype=text/css&smaxage=18000";
+@import "/en/docs/index.php?title=-&action=raw&gen=css&maxage=18000";
+/*]]>*/</style>              </head>
+
+  <body                 class="ns-6"		id="developer-mozilla-org">
+
+
+<div id="container">
+	<p class="skipLink"><a href="#content" accesskey="2">Skip to main content</a></p>
+	<div id="mozilla-org"><a href="http://www.mozilla.org/">Visit Mozilla.org</a></div>
+
+<div id="header">
+	<h1><a href="/" title="Return to home page" accesskey="1">Mozilla Developer Network</a></h1>
+	<!-- search box -->
+		<form name="searchform" action="/en/docs/Special:Nutch" id="searchform">
+		<input type="hidden" name="language" value="en">
+		<input type="hidden" name="start" value="0">
+		<input type="hidden" name="hitsPerPage" value="10">
+			<input id="searchInput" name="query" type="text"
+				accesskey="s"
+				 />
+			<input type='submit' name="fulltext"
+				class="searchButton"
+				value="Search" />
+		</form>
+	<!-- end searchbox -->
+</div>
+
+<div id="navigation">
+	<div id="bar">
+		<div>
+			<ul id="personal">
+				<li id="pt-login"><a href="/en/docs/index.php?title=Special:Userlogin&amp;returnto=Image:icon.png">Create an account or log in</a></li>			</ul>
+			<ul id="contenttypes">
+					    									      			<li class="selected"><a href="/en/docs/Main_Page">Documentation</a></li>
+						     									     									     									     									     									     									     											<li><a href="http://developer.mozilla.org/devnews/">DevNews</a></li>
+				<li><a href="http://developer.mozilla.org/webwatch/">Webwatch</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+	
+			
+<div id="page">
+
+
+	<div id="sidebar">
+		<div id="sidebarslideup" class="sidebarslidecontrol" onclick="new Effect.SlideUp('sidebarslidebox'); sidebarUp();">
+			Hide Sidebar	
+		</div>	
+		<div id="sidebarslidedown" class="sidebarslidecontrol" onclick="new Effect.SlideDown('sidebarslidebox'); sidebarDown();" style="display: none;">
+			Show Sidebar
+		</div>
+		<div id="sidebarslidebox">
+			
+		<div>
+
+		<div id="related">
+			<div>
+				<h3>Related</h3>
+							</div>
+		</div>
+
+		<!-- WIKI NAVIGATION -->
+		<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+		<div class="pagetools">
+			<div>
+					  			<h3>Navigation</h3>
+	    		<ul>
+	    				      			<li id="n-mainpage"><a href="/en/docs/Main_Page">Main Page</a></li>
+	     				      			<li id="n-portal"><a href="/en/docs/MDC:Community_Portal">Community portal</a></li>
+	     				      			<li id="n-currentevents"><a href="/en/docs/Current_events">Current events</a></li>
+	     				      			<li id="n-recentchanges"><a href="/en/docs/Special:Recentchanges">Recent changes</a></li>
+	     				      			<li id="n-randompage"><a href="/en/docs/Special:Random">Random page</a></li>
+	     				      			<li id="n-help"><a href="/en/docs/Help:Contents">Help</a></li>
+	     				      			<li id="n-sitesupport"><a href="/en/docs/MDC:Site_support">Donations</a></li>
+	     				    		</ul>
+							</div>
+		</div>
+
+		<!-- VIEWS -->
+		<div class="pagetools">
+			<div>
+				<h3>Views</h3>
+				<ul>
+	  			<li id="ca-nstab-image"
+	     			class="selected"	     			><a href="/en/docs/Image:icon.png">File</a></li><li id="ca-talk"
+	     			class="new"	     			><a href="/en/docs/index.php?title=Image_talk:icon.png&amp;action=edit">Discussion</a></li><li id="ca-edit"
+	     				     			><a href="/en/docs/index.php?title=Image:icon.png&amp;action=edit">Edit</a></li><li id="ca-history"
+	     				     			><a href="/en/docs/index.php?title=Image:icon.png&amp;action=history">History</a></li>	  			</ul>
+			</div>
+		</div>
+
+		<!-- TOOLBOX -->
+		<div class="pagetools">
+			<div>
+	    		<h3>Toolbox</h3>
+	    		<ul>
+		  								<li id="t-whatlinkshere"><a href="/en/docs/Special:Whatlinkshere/Image:icon.png">What links here</a></li>
+		  								<li id="t-recentchangeslinked"><a href="/en/docs/Special:Recentchangeslinked/Image:icon.png">Related changes</a></li>
+		  			              			      				      				      				      				      				      				      			<li id="t-upload"><a href="/en/docs/Special:Upload">Upload file</a></li>	      				      			<li id="t-specialpages"><a href="/en/docs/Special:Specialpages">Special pages</a></li>	      				      				      			<li id="t-print"><a href="/en/docs/index.php?title=Image:icon.png&amp;printable=yes">Printable version</a></li>
+	      				    		</ul>
+	    	</div>
+		</div>
+
+		<!-- LANGUAGE LINKS -->
+		
+		</div>
+		</div>
+	</div><!-- END SIDEBAR -->
+
+	<div id="content">
+		<div class="article">
+		<a name="top" id="contentTop"></a>
+				<h1 class="firstHeading">Image:icon.png</h1>
+			<h3 id="siteSub">From MDC</h3>
+			<div id="contentSub"></div>
+												
+
+				<ul id="filetoc">
+			<li><a href="#file">Image</a></li>
+			<li><a href="#filehistory">File history</a></li>
+			<li><a href="#filelinks">Links</a></li>
+		</ul><div class="fullImageLink" id="file"><img border="0" src="/wiki-images/en/c/cc/icon.png" width="48" height="48" alt="" /></div><div class="fullMedia">
+<p><a href="/wiki-images/en/c/cc/icon.png" class='internal' title="icon.png">icon.png</a> <span class="fileInfo"> (3KB, MIME type: <code>image/png</code>)</span>
+</p>
+</div>
+<p>Extension icon image for <a href="/en/docs/Custom_Toolbar_Button" title="Custom Toolbar Button">Custom Toolbar Button</a> tutorial
+</p>
+<h2 id="filehistory">File history</h2>
+<p>Legend: (cur) = this is the current file, (del) = delete
+this old version, (rev) = revert to this old version.
+<br /><i>Click on date to see the file uploaded on that date</i>.</p>
+<ul class="special"><li> (del) (cur) <a href="/wiki-images/en/c/cc/icon.png" title="/wiki-images/en/c/cc/icon.png">12:30, 23 December 2005</a> . . <a href="/en/docs/User:Rod_Whiteley" title="User:Rod Whiteley">Rod Whiteley</a> (2600 bytes) <span class='comment'>(Extension icon image for <a href="/en/docs/Custom_Toolbar_Button" title="Custom Toolbar Button">Custom Toolbar Button</a> tutorial)</span></li>
+</ul>
+<br /><ul><li><div><a href="http://developer.mozilla.org/en/docs/index.php?title=Special:Upload&amp;wpDestFile=icon.png" class='external text' title="http://developer.mozilla.org/en/docs/index.php?title=Special:Upload&amp;wpDestFile=icon.png" rel="nofollow">Upload a new version of this file</a></div>
+</li><li><a href="/en/docs/index.php?title=Image:icon.png&amp;action=edit&amp;externaledit=true&amp;mode=file" title="Image:icon.png">Edit this file using an external application</a><div>See the <a href="http://meta.wikimedia.org/wiki/Help:External_editors" class='external text' title="http://meta.wikimedia.org/wiki/Help:External editors" rel="nofollow">setup instructions</a> for more information.</div>
+</li></ul><h2 id="filelinks">Links</h2>
+<p>The following pages link to this file:</p>
+<ul><li><a href="/en/docs/Custom_Toolbar_Button" title="Custom Toolbar Button">Custom Toolbar Button</a></li>
+</ul>
+<div class="printfooter">
+Retrieved from "<a href="http://developer.mozilla.org/en/docs/Image:icon.png">http://developer.mozilla.org/en/docs/Image:icon.png</a>"</div>
+						
+			
+		</div>
+	</div> <!-- end id content -->
+
+
+      <div id="footer">
+		<ul>
+	  		<li id="f-lastmod"> This page was last modified 12:30, 23 December 2005.</li>	  		<li id="f-viewcount">This page has been accessed 1,065 times.</li>		</ul>
+		<ul>
+	  			  			  		<li id="f-copyright">Content is available under <a href="/en/docs/MDC:Copyrights" title="MDC:Copyrights">these licenses</a>.</li>	  		<li id="f-about"><a href="/en/docs/MDC:About" title="MDC:About">About MDC</a></li>	  				</ul>
+	  </div>
+    </div> <!-- end id page -->
+	</div> <!-- end id container -->
+	
+    <!-- Served by giles in 0.23 secs. -->  </body>
+</html>
