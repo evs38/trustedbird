@@ -45,9 +45,6 @@ window.addEventListener("load", trpwrp_OnLoadMsgComposeWindow, false);
 window.addEventListener('compose-window-close', trpwrp_onComposerClose, true);
 window.addEventListener('compose-window-reopen', trpwrp_onComposerReOpen, true);
 
-// Tmp variable : to be replace by a field in the gSMFields object
-var trippleWrapMessage = false;
-
 // This function gets called multiple times, but only on first open, not on composer recycling
 function trpwrp_OnLoadMsgComposeWindow() {
 
@@ -79,8 +76,8 @@ function trpwrp_OnLoadMsgComposeWindow() {
 // Handler for 'compose-window-reopen' event sent by MsgComposeCommands.js
 function trpwrp_onComposerReOpen() {
     // Load preferences
-    trippleWrapMessage = gCurrentIdentity.getBoolAttribute("triple_wrap_mail");
-    trpwrp_setTrippleWrapUI(trippleWrapMessage);
+    gSMFields.tripleWrapMessage = gCurrentIdentity.getBoolAttribute("triple_wrap_mail");
+    trpwrp_setTrippleWrapUI(gSMFields.tripleWrapMessage);
 }
 
 // Handler for 'compose-window-close' event sent by MsgComposeCommands.js
@@ -95,15 +92,15 @@ function trpwrp_ToggleTrippleWrapMessage(event) {
     }
 
     // Toggle trippleWrap flag
-    trippleWrapMessage = !trippleWrapMessage;
+    gSMFields.tripleWrapMessage = !gSMFields.tripleWrapMessage;
 
     // make sure we have a cert name for encrypting and one for signing ...
-    if (trippleWrapMessage) {
+    if (gSMFields.tripleWrapMessage) {
         var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
         var encryptionCertName = gCurrentIdentity.getUnicharAttribute("encryption_cert_name");
 
         if (!signingCertName || !encryptionCertName) {
-            trippleWrapMessage = false;
+            gSMFields.tripleWrapMessage = false;
             showNeedSetupInfo();
             
             // Stop even propagation to prevent default security menu handler
@@ -144,10 +141,10 @@ setSecuritySettings = function trpwrp_setSecuritySettings(menu_id) {
     trpwrp_OriginalSetSecuritySettings(menu_id);
     
     // Enable or disable menuitem "sign" and "encrypt" according to trippleWrapMessage flag
-    document.getElementById("menu_securityEncryptRequire" + menu_id).setAttribute("disabled", trippleWrapMessage);
-    document.getElementById("menu_securityNoEncryption" + menu_id).setAttribute("disabled", trippleWrapMessage);
-    document.getElementById("menu_securitySign" + menu_id).setAttribute("disabled", trippleWrapMessage);
+    document.getElementById("menu_securityEncryptRequire" + menu_id).setAttribute("disabled", gSMFields.tripleWrapMessage);
+    document.getElementById("menu_securityNoEncryption" + menu_id).setAttribute("disabled", gSMFields.tripleWrapMessage);
+    document.getElementById("menu_securitySign" + menu_id).setAttribute("disabled", gSMFields.tripleWrapMessage);
   
     // Set checked status for trippleWrapMessage menuitem
-    document.getElementById("menu_securityTrippleWrap" + menu_id).setAttribute("checked", trippleWrapMessage);
+    document.getElementById("menu_securityTrippleWrap" + menu_id).setAttribute("checked", gSMFields.tripleWrapMessage);
 }
