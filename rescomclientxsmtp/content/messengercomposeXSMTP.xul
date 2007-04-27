@@ -57,7 +57,7 @@
   <script type="application/x-javascript" src="chrome://messenger/content/addressbook/abCardOverlay.js"/>-->
   <script type="application/x-javascript" src="chrome://rescomclientxsmtp/content/messengercomposeXSMTP.js"/>
   <script type="application/x-javascript" src="chrome://rescomclientxsmtp/content/daterfc.js"/>
-  <script type="application/x-javascript" src="chrome://messenger/content/dateFormat.js"/>
+  <script type="application/x-javascript" src="chrome://rescomclientxsmtp/content/xsmtpHeaders.js"/>
   <!--<script type="application/x-javascript" src="chrome://rescomclientxsmtp/content/messengercomposeVerifXSMTP.js"/>-->
   <!--<script type="application/x-javascript" src="chrome://mail/content/messengercompose/addressingWidgetOverlay.js"/>-->
   
@@ -181,7 +181,8 @@
 									</menupopup>
 								</rule>
 							</template>
-						</menulist><textbox id='X-P772-Message-Type2' onchange="concatField('X-P772-Message-Type',this.value);" hidden="true" flex="1"/>
+						</menulist>
+						<textbox id='X-P772-Message-Type2' onchange="concatField('X-P772-Message-Type',this.value);" hidden="true" flex="1"/>
 					</hbox>
 				</hbox>
 				<hbox>

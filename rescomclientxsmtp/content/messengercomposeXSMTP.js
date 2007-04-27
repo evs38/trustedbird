@@ -42,41 +42,41 @@ var gRemoveButton;
 var gHeaderInputElement;
 var gArrayHdrs;
 var gHdrsList;
-var gContainer;
+//var gContainer=0;
 var gFilterBundle=null;
 var gCustomBundle=null;
-var customedHead = window.opener['customedHeaders'];
 var gMsgCompose = window.opener['gMsgCompose'];
 var msgCompFields = gMsgCompose.compFields;
 var headersCustom=new Array();
 const AVAILABLE_ROW = 8;
-const MILLISECONDS_PER_HOUR   = 60 * 60 * 1000;
-const MICROSECONDS_PER_DAY    = 1000 * MILLISECONDS_PER_HOUR * 24;
 const DATE_VERIF='X-P772-Extended-Authorisation-Info';
 var verif;
 var message;
+var customedHead;
+
+//window first initialisation
+if((!(gMsgCompose.bodyModified)) || (!(window.opener.gContainer))){window.opener.customedHeaders=""; window.opener.gContainer=0;gMsgCompose.bodyModified=true;}
+var customedHead = window.opener.customedHeaders;
 
 //function :  listbox multi-choice 
 function availableToChoice(list,list2) {
 	var box = document.getElementById(list2);
 	var box1 = document.getElementById(list);
-	var boxCount = box.selectedCount;
-	for (var i = 0; i < boxCount; i++) {
+	for (var i = 0; i < box.selectedCount; i++) {
 		var item = box.selectedItems[0];
 		if((box1.getRowCount() < AVAILABLE_ROW)){ //add Item limit 
-			box1.appendItem ( box.selectedItems[0].label , box.selectedItems[0].label );
+			box1.appendItem ( item.label , item.label );
 		}
 		box.removeItemAt(box.getIndexOfItem(item));
 	}
 }
 
-
+//function : set listbox multi-choice onload
 function choices(choice,list) {
 	var box = document.getElementById(list);
 	var box2 = document.getElementById("available");
-	var boxCount = choice.length;
 	
-	for (var i = 0; i < boxCount; i++) {
+	for (var i = 0; i < choice.length; i++) {
 		var item = choice[i];
 		try{
 			box2.removeItemAt(box2.getIndexOfItem(item));
@@ -87,8 +87,19 @@ function choices(choice,list) {
 /////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////  field initialisation  ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
+
+function isDraftMessage(array1){
+	var catchHeaderFromURI=getXsmtpHeadersFromURI();
+	if ((catchHeaderFromURI) && ((window.opener.gContainer == 0) || (window.opener.gContainer == undefined)) ){
+		window.opener.customedHeaders = catchHeaderFromURI;
+		return catchHeaderFromURI;
+	}return array1;
+}
+
 function onLoad()
 {
+    //window first initialisation
+	
     gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 	verif={};
     var hdrs;
@@ -103,7 +114,17 @@ function onLoad()
     gArrayHdrs = new Array();
 	try
     {  
-        var champs=customedHead;
+	    //var catchHeaderFromURI = getXsmtpHeadersFromURI();
+		var champs = customedHead;
+		champs = isDraftMessage(champs);
+		//if ((catchHeaderFromURI) && (window.opener.gContainer == 0)){
+		//alert("bob2 "+champs);
+			//if (!(champs.indexOf(catchHeaderFromURI))){
+			//	window.opener.customedHeaders = catchHeaderFromURI;
+			//	alert("bob "+window.opener.customedHeaders);
+			//}	
+		//	champs=catchHeaderFromURI;
+		//}
 		var array1=champs.split("\r");
 		for (var i = 0; i< array1.length; i++) {
 			var field = array1[i].split(":");
@@ -116,8 +137,8 @@ function onLoad()
     catch(ex)
     {
       headersCustom={};
-    }
-    initializeDialog(hdrs);	
+    }	
+	initializeDialog(hdrs);	
 }
 
 function initializeDialog(hdrs)
@@ -151,6 +172,7 @@ function addFields(gArrayElement) //ok
 		{	
 		var field = window.document.getElementById(gArrayElement);
 		head = headersCustom[gArrayElement];
+		//alert("bob "+head);
 		if (field){		
 			if(head){   
 				if (gArrayElement == "X-P772-Special-Handling-Instructions"){
@@ -160,8 +182,7 @@ function addFields(gArrayElement) //ok
 				}else if(field.tagName == 'menulist'){
 					field.setAttribute('value',head);
 					head=associateValue(head,gArrayElement,'=');
-					field.setAttribute('label',head);
-					
+					field.setAttribute('label',head);		
 				}else{
 					field.value = head;
 				}
@@ -175,9 +196,10 @@ function addFields(gArrayElement) //ok
 ///////////////////////////////////////////////////////////////////////////////////////////
 //find associate value
 function associateValue(head,field,separator){
-	var regval = new RegExp(/^([^=]*)=(.*)/);
-	if ((regval.test(head)) == true){
-		alert("hier");
+	//var regval = new RegExp(/^([^=]*)=(.*)/);
+	//if ((regval.test(head)) == true){
+	if ((/^([^=]*)=(.*)/.test(head)) == true){
+	    //alert("voi "+head)
 		var field2=field+"2";
 		onselectOk(field2,RegExp.$2);
 		head=RegExp.$1;
@@ -238,6 +260,14 @@ function integerNumber(val){
 	verif[val] = message;
 }
 
+/*function isNeeded(val){
+	var field= window.document.getElementById(val);
+	if (!(field.value)){
+		var message = xSMTPbundle.getString(val+".label")+ " : "+xSMTPbundle.getString("integer.bad")+"\r\n";
+		alert(message);
+	}
+}*/
+
 function isAllOk(){
 	var compte = 0;
 	var elt = "";
@@ -280,8 +310,9 @@ function onOk()
  
   if (headers.length)
   {
+	//alert("voiv "+msgCompFields.otherRandomHeaders);
 	msgCompFields.otherRandomHeaders=""; //headers initialization
-	window.opener.customedHeaders += DATE_VERIF+": " + setRFC2822Date(new Date()) + "\r";
+	window.opener.customedHeaders += DATE_VERIF+":" + setRFC2822Date(new Date()) + "\r";
 	var hdrs;
 	for (var i =0; i< headers.length; i++) {
 		try
@@ -294,18 +325,20 @@ function onOk()
 					priority = list.getItemAtIndex(0).value;
 					for (var j=1; j <list.getRowCount(); j++){
 						priority += ";"+list.getItemAtIndex(j).value;
-				}
+					}
 				}
 			}else{
 				priority = list.value;
 			}
 			if (priority.length)
 			{
-			  window.opener.customedHeaders += headers[i]+": " + priority + "\r";
+			  window.opener.customedHeaders += headers[i]+":" + priority + "\r";
 			}
 		}catch(ex) {} 
 	}
   }
+  //alert(window.opener.customedHeaders);
+  window.opener.gContainer=1;
   return true;
 
 }

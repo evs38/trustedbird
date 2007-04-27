@@ -122,6 +122,7 @@
   <RDF:Seq RDF:about="http://home.netscape.com/all-XSMTPMENU">
     <RDF:li>
       <RDF:Seq RDF:about="http://home.netscape.com/X-P772-Primary-Precedence">
+	    <RDF:li RDF:resource="http://home.netscape.com/X-P772-Primary-Precedence/"/>
         <RDF:li RDF:resource="http://home.netscape.com/X-P772-Primary-Precedence/routine"/>
 		<RDF:li RDF:resource="http://home.netscape.com/X-P772-Primary-Precedence/priority"/>
 		<RDF:li RDF:resource="http://home.netscape.com/X-P772-Primary-Precedence/immediate"/>
@@ -130,6 +131,7 @@
     </RDF:li>
     <RDF:li>
       <RDF:Seq RDF:about="http://home.netscape.com/X-P772-Security-Classification">
+	    <RDF:li RDF:resource="http://home.netscape.com/X-P772-Security-Classification/"/>
         <RDF:li RDF:resource="http://home.netscape.com/X-P772-Security-Classification/NON_PROTEGE"/>
 		<RDF:li RDF:resource="http://home.netscape.com/X-P772-Security-Classification/UNCLASSIFIED"/>
 		<RDF:li RDF:resource="http://home.netscape.com/X-P772-Security-Classification/NATO_UNCLASSIFIED"/>
@@ -148,13 +150,14 @@
     </RDF:li>
     <RDF:li>
       <RDF:Seq RDF:about="http://home.netscape.com/X-P772-Priority-Level-Qualifier">
-        <RDF:li RDF:resource="http://home.netscape.com/birds/emu"/>
+        <RDF:li RDF:resource="http://home.netscape.com/X-P772-Priority-Level-Qualifier/"/>
         <RDF:li RDF:resource="http://home.netscape.com/X-P772-Priority-Level-Qualifier/low"/>
 		<RDF:li RDF:resource="http://home.netscape.com/X-P772-Priority-Level-Qualifier/high"/>
       </RDF:Seq>
     </RDF:li>
     <RDF:li>
       <RDF:Seq RDF:about="http://home.netscape.com/X-P772-Message-Type">
+	    <RDF:li RDF:resource="http://home.netscape.com/X-P772-Message-Type/"/>
         <RDF:li RDF:resource="http://home.netscape.com/X-P772-Message-Type/exercise"/>
         <RDF:li RDF:resource="http://home.netscape.com/X-P772-Message-Type/operation"/>
 		<RDF:li RDF:resource="http://home.netscape.com/X-P772-Message-Type/project"/>
