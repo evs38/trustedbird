@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE prefwindow [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
+<!ENTITY % preferencesDTD SYSTEM "chrome://messenger/locale/preferences/preferences.dtd">
+%brandDTD;
+%preferencesDTD;
+]>
+<!-- Overlay to launch compose panel -->
+<overlay
+    id="Compose-preferencesOverlay"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <prefpane
+        id="paneCompose"
+        label="&paneComposition.title;"
+        src="chrome://milimail-multi-ldap/content/preferences/composeLDAPOverlay.xul" />
+
+
+
+</overlay>

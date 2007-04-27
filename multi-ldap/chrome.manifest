@@ -1,0 +1,6 @@
+content milimail-multi-ldap content/
+
+locale milimail-multi-ldap  en locale/en_US/
+locale milimail-multi-ldap  fr locale/fr_FR/
+
+overlay chrome://messenger/content/preferences/preferences.xul chrome://milimail-multi-ldap/content/preferences/preferencesOverlay.xul
