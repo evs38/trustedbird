@@ -44,11 +44,11 @@
 }
 
 #msgcomposeWindow[triple_wrapping="ok"] #triple_wrapping-status {
-    list-style-image: url("chrome://triple_wrapping/skin/icons/TripleWrappingOK.gif");
+    list-style-image: url("chrome://triple_wrapping/skin/icons/sbTripleWrapOk.gif");
     visibility: visible;
 }
 
 #msgcomposeWindow[triple_wrapping="notok"] #triple_wrapping-status {
-    list-style-image: url("chrome://triple_wrapping/skin/icons/TripleWrappingKO.gif");
+    list-style-image: url("chrome://triple_wrapping/skin/icons/sbTripleWrapNotOk.gif");
     visibility: visible;
 }
