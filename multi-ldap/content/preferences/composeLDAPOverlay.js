@@ -22,8 +22,10 @@ var gComposePane = {
     // builder because of Bug #285076, 
     this.createLocalDirectoriesList();
     
-    this.enableAutocomplete();
-
+   // this.enableAutocomplete();
+	
+	initLDAPAutocompleteList();
+	
     this.initLanguageMenu();
 
     this.populateFonts();
@@ -393,3 +395,108 @@ var gComposePane = {
      } catch (ex) {}
    },  
 };
+
+//Function which deal user event on LDAP AutoComplete List
+function updateLDAPList(target){
+	
+var list = document.getElementById("LDAPList");
+var item = list.currentItem;
+
+var nameCell = 	item.childNodes.item(0);
+var checkBoxCell = item.childNodes.item(1);
+dump(nameCell.tagName+"\n");
+dump(nameCell.getAttribute("label")+" : ");
+dump(nameCell.getAttribute("value")+"\n");
+var checkbox = checkBoxCell.firstChild;
+dump(checkbox.checked+"\n");
+
+updateLDAPAutocompletePref(nameCell.getAttribute("value"), checkbox.checked);
+}
+
+//Helper function return an array minus an value
+function removeFromArray(value, allPrefs){
+	var prefs = new Array();
+	
+	for (i = 0; i < allPrefs.length; i++){
+		if (allPrefs[i] != value)
+			prefs.push(allPrefs[i]);
+	}
+	
+	return prefs;
+}
+
+//Convert an Array to an String with coma
+function convertPrefArrayToString(array){
+	var s = "";
+	
+	for (i = 0 ; i < array.length ; i++){
+		if (array[i].length != 0)
+			{
+				s+=array[i];
+				s +=',';
+			}
+	}
+	
+	
+	return s.slice(0,-1);
+}
+
+function updateLDAPAutocompletePref(LDAPUri, checked){
+	dump("Enter saveLDAPList()" + "\n");
+	var uri = "ldap_2.autoComplete.directoryServer";
+	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+                            .getService(Components.interfaces.nsIPrefBranch);
+                            
+    
+    var LDAPPrefValue = LDAPUri.split("//")[1];
+    dump("saveLDAPList() LDAPPrefValue : " + LDAPPrefValue + "\n");
+                 
+    var autoCompletePref = prefService.getCharPref(uri);
+    dump("saveLDAPList() old autoCompletePref : " + autoCompletePref + "\n");
+    
+    var allPrefs = autoCompletePref.split(',');
+    
+    
+    var prefsFiltered = removeFromArray(LDAPPrefValue, allPrefs);
+   
+   	if (checked)
+   		prefsFiltered.push(LDAPPrefValue);
+   	
+   
+ 
+   	var newPref = convertPrefArrayToString(prefsFiltered);
+  
+    prefService.setCharPref(uri,newPref)
+    
+    autoCompletePref = prefService.getCharPref(uri);
+    dump("saveLDAPList() new autoCompletePref : " + autoCompletePref + "\n");
+	
+}
+
+//Init AutoComplete List Box LDAP
+function initLDAPAutocompleteList(){
+	var list = document.getElementById("LDAPList");
+	var count = list.getRowCount();
+	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+                            .getService(Components.interfaces.nsIPrefBranch);
+    var uri = "ldap_2.autoComplete.directoryServer";
+    
+    //Get all LDAP where AutoComplete is set from User Prefs
+    var pref = prefService.getCharPref(uri);
+    
+	//Loop over all LDAP servers                       
+	for ( i = 0; i < count ; i++){
+		item = list.getItemAtIndex(i);
+		var ldapUri = item.childNodes.item(0).getAttribute("value");
+		var ldapPrefValue = ldapUri.split("//")[1];
+		var checkBox = item.childNodes.item(1).firstChild;
+		
+		//Test if pref contains ldapPrefValue to initialize checkboxes
+		if ( pref.indexOf(ldapPrefValue) >= 0 )
+			checkBox.checked = true;
+		else
+			checkBox.checked = false;
+	}
+
+
+}

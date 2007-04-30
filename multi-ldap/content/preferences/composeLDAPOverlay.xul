@@ -33,7 +33,7 @@
       <preference id="mailnews.wraplength" name="mailnews.wraplength" type="int"/>
       <preference id="mail.enable_autocomplete" name="mail.enable_autocomplete" type="bool"/>
       <preference id="ldap_2.autoComplete.useDirectory" name="ldap_2.autoComplete.useDirectory" type="bool"/>
-      <preference id="ldap_2.autoComplete.directoryServer" name="ldap_2.autoComplete.directoryServer" type="string"/>
+      <!--  preference id="ldap_2.autoComplete.directoryServer" name="ldap_2.autoComplete.directoryServer" type="string"/-->
       <preference id="mail.collect_email_address_outgoing" name="mail.collect_email_address_outgoing" type="bool"/>
       <preference id="mail.collect_addressbook" name="mail.collect_addressbook" type="string"/>
       <preference id="spellchecker.dictionary"  name="spellchecker.dictionary"   type="unichar"/>
@@ -142,45 +142,44 @@
               <caption label="&addressingTitle.label;"/>
 
               <description>&autocompleteText.label;</description>
+               
+               <listbox
+                   id="LDAPList"
+                   ref="moz-abdirectory://"
+                   datasources="rdf:addressdirectory"
+                   onclick="updateLDAPList(event.target)">
+                   <listhead>
+                       <listheader label="LDAP" />
+                       <listheader label="Autocomplete" />
+                   </listhead>
+                   <listcols>
+                       <listcol flex="1" />
+                       <listcol flex="1" />
+                   </listcols>
 
-              <listbox
-                  id="LDAPList"
-                  ref="moz-abdirectory://"
-                  datasources="rdf:addressdirectory">
-                  <listhead>
-                      <listheader label="LDAP" />
-                      <listheader label="Autocomplete" />
-                  </listhead>
-                  <listcols>
-                      <listcol flex="1" />
-                      <listcol flex="1" />
-                  </listcols>
+                   <template>
 
-                  <template>
+                       <listitem
+                           uri="rdf:*"
+                           allowevents="true"
+                           >
 
-                      <listitem uri="rdf:*">
-                          
-                          <listcell
-                              uri="rdf:*"
-                              label="rdf:http://home.netscape.com/NC-rdf#DirName" />
+                           <listcell
+                               uri="rdf:*"
+                               label="rdf:http://home.netscape.com/NC-rdf#DirName"
+                               value="rdf:http://home.netscape.com/NC-rdf#DirUri"/>
 
-                         <listcell
-                              uri="rdf:*"
-                              type="checkbox"
-                              label=""
-                              />
+                           <listcell>
+                               <checkbox/>
+                           </listcell>
 
+                       </listitem>
 
-                      </listitem>
+                   </template>
 
+               </listbox>
 
-
-
-                  </template>
-
-              </listbox>
-           
-              <hbox align="center">
+               <hbox align="center">
               
                 <button id="editButton" label="&editDirectories.label;" 
                         oncommand="gComposePane.editDirectories();"
