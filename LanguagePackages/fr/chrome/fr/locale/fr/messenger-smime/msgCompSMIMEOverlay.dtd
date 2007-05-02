@@ -15,6 +15,9 @@
 <!ENTITY menu_securitySign.label "Signer numériquement ce message">
 <!ENTITY menu_securitySign.accesskey "S">
 
+<!ENTITY menu_securityTripleWrap.label "Utiliser une triple enveloppe">
+<!ENTITY menu_securityTripleWrap.accesskey "T">
+
 <!ENTITY menu_securityStatus.label "Voir les informations de sécurité">
 <!ENTITY menu_securityStatus.accesskey "i">
 

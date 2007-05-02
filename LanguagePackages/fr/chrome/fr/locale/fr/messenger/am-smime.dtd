@@ -10,6 +10,7 @@
 <!ENTITY certificate_clear.button "Effacer">
 <!ENTITY signingGroupTitle.label "Signature">
 <!ENTITY signMessage.label "Signer les messages numériquement">
+<!ENTITY tripleWrapMessage.label "Utiliser une triple enveloppe (Un certificat pour signer et chiffrer doit être défini)">
 <!ENTITY signingCert.message "Certificat personnel pour signer numériquement les messages envoyés :">
 <!ENTITY signingCert.notselected "Pas de certificat">
 

@@ -5,6 +5,7 @@
 <!ENTITY status.heading "Le contenu du message sera envoyé de la façon suivante :">
 <!ENTITY status.signed "Signé numériquement :">
 <!ENTITY status.encrypted "Chiffré :">
+<!ENTITY status.tripleWrapped "Triple enveloppe:">
 <!ENTITY status.certificates "Certificats :">
 <!ENTITY view.label "Voir">
 <!ENTITY view.accesskey "V">
