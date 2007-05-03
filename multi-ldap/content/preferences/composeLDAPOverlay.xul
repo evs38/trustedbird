@@ -3,9 +3,11 @@
 <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
 <!ENTITY % composeDTD SYSTEM "chrome://messenger/locale/preferences/compose.dtd">
 <!ENTITY % editorOverlayDTD SYSTEM "chrome://editor/locale/editorOverlay.dtd">
+<!ENTITY % composeLDAPOverlayDTD SYSTEM "chrome://milimail-multi-ldap/locale/preferences/composeLDAPOverlay.dtd">
 %brandDTD;
 %composeDTD;
 %editorOverlayDTD;
+%composeLDAPOverlayDTD;
 ]>
 
 <overlay id="LDAPComposePaneOverlay"
@@ -137,66 +139,76 @@
          </tabpanel>
 
          <tabpanel orient="vertical">
-           <groupbox>
-              <!-- Address Autocomplete -->
-              <caption label="&addressingTitle.label;"/>
+             <groupbox>
+                 <!-- Address Autocomplete -->
+                 <caption label="&addressingTitle.label;" />
 
-              <description>&autocompleteText.label;</description>
-               
-               <listbox
-                   id="LDAPList"
-                   ref="moz-abdirectory://"
-                   datasources="rdf:addressdirectory"
-                   onclick="updateLDAPList(event.target)">
-                   <listhead>
-                       <listheader label="LDAP" />
-                       <listheader label="Autocomplete" />
-                   </listhead>
-                   <listcols>
-                       <listcol flex="1" />
-                       <listcol flex="1" />
-                   </listcols>
+                 <description>
+                     &autocompleteText.label;
+                 </description>
 
-                   <template>
+                 <listbox
+                     id="LDAPList"
+                     ref="moz-abdirectory://"
+                     datasources="rdf:addressdirectory"
+                     onclick="updateLDAPList(event.target)">
+                     <listhead>
+                         <listheader label="LDAP" />
+                         <listheader label="&ldapAutocomplete.label;" />
+                     </listhead>
+                     <listcols>
+                         <listcol flex="1" />
+                         <listcol flex="1" />
+                     </listcols>
 
-                       <listitem
-                           uri="rdf:*"
-                           allowevents="true"
-                           >
+                     <template>
 
-                           <listcell
-                               uri="rdf:*"
-                               label="rdf:http://home.netscape.com/NC-rdf#DirName"
-                               value="rdf:http://home.netscape.com/NC-rdf#DirUri"/>
+                         <listitem
+                             uri="rdf:*"
+                             allowevents="true">
 
-                           <listcell>
-                               <checkbox/>
-                           </listcell>
+                             <listcell
+                                 uri="rdf:*"
+                                 label="rdf:http://home.netscape.com/NC-rdf#DirName"
+                                 value="rdf:http://home.netscape.com/NC-rdf#DirUri" />
 
-                       </listitem>
+                             <listcell>
+                                 <checkbox />
+                             </listcell>
 
-                   </template>
+                         </listitem>
 
-               </listbox>
+                     </template>
 
-               <hbox align="center">
-              
-                <button id="editButton" label="&editDirectories.label;" 
-                        oncommand="gComposePane.editDirectories();"
-                        accesskey="&editDirectories.accesskey;"/>  
-              </hbox>
-            </groupbox>
-            
-            <separator class="thin"/>
+                 </listbox>
 
-            <hbox align="center" pack="start">
-              <checkbox id="emailCollectionOutgoing" label="&emailCollectionPicker.label;" 
-                        accesskey="&emailCollectionPicker.accesskey;" preference="mail.collect_email_address_outgoing"/>
-                <menulist id="localDirectoriesList" flex="1" preference="mail.collect_addressbook">
-                  <menupopup id="abPopup-menupopup">
-                  </menupopup>
-                </menulist>
-            </hbox>   
+                 <hbox align="center">
+
+                     <button
+                         id="editButton"
+                         label="&editDirectories.label;"
+                         oncommand="gComposePane.editDirectories();"
+                         accesskey="&editDirectories.accesskey;" />
+                 </hbox>
+             </groupbox>
+
+             <separator class="thin" />
+
+             <hbox
+                 align="center"
+                 pack="start">
+                 <checkbox
+                     id="emailCollectionOutgoing"
+                     label="&emailCollectionPicker.label;"
+                     accesskey="&emailCollectionPicker.accesskey;"
+                     preference="mail.collect_email_address_outgoing" />
+                 <menulist
+                     id="localDirectoriesList"
+                     flex="1"
+                     preference="mail.collect_addressbook">
+                     <menupopup id="abPopup-menupopup"></menupopup>
+                 </menulist>
+             </hbox>
          </tabpanel>
 
          <tabpanel orient="vertical">

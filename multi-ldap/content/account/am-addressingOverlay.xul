@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE window SYSTEM "chrome://milimail-multi-ldap/locale/account/am-addressingOverlay.dtd">
+
+<overlay
+    id="LDAPComposePaneOverlay"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:nc="http://home.netscape.com/NC-rdf#"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <script
+        type="application/x-javascript"
+        src="chrome://milimail-multi-ldap/content/account/am-addressingOverlay.js" />
+    <vbox
+        flex="1"
+        id="compositionAndAddressing">
+        <groupbox>
+            <caption label="&addressingTitle.label;" />
+            <checkbox
+                id="ldap_2.identity.id.multi_ldap_use_custom_preferences"
+                label="Use Custom Preferences"
+                oncommand="enableCustomPreferences(event.target)"
+                 />
+            <listbox
+                id="LDAPList"
+                ref="moz-abdirectory://"
+                datasources="rdf:addressdirectory"
+                onclick="updateLDAPList(event.target)">
+                <listhead>
+                    <listheader label="LDAP" />
+                    <listheader label="&addressingAutocomplete.label;" />
+                </listhead>
+                <listcols>
+                    <listcol flex="1" />
+                    <listcol flex="1" />
+                </listcols>
+
+                <template>
+
+                    <listitem
+                        uri="rdf:*"
+                        allowevents="true">
+
+                        <listcell
+                            uri="rdf:*"
+                            label="rdf:http://home.netscape.com/NC-rdf#DirName"
+                            value="rdf:http://home.netscape.com/NC-rdf#DirUri" />
+
+                        <listcell>
+                            <checkbox/>
+                        </listcell>
+
+                    </listitem>
+
+                </template>
+
+            </listbox>
+        </groupbox>
+    </vbox>
+</overlay>
