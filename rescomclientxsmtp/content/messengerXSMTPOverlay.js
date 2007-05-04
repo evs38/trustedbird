@@ -37,17 +37,29 @@
  var verif="";
 //custom preference initialization
 var XP772=new Array("X-P772-Version","X-P772-Priority-Level-Qualifier","X-P772-Extended-Grade-Of-Delivery","X-P772-Primary-Precedence","X-P772-Copy-Precedence","X-P772-Message-Type","X-P772-Address-List-Indicator","X-P772-Exempted-Address","X-P772-Extended-Authorisation-Info","X-P772-Distribution-Codes","X-P772-MCA","X-P772-Handling-Instructions","X-P772-Message-Instructions","X-P772-Codress-message-indicator","X-P772-Originator-Reference","X-P772-ReferenceIndication","X-P772-Other-Recipient-Indicator","X-P772-Acp-Message-identifier","X-P772-Originator-PLAD","X-P772-Acp-Notification-Request","X-P772-Acp-Notification-Response","X-P772-Security-Classification","X-P772-Special-Handling-Instructions","available");
+var needed=new Array("X-P772-Primary-Precedence","X-P772-Originator-Reference","X-P772-Security-Classification");
 var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 //var gDBView = Components.classes["@mozilla.org/messenger/msgdbview;1?type=search"].createInstance(Components.interfaces.nsIMsgDBView);
 //addCustomPref('mail.compose.other.header');
-addCustomPref('mailnews.customHeaders');
-addCustomPref('mailnews.customDBHeaders','yes');
+
+addCustomPref(XP772,'mailnews.customHeaders');
+addCustomPref(XP772,'mailnews.customDBHeaders','yes');
+addCustomPref(needed,'xsmtp.neededHeaders');
+gPrefs.setCharPref('xsmtp.size.flash', 10000);
+gPrefs.setCharPref('xsmtp.size.immediat', 50000);
+gPrefs.setCharPref('xsmtp.size.urgent', 1000000);
+gPrefs.setCharPref('xsmtp.size.routine', 10000000);
+//gPrefs.setCharPref('xsmtp.neededHeaders', "X-P772-Primary-Precedence,X-P772-Originator-Reference,X-P772-Security-Classification");
 
 //add custom headers pref
-function addCustomPref(val,lower)
+function addCustomPref(XP772,val,lower)
 {
    var customedHeaders = "";
-   var headrs = gPrefs.getCharPref(val);
+   var headrs = "";
+   try {
+		headrs = gPrefs.getCharPref(val);
+   }catch(ex){}
+   
    for (var i=0; i< XP772.length; i++){
 	 if ( (headrs.indexOf(XP772[i]) != -1) || (headrs.indexOf(XP772[i].toLowerCase()) != -1) ){
 	 }else {
@@ -499,7 +511,7 @@ var X_P772_Special_Handling_Instructions =
 //column handler add
 function addCustomColumnHandler() 
 {
-	gDBView.addColumnHandler("X-P772-Version", X_P772_Version);
+	//gDBView.addColumnHandler("X-P772-Version", X_P772_Version);
 	gDBView.addColumnHandler("X-P772-Priority-Level-Qualifier", X_P772_Priority_Level_Qualifier);
 	gDBView.addColumnHandler("X-P772-Extended-Grade-Of-Delivery", X_P772_Extended_Grade_Of_Delivery);
 	gDBView.addColumnHandler("X-P772-Primary-Precedence", X_P772_Primary_Precedence);

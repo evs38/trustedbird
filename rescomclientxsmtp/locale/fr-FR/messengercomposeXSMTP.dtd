@@ -53,5 +53,6 @@
 <!ENTITY xsmtp.advancedmore.box "More advanced">
 <!ENTITY xsmtp.header.title "xSMPT Headers">
 <!ENTITY xsmtp.must.box "Must">
-<!ENTITY xsmtp.menulist.label "--select--">
+<!ENTITY xsmtp.menulist.label "">
+<!ENTITY xsmtp.needed "--Needed--">
 

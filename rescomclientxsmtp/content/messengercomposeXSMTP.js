@@ -42,7 +42,6 @@ var gRemoveButton;
 var gHeaderInputElement;
 var gArrayHdrs;
 var gHdrsList;
-//var gContainer=0;
 var gFilterBundle=null;
 var gCustomBundle=null;
 var gMsgCompose = window.opener['gMsgCompose'];
@@ -55,22 +54,40 @@ var message;
 var customedHead;
 
 //window first initialisation
-if((!(gMsgCompose.bodyModified)) || (!(window.opener.gContainer))){window.opener.customedHeaders=""; window.opener.gContainer=0;gMsgCompose.bodyModified=true;}
-var customedHead = window.opener.customedHeaders;
+window.opener.customedHeaders=msgCompFields.otherRandomHeaders;
+if((!(gMsgCompose.bodyModified)) || (!(window.opener.gContainer))){window.opener.gContainer=0; gMsgCompose.bodyModified=true;}
+
 
 //function :  listbox multi-choice 
 function availableToChoice(list,list2) {
 	var box = document.getElementById(list2);
 	var box1 = document.getElementById(list);
-	for (var i = 0; i < box.selectedCount; i++) {
+	var boxCount = box.selectedCount;
+	var box_1="";
+	try{
+		box1.selectAll( );
+		var box1item = box1.selectedCount;
+		for (var i = 0; i < box1item; i++) {
+			box_1 += box1.selectedItems[i].label +",";
+		}
+		box1.clearSelection( );
+	}catch(ex){}	
+	
+	for (var i = 0; i < boxCount; i++) {
+		//var exist=0;
 		var item = box.selectedItems[0];
+		try{
+		box.removeItemAt(box.getIndexOfItem(item));
+		var regexp=item.label;
+		regexp = new RegExp(regexp);
+		if ((regexp.test(box_1)) == true){continue;}//remove item that already exist
+		}catch(ex){}
 		if((box1.getRowCount() < AVAILABLE_ROW)){ //add Item limit 
 			box1.appendItem ( item.label , item.label );
-		}
-		box.removeItemAt(box.getIndexOfItem(item));
+		}	
+		
 	}
 }
-
 //function : set listbox multi-choice onload
 function choices(choice,list) {
 	var box = document.getElementById(list);
@@ -78,24 +95,23 @@ function choices(choice,list) {
 	
 	for (var i = 0; i < choice.length; i++) {
 		var item = choice[i];
-		try{
-			box2.removeItemAt(box2.getIndexOfItem(item));
-		}catch(ex){}
 		box.appendItem ( item , item );
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////  field initialisation  ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-
+//get headers from draft
 function isDraftMessage(array1){
 	var catchHeaderFromURI=getXsmtpHeadersFromURI();
-	if ((catchHeaderFromURI) && ((window.opener.gContainer == 0) || (window.opener.gContainer == undefined)) ){
-		window.opener.customedHeaders = catchHeaderFromURI;
+	if ((catchHeaderFromURI) && ((window.opener.gContainer == 0) || (window.opener.gContainer == undefined))){
+		window.opener.customedHeaders =catchHeaderFromURI; //record field value initialization
 		return catchHeaderFromURI;
 	}return array1;
 }
 
+//fill field on onload
 function onLoad()
 {
     //window first initialisation
@@ -114,18 +130,10 @@ function onLoad()
     gArrayHdrs = new Array();
 	try
     {  
-	    //var catchHeaderFromURI = getXsmtpHeadersFromURI();
-		var champs = customedHead;
+		var champs=window.opener.customedHeaders;
 		champs = isDraftMessage(champs);
-		//if ((catchHeaderFromURI) && (window.opener.gContainer == 0)){
-		//alert("bob2 "+champs);
-			//if (!(champs.indexOf(catchHeaderFromURI))){
-			//	window.opener.customedHeaders = catchHeaderFromURI;
-			//	alert("bob "+window.opener.customedHeaders);
-			//}	
-		//	champs=catchHeaderFromURI;
-		//}
-		var array1=champs.split("\r");
+		
+		var array1=champs.split("\r\n");
 		for (var i = 0; i< array1.length; i++) {
 			var field = array1[i].split(":");
 			if (field[0]==DATE_VERIF){ continue;}
@@ -141,6 +149,7 @@ function onLoad()
 	initializeDialog(hdrs);	
 }
 
+//no null field
 function initializeDialog(hdrs)
 {
   if (hdrs)
@@ -165,6 +174,7 @@ function initializeFields()
   }
 }
 
+//add field value
 function addFields(gArrayElement) //ok
 {
 	var head="";
@@ -172,7 +182,6 @@ function addFields(gArrayElement) //ok
 		{	
 		var field = window.document.getElementById(gArrayElement);
 		head = headersCustom[gArrayElement];
-		//alert("bob "+head);
 		if (field){		
 			if(head){   
 				if (gArrayElement == "X-P772-Special-Handling-Instructions"){
@@ -196,10 +205,10 @@ function addFields(gArrayElement) //ok
 ///////////////////////////////////////////////////////////////////////////////////////////
 //find associate value
 function associateValue(head,field,separator){
-	//var regval = new RegExp(/^([^=]*)=(.*)/);
-	//if ((regval.test(head)) == true){
+    //var regexp="/^([^"+separator+"]*)"+separator+"(.*)/";
+	//regexp = new RegExp(regexp);
 	if ((/^([^=]*)=(.*)/.test(head)) == true){
-	    //alert("voi "+head)
+	//if ((regexp.test(head)) == true){
 		var field2=field+"2";
 		onselectOk(field2,RegExp.$2);
 		head=RegExp.$1;
@@ -214,10 +223,10 @@ function TrimString(string) //ok
   return string.replace(/(^\s+)|(\s+$)/g, '')
 }
 
-//verification des champs
+//mail field check up
 function isRFC2822Mail(val){
-	var field= window.document.getElementById(val);
 	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
+	var field= window.document.getElementById(val);
 	message = "";
 	var reg =/^(("([a-zA-Z\d]+)"\s+(<){1})?([a-z\d]+((\.|-|_)[a-z\d]+)*@((?![-\d])[a-z\d-]{0,62}[a-z\d]\.){1,4}[a-z]{2,6})(>)?(;)?)+$/;
 	var valeur = field.value;
@@ -240,7 +249,6 @@ function fieldAttributLengthVerif(val,fieldSize,stringMinSize,stringMaxSize){
 	regval = new RegExp(regval);
 	var values = TrimString(field.value); //remove white space before and after
 	if (values){
-		//alert("val "+values);
 		if(!(regval.test(values))){
 			message = xSMTPbundle.getString(val+".label") + " : "+xSMTPbundle.getString("format.bad")+"\r\n";
 			alert(message);
@@ -248,10 +256,11 @@ function fieldAttributLengthVerif(val,fieldSize,stringMinSize,stringMaxSize){
 	}
 	verif[val] = message;		
 }		
-			
+
+//is integer			
 function integerNumber(val){
-	var number = window.document.getElementById(val).value;
 	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
+	var number = window.document.getElementById(val).value;
 	message = "";
     if(number != parseInt(number)){
 		var message = xSMTPbundle.getString(val+".label")+ " : "+xSMTPbundle.getString("integer.bad")+"\r\n";
@@ -260,15 +269,24 @@ function integerNumber(val){
 	verif[val] = message;
 }
 
-/*function isNeeded(val){
-	var field= window.document.getElementById(val);
-	if (!(field.value)){
-		var message = xSMTPbundle.getString(val+".label")+ " : "+xSMTPbundle.getString("integer.bad")+"\r\n";
-		alert(message);
+//needed field check up
+function isNeeded(){
+	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
+	var headers = new Array();
+	var headers = gPrefs.getCharPref("xsmtp.neededHeaders").split(',');
+	for (var i =0; i< headers.length; i++) {
+		message = "";
+		var field= window.document.getElementById(headers[i]);
+		if (!(TrimString(field.value))){
+			var message = xSMTPbundle.getString(headers[i]+".label")+ " : "+xSMTPbundle.getString("xsmtp.needed")+"\r\n";
+		}
+		verif[headers[i]] = message;
 	}
-}*/
+}
 
+// is all field syntax ok
 function isAllOk(){
+    isNeeded();
 	var compte = 0;
 	var elt = "";
 	for (var i in verif) {
@@ -290,30 +308,29 @@ function onselectOk(field,val)
 
 function concatField(field,value)
 {
-	field = window.document.getElementById(field);
-	field.value += "="+ value;
+	//field = window.document.getElementById(field);
+	window.document.getElementById(field).value += "="+ value;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////  field value submission  ////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-//on button ok onclick
+//onclick
 function onOk()
 {  
  //onOK field verification
  if (!isAllOk()){return false};
- var headrs = gPrefs.getCharPref("mailnews.customHeaders");
- window.opener.customedHeaders = ""; //record field value initialization
+ //var headrs = gPrefs.getCharPref("mailnews.customHeaders");
  var headers = new Array();
- headers = headrs.split(',');
+ headers = gPrefs.getCharPref("mailnews.customHeaders").split(',');
  var priority;
  
   if (headers.length)
   {
-	//alert("voiv "+msgCompFields.otherRandomHeaders);
+	window.opener.customedHeaders = ""; //record field value initialization
 	msgCompFields.otherRandomHeaders=""; //headers initialization
-	window.opener.customedHeaders += DATE_VERIF+":" + setRFC2822Date(new Date()) + "\r";
-	var hdrs;
+	window.opener.customedHeaders += DATE_VERIF+":" + setRFC2822Date(new Date()) + "\r\n";
+	
 	for (var i =0; i< headers.length; i++) {
 		try
 		{	
@@ -330,15 +347,14 @@ function onOk()
 			}else{
 				priority = list.value;
 			}
-			if (priority.length)
-			{
-			  window.opener.customedHeaders += headers[i]+":" + priority + "\r";
-			}
+			//if (priority.length) //no null field
+			//{
+			  window.opener.customedHeaders += headers[i]+":" + priority + "\r\n";
+			  msgCompFields.otherRandomHeaders = window.opener.customedHeaders;
+			//}
 		}catch(ex) {} 
 	}
   }
-  //alert(window.opener.customedHeaders);
   window.opener.gContainer=1;
   return true;
-
 }

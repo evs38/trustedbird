@@ -34,7 +34,7 @@
 * the terms of any one of the MPL, the GPL or the LGPL.
 *
 * ***** END LICENSE BLOCK ***** */
-//var customedHeaders;
+//var customedHeaders="";
 var gContainer;
 
 var mailSendObserver =
@@ -44,14 +44,12 @@ var mailSendObserver =
 	  var headers=customedHeaders;	
 	  var msgCompFields = gMsgCompose.compFields;
 	  
-	  var array1=headers.split("\r");
+	  var array1=headers.split("\r\n");
 	  for (var i = 0; i< array1.length; i++) {
 		var head=array1[i];
 		if (head){
-			var regval = new RegExp(/^([^:]*):([^--]*)/);//echap null field
-			//var regval = new RegExp(/^([^:]*):(.*)/);
+			var regval = new RegExp(/^([^:]*):([^--]*)/);
 			regval.test(array1[i]);
-			//if ((RegExp.$1 == "available") || (RegExp.$1 == "") || (RegExp.$2 == " ")){ continue;} //echap null field
 			if ((RegExp.$1 == "available") || (RegExp.$1 == "") || (RegExp.$1 == " ")){ continue;}
 			msgCompFields.otherRandomHeaders += RegExp.$1+": " + RegExp.$2 +"\r\n";
 		}
