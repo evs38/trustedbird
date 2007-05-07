@@ -15,11 +15,12 @@
  * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
+ * BT Global Services / Etat  français  Ministère de la Défense
  * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Eric Ballet Baz BT Global Services / Etat français Ministère de la Défense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
