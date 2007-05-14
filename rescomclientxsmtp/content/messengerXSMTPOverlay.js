@@ -15,13 +15,14 @@
  * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
+ *   BT Global Services / Etat français Ministère de la Défense
  * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Bruno Lebon BT Global Services / Etat français Ministère de la Défense
  *
- * Alternatively, the contents o    f this file may be used under the terms of
+ * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
  * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
@@ -34,7 +35,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- var verif="";
+ 
+var verif="";
 //custom preference initialization
 var XP772=new Array("X-P772-Version","X-P772-Priority-Level-Qualifier","X-P772-Extended-Grade-Of-Delivery","X-P772-Primary-Precedence","X-P772-Copy-Precedence","X-P772-Message-Type","X-P772-Address-List-Indicator","X-P772-Exempted-Address","X-P772-Extended-Authorisation-Info","X-P772-Distribution-Codes","X-P772-MCA","X-P772-Handling-Instructions","X-P772-Message-Instructions","X-P772-Codress-message-indicator","X-P772-Originator-Reference","X-P772-ReferenceIndication","X-P772-Other-Recipient-Indicator","X-P772-Acp-Message-identifier","X-P772-Originator-PLAD","X-P772-Acp-Notification-Request","X-P772-Acp-Notification-Response","X-P772-Security-Classification","X-P772-Special-Handling-Instructions","available");
 var needed=new Array("X-P772-Primary-Precedence","X-P772-Originator-Reference","X-P772-Security-Classification");
