@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     May 20, 2007 11:28:19 PM                                                        
+
+     Milimail Extension    
+     Script creates an XPI
+                   
+     Olivier PARNIERE
+     Milimail.org                                                                
+     ====================================================================== -->
+<project name="project" default="package">
+	<description>
+           MiliMail Extension Packager
+    </description>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: prepare-layout                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="prepare-layout">
+		<mkdir dir="dest"/>
+		<delete>
+			<fileset dir="dest">
+				<include name="**"/>
+			</fileset>
+		</delete>
+	</target>
+
+
+
+	<!-- ================================= 
+          target: package              
+         ================================= -->
+	<target name="package"  depends="prepare-layout" description="--> package in xpi">
+		<zip destfile="dest/Milimail-DSN.xpi">
+			<fileset dir="." id="id">
+				<include name="**"/>
+				<exclude name="build.xml"/>
+				<exclude name=".project"/>
+				<exclude name=".settings/"/>
+				<exclude name="dest/"/>
+			</fileset>
+		</zip>
+	</target>
+
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+	<target name="clean" description="--> clean">
+		<delete>
+			<fileset dir="dest">
+				<include name="**"/>
+			</fileset>
+		</delete>
+	</target>
+
+</project>
