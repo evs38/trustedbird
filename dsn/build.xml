@@ -9,6 +9,7 @@
      Milimail.org                                                                
      ====================================================================== -->
 <project name="project" default="package">
+	<property name="component" value="DSN"/>
 	<description>
            MiliMail Extension Packager
     </description>
@@ -31,7 +32,9 @@
           target: package              
          ================================= -->
 	<target name="package"  depends="prepare-layout" description="--> package in xpi">
-		<zip destfile="dest/Milimail-DSN.xpi">
+		<tstamp/>
+		
+		<zip destfile="dest/Milimail-${component}-${DSTAMP}-${TSTAMP}.xpi">
 			<fileset dir="." id="id">
 				<include name="**"/>
 				<exclude name="build.xml"/>
