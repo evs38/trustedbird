@@ -75,12 +75,14 @@ function enableDisableCustomSettings()
 		requestDSNOnSuccess.setAttribute("disabled",true);
 		requestDSNOnFailure.setAttribute("disabled",true);
 		requestDSNOnDelay.setAttribute("disabled",true);
+		requestDSNNever.setAttribute("disabled",true);
 	}
 	 else {	
 		requestAlwaysDSN.removeAttribute("disabled");
 		requestDSNOnSuccess.removeAttribute("disabled");
 		requestDSNOnFailure.removeAttribute("disabled");
 		requestDSNOnDelay.removeAttribute("disabled");
+		requestDSNNever.removeAttribute("disabled");
 		}
 	
 }
