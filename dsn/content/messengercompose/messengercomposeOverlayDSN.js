@@ -42,7 +42,7 @@ var prefService;
 var isDSNEnabled;
 
 
-//Oberser to set DSN State to the compFields
+//Oberver to set DSN State to the compFields
 var mailSendObserver =
 
 {
@@ -84,11 +84,10 @@ function defineDSNMenu(identityKey)
 	//Get Service which read / write preferences
 	prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 	
-	
 	var isCustomPrefsEnabled ;
 	
 	try {
-		isCustomPrefsEnabled = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_use_custom_prefs");
+		isCustomPrefsEnabled = getSafeBoolPref(prefService,"mail.identity." + identityKey + ".dsn_use_custom_prefs");
 	} catch (ex) {
 		isCustomPrefsEnabled = false;
 	}
@@ -98,29 +97,60 @@ function defineDSNMenu(identityKey)
 	if (isCustomPrefsEnabled){
 		dump("defineDSNMenu -> set account DSN Always request" + "\n");
 		
-		try  {
-			isAlwaysEnabled = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_always_request_on");
-		} catch (ex) {
-			isAlwaysEnabled = false;
-		}
+	isAlwaysEnabled = getSafeBoolPref(prefService,"mail.identity." + identityKey + ".dsn_always_request_on");
+		
 	} else {
 		
 		dump("defineDSNMenu -> set general DSN Always request" + "\n");
 		
-		try {
-			isAlwaysEnabled = prefService.getBoolPref("mail.dsn_always_request_on");
-		}
-		catch (ex) {
-			isAlwaysEnabled = false;
-		}
+		isAlwaysEnabled = getSafeBoolPref(prefService,"mail.dsn_always_request_on");
+		
 		dump("defineDSNMenu -> isAlwaysEnabled : " + isAlwaysEnabled + "\n");
 	}
 	
-	
 	//Setting state for DSN Menu
 	document.getElementById("requestDSNMenu").setAttribute('checked',isAlwaysEnabled);
+	
 	isDSNEnabled = isAlwaysEnabled;
 	
+	//disabled DSN Menu if there is no DSN options chosen (Generally on first use)
+	var isCustomPrefsEnabled = getSafeBoolPref(prefService,"mail.identity." + identityKey + ".dsn_use_custom_prefs");
+	
+	if (isCustomPrefsEnabled){
+		onSuccess = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_on_success_on");
+		onFailure = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_on_failure_on");
+		onDelay = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_on_delay_on");
+		never = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_never");
+	} else {
+		onSuccess = getSafeBoolPref(prefService, "mail.dsn_request_on_success_on");
+		onFailure = getSafeBoolPref(prefService, "mail.dsn_request_on_failure_on");
+		onDelay = getSafeBoolPref(prefService, "mail.dsn_request_on_delay_on");
+		never = getSafeBoolPref(prefService, "mail.dsn_request_never");
+	}
+	
+	
+	
+	
+	if (!(isDSNEnabled && onSuccess && onFailure && onDelay && never))
+		document.getElementById("requestDSNMenu").setAttribute('disabled',true);
+		
+	if (isDSNEnabled || onSuccess || onFailure || onDelay || never)
+		document.getElementById("requestDSNMenu").setAttribute('disabled',false);
+	
+	
+}
+//helper Getter preferences with existence test, if it fails it sets the default value false
+function getSafeBoolPref(prefService, key){
+	var value = false;
+	
+	try {
+		value = prefService.getBoolPref(key);
+	} catch (e) {
+		prefService.setBoolPref(key,value);
+	}
+	
+	return value;
+
 }
 
 //Setting DSN State to message's compFields
@@ -129,24 +159,21 @@ function setDSNState(){
 	
 	var isCustomPrefsEnabled = false ;
 	
-	try {
-		isCustomPrefsEnabled = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_use_custom_prefs");
-	} catch (ex) {
-		isCustomPrefsEnabled = false;
-	}
+	isCustomPrefsEnabled = getSafeBoolPref(prefService,"mail.identity." + identityKey + ".dsn_use_custom_prefs");
+	
 	
 	if (isDSNEnabled == true) { // else DSN msCompFields are initialized to false in XPCOM
 		if (isCustomPrefsEnabled == true){
-			onSuccess = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_on_success_on");
-			onFailure = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_on_failure_on");
-			onDelay = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_on_delay_on");
-			never = prefService.getBoolPref("mail.identity." + identityKey + ".dsn_request_never");
+			onSuccess = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_on_success_on");
+			onFailure = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_on_failure_on");
+			onDelay = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_on_delay_on");
+			never = getSafeBoolPref(prefService, "mail.identity." + identityKey + ".dsn_request_never");
 		
 		} else {
-			onSuccess = prefService.getBoolPref("mail.dsn_request_on_success_on");
-			onFailure = prefService.getBoolPref("mail.dsn_request_on_failure_on");
-			onDelay = prefService.getBoolPref("mail.dsn_request_on_delay_on");
-			never = prefService.getBoolPref("mail.dsn_request_never");
+			onSuccess = getSafeBoolPref(prefService, "mail.dsn_request_on_success_on");
+			onFailure = getSafeBoolPref(prefService, "mail.dsn_request_on_failure_on");
+			onDelay = getSafeBoolPref(prefService, "mail.dsn_request_on_delay_on");
+			never = getSafeBoolPref(prefService, "mail.dsn_request_never");
 		}
 	}
 	
