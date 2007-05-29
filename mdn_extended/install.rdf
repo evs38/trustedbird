@@ -39,8 +39,8 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
     <Description about="urn:mozilla:install-manifest">
         <em:id>mdn_extended@milimail.org</em:id>
-        <em:name>mdn_extended</em:name>
-        <em:version>0.1</em:version>
+        <em:name>MDN Extended</em:name>
+        <em:version>0.1.1.0</em:version>
         <em:creator>Eric BALLET BAZ</em:creator>
         <em:targetApplication>
             <Description>
@@ -49,5 +49,6 @@
                 <em:maxVersion>2.0.0.*</em:maxVersion>
             </Description>
         </em:targetApplication>
+		<em:description>Handles the 'Delete' receipt. Note: the standard release of Thunderbird handles only 'Read' receipt.</em:description>
     </Description>
 </RDF>
