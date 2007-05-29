@@ -15,7 +15,7 @@
  * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
- *   BT Global Services / Etat français Ministère de la Défense
+ *   BT Global Services / Etat francais Ministere de la Defense
  * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
