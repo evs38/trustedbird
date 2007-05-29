@@ -40,7 +40,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:id>send_format_ldap@milimail.org</em:id>
         <em:name>send_format_ldap</em:name>
-        <em:version>0.1</em:version>
+        <em:version>0.1.1.0</em:version>
         <em:creator>Eric BALLET BAZ</em:creator>
         <em:targetApplication>
             <Description>
@@ -49,5 +49,6 @@
                 <em:maxVersion>2.0.0.*</em:maxVersion>
             </Description>
         </em:targetApplication>
+		<em:description>Allows, when sending a message, to find supported email formats for the recipients (Text, HTML) by looking up these informations into a LDAP directory.</em:description>
     </Description>
 </RDF>
