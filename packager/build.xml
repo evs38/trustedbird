@@ -7,7 +7,7 @@
                    
      Olivie PARNIERE                                                                
      ====================================================================== -->
-<project name="Milimail Packager">
+<project name="Milimail Packager" default="package">
 	<description>
             Package All Extensions
     </description>
