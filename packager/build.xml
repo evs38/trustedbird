@@ -5,9 +5,9 @@
      Milimail Packager    
     
                    
-     Olivie PARNIERE                                                                
+     Olivier PARNIERE                                                                
      ====================================================================== -->
-<project name="Milimail Packager" default="package">
+<project name="Milimail Packager" default="package-milimail">
 	<description>
             Package All Extensions
     </description>
@@ -48,17 +48,17 @@
 		<mkdir dir="${trunk.gfd.local}" />
 		<mkdir dir="${trunk.multildap.local}" />
 		<mkdir dir="${trunk.languages.local}" />
-		
+
 		<mkdir dir="${tag.mdn.0110.local}" />
 		<mkdir dir="${tag.gfd.0110.local}" />
 		<mkdir dir="${tag.dsn.0100.local}" />
-		<mkdir dir="${tag.languages.0100.local}" />
+		<mkdir dir="${tag.languages.0100.local}/mozilla" />
 	</target>
 
 	<!-- ================================= 
-          target: checkout              
+          target: checkout-extensions              
          ================================= -->
-	<target name="checkout" depends="prepare-layout,load-svn-ant-libray" description="--> checkout all extension from repository">
+	<target name="checkout-extensions" depends="prepare-layout,load-svn-ant-libray" description="--> checkout all extension from repository">
 
 		<svn javahl="false">
 			<checkout url="${trunk.dsn.url}" destpath="${trunk.dsn.local}" />
@@ -67,33 +67,103 @@
 			<checkout url="${trunk.gfd.url}" destpath="${trunk.gfd.local}" />
 			<checkout url="${trunk.multildap.url}" destpath="${trunk.multildap.local}" />
 			<checkout url="${trunk.languages.url}" destpath="${trunk.languages.local}" />
-			
+
 			<checkout url="${tag.mdn.0110.url}" destpath="${tag.mdn.0110.local}" />
 			<checkout url="${tag.gfd.0110.url}" destpath="${tag.gfd.0110.local}" />
 			<checkout url="${tag.dsn.0100.url}" destpath="${tag.dsn.0100.local}" />
 			<checkout url="${tag.languages.0100.url}" destpath="${tag.languages.0100.local}" />
+
 		</svn>
 
 	</target>
 
+	<!-- ================================= 
+          target: checkout-milimail              
+         ================================= -->
+	<target name="checkout-milimail" depends="package-extensions,load-svn-ant-libray" description="--> checkout milimail">
+		<svn javahl="false">
+			<checkout url="${br.th.v0.url}" destpath="${br.th.v0.local}" />
+		</svn>
+	</target>
 
 	<!-- ================================= 
-          target: package              
+          target: compile-milimail              
          ================================= -->
-	<target name="package" depends="checkout" description="--> description">
+	<target name="compile-milimail" depends="checkout-milimail,copy-config-linux,copy-config-win" description="--> compile Milimail">
+		<exec executable="make" dir="${br.th.v0.local}">
+			<arg value="-f"/>
+			<arg value="client.mk"/>
+			<arg value="build"/>
+		</exec>
+	</target>
+
+	<!-- ================================= 
+          target: package-milimail              
+         ================================= -->
+	<target name="package-milimail" depends="" description="--> package milimail in a compressed archive">
+		<exec executable="make" dir="${br.th.v0.local}">
+			<arg value="-C"/>
+			<arg value="xpinstall/packager"/>
+		</exec>
+
+		<copy todir="${local.destination}">
+			<fileset dir="${br.th.v0.local}/dist">
+				<include name="*.tar.gz"/>
+				<include name="*.zip"/>
+			</fileset>
+		 	<mapper type="regexp" from="(.*)\.(tar\.gz|zip)$" to="\1.v0.\2"/>
+		</copy>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: check-os                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="check-os">
+		<condition property="isWin">
+			<and>
+				<os family="windows"/>
+			</and>
+		</condition>
+
+		<condition property="isLinux">
+			<and>
+				<os family="unix"/>
+			</and>
+		</condition>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: copy-config-win                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="copy-config-win" depends="check-os" if="isWin">
+
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+	          target: copy-config-linux                      
+	         - - - - - - - - - - - - - - - - - -->
+	<target name="copy-config-linux" depends="check-os" if="isLinux">
+		<copy file="res/config/linux/.mozconfig" tofile="${br.th.v0.local}/.mozconfig"/>
+	</target>
+
+	<!-- ================================= 
+          target: package-extensions              
+         ================================= -->
+	<target name="package-extensions" depends="checkout-extensions" description="--> description">
 		<zip destfile="${local.destination}/${trunk.dsn.name}.xpi" basedir="${trunk.dsn.local}" excludes="build.xml" />
 		<zip destfile="${local.destination}/${trunk.mdn.name}.xpi" basedir="${trunk.mdn.local}" />
 		<zip destfile="${local.destination}/${trunk.xsmtp.name}.xpi" basedir="${trunk.xsmtp.local}" />
 		<zip destfile="${local.destination}/${trunk.gfd.name}.xpi" basedir="${trunk.gfd.local}" />
 		<zip destfile="${local.destination}/${trunk.multildap.name}.xpi" basedir="${trunk.multildap.local}" />
 		<zip destfile="${local.destination}/${trunk.languages.name}.xpi" basedir="${trunk.languages.local}" />
-		
+
 		<zip destfile="${local.destination}/${tag.mdn.0110.name}.xpi" basedir="${tag.mdn.0110.local}" />
 		<zip destfile="${local.destination}/${tag.gfd.0110.name}.xpi" basedir="${tag.mdn.0110.local}" />
 		<zip destfile="${local.destination}/${tag.dsn.0100.name}.xpi" basedir="${tag.dsn.0100.local}" />
 		<zip destfile="${local.destination}/${tag.languages.0100.name}.xpi" basedir="${tag.languages.0100.local}" />
 
 	</target>
+
 
 
 
