@@ -100,7 +100,7 @@
 	<!-- ================================= 
           target: package-milimail              
          ================================= -->
-	<target name="package-milimail" depends="" description="--> package milimail in a compressed archive">
+	<target name="package-milimail" depends="compile-milimail" description="--> package milimail in a compressed archive">
 		<exec executable="make" dir="${br.th.v0.local}">
 			<arg value="-C"/>
 			<arg value="xpinstall/packager"/>
