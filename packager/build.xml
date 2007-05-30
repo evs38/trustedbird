@@ -29,7 +29,7 @@
 	<!-- ================================= 
           target: clean              
          ================================= -->
-	<target name="clean" description="--> description">
+	<target name="clean" description="--> clean all generated files">
 		<delete includeEmptyDirs="true" failonerror="no">
 			<fileset dir="${local.repository}" />
 			<fileset dir="${local.destination}" />
