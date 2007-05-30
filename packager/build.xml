@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     May 29, 2007 3:27:59 PM                                                        
+
+     Milimail Packager    
+    
+                   
+     Olivie PARNIERE                                                                
+     ====================================================================== -->
+<project name="Milimail Packager">
+	<description>
+            Package All Extensions
+    </description>
+
+	<property file="package.properties" />
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: load-svn-ant-libray                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="load-svn-ant-libray">
+		<taskdef resource="svntask.properties">
+			<classpath>
+				<pathelement location="lib/svnant.jar" />
+				<pathelement location="lib/svnClientAdapter.jar" />
+			</classpath>
+		</taskdef>
+	</target>
+
+
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+	<target name="clean" description="--> description">
+		<delete includeEmptyDirs="true" failonerror="no">
+			<fileset dir="${local.repository}" />
+			<fileset dir="${local.destination}" />
+		</delete>
+	</target>
+
+	<!-- ================================= 
+          target: prepare-layout              
+         ================================= -->
+	<target name="prepare-layout" depends="clean" description="--> Prepare file layout">
+		<mkdir dir="${local.repository}" />
+		<mkdir dir="${local.destination}" />
+		<mkdir dir="${trunk.dsn.local}" />
+		<mkdir dir="${trunk.mdn.local}" />
+		<mkdir dir="${trunk.xsmtp.local}" />
+		<mkdir dir="${trunk.gfd.local}" />
+		<mkdir dir="${trunk.multildap.local}" />
+		<mkdir dir="${trunk.languages.local}" />
+		
+		<mkdir dir="${tag.mdn.0110.local}" />
+		<mkdir dir="${tag.gfd.0110.local}" />
+		<mkdir dir="${tag.dsn.0100.local}" />
+		<mkdir dir="${tag.languages.0100.local}" />
+	</target>
+
+	<!-- ================================= 
+          target: checkout              
+         ================================= -->
+	<target name="checkout" depends="prepare-layout,load-svn-ant-libray" description="--> checkout all extension from repository">
+
+		<svn javahl="false">
+			<checkout url="${trunk.dsn.url}" destpath="${trunk.dsn.local}" />
+			<checkout url="${trunk.mdn.url}" destpath="${trunk.mdn.local}" />
+			<checkout url="${trunk.xsmtp.url}" destpath="${trunk.xsmtp.local}" />
+			<checkout url="${trunk.gfd.url}" destpath="${trunk.gfd.local}" />
+			<checkout url="${trunk.multildap.url}" destpath="${trunk.multildap.local}" />
+			<checkout url="${trunk.languages.url}" destpath="${trunk.languages.local}" />
+			
+			<checkout url="${tag.mdn.0110.url}" destpath="${tag.mdn.0110.local}" />
+			<checkout url="${tag.gfd.0110.url}" destpath="${tag.gfd.0110.local}" />
+			<checkout url="${tag.dsn.0100.url}" destpath="${tag.dsn.0100.local}" />
+			<checkout url="${tag.languages.0100.url}" destpath="${tag.languages.0100.local}" />
+		</svn>
+
+	</target>
+
+
+	<!-- ================================= 
+          target: package              
+         ================================= -->
+	<target name="package" depends="checkout" description="--> description">
+		<zip destfile="${local.destination}/${trunk.dsn.name}.xpi" basedir="${trunk.dsn.local}" excludes="build.xml" />
+		<zip destfile="${local.destination}/${trunk.mdn.name}.xpi" basedir="${trunk.mdn.local}" />
+		<zip destfile="${local.destination}/${trunk.xsmtp.name}.xpi" basedir="${trunk.xsmtp.local}" />
+		<zip destfile="${local.destination}/${trunk.gfd.name}.xpi" basedir="${trunk.gfd.local}" />
+		<zip destfile="${local.destination}/${trunk.multildap.name}.xpi" basedir="${trunk.multildap.local}" />
+		<zip destfile="${local.destination}/${trunk.languages.name}.xpi" basedir="${trunk.languages.local}" />
+		
+		<zip destfile="${local.destination}/${tag.mdn.0110.name}.xpi" basedir="${tag.mdn.0110.local}" />
+		<zip destfile="${local.destination}/${tag.gfd.0110.name}.xpi" basedir="${tag.mdn.0110.local}" />
+		<zip destfile="${local.destination}/${tag.dsn.0100.name}.xpi" basedir="${tag.dsn.0100.local}" />
+		<zip destfile="${local.destination}/${tag.languages.0100.name}.xpi" basedir="${tag.languages.0100.local}" />
+
+	</target>
+
+
+
+</project>
