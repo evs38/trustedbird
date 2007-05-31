@@ -1,0 +1,13 @@
+#Mozilla Milimail Linux Configuration File
+
+mk_add_options MOZ_CO_PROJECT=mail
+ac_add_options --enable-application=mail
+ac_add_options --enable-optimize
+ac_add_options --disable-debug
+ac_add_options --disable-freetype2
+ac_add_options --enable-xft
+ac_add_options --disable-tests
+ac_add_options --enable-static
+ac_add_options --disable-shared
+mk_add_options MOZ_MAKE_FLAGS=-j4
+
