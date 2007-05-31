@@ -17,12 +17,13 @@
           target: load-svn-ant-libray                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="load-svn-ant-libray">
-		<taskdef resource="svntask.properties">
-			<classpath>
-				<pathelement location="lib/svnant.jar" />
-				<pathelement location="lib/svnClientAdapter.jar" />
-			</classpath>
-		</taskdef>
+		<path id="svnant.classpath">
+    			<fileset dir="lib">
+      			<include name="**/*.jar"/>
+    			</fileset>
+  		</path>  
+	
+		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="lib/svnant.jar;lib/svnClientAdapter.jar;lib/svnkit.jar;lib/javahl.jar;lib/ganymed.jar" /> 
 	</target>
 
 
@@ -60,7 +61,7 @@
          ================================= -->
 	<target name="checkout-extensions" depends="prepare-layout,load-svn-ant-libray" description="--> checkout all extension from repository">
 
-		<svn javahl="false">
+		<svn username="oparnier" password="Meeshohg" javahl="false" svnkit="true">
 			<checkout url="${trunk.dsn.url}" destpath="${trunk.dsn.local}" />
 			<checkout url="${trunk.mdn.url}" destpath="${trunk.mdn.local}" />
 			<checkout url="${trunk.xsmtp.url}" destpath="${trunk.xsmtp.local}" />
@@ -81,7 +82,7 @@
           target: checkout-milimail              
          ================================= -->
 	<target name="checkout-milimail" depends="package-extensions,load-svn-ant-libray" description="--> checkout milimail">
-		<svn javahl="false">
+		<svn javahl="false" svnkit="true">
 			<checkout url="${br.th.v0.url}" destpath="${br.th.v0.local}" />
 		</svn>
 	</target>
