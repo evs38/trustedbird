@@ -137,7 +137,7 @@
           target: copy-config-win                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="copy-config-win" depends="check-os" if="isWin">
-
+		<copy file="res/config/win/.mozconfig" tofile="${br.th.v0.local}/.mozconfig"/>
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
