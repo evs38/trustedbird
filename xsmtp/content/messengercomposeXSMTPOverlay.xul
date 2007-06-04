@@ -53,7 +53,7 @@
   id="toolbarbutton-xsmtp"
   label="xSMTP"
   tooltiptext="xSMPT headers"
-  image="chrome://xsmtp/content/icons/icon2.gif"
+  image="chrome://xsmtp/content/icons/xsmtp.gif"
   orient="vertical"
   oncommand="window.openDialog('chrome://xsmtp/content/messengercomposeXSMTP.xul', '', 'chrome,resizable=yes,titlebar,modal,width=600,height=600');"/>
   
