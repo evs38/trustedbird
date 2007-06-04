@@ -1,0 +1,4 @@
+<!ENTITY dialog.title "Contrôle de la taille des messages">
+<!ENTITY dialog.description  "Activer ou désactiver le contrôle de la taille des messages en fonctions de leur priorité">
+<!ENTITY button.activ.label "Activer">
+<!ENTITY button.desactiv.label "Désactiver">

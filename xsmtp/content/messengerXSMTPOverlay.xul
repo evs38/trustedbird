@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="UTF-8"?> 
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is Mozilla Communicator
+   -
+   - The Initial Developer of the Original Code is
+   -   BT Global Services / Etat français Ministère de la Défense
+   - Portions created by the Initial Developer are Copyright (C) 2002
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -   Bruno Lebon BT Global Services / Etat français Ministère de la Défense
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<!DOCTYPE overlay SYSTEM "chrome://xsmtp/locale/messengercomposeXSMTP.dtd">
+<overlay id="rescomclienticon"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<script type="text/javascript" src="chrome://xsmtp/content/messengerXSMTPOverlay.js"/>
+
+<tree id="threadTree">
+  <treecols id="threadCols">
+  
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Version" persist="hidden ordinal width " flex="2" hidden="true" label="&X-P772-Version.label;" tooltiptext="&X-P772-Version.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Priority-Level-Qualifier" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Priority-Level-Qualifier.label;" tooltiptext="&X-P772-Priority-Level-Qualifier.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Extended-Grade-Of-Delivery" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Extended-Grade-Of-Delivery.label;" tooltiptext="&X-P772-Extended-Grade-Of-Delivery.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Primary-Precedence" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Primary-Precedence.label;" tooltiptext="&X-P772-Primary-Precedence.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Copy-Precedence" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Copy-Precedence.label;" tooltiptext="&X-P772-Copy-Precedence.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Message-Type" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Message-Type.label;" tooltiptext="&X-P772-Message-Type.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Address-List-Indicator" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Address-List-Indicator.label;" tooltiptext="&X-P772-Address-List-Indicator.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Exempted-Address" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Exempted-Address.label;" tooltiptext="&X-P772-Exempted-Address.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Extended-Authorisation-Info" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Extended-Authorisation-Info.label;" tooltiptext="&X-P772-Extended-Authorisation-Info.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Distribution-Codes" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Distribution-Codes.label;" tooltiptext="&X-P772-Distribution-Codes.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-MCA" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-MCA.label;" tooltiptext="&X-P772-MCA.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Handling-Instructions" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Handling-Instructions.label;" tooltiptext="&X-P772-Handling-Instructions.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Message-Instructions" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Message-Instructions.label;" tooltiptext="&X-P772-Message-Instructions.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Codress-message-indicator" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Codress-message-indicator.label;" tooltiptext="&X-P772-Codress-message-indicator.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Originator-Reference" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Originator-Reference.label;" tooltiptext="&X-P772-Originator-Reference.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-ReferenceIndication" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-ReferenceIndication.label;" tooltiptext="&X-P772-ReferenceIndication.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Other-Recipient-Indicator" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Other-Recipient-Indicator.label;" tooltiptext="&X-P772-Other-Recipient-Indicator.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Acp-Message-identifier" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Acp-Message-identifier.label;" tooltiptext="&X-P772-Acp-Message-identifier.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Originator-PLAD" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Originator-PLAD.label;" tooltiptext="&X-P772-Originator-PLAD.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Acp-Notification-Request" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Acp-Notification-Request.label;" tooltiptext="&X-P772-Acp-Notification-Request.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Acp-Notification-Response" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Acp-Notification-Response.label;" tooltiptext="&X-P772-Acp-Notification-Response.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Security-Classification" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Security-Classification.label;" tooltiptext="&X-P772-Security-Classification.label;"/>
+	<splitter class="tree-splitter"/>
+	<treecol id="X-P772-Special-Handling-Instructions" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Special-Handling-Instructions.label;" tooltiptext="&X-P772-Special-Handling-Instructions.label;"/>
+ 
+ </treecols>
+</tree>
+
+
+</overlay>

@@ -1,0 +1,4 @@
+<!ENTITY dialog.title "Message Size control">
+<!ENTITY dialog.description  "Enable or desable the message size control">
+<!ENTITY button.activ.label "Enable">
+<!ENTITY button.desactiv.label "Desable">
