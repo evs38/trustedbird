@@ -88,9 +88,9 @@
 	</target>
 
 	<!-- ================================= 
-          target: compile-milimail              
+          target: compile-milimail-linux              
          ================================= -->
-	<target name="compile-milimail" depends="checkout-milimail,copy-config-linux,copy-config-win" description="--> compile Milimail">
+	<target name="compile-milimail-linux" depends="checkout-milimail,copy-config-linux" if="isLinux" description="--> compile Milimail">
 		<exec executable="make" dir="${br.th.v0.local}">
 			<arg value="-f"/>
 			<arg value="client.mk"/>
@@ -99,9 +99,28 @@
 	</target>
 
 	<!-- ================================= 
+	          target: compile-milimail-win              
+	         ================================= -->
+		<target name="compile-milimail-win" depends="checkout-milimail,copy-config-win" if="isWin" description="--> compile Milimail">
+			<exec executable="svn" dir="${br.th.v0.local}">
+				<arg value="revert"/>
+				<arg value="-R ."/>
+			</exec>
+			<exec executable="./configure" dir="${br.th.v0.local}"></exec>
+			<exec executable="make" dir="${br.th.v0.local}">
+				<arg value="distclean"/>
+			</exec>
+			<exec executable="make" dir="${br.th.v0.local}">
+				<arg value="-f"/>
+				<arg value="client.mk"/>
+				<arg value="build"/>
+			</exec>
+		</target>
+
+	<!-- ================================= 
           target: package-milimail              
          ================================= -->
-	<target name="package-milimail" depends="compile-milimail" description="--> package milimail in a compressed archive">
+	<target name="package-milimail" depends="check-os,compile-milimail-linux,compile-milimail-win" description="--> package milimail in a compressed archive">
 		<exec executable="make" dir="${br.th.v0.local}">
 			<arg value="-C"/>
 			<arg value="xpinstall/packager"/>
@@ -136,14 +155,14 @@
 	<!-- - - - - - - - - - - - - - - - - - 
           target: copy-config-win                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="copy-config-win" depends="check-os" if="isWin">
+	<target name="copy-config-win" >
 		<copy file="res/config/win/.mozconfig" tofile="${br.th.v0.local}/.mozconfig"/>
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
 	          target: copy-config-linux                      
 	         - - - - - - - - - - - - - - - - - -->
-	<target name="copy-config-linux" depends="check-os" if="isLinux">
+	<target name="copy-config-linux">
 		<copy file="res/config/linux/.mozconfig" tofile="${br.th.v0.local}/.mozconfig"/>
 	</target>
 
