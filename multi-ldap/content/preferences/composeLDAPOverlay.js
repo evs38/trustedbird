@@ -1,6 +1,6 @@
 
 
-const kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
+var kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
 
 var gRefresh = false; // leftover hack from the old preferences dialog
 
@@ -443,34 +443,63 @@ function convertPrefArrayToString(array){
 
 function updateLDAPAutocompletePref(LDAPUri, checked){
 	dump("Enter saveLDAPList()" + "\n");
-	var uri = "ldap_2.autoComplete.directoryServer";
+	var prefLDAPURI = "ldap_2.autoComplete.ldapServers";
 	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
                             .getService(Components.interfaces.nsIPrefBranch);
-                            
+    var localPrefMap = new Object();                       
+    localPrefMap["abook.mab"]="ldap_2.autoComplete.useAddressBooks";
+    localPrefMap["history.mab"]="mail.enable_autocomplete";
     
     var LDAPPrefValue = LDAPUri.split("//")[1];
     dump("saveLDAPList() LDAPPrefValue : " + LDAPPrefValue + "\n");
-                 
-    var autoCompletePref = prefService.getCharPref(uri);
+    
+    var uri = "";
+    
+    if (LDAPPrefValue.search("ldap_2") != -1){
+    	uri=prefLDAPURI;
+    } else{
+        dump("pref local "+ localPrefMap[LDAPPrefValue] + " "+ checked);
+    	prefService.setBoolPref(localPrefMap[LDAPPrefValue], checked);
+        return;
+    }
+    
+    var autoCompletePref = getSafeCharPref(prefService, uri);
     dump("saveLDAPList() old autoCompletePref : " + autoCompletePref + "\n");
     
     var allPrefs = autoCompletePref.split(',');
-    
     
     var prefsFiltered = removeFromArray(LDAPPrefValue, allPrefs);
    
    	if (checked)
    		prefsFiltered.push(LDAPPrefValue);
    	
-   
- 
    	var newPref = convertPrefArrayToString(prefsFiltered);
   
-    prefService.setCharPref(uri,newPref)
+    prefService.setCharPref(uri, newPref);
     
-    autoCompletePref = prefService.getCharPref(uri);
+    autoCompletePref = getSafeCharPref(prefService, uri);
     dump("saveLDAPList() new autoCompletePref : " + autoCompletePref + "\n");
-	
+}
+/*
+ * Get preference safety, if preference does not exist it returns empty string
+ */
+function getSafeCharPref(prefService, uri){
+	var value = "";
+	try {
+		value = prefService.getCharPref(uri);
+	} catch(e){}
+	return value;
+}
+
+/*
+ * Get preference safety, if preference does not exist it returns true boolean
+ */
+function getSafeBoolPref(prefService, uri){
+	var value = true;
+	try {
+		value = prefService.getBoolPref(uri);
+	} catch(e){}
+	return value;
 }
 
 //Init AutoComplete List Box LDAP
@@ -479,11 +508,17 @@ function initLDAPAutocompleteList(){
 	var count = list.getRowCount();
 	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
                             .getService(Components.interfaces.nsIPrefBranch);
-    var uri = "ldap_2.autoComplete.directoryServer";
+                            
+    //URI of All Autocomplete repositories
+    var prefLDAPURI = "ldap_2.autoComplete.ldapServers";
+    var prefLocalHistoryURI = "mail.enable_autocomplete";
+    var prefLocalAddressUri = "ldap_2.autoComplete.useAddressBooks";
     
     //Get all LDAP where AutoComplete is set from User Prefs
-    var pref = prefService.getCharPref(uri);
-    
+    var prefLDAP = getSafeCharPref(prefService, prefLDAPURI);
+    var prefLocalHistoryBool = getSafeBoolPref(prefService, prefLocalHistoryURI);
+    var prefLocalAddressBool = getSafeBoolPref(prefService, prefLocalAddressUri);
+	
 	//Loop over all LDAP servers                       
 	for ( i = 0; i < count ; i++){
 		item = list.getItemAtIndex(i);
@@ -492,10 +527,23 @@ function initLDAPAutocompleteList(){
 		var checkBox = item.childNodes.item(1).firstChild;
 		
 		//Test if pref contains ldapPrefValue to initialize checkboxes
-		if ( pref.indexOf(ldapPrefValue) >= 0 )
+		if (( prefLDAP.indexOf(ldapPrefValue) >= 0))
 			checkBox.checked = true;
 		else
 			checkBox.checked = false;
+	
+        //Case of Local Directory : AddressBook and History		
+		if (ldapPrefValue=="abook.mab")
+		    if (prefLocalAddressBool)
+		       checkBox.checked = true;
+		    else
+		       checkBox.checked = false;
+		    
+		if (ldapPrefValue=="history.mab")
+		 if (prefLocalHistoryBool)
+		    checkBox.checked = true;
+		  else
+		    checkBox.checked = false;
 	}
 
 

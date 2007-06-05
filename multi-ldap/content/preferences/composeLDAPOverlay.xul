@@ -153,7 +153,7 @@
                      datasources="rdf:addressdirectory"
                      onclick="updateLDAPList(event.target)">
                      <listhead>
-                         <listheader label="LDAP" />
+                         <listheader label="&directory.label;" />
                          <listheader label="&ldapAutocomplete.label;" />
                      </listhead>
                      <listcols>

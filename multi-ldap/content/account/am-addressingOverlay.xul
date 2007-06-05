@@ -35,11 +35,10 @@
                 </listcols>
 
                 <template>
-
                     <listitem
                         uri="rdf:*"
                         allowevents="true">
-
+						
                         <listcell
                             uri="rdf:*"
                             label="rdf:http://home.netscape.com/NC-rdf#DirName"
@@ -48,9 +47,8 @@
                         <listcell>
                             <checkbox/>
                         </listcell>
-
+                        
                     </listitem>
-
                 </template>
 
             </listbox>
