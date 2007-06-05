@@ -179,7 +179,8 @@ function addFields(gArrayElement) //ok
 		{	
 		var field = window.document.getElementById(gArrayElement);
 		head = headersCustom[gArrayElement];
-		if (field){		
+		if (field){	
+            		
 			if(head){   
 				if (gArrayElement == "X-P772-Special-Handling-Instructions"){
 					var choice = new Array();
@@ -188,7 +189,13 @@ function addFields(gArrayElement) //ok
 				}else if(field.tagName == 'menulist'){
 					field.setAttribute('value',head);
 					head=associateValue(head,gArrayElement,'=');
-					field.setAttribute('label',head);		
+					field.setAttribute('label',head);
+                }else if (gArrayElement == "X-P772-MCA"){	
+						var disabledField=window.document.getElementById("X-P772-Distribution-Codes").setAttribute('disabled',true);
+						field.value = head;
+			    }else if (gArrayElement == "X-P772-Distribution-Codes"){
+				        var disabledField=window.document.getElementById("X-P772-MCA").setAttribute('disabled',true);
+						field.value = head;
 				}else{
 					field.value = head;
 				}
@@ -336,6 +343,8 @@ function concatField(field,value)
 function isValidChar(field, fieldValue){
 	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
 	field = window.document.getElementById(field);
+	/*if (/([^\w])/.test(fieldValue)){//autre correction
+		alert (xSMTPbundle.getString("syntax.bad")+ " :"+RegExp.$1);*/
 	if (/[:]/.test(fieldValue)){
 		alert (xSMTPbundle.getString("syntax.bad"));
 		field.value =  fieldValue.substring(0,fieldValue.length -1);
