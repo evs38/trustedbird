@@ -157,14 +157,14 @@
 	<!-- - - - - - - - - - - - - - - - - - 
           target: copy-config-win                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="copy-config-win" >
+	<target name="copy-config-win" depends="check-os" >
 		<copy file="res/config/win/.mozconfig" tofile="${br.th.v0.local}/.mozconfig"/>
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
 	          target: copy-config-linux                      
 	         - - - - - - - - - - - - - - - - - -->
-	<target name="copy-config-linux">
+	<target name="copy-config-linux" depends="check-os">
 		<copy file="res/config/linux/.mozconfig" tofile="${br.th.v0.local}/.mozconfig"/>
 	</target>
 
