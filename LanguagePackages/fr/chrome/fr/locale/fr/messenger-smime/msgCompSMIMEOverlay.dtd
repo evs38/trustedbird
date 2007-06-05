@@ -20,6 +20,7 @@
 
 <!ENTITY menu_securityTripleWrap.label "Utiliser une triple enveloppe">
 <!ENTITY menu_securityTripleWrap.accesskey "T">
+<!ENTITY tripleWrap.description "Un message utilisant une triple enveloppe est signé, puis chiffré, puis signé.">
 
 <!ENTITY menu_securityStatus.label "Voir les informations de sécurité">
 <!ENTITY menu_securityStatus.accesskey "i">
