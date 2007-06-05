@@ -106,7 +106,9 @@
 				<arg value="revert"/>
 				<arg value="-R ."/>
 			</exec>
-			<exec executable="./configure" dir="${br.th.v0.local}"></exec>
+			<exec executable="sh" dir="${br.th.v0.local}">
+				<arg value="configure"/>
+			</exec>
 			<exec executable="make" dir="${br.th.v0.local}">
 				<arg value="distclean"/>
 			</exec>
