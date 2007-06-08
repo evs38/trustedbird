@@ -43,7 +43,6 @@
                             uri="rdf:*"
                             label="rdf:http://home.netscape.com/NC-rdf#DirName"
                             value="rdf:http://home.netscape.com/NC-rdf#DirUri" />
-
                         <listcell>
                             <checkbox/>
                         </listcell>

@@ -119,12 +119,11 @@ function getSafeCharPref(prefService, uri){
 	} catch(e){}
 	return value;
 }
-
+ 
 
 function updateLDAPAutocompletePref(LDAPUri, checked){
 	dump("Enter saveLDAPList()" + "\n");
-	var prefLDAPURI = "ldap_2.identity."+identitykey+".autoComplete.ldapServers";
-	var prefLocalDirectoriesURI = "ldap_2.identity."+identitykey+".autoComplete.ldapLocalDirectories";
+	var uri = "ldap_2.identity."+identitykey+".autoComplete.ldapServers";
 	
 	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
                             .getService(Components.interfaces.nsIPrefBranch);
@@ -132,12 +131,6 @@ function updateLDAPAutocompletePref(LDAPUri, checked){
     var LDAPPrefValue = LDAPUri.split("//")[1];
     dump("saveLDAPList() LDAPPrefValue : " + LDAPPrefValue + "\n");
     
-    var uri = "";
-    if (LDAPPrefValue.search("ldap_2") != -1){
-    	uri=prefLDAPURI;
-    } else
-    	uri=prefLocalDirectoriesURI;
-                 
     var autoCompletePref = getSafeCharPref(prefService, uri);
     dump("saveLDAPList() old autoCompletePref : " + autoCompletePref + "\n");
     
@@ -164,11 +157,11 @@ function initLDAPAutocompleteList(){
                             .getService(Components.interfaces.nsIPrefBranch);
     
     var prefLDAPURI = "ldap_2.identity."+identitykey+".autoComplete.ldapServers";
-    var prefLocalDirectoriesURI = "ldap_2.identity."+identitykey+".autoComplete.ldapLocalDirectories";
+
     
     //Get all LDAP where AutoComplete is set from User Prefs
     var prefLDAP = getSafeCharPref(prefService, prefLDAPURI);
-    var prefLocalDirectories = getSafeCharPref(prefService, prefLocalDirectoriesURI);
+    
     
 	//Loop over all LDAP servers                       
 	for ( i = 0; i < count ; i++){
@@ -176,9 +169,14 @@ function initLDAPAutocompleteList(){
 		var ldapUri = item.childNodes.item(0).getAttribute("value");
 		var ldapPrefValue = ldapUri.split("//")[1];
 		var checkBox = item.childNodes.item(1).firstChild;
+	  
+	    //Hidden Local Directories, cannot access to rdf moz-abldapdirectory in XUL.
+		if ((ldapUri.search("history.mab") != -1) || (ldapUri.search("abook.mab") != -1)){
+		         item.setAttribute("hidden","true");
+		}
 		
 		//Test if pref contains ldapPrefValue to initialize checkboxes
-		if (( prefLDAP.indexOf(ldapPrefValue) >= 0) || (prefLocalDirectories.indexOf(ldapPrefValue) >= 0))
+		if ( prefLDAP.indexOf(ldapPrefValue) >= 0)
 			checkBox.checked = true;
 		else
 			checkBox.checked = false;
@@ -219,14 +217,20 @@ function disableListBox(list, bool){
 }
 
 function enableCustomPreferences(target){
-	
+	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+                            .getService(Components.interfaces.nsIPrefBranch);
 	dump("enableCustomPreferences() -> Enter " + 	"\n");
 	var list = document.getElementById("LDAPList");
 	dump("enableCustomPreferences() -> checkbox state " + target.checked + "\n");
+	var uri = "ldap_2.identity."+identitykey+".autoComplete.overrideGlobalPref";
 	
-	if (target.checked == false)
+	if (target.checked == false){
 		disableListBox(list,true);
-	else
+		prefService.setBoolPref(uri, false);
+	}
+	else{
 		disableListBox(list,false);
+		prefService.setBoolPref(uri, true);
+	}
 }
 
