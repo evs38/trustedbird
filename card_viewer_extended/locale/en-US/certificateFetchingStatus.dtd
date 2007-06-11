@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<!-- ***** BEGIN LICENSE BLOCK *****
+﻿<!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
    - The contents of this file are subject to the Mozilla Public License Version
@@ -36,17 +35,6 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE dialog SYSTEM "chrome://card_viewer_extended/locale/abCardOverlay_overlay.dtd">
-
-<overlay id="card_viewer_extended_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
-    <script type="application/x-javascript" src="chrome://card_viewer_extended/content/abCardOverlay_overlay.js"/>
-
-    <vbox id="editcard">
-        <stringbundle id="card_viewer_extended_stringbundle" src="chrome://card_viewer_extended/locale/card_viewer_extended.properties"/>
-        <separator/>
-        <hbox>
-            <button label="&button.showCurrentCertificate.label;" accesskey="&button.showCurrentCertificate.accesskey;" oncommand="cardvext_showCurrentCertificate()"/>
-        </hbox>
-    </vbox>
-</overlay>
+<!ENTITY title.label "Downloading certificate">
+<!ENTITY info.message "Searching the directory for contact's certificate. This may take a few minutes.">
+<!ENTITY stop.label "Stop Searching">

@@ -36,52 +36,91 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// URL of the window dialog to call
+const CARDVEXT_CERTIFICATE_FETCHING_DIALOG_WINDOW_URL = 'chrome://card_viewer_extended/content/certificateFetchingStatuts.xul';
+
+// String bundle resource
+var cardvext_stringBundle;
+
 // Main entry point : show to the user the certificate of the current card
 function cardvext_showCurrentCertificate() {
 
-  // Get the email of the selected user's card
-  var email = cardvext_getEmail();
-  if (!email) {
-    alert("No email found to retrieve certificate");
-    return;
-  }
+    // Init the string bundle resource
+    cardvext_stringBundle = document.getElementById('card_viewer_extended_stringbundle');
 
-  // First try to retrieve the certificate from local storage
-  var cert = null;
-  var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
-  try {
-    cert = certDB.findCertByEmailAddress(null, email);
-    
-  } catch (e) {
-    /* No certificate found : silently ignore this exception */
-  }
-  
-  // Then, if cert isn't found try to retrieve it from LDAP
-  if (!cert) {
-    // TODO : Check LDAP
-  }
-    
-  // Finally if cert isn't found, alert the user
-  if (!cert) {
-    alert("No certificate found");
-    return
-  }
-  
-  // Show the certificate we have found
-  cardvext_viewCertHelper(cert);
+    // Get the email of the selected user's card
+    var email = cardvext_getEmail();
+    if (!email) {
+        alert(cardvext_stringBundle.getString("no_email_found"));
+        return;
+    }
+
+    // First try to retrieve the certificate from local storage
+    var certificate = null;
+    var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
+    try {
+        certificate = certDB.findCertByEmailAddress(null, email);
+
+    } catch (e) {
+        // No certificate found : silently ignore this exception
+    }
+
+    // if certificate isn't found try to retrieve it from LDAP
+    if (!certificate) {
+        // Use an array to pass the argument to the dialog window
+        // in order to be able to return a modified value
+        var certificate_bytes = null;
+        var certificate_length = 0;
+        var argHolder = [email, certificate_bytes, certificate_length];
+
+        // Open the dialog window that will block the user until fectching from LDAP is done
+        window.openDialog(
+            CARDVEXT_CERTIFICATE_FETCHING_DIALOG_WINDOW_URL,
+            'cardvext_certificateFetchingStatuts', // Dummy name
+            'chrome,resizable=0,modal=1,dialog=1', // Modal: block user
+            argHolder
+        );
+
+        // Fetch the certificate's datas from the dialog window
+        certificate_bytes = argHolder[1];
+        certificate_length = argHolder[2];
+
+        // Certificate has been found in LDAP, import it in local storage
+        if (certificate_bytes) {
+            // Import certificate
+            certDB.importEmailCertificate(certificate_bytes, certificate_length.value, null);
+
+            // Reload the certificate as a X509 object
+            try {
+                certificate = certDB.findCertByEmailAddress(null, email);
+            } catch (e) {
+                // No certificate found : silently ignore this exception
+                // This could happen for example if certificate doesn't contains the same email as the one defined in LDAP !
+            }
+        }
+    }
+
+    // Display the certificate if found 
+    if (certificate) {
+        cardvext_viewCertHelper(certificate);
+
+    // Else alert the user
+    } else {
+        alert(cardvext_stringBundle.getString("no_certificate_found"));
+    }
 }
 
 // Helper to show to the user the specified certificate
-function cardvext_viewCertHelper(cert) {
-  if (!cert)
-    return;
+function cardvext_viewCertHelper(certificate) {
+    if (!certificate)
+        return;
 
-  var cd = Components.classes["@mozilla.org/nsCertificateDialogs;1"].getService(Components.interfaces.nsICertificateDialogs);
-  cd.viewCert(window, cert);
+    var cd = Components.classes["@mozilla.org/nsCertificateDialogs;1"].getService(Components.interfaces.nsICertificateDialogs);
+    cd.viewCert(window, certificate);
 }
 
 // Retrieve the email of the selected user's card
 function cardvext_getEmail() {
-  var primaryEmail = document.getElementById("PrimaryEmail");
-  return primaryEmail.value;
+    var primaryEmail = document.getElementById("PrimaryEmail");
+    return primaryEmail.value;
 }

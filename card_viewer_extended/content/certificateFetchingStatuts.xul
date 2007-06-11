@@ -36,17 +36,25 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE dialog SYSTEM "chrome://card_viewer_extended/locale/abCardOverlay_overlay.dtd">
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
-<overlay id="card_viewer_extended_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<!DOCTYPE dialog SYSTEM "chrome://card_viewer_extended/locale/certificateFetchingStatus.dtd">
 
+<dialog
+    id="card_viewer_extended_certificateFetchingStatus"
+    title="&title.label;"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    buttons="cancel"
+    buttonlabelcancel="&stop.label;"
+    ondialogcancel="return cardvext_onDialogCancelFetchingStatuts();"
+    onload="cardvext_onLoadCertificateFetchingStatuts();">
+
+    <stringbundle id="bundle_ldap" src="chrome://mozldap/locale/ldap.properties"/>
+    
     <script type="application/x-javascript" src="chrome://card_viewer_extended/content/abCardOverlay_overlay.js"/>
-
-    <vbox id="editcard">
-        <stringbundle id="card_viewer_extended_stringbundle" src="chrome://card_viewer_extended/locale/card_viewer_extended.properties"/>
-        <separator/>
-        <hbox>
-            <button label="&button.showCurrentCertificate.label;" accesskey="&button.showCurrentCertificate.accesskey;" oncommand="cardvext_showCurrentCertificate()"/>
-        </hbox>
-    </vbox>
-</overlay>
+    <script type="application/x-javascript" src="chrome://card_viewer_extended/content/certificateFetchingStatuts.js"/>
+    
+    <description>&info.message;</description>
+    
+    <progressmeter id="card_viewer_extended_progressmeter" mode="undetermined"/>
+</dialog>
