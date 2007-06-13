@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
+const kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
 
 var gRefresh = false; // leftover hack from the old preferences dialog
 
