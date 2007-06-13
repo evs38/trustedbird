@@ -35,63 +35,63 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-//var customedHeaders="";
-var customedHeaders;
+//initialyse the needed global variables 
+var customedHeaders="";
 var gContainer=0;
+
+ 
 const DATE_VERIF="X-P772-Extended-Authorisation-Info";
 
+//get header from recorded message
 function getDraftMessage(){
-	var catchHeaderFromURI = getXsmtpHeadersFromURI();
+    var catchHeaderFromURI="";
+	catchHeaderFromURI = getXsmtpHeadersFromURI(msgWindow,window);
 	if ((catchHeaderFromURI)){
+			//window.customedHeaders = catchHeaderFromURI; //record field value initialization
 		return catchHeaderFromURI;
 	}else{return "";}
 }
 
-
-var xSMTPObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-
+//trim space before and after the string
 function TrimString(string) //ok
 {
   if (!string) return "";
   return string.replace(/(^\s+)|(\s+$)/g, '')
 }
-	
 
 
+//register customed headers
 var xSMTPMailSendObserver =
 {
   observe: function(subject, topic, data)
   {
-	
 	  try{
-	  var xSMTPHeaders=customedHeaders;
-	
 	  var msgCompFields = gMsgCompose.compFields;
-	  if ((window.gContainer == 0)){
-			customedHeaders=getDraftMessage(msgWindow);
+	  if ((gContainer == 0) && (gMsgCompose.type != 0)){ 
+			customedHeaders=getDraftMessage();
 	  }
-	
 	  if (customedHeaders){
-		  var xSMTPHeaders=customedHeaders.split("\r\n");
-		  for (var i = 0; i< xSMTPHeaders.length; i++) {
-			var head=xSMTPHeaders[i];
+		  var headers=customedHeaders;	
+		  var priority="";
+		  var array1=headers.split("\r\n");
+		  for (var i = 0; i< array1.length; i++) {
+			var head=array1[i];
 			if (head){
-				var regval = new RegExp(/^([^:]*):([^--]*)/);
-				regval.test(xSMTPHeaders[i]);
-				var value = RegExp.$2;
-				var field = RegExp.$1;
-				
+				var regval = new RegExp("^([^:]*):([^:]*)");
+				regval.test(array1[i]);
+				var value = RegExp.$2; var field = RegExp.$1;
 				if (/Info$/.test(field)){continue;}
-				if ((RegExp.$1 == "available") || (RegExp.$1 == "") || (RegExp.$1 == " ")){ continue;}
-				
-				msgCompFields.otherRandomHeaders += RegExp.$1+": " + TrimString(value) +"\r\n";
+				if ((field == "available") || (field == "") || (field == " ")){ continue;}
+				msgCompFields.otherRandomHeaders += field+": " + TrimString(value) +"\r\n";
 			}
 		  }
 		 msgCompFields.otherRandomHeaders += DATE_VERIF+": " + setRFC2822Date(new Date()) + "\r\n";
-		 gContainer==1;
+		 gContainer=1;
 	  }
+	  
 	 }catch(ex){}
   }
 }
 
+var xSMTPObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
 xSMTPObserverService.addObserver(xSMTPMailSendObserver, "mail:composeOnSend", false);

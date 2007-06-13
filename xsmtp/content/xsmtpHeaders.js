@@ -38,17 +38,17 @@
 //global variable
 var xSMTPMessenger = Components.classes["@mozilla.org/messenger;1"].createInstance();
 xSMTPMessenger = xSMTPMessenger.QueryInterface(Components.interfaces.nsIMessenger);
-var customedHeaders;
+//var customedHeaders;
+
 
 //get message URI
 function GetSelectedMessagesXSMTP()
 {
-  if (gMsgCompose) {
-    var mailWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService()
-                     .QueryInterface(Components.interfaces.nsIWindowMediator)
-                     .getMostRecentWindow("mail:3pane");
-    if (mailWindow) {
-      return mailWindow.GetSelectedMessages();
+  if (gMsgCompose) {  
+	var mailWindow = gMsgCompose.compFields.draftId;
+    mailWindow=mailWindow.substring(mailWindow, mailWindow.indexOf('?'));
+	if (mailWindow) {
+      return mailWindow;
     }
   }
 
@@ -97,15 +97,18 @@ function GetHeadersFromURI(messageURI,opener) {
 }
 
 //get xsmtp headers
-function getXsmtpHeadersFromURI(opener){
+function getXsmtpHeadersFromURI(opener,fenetre){
     var messageURI = "";
 	if ((gMsgCompose.type == 9) || (gMsgCompose.type == 10)){
-	    messageURI = GetSelectedMessagesXSMTP();	
+	    var regex=gMsgCompose.type+":uri";
+	    var regval = new RegExp("^"+regex);
+		var xSMTPHeaders="";
+	 
+		messageURI=GetSelectedMessagesXSMTP();
+		
 		if (/null/.test(messageURI)){return false;}
 		var head=GetHeadersFromURI(messageURI,opener).allHeaders;
-		var allHeaders = new Array();
-		var xSMTPHeaders="";
-		allHeaders = head.split('\r\n');
+		var allHeaders = head.split('\r\n');
 		for (i in allHeaders){ 
 			if (!(allHeaders[i].indexOf('X-P772'))){
 				xSMTPHeaders += allHeaders[i]+ "\r\n";

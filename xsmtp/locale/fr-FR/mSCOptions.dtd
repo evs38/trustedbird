@@ -1,4 +1,3 @@
-﻿<?xml version="1.0" encoding="UTF-8"?> 
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
@@ -15,12 +14,12 @@
    - The Original Code is Mozilla Communicator
    -
    - The Initial Developer of the Original Code is
-   -   BT Global Services / Etat français Ministère de la Défense
+   -   BT Global Services / Etat francais Ministere de la Defense
    - Portions created by the Initial Developer are Copyright (C) 2002
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
-   -   Bruno Lebon BT Global Services / Etat français Ministère de la Défense
+   -   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,33 +35,9 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE overlay >
-<overlay id="custombutton-overlay"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
-<!-- Thunderbird compose -->
-<toolbarpalette id="MsgComposeToolbarPalette">
-  <toolbarbutton class="toolbarbutton-1" id="toolbarbutton-xsmtp"/>
-</toolbarpalette>
-
-<toolbar id="MsgComposeToolbarPalette" defaultset="button-send,spacer,button-address,spacer,spellingButton,spacer,button-attach,button-security,spacer,button-save,spacer,toolbarbutton-xsmtp">
-  </toolbar>
-
-<!-- button details -->
-<toolbarbutton
-  id="toolbarbutton-xsmtp"
-  label="xSMTP"
-  tooltiptext="xSMPT headers"
-  image="chrome://xsmtp/content/icons/icon2.gif"
-  orient="vertical"
-  oncommand="window.openDialog('chrome://xsmtp/content/messengercomposeXSMTP.xul', '', 'chrome,resizable=yes,titlebar,modal,width=600,height=600');"/>
-  
-  <stringbundleset id="stringbundleset">
-    <stringbundle id="string-bundle" src="chrome://xsmtp/locale/mSCOptions.properties"/>
-  </stringbundleset>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/messengercomposeXSMTPOverlay.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/xsmtpHeaders.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/daterfc.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/messengercomposeMSC0verlay.js"/>
-  
- </overlay>
+<!ENTITY dialog.title "Contrôle de la taille des messages">
+<!ENTITY dialog.description  "Activer ou désactiver le contrôle de la taille des messages en fonctions de leur priorité">
+<!ENTITY button.activ.label "Activer">
+<!ENTITY button.desactiv.label "Désactiver">
+<!ENTITY title.dialogSize.label "Contrôle de la taille des éléments des message enregistrés">
+<!ENTITY info.message "Nous contrôlons la taille du message. Patientez, s'il vous plait !">

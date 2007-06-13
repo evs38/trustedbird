@@ -19,8 +19,9 @@
    - Portions created by the Initial Developer are Copyright (C) 2002
    - the Initial Developer. All Rights Reserved.
    -
-   - Contributor(s): 
-   -   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
+   - Contributor(s):
+   -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+   -   and Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,20 +37,20 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-    <Description about="urn:mozilla:install-manifest">
-      <em:id>xsmtp@milimail.org</em:id>
-      <em:name>XSMTP Extension</em:name>
-      <em:version>0.1.0.0</em:version>
-      <em:creator>Bruno Lebon</em:creator>
-      <em:targetApplication>
-          <Description>
-              <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
-              <em:minVersion>2.0.0.0</em:minVersion>
-              <em:maxVersion>2.0.0.*</em:maxVersion>
-          </Description>
-      </em:targetApplication>
-      <em:description>XSMTP extension</em:description>
-	  <em:optionsURL>chrome://xsmtp/content/mSCOptions.xul</em:optionsURL>
-    </Description>
-</RDF>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://xsmtp/locale/mSCOptions.dtd">
+
+<dialog
+    id="mSCOptionsInsertedRecordSize"
+    title="&title.dialogSize.label;"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	onCancel="window.close();"
+    onload="mscOptions_Size_Onload();">
+	
+    <script type="application/x-javascript" src="chrome://xsmtp/content/xSMTPInsertedRecordSize.js"/>
+    
+    <description>&info.message;</description>
+    
+    <progressmeter id="mSCOptions_progressmeter" mode="undetermined"/>
+</dialog>

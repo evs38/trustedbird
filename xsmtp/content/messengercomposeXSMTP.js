@@ -56,7 +56,8 @@ var customedHead;
 
 //window first initialisation
 window.opener.customedHeaders=msgCompFields.otherRandomHeaders;
-if((!(gMsgCompose.bodyModified)) || (!(window.opener.gContainer))){window.opener.gContainer=0; gMsgCompose.bodyModified=true;}
+
+//if((!(gMsgCompose.bodyModified)) || (!(window.opener.gContainer))){window.opener.gContainer=0; gMsgCompose.bodyModified=true;}
 
 //function :  listbox multi-choice 
 function availableToChoice(list,list2) {
@@ -102,9 +103,10 @@ function choices(choice,list) {
 /////////////////////////////////////////////////////////////////////////////////////////
 //get headers from draft
 function isDraftMessage(array1){
-	var catchHeaderFromURI = getXsmtpHeadersFromURI(window.opener['msgWindow']);
+	var catchHeaderFromURI = getXsmtpHeadersFromURI(window.opener['msgWindow'],window.opener);
 	if ((catchHeaderFromURI) && (window.opener.gContainer != 1) ){
-		window.opener.customedHeaders = catchHeaderFromURI; //record field value initialization
+		//window.opener.customedHeaders = catchHeaderFromURI; //record field value initialization
+		alert("hier");
 		return catchHeaderFromURI;
 	}return array1;
 }
@@ -258,9 +260,10 @@ function fieldAttributLengthVerif(val,fieldSize,stringMinSize,stringMaxSize){
 	message = "";
 	
 	//var regval="^([a-z\d]{"+stringMinSize+","+stringMaxSize+"};){0,"+(fieldSize - 1)+"}([a-z\d]{"+stringMinSize+","+stringMaxSize+"}(;)?){1}$";
-	var regval="^(.{"+stringMinSize+","+stringMaxSize+"};){0,"+(fieldSize - 1)+"}(.{"+stringMinSize+","+stringMaxSize+"}(;)?){1}$";
+	var regval="^([^;]{"+stringMinSize+","+stringMaxSize+"};){0,"+(fieldSize - 1)+"}([^;]{"+stringMinSize+","+stringMaxSize+"}(;)?){1}$";
 	regval = new RegExp(regval);
-	var values = TrimString(field.value); //remove white space before and after
+	var values = TrimString(field.value);//remove white space before and after
+	
 	if (values){
 		if(!(regval.test(values))){
 			message = xSMTPbundle.getString(val+".label") + " : "+xSMTPbundle.getString("format.bad")+"\r\n";
@@ -276,6 +279,10 @@ function integerNumber(val){
 	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
 	var xSMTPNumber = window.document.getElementById(val).value;
 	message = "";
+	if (xSMTPNumber.length > 1){
+		xSMTPNumber=xSMTPNumber.replace(/^0{1,}/,'');
+	}
+	
     if((TrimString(xSMTPNumber)) &&(xSMTPNumber != parseInt(xSMTPNumber))){
 		var message = xSMTPbundle.getString(val+".label")+ " : "+xSMTPbundle.getString("integer.bad")+"\r\n";
 		verif[val] = message;
@@ -287,7 +294,6 @@ function integerNumber(val){
 //needed field check up
 function isNeeded(){
 	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
-	//var xSMTPNeededHeaders = new Array();
 	var xSMTPNeededHeaders = gPrefs.getCharPref("xsmtp.neededHeaders").split(',');
 	for (var i =0; i< xSMTPNeededHeaders.length; i++) {
 		message = "";
@@ -331,7 +337,7 @@ function onselectOk(field,valFieldText,valFieldMenu)
 function concatField(field,value)
 {
 	field = window.document.getElementById(field);
-	value=value.replace(/\s+/g,'');
+	value=TrimString(value);
 	if (/^([^=]+)=.*/.test(field.value)){
 		if (value == ""){
 				field.setAttribute('value',RegExp.$1);
@@ -343,13 +349,10 @@ function concatField(field,value)
 function isValidChar(field, fieldValue){
 	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
 	field = window.document.getElementById(field);
-	/*if (/([^\w])/.test(fieldValue)){//autre correction
-		alert (xSMTPbundle.getString("syntax.bad")+ " :"+RegExp.$1);*/
-	if (/[:]/.test(fieldValue)){
-		alert (xSMTPbundle.getString("syntax.bad"));
-		field.value =  fieldValue.substring(0,fieldValue.length -1);
-		//fieldValue = fieldValue.substring(0,fieldValue.length -1);
-		//field.value = fieldValue;
+		//[^ a-zA-Z_éèàêâùïüëôç'\%€\{\}\<\>\!]
+	if (/[:]/g.test(fieldValue)){
+		alert (xSMTPbundle.getString("syntax.bad"));	
+		field.value=fieldValue.replace(/:/g,''); 
 	}
 }
 	
@@ -362,7 +365,6 @@ function onOk()
 {  
  //onOK field verification
  if (!isAllOk()){return false};
- //var xsmtpHeaders = new Array();
  var xsmtpHeaders = gPrefs.getCharPref("mailnews.customHeaders").split(',');
  var priority;
  
@@ -370,7 +372,6 @@ function onOk()
   {
 	window.opener.customedHeaders = ""; //record field value initialization
 	msgCompFields.otherRandomHeaders = ""; //headers initialization
-	//window.opener.customedHeaders += DATE_VERIF+":" + setRFC2822Date(new Date()) + "\r\n";
 	
 	for (var i =0; i< xsmtpHeaders.length; i++) {
 		try

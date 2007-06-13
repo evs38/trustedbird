@@ -37,9 +37,12 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!DOCTYPE overlay SYSTEM "chrome://xsmtp/locale/messengercomposeXSMTP.dtd">
+
 <overlay id="rescomclienticon"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 <script type="text/javascript" src="chrome://xsmtp/content/messengerXSMTPOverlay.js"/>
+
+
 
 <tree id="threadTree">
   <treecols id="threadCols">

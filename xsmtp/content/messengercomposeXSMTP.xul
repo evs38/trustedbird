@@ -207,7 +207,7 @@
 					<spacer flex="1"/>
 					<label value="&X-P772-Exempted-Address.label;" class="CardEditLabel"/>
 					<hbox class="CardEditWidth">
-						<textbox id="&X-P772-Exempted-Address.id;" onchange="isRFC2822Mail('X-P772-Exempted-Address');" flex="1"/>
+						<textbox id="&X-P772-Exempted-Address.id;" onchange="isRFC2822Mail('X-P772-Exempted-Address');" oninput="isValidChar('X-P772-Exempted-Address',this.value);" flex="1"/>
 					</hbox>
 				</hbox>
 				<hbox>
@@ -260,7 +260,7 @@
 					<spacer flex="1" />
 					<label value="&X-P772-Codress-message-indicator.label;" class="CardEditLabel"/>
 					<hbox class="CardEditWidth">
-						<textbox id="&X-P772-Codress-message-indicator.id;" onblur="integerNumber('X-P772-Codress-message-indicator');" flex="1"/>
+						<textbox id="&X-P772-Codress-message-indicator.id;" onblur="integerNumber('X-P772-Codress-message-indicator');" oninput="isValidChar('X-P772-Codress-message-indicator',this.value);" flex="1"/>
 					</hbox>
 	            </hbox>
 	            <hbox>

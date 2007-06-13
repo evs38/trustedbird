@@ -1,4 +1,4 @@
-ï»¿<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
@@ -15,12 +15,12 @@
    - The Original Code is Mozilla Communicator
    -
    - The Initial Developer of the Original Code is
-   -   BT Global Services / Etat franÃ§ais MinistÃ¨re de la DÃ©fense
+   -   BT Global Services / Etat français Ministère de la Défense
    - Portions created by the Initial Developer are Copyright (C) 2002
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
-   -   Bruno Lebon BT Global Services / Etat franÃ§ais MinistÃ¨re de la DÃ©fense
+   -   Bruno Lebon BT Global Services / Etat français Ministère de la Défense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,34 +35,32 @@
    - the terms of any one of the MPL, the GPL or the LGPL.
    -
    - ***** END LICENSE BLOCK ***** -->
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 
-<!DOCTYPE overlay >
-<overlay id="custombutton-overlay"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<!DOCTYPE dialog SYSTEM "chrome://xsmtp/locale/mSCOptions.dtd">
 
-<!-- Thunderbird compose -->
-<toolbarpalette id="MsgComposeToolbarPalette">
-  <toolbarbutton class="toolbarbutton-1" id="toolbarbutton-xsmtp"/>
-</toolbarpalette>
-
-<toolbar id="MsgComposeToolbarPalette" defaultset="button-send,spacer,button-address,spacer,spellingButton,spacer,button-attach,button-security,spacer,button-save,spacer,toolbarbutton-xsmtp">
-  </toolbar>
-
-<!-- button details -->
-<toolbarbutton
-  id="toolbarbutton-xsmtp"
-  label="xSMTP"
-  tooltiptext="xSMPT headers"
-  image="chrome://xsmtp/content/icons/icon2.gif"
-  orient="vertical"
-  oncommand="window.openDialog('chrome://xsmtp/content/messengercomposeXSMTP.xul', '', 'chrome,resizable=yes,titlebar,modal,width=600,height=600');"/>
-  
+<dialog id="options" title="&dialog.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept,cancel"
+        ondialogaccept="return doOK();"
+        ondialogcancel="return doCancel();"
+        onload="onLoad();">
+        
   <stringbundleset id="stringbundleset">
     <stringbundle id="string-bundle" src="chrome://xsmtp/locale/mSCOptions.properties"/>
   </stringbundleset>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/messengercomposeXSMTPOverlay.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/xsmtpHeaders.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/daterfc.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/messengercomposeMSC0verlay.js"/>
+ 
+  <script type="application/x-javascript" src="mSCOptions.js"/>
   
- </overlay>
+  <vbox>
+    <label value="&dialog.description;"/>
+    <spacer/>
+    <hbox align="center">
+      <radiogroup id="group">
+		  <radio id="xSMTPControle1" value="true" label="&button.activ.label;"/>
+		  <radio id="xSMTPControle2" value="false" label="&button.desactiv.label;"/>
+	  </radiogroup>
+    </hbox>  
+  </vbox>
+  
+</dialog>
