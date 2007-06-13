@@ -195,7 +195,7 @@ function mdn_extended_HandleMDNDeleteResponse(aUrl, headers) {
 }
 
 // Extension Hook : replace the built in SetupCommandUpdateHandlers functions defined in mail3PaneWindowCommands.js and in messageWindow.js with our own.. 
-mdn_extended_OriginalSetupCommandUpdateHandlers = SetupCommandUpdateHandlers;
+var mdn_extended_OriginalSetupCommandUpdateHandlers = SetupCommandUpdateHandlers;
 SetupCommandUpdateHandlers = function mdn_extended_SetupCommandUpdateHandlers() {
 
     // Call built in SetupCommandUpdateHandlers function
