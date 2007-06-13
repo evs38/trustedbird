@@ -18,17 +18,18 @@
             <checkbox
                 id="ldap_2.identity.id.multi_ldap_use_custom_preferences"
                 label="Use Custom Preferences"
-                oncommand="enableCustomPreferences(event.target)"
-                 />
+                oncommand="enableCustomPreferences(event.target)" />
             <listbox
                 id="LDAPList"
                 ref="moz-abdirectory://"
                 datasources="rdf:addressdirectory"
                 onclick="updateLDAPList(event.target)">
+
                 <listhead>
                     <listheader label="LDAP" />
                     <listheader label="&addressingAutocomplete.label;" />
                 </listhead>
+
                 <listcols>
                     <listcol flex="1" />
                     <listcol flex="1" />
@@ -38,15 +39,16 @@
                     <listitem
                         uri="rdf:*"
                         allowevents="true">
-						
+
                         <listcell
                             uri="rdf:*"
                             label="rdf:http://home.netscape.com/NC-rdf#DirName"
                             value="rdf:http://home.netscape.com/NC-rdf#DirUri" />
+
                         <listcell>
-                            <checkbox/>
+                            <checkbox />
                         </listcell>
-                        
+
                     </listitem>
                 </template>
 
