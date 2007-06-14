@@ -36,7 +36,7 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!-- General Setting -->
-<!ENTITY dsnTitle.label     "Notification de délivrance">
+<!ENTITY dsnTitle.label     "Avis de remise">
 <!ENTITY dsnAlwaysSend.label "A l'envoi, toujours demander un avis de remise>
 <!ENTITY dsnAlwaysSend.accesskey "T">
 
