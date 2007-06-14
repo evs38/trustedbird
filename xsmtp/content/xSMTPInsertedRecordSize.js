@@ -39,10 +39,11 @@
 
 // Global variables and constants.
 var urls=new Array();
-var size = 0;
+var mscSize = 0;
 var gIOService = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
 
 function openMSCOptionsChannel(url) {
+  url=decodeURI(url);
   var URI = gIOService.newURI(url, null, null);
   URI = URI.QueryInterface(Components.interfaces.nsIURL );
   return gIOService.newChannelFromURI(URI);
@@ -56,7 +57,8 @@ function MSCOptionsListener(urls, i)
 
 MSCOptionsListener.prototype =
 {
-
+  //mscSize : 0,
+  return_count : 0, 
   QueryInterface: function(iid)
   {
     if (iid.equals(Components.interfaces.nsIStreamListener))
@@ -66,7 +68,9 @@ MSCOptionsListener.prototype =
   
   onDataAvailable: function(request , context , inputStream , offset , count)
   {
-    size += count;
+   //alert("pol "+count);
+   this.return_count++; 
+    mscSize += count;
   },
   
   onStartRequest: function() {},
@@ -74,13 +78,16 @@ MSCOptionsListener.prototype =
   onStopRequest: function(request , context , statusCode )
   {
     this.index++;
-  
+
 	// Goto next URL
+	//alert(mscSize +" "+ this.index);
 	if (this.listeurls.length > this.index) {
 		 var channel = openMSCOptionsChannel(this.listeurls[this.index]);
-		channel.asyncOpen (new MSCOptionsListener(this.urls, this.index), null);
+		channel.asyncOpen(new MSCOptionsListener(this.listeurls, this.index), null);
 	}else{
-	  window.arguments[0][1]=size;
+	  //alert(size +" "+ this.index);
+	  //alert("oaui "+this.return_count);
+	  window.arguments[0][1] = mscSize;
 	  window.close();
 	} 
   },
@@ -94,10 +101,8 @@ function mscOptions_Size_Onload() {
 
     // Retrieve and remind window argument
     urls = window.arguments[0][0];
-
     // If argument is ok
     if (urls.length>0) {
-    
         // Init and process to get message Size
         var channel = openMSCOptionsChannel(urls[0]);
 		channel.asyncOpen(new MSCOptionsListener(urls, 0), null);

@@ -106,7 +106,6 @@ function isDraftMessage(array1){
 	var catchHeaderFromURI = getXsmtpHeadersFromURI(window.opener['msgWindow'],window.opener);
 	if ((catchHeaderFromURI) && (window.opener.gContainer != 1) ){
 		//window.opener.customedHeaders = catchHeaderFromURI; //record field value initialization
-		alert("hier");
 		return catchHeaderFromURI;
 	}return array1;
 }

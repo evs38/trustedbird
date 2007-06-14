@@ -67,9 +67,9 @@ var xSMTPMailSendObserver =
   {
 	  try{
 	  var msgCompFields = gMsgCompose.compFields;
-	  if ((gContainer == 0) && (gMsgCompose.type != 0)){ 
+	 /* if ((gContainer == 0) && (gMsgCompose.type != 0)){ 
 			customedHeaders=getDraftMessage();
-	  }
+	  }*/
 	  if (customedHeaders){
 		  var headers=customedHeaders;	
 		  var priority="";
