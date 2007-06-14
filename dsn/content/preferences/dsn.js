@@ -37,46 +37,40 @@
  
 //This function check parameters to be sure that at least one DSN option is checked
  function checkParameters(target){
-	var requestAlwaysDSN = document.getElementById("mail.dsn_always_request_on");
+    var requestAlwaysDSN = document.getElementById("mail.dsn_always_request_on");
 	var requestDSNOnSuccess = document.getElementById("mail.dsn_request_on_success_on");
 	var requestDSNOnFailure = document.getElementById("mail.dsn_request_on_failure_on");
 	var requestDSNOnDelay = document.getElementById("mail.dsn_request_on_delay_on");
-	var requestDSNNever = document.getElementById("mail.dsn_request_never");
+	var requestDSNNever = document.getElementById("mail.dsn_request_never"); 
+     
+	var a = requestAlwaysDSN.value;
+	var s = requestDSNOnSuccess.value;
+	var f = requestDSNOnFailure.value;
+	var d = requestDSNOnDelay.value;
+	var n = requestDSNNever.value;
+	
 	
 	var stringsBundle = document.getElementById("string-bundle");
 	var alertString = stringsBundle.getString('alert-parameters') + " ";
 
 	//One of the option must be checked
-	if ( requestAlwaysDSN.value && !requestDSNOnSuccess.value && !requestDSNOnFailure.value && !requestDSNOnDelay.value &&  !requestDSNNever.value){
-			alert(alertString);
-			target.value = !target.value;
-		}
 	
-	//Never option is only possible when the others are unchecked
-	if ( requestDSNNever.value && (target.value)){
-		requestDSNNever.value=false;
+	if (!d && !n && a && !s && !f){
+	       alert(alertString);
+	       target.value = !target.value;
 	}
+	
+	if ( n && ( (d  && !s ) || ( s && !f ) || f ) ){
+	    if (target == requestDSNNever){
+    	    requestDSNOnSuccess.value = false;
+    	    requestDSNOnFailure.value = false;
+    	    requestDSNOnDelay.value = false;
+	    } else if ( (target == requestDSNOnSuccess) || (target == requestDSNOnFailure) || (target == requestDSNOnDelay)){
+	        if (target.value == true)
+    	        requestDSNNever.value = false;
+	    }
+	}
+
+	
 }
 
-function uncheckParameters(target){
-	var requestAlwaysDSN = document.getElementById("mail.dsn_always_request_on");
-	var requestDSNOnSuccess = document.getElementById("mail.dsn_request_on_success_on");
-	var requestDSNOnFailure = document.getElementById("mail.dsn_request_on_failure_on");
-	var requestDSNOnDelay = document.getElementById("mail.dsn_request_on_delay_on");
-
-	//When Never option is enabled, the others are unchecked
-	if (target.value){
-		requestDSNOnSuccess.value=false;
-		requestDSNOnFailure.value=false;
-		requestDSNOnDelay.value=false;
-	}
-	
-	var stringsBundle = document.getElementById("string-bundle");
-	var alertString = stringsBundle.getString('alert-parameters') + " ";
-	
-	//One of the option must be checked
-	if ( requestAlwaysDSN.value && !requestDSNOnSuccess.value && !requestDSNOnFailure.value && !requestDSNOnDelay.value &&  !target.value){
-		alert(alertString);
-		target.value = !target.value;
-	}
-}
