@@ -49,8 +49,9 @@
     type="child"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     dlgbuttons="accept,cancel"
-    title="&dsnTitle.label;">
-
+    title="&dsnTitle.label;"
+    onload="checkParameters(event.target)">
+	
     <stringbundleset id="stringbundleset">
         <stringbundle
             id="string-bundle"
@@ -92,7 +93,7 @@
                 id="mail.dsn_request_never"
                 name="mail.dsn_request_never"
                 type="bool"
-                onchange="uncheckParameters(event.target)"
+                onchange="checkParameters(event.target)"
                   />
         </preferences>
 
@@ -106,7 +107,7 @@
                 label="&dsnAlwaysSend.label;"
                 preference="mail.dsn_always_request_on"
                 accesskey="&dsnAlwaysSend.accesskey;"
-               />
+                />
 
         </vbox>
 
@@ -144,11 +145,6 @@
             preference="mail.dsn_request_on_delay_on"
             accesskey="&dsnRequestOnDelay.accesskey;"
           />
-
-        <!-- Seperator to have a nice UI -->
-        <separator class="thin" />
-        <separator class="groove" />
-        <separator class="thin" />
 
         <checkbox
             id="requestNever"
