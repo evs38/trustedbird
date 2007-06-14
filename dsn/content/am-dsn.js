@@ -61,6 +61,8 @@
 	requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
 	requestDSNNever = document.getElementById("identity.dsn_request_never");
 	enableDisableCustomSettings();
+	
+	
 
 }
 
@@ -83,6 +85,8 @@ function enableDisableCustomSettings()
 		requestDSNOnFailure.removeAttribute("disabled");
 		requestDSNOnDelay.removeAttribute("disabled");
 		requestDSNNever.removeAttribute("disabled");
+		checkParameters(new Object());
+		
 		}
 	
 }
@@ -107,15 +111,33 @@ function onSave(){
 	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked && !requestDSNNever.checked ){
 		
 		dump("function onSave() -> Reset to default options	" + "\n");
-		requestAlwaysDSN.setAttribute("checked",false);
-		requestDSNOnSuccess.setAttribute("checked",false);
-		requestDSNOnFailure.setAttribute("checked",false);
-		requestDSNOnDelay.setAttribute("checked",false);
-		requestDSNNever.setAttribute("checked",false);
+		requestAlwaysDSN.checked = false;
+		requestDSNOnSuccess.checked = false;
+		requestDSNOnFailure.checked = false;
+		requestDSNOnDelay.checked = false;
+		requestDSNNever.checked = false;
 	}
 
 }
-//This function check parameters to be sure that at least one DSN option is checked
+/** 
+* karnaugh map
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*        | 0 0 0  | 0 0 1  | 0 1 1  | 0 1 0  | 1 1 0   | 1 1 1  | 1 0 1  | 1 0 0 
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  0  0  |   EA   |        |        |        |         |        |        |  EA   
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  0  1  |        |   EN   |   EN   |   EN   |   EN    |   EN   |        |       
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  1  1  |   EN   |   EN   |   EN   |   EN   |   EN    |   EN   |  EN    |  EN   
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  1  0  |        |        |        |        |         |        |        |       
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+* 
+* First row in order : always request, success option, failure option
+* First column in order : delay option, never option
+* EA : Error for "always" request checkbox state
+* EN : Errr for "Never" request checkbox state
+*/ 
 function checkParameters(target){
 	useCustomPrefs = document.getElementById("identity.dsn_use_custom_prefs")
 	
@@ -128,40 +150,39 @@ function checkParameters(target){
 	requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
 	requestDSNNever = document.getElementById("identity.dsn_request_never");
 	
-	var stringsBundle = document.getElementById("string-bundle");
-	var alertString = stringsBundle.getString('alert-parameters') + " ";
+	var a = requestAlwaysDSN.checked;
+	var s = requestDSNOnSuccess.checked;
+	var f = requestDSNOnFailure.checked;
+	var d = requestDSNOnDelay.checked;
+	var n = requestDSNNever.checked;
+	
 
-	//One of the option must be checked
-	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked && !requestDSNNever.checked){
-		alert(alertString);
-		target.setAttribute("checked", !target.checked);
+    //case that the checkbox request always DSN must enabled	
+	if ((target != requestAlwaysDSN) && target.checked){
+	    requestAlwaysDSN.disabled = false;
 	}
 	
-	//Never option is only possible when the others are unchecked
-	if (requestDSNNever.checked && (requestDSNOnSuccess.checked ||requestDSNOnFailure.checked ||requestDSNOnDelay.checked )){
-		requestDSNNever.setAttribute("checked",false);
+	//EA State
+	if (!d && !n && !s && !f){
+	       if ((target != requestAlwaysDSN)){
+	           requestAlwaysDSN.checked = false;
+	           requestAlwaysDSN.disabled = !requestAlwaysDSN.disabled;
+	       } 
+	       
 	}
+	
+	//EN State
+	if ( n && ( (d  && !s ) || ( s && !f ) || f ) ){
+	    if (target == requestDSNNever){
+    	    requestDSNOnSuccess.checked = false;
+    	    requestDSNOnFailure.checked = false;
+    	    requestDSNOnDelay.checked = false;
+	    } else if ( (target == requestDSNOnSuccess) || (target == requestDSNOnFailure) || (target == requestDSNOnDelay)){
+	        if (target.checked == true)
+    	        requestDSNNever.checked = false;
+	    }
+	}
+
+	
 }
-
-function uncheckParameters(target){
-		requestDSNOnSuccess = document.getElementById("identity.dsn_request_on_success_on");
-		requestDSNOnFailure = document.getElementById("identity.dsn_request_on_failure_on");
-		requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
-
-	//When Never option is enabled, the others are unchecked
-	if (target.checked){
-		dump("checkParameters() -> reset Sucess, Failure, Delay values to false\n	");
-		requestDSNOnSuccess.setAttribute("checked",false);
-		requestDSNOnFailure.setAttribute("checked",false);
-		requestDSNOnDelay.setAttribute("checked",false);
-	}
-
-	var stringsBundle = document.getElementById("string-bundle");
-	var alertString = stringsBundle.getString('alert-parameters') + " ";
-	
-	//One of the option must be checked
-	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked && !target.checked){
-		alert(alertString);
-		target.setAttribute("checked", !target.checked);
-	}
-} 
+ 
