@@ -57,8 +57,7 @@ function MSCOptionsListener(urls, i)
 
 MSCOptionsListener.prototype =
 {
-  //mscSize : 0,
-  return_count : 0, 
+
   QueryInterface: function(iid)
   {
     if (iid.equals(Components.interfaces.nsIStreamListener))
@@ -66,9 +65,13 @@ MSCOptionsListener.prototype =
     return null;
   },
   
+
   onDataAvailable: function(request , context , inputStream , offset , count)
   {
-   this.return_count++; 
+   var inStream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
+    inStream.init(inputStream);
+    inStream.read(count);
+
     mscSize += count;
   },
   
