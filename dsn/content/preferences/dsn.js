@@ -36,8 +36,26 @@
  *
  * ***** END LICENSE BLOCK ***** */
  
-//This function check parameters to be sure that at least one DSN option is checked
- function checkParameters(target){
+/** 
+* karnaugh map
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*        | 0 0 0  | 0 0 1  | 0 1 1  | 0 1 0  | 1 1 0   | 1 1 1  | 1 0 1  | 1 0 0 
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  0  0  |   EA   |        |        |        |         |        |        |  EA   
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  0  1  |        |   EN   |   EN   |   EN   |   EN    |   EN   |        |       
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  1  1  |   EN   |   EN   |   EN   |   EN   |   EN    |   EN   |  EN    |  EN   
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+*  1  0  |        |        |        |        |         |        |        |       
+*--------+--------+--------+--------+--------+---------+--------+--------+-------
+* 
+* First row in order : always request, success option, failure option
+* First column in order : delay option, never option
+* EA : Error for "always" request checkbox state
+* EN : Errr for "Never" request checkbox state
+*/ 
+function checkParameters(target){
     var requestAlwaysDSN = document.getElementById("mail.dsn_always_request_on");
 	var requestDSNOnSuccess = document.getElementById("mail.dsn_request_on_success_on");
 	var requestDSNOnFailure = document.getElementById("mail.dsn_request_on_failure_on");
