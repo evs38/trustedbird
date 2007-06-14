@@ -40,7 +40,7 @@
     <Description about="urn:mozilla:install-manifest">
       <em:id>xsmtp@milimail.org</em:id>
       <em:name>XSMTP Extension</em:name>
-      <em:version>0.1.0.0</em:version>
+      <em:version>0.2.0.0</em:version>
       <em:creator>Bruno Lebon</em:creator>
       <em:targetApplication>
           <Description>
