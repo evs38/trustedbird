@@ -15,11 +15,12 @@
  * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
+ *   BT Global Services / Etat francais Ministere de la Defense
  * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): Olivier PARNIERE olivier.parniere@milimail.org
+ * Contributor(s):
+ *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -53,12 +54,20 @@
 	var stringsBundle = document.getElementById("string-bundle");
 	var alertString = stringsBundle.getString('alert-parameters') + " ";
 
-	//One of the option must be checked
-	
-	if (!d && !n && a && !s && !f){
-	       alert(alertString);
-	       target.value = !target.value;
+    //case that the checkbox request always DSN must enabled	
+	if ((target != requestAlwaysDSN) && target.value){
+	    requestAlwaysDSN.disabled = false;
 	}
+	
+	
+	if (!d && !n && !s && !f){
+	       if (target != requestAlwaysDSN){
+	           requestAlwaysDSN.value = false;
+	           requestAlwaysDSN.disabled = !requestAlwaysDSN.disabled;
+	       } 
+	       
+	}
+	
 	
 	if ( n && ( (d  && !s ) || ( s && !f ) || f ) ){
 	    if (target == requestDSNNever){
