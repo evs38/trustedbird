@@ -124,7 +124,7 @@
                 accesskey="&requestNever.accesskey;"
                 genericattr="true"
                 iscontrolcontainer="true"
-                oncommand="uncheckParameters(event.target)" />
+                oncommand="checkParameters(event.target)" />
 
         </vbox>
 
