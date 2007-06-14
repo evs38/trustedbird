@@ -68,16 +68,13 @@ function checkParameters(target){
 	var d = requestDSNOnDelay.value;
 	var n = requestDSNNever.value;
 	
-	
-	var stringsBundle = document.getElementById("string-bundle");
-	var alertString = stringsBundle.getString('alert-parameters') + " ";
 
     //case that the checkbox request always DSN must enabled	
 	if ((target != requestAlwaysDSN) && target.value){
 	    requestAlwaysDSN.disabled = false;
 	}
 	
-	
+	//EA State
 	if (!d && !n && !s && !f){
 	       if (target != requestAlwaysDSN){
 	           requestAlwaysDSN.value = false;
@@ -86,7 +83,7 @@ function checkParameters(target){
 	       
 	}
 	
-	
+	//EN State
 	if ( n && ( (d  && !s ) || ( s && !f ) || f ) ){
 	    if (target == requestDSNNever){
     	    requestDSNOnSuccess.value = false;
