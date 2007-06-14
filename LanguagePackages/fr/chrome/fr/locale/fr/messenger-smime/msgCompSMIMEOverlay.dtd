@@ -15,8 +15,8 @@
 <!ENTITY menu_securitySign.label "Signer numériquement ce message">
 <!ENTITY menu_securitySign.accesskey "S">
 
-<!ENTITY menu_securitySignedReceiptRequest.label "Accusé de réception signé">
-<!ENTITY menu_securitySignedReceiptRequest.accesskey "A">
+<!ENTITY menu_securitySignedReceiptRequest.label "Reçu signé">
+<!ENTITY menu_securitySignedReceiptRequest.accesskey "R">
 
 <!ENTITY menu_securityTripleWrap.label "Utiliser une triple enveloppe">
 <!ENTITY menu_securityTripleWrap.accesskey "T">
