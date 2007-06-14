@@ -42,16 +42,6 @@ var gContainer=0;
  
 const DATE_VERIF="X-P772-Extended-Authorisation-Info";
 
-//get header from recorded message
-function getDraftMessage(){
-    var catchHeaderFromURI="";
-	catchHeaderFromURI = getXsmtpHeadersFromURI(msgWindow,window);
-	if ((catchHeaderFromURI)){
-			//window.customedHeaders = catchHeaderFromURI; //record field value initialization
-		return catchHeaderFromURI;
-	}else{return "";}
-}
-
 //trim space before and after the string
 function TrimString(string) //ok
 {
@@ -67,9 +57,7 @@ var xSMTPMailSendObserver =
   {
 	  try{
 	  var msgCompFields = gMsgCompose.compFields;
-	 /* if ((gContainer == 0) && (gMsgCompose.type != 0)){ 
-			customedHeaders=getDraftMessage();
-	  }*/
+	 
 	  if (customedHeaders){
 		  var headers=customedHeaders;	
 		  var priority="";

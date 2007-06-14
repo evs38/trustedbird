@@ -68,7 +68,6 @@ MSCOptionsListener.prototype =
   
   onDataAvailable: function(request , context , inputStream , offset , count)
   {
-   //alert("pol "+count);
    this.return_count++; 
     mscSize += count;
   },
@@ -80,13 +79,10 @@ MSCOptionsListener.prototype =
     this.index++;
 
 	// Goto next URL
-	//alert(mscSize +" "+ this.index);
 	if (this.listeurls.length > this.index) {
 		 var channel = openMSCOptionsChannel(this.listeurls[this.index]);
 		channel.asyncOpen(new MSCOptionsListener(this.listeurls, this.index), null);
 	}else{
-	  //alert(size +" "+ this.index);
-	  //alert("oaui "+this.return_count);
 	  window.arguments[0][1] = mscSize;
 	  window.close();
 	} 

@@ -258,7 +258,6 @@ function fieldAttributLengthVerif(val,fieldSize,stringMinSize,stringMaxSize){
     var field = window.document.getElementById(val);
 	message = "";
 	
-	//var regval="^([a-z\d]{"+stringMinSize+","+stringMaxSize+"};){0,"+(fieldSize - 1)+"}([a-z\d]{"+stringMinSize+","+stringMaxSize+"}(;)?){1}$";
 	var regval="^([^;]{"+stringMinSize+","+stringMaxSize+"};){0,"+(fieldSize - 1)+"}([^;]{"+stringMinSize+","+stringMaxSize+"}(;)?){1}$";
 	regval = new RegExp(regval);
 	var values = TrimString(field.value);//remove white space before and after
@@ -348,7 +347,6 @@ function concatField(field,value)
 function isValidChar(field, fieldValue){
 	var xSMTPbundle = window.document.getElementById('xSMTPCompose');
 	field = window.document.getElementById(field);
-		//[^ a-zA-Z_éèàêâùïüëôç'\%€\{\}\<\>\!]
 	if (/[:]/g.test(fieldValue)){
 		alert (xSMTPbundle.getString("syntax.bad"));	
 		field.value=fieldValue.replace(/:/g,''); 

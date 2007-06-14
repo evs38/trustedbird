@@ -358,15 +358,10 @@ function MSCListenerFunction()
 		var recipientsSize = getRecipientsSize();
 		
 		var allsize=fromSize+subjectBoxSize+recipientsSize+455;
-//		alert("allsize "+allsize);
 		var customHeadersSize = getCustomHeadersSize();
-//		alert("cust "+customHeadersSize);
 		var attachementSize = getAttachementSize();
-//		alert("att "+attachementSize);
 		var bodySize = getBodySize();
-//		alert("bodySize "+bodySize);
 		
-		//size = size + bodySize + attachementSize;
 		size = size + fromSize + recipientsSize + subjectBoxSize + bodySize + customHeadersSize + attachementSize;
 		size = getSizeKo(size);
 		
@@ -380,5 +375,3 @@ function MSCListenerFunction()
 	}
 	return true;
 }
-
-//window.addEventListener('compose-send-message', MSCListenerFunction, true);
