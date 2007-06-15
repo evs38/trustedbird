@@ -36,18 +36,18 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!-- General Setting -->
-<!ENTITY dsnTitle.label     "Delivery Status Notification">
-<!ENTITY dsnAlwaysSend.label "When sending messages, always request delivery status notification">
-<!ENTITY dsnAlwaysSend.accesskey "W">
+<!ENTITY dsnTitle.label                 "Delivery Status Notification">
+<!ENTITY dsnAlwaysSend.label            "When sending messages, always request delivery status notification">
+<!ENTITY dsnAlwaysSend.accesskey        "W">
 
 <!-- Option Settings -->
-<!ENTITY dsnOptionTitle.label "Ask notification on :">
-<!ENTITY dsnRequestOnSuccess.label "Success in delivering the message">
-<!ENTITY dsnRequestOnSuccess.accesskey "S">
-<!ENTITY dsnRequestOnFailure.label "Failure in delivering the message">
-<!ENTITY dsnRequestOnFailure.accesskey "F">
-<!ENTITY dsnRequestOnDelay.label "Failure in delivering the message because of delay">
-<!ENTITY dsnRequestOnDelay.accesskey "D">
+<!ENTITY dsnOptionTitle.label           "Ask notification on :">
+<!ENTITY dsnRequestOnSuccess.label      "Success in delivering the message">
+<!ENTITY dsnRequestOnSuccess.accesskey  "S">
+<!ENTITY dsnRequestOnFailure.label      "Failure in delivering the message">
+<!ENTITY dsnRequestOnFailure.accesskey  "F">
+<!ENTITY dsnRequestOnDelay.label        "Failure in delivering the message because of delay">
+<!ENTITY dsnRequestOnDelay.accesskey    "D">
 
-<!ENTITY dsnRequestNever.label "Never receive delivery status notification">
-<!ENTITY dsnRequestNever.accesskey "N">
+<!ENTITY dsnRequestNever.label          "Never receive delivery status notification">
+<!ENTITY dsnRequestNever.accesskey      "N">

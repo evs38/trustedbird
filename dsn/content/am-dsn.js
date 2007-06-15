@@ -19,7 +19,8 @@
  * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): Olivier PARNIERE olivier.parniere@milimail.org
+ * Contributor(s):
+ *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -52,8 +53,7 @@
 {
 	//Initialize Custom variables
 	useCustomPrefs = document.getElementById("identity.dsn_use_custom_prefs");
-	dump("function onInit() -> useCustomPrefs : "+ useCustomPrefs.value + "\n");
-	
+
 	requestAlwaysDSN = document.getElementById("identity.dsn_always_request_on");
 
 	requestDSNOnSuccess = document.getElementById("identity.dsn_request_on_success_on");
@@ -61,17 +61,11 @@
 	requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
 	requestDSNNever = document.getElementById("identity.dsn_request_never");
 	enableDisableCustomSettings();
-	
-	
-
 }
 
 //This function disable or enable the Custom Settings 
 function enableDisableCustomSettings()
-{	
-	dump("function enableCustomSettings() -> Enter" + "\n");
-	dump("function enableCustomSettings() -> useCustomPrefs : "+ useCustomPrefs.value + "\n");
-	
+{
 	if (useCustomPrefs.value == "false"){
 		requestAlwaysDSN.setAttribute("disabled",true);
 		requestDSNOnSuccess.setAttribute("disabled",true);
@@ -88,36 +82,24 @@ function enableDisableCustomSettings()
 		checkParameters(new Object());
 		
 		}
-	
 }
 
 //Load current identity
 function onPreInit(account, accountValues)
 {
-	dump("function onPreInit() -> Enter" + "\n");
-
 	identity = account.defaultIdentity;
-	dump("function onPreInit() -> identity : "+ identity.key + "\n");
-	
-	account = account;
 }
 
 //This function is called by Account Manager when OK Button is pushed
 function onSave(){
-	
-	dump("function onSave() -> Enter" + "\n");
-	
 	//Reset to default if there is not DSN options checked
 	if (requestAlwaysDSN.checked && !requestDSNOnSuccess.checked  && !requestDSNOnFailure.checked && !requestDSNOnDelay.checked && !requestDSNNever.checked ){
-		
-		dump("function onSave() -> Reset to default options	" + "\n");
 		requestAlwaysDSN.checked = false;
 		requestDSNOnSuccess.checked = false;
 		requestDSNOnFailure.checked = false;
 		requestDSNOnDelay.checked = false;
 		requestDSNNever.checked = false;
 	}
-
 }
 /** 
 * karnaugh map
@@ -140,16 +122,16 @@ function onSave(){
 */ 
 function checkParameters(target){
 	useCustomPrefs = document.getElementById("identity.dsn_use_custom_prefs")
-	
+
 	if (!useCustomPrefs)
 		return;
-		
+
 	requestAlwaysDSN = document.getElementById("identity.dsn_always_request_on");
 	requestDSNOnSuccess = document.getElementById("identity.dsn_request_on_success_on");
 	requestDSNOnFailure = document.getElementById("identity.dsn_request_on_failure_on");
 	requestDSNOnDelay = document.getElementById("identity.dsn_request_on_delay_on");
 	requestDSNNever = document.getElementById("identity.dsn_request_never");
-	
+
 	var a = requestAlwaysDSN.checked;
 	var s = requestDSNOnSuccess.checked;
 	var f = requestDSNOnFailure.checked;
@@ -161,7 +143,7 @@ function checkParameters(target){
 	if ((target != requestAlwaysDSN) && target.checked){
 	    requestAlwaysDSN.disabled = false;
 	}
-	
+
 	//EA State
 	if (!d && !n && !s && !f){
 	       if ((target != requestAlwaysDSN)){
@@ -183,6 +165,6 @@ function checkParameters(target){
 	    }
 	}
 
-	
+
 }
  

@@ -36,5 +36,5 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!-- DSN Menu item -->
-<!ENTITY dsnMenu.label "Ask a Delivery Status Notification">
-<!ENTITY dsnMenu.accesskey "D">
+<!ENTITY dsnMenu.label      "Ask a Delivery Status Notification">
+<!ENTITY dsnMenu.accesskey  "D">

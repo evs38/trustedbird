@@ -34,23 +34,23 @@
    - the terms of any one of the MPL, the GPL or the LGPL.
    -
    - ***** END LICENSE BLOCK ***** -->
-   
-<!ENTITY pane.title	"Delivery Status Notification">
-<!ENTITY useGlobalPrefs.label         "Utiliser les préférences générales de notification de délivrance pour ce compte">
-<!ENTITY useGlobalPrefs.accesskey     "U">
-<!ENTITY useCustomPrefs.label         "Modifier les préférences de notification pour ce compte">
-<!ENTITY useCustomPrefs.accesskey     "M">
 
-<!ENTITY requestAlways.label	"Lors de l'envoi d'un message, toujours demander une notification de délivrance">
-<!ENTITY requestAlways.accesskey	"L">
+<!ENTITY pane.title                 "Avis de remise">
+<!ENTITY useGlobalPrefs.label       "Utiliser les préférences générales d'avis de remise pour ce compte">
+<!ENTITY useGlobalPrefs.accesskey   "U">
+<!ENTITY useCustomPrefs.label       "Modifier les préférences d'avis de remise pour ce compte">
+<!ENTITY useCustomPrefs.accesskey   "M">
 
-<!ENTITY optionTitle.label "Demander une notification en cas de :">
-<!ENTITY requestOnSucess.label "succés de la délivrance">
-<!ENTITY requestOnSucess.accesskey "S">
-<!ENTITY requestOnFailure.label "échec de la délivrance">
+<!ENTITY requestAlways.label        "Lors de l'envoi d'un message, toujours demander un avis de remise">
+<!ENTITY requestAlways.accesskey    "L">
+
+<!ENTITY optionTitle.label          "Demander un avis de remise en cas de :">
+<!ENTITY requestOnSucess.label      "succès de remise">
+<!ENTITY requestOnSucess.accesskey  "s">
+<!ENTITY requestOnFailure.label     "échec de remise">
 <!ENTITY requestOnFailure.accesskey "é">
-<!ENTITY requestOnDelay.label "délai trop long pendant la délivrance">
-<!ENTITY requestOnDelay.accesskey "D">
+<!ENTITY requestOnDelay.label       "délai trop long lors de la remise">
+<!ENTITY requestOnDelay.accesskey   "d">
 
-<!ENTITY requestNever.label "Ne jamais recevoir de notification de délivrance">
-<!ENTITY requestNever.accesskey "N">
+<!ENTITY requestNever.label         "Ne jamais recevoir d'avis de remise">
+<!ENTITY requestNever.accesskey     "N">

@@ -36,6 +36,6 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!-- DSN -->
-<!ENTITY dsnInfo.label					"Gestion des demandes de notification de délivrance">
-<!ENTITY showDSN.label					"Avis de Remise...">
-<!ENTITY showDSN.accesskey				"D">
+<!ENTITY dsnInfo.label      "Gestion des avis de remise">
+<!ENTITY showDSN.label      "Avis de remise...">
+<!ENTITY showDSN.accesskey  "v">

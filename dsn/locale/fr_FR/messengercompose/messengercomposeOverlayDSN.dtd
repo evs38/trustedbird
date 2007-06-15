@@ -36,5 +36,5 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!-- DSN Menu item -->
-<!ENTITY dsnMenu.label "Demander une notification de délivrance">
-<!ENTITY dsnMenu.accesskey "V">
+<!ENTITY dsnMenu.label      "Demander un avis de remise">
+<!ENTITY dsnMenu.accesskey  "D">

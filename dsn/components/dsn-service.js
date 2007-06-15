@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Seth Spitzer <sspitzer@netscape.com>
+ *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -35,7 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
 
 /* components defined in this file */
 const dsn_EXTENSION_SERVICE_CONTRACTID =
@@ -56,7 +56,6 @@ dsnService.prototype.chromePackageName = "milimail-dsn";
 dsnService.prototype.showPanel =
 
 function (server)
-
 {
   // don't show the panel for news accounts
   return (server.type != "nntp");
@@ -75,7 +74,6 @@ function (outer, iid) {
 
   return new dsnService();
 }
-
 
 var dsnModule = new Object();
 
@@ -111,7 +109,6 @@ function (compMgr, cid, iid) {
   if (cid.equals(dsn_EXTENSION_SERVICE_CID))
     return dsnFactory;
 
-
   if (!iid.equals(Components.interfaces.nsIFactory))
     throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
 
@@ -128,5 +125,3 @@ function(compMgr)
 function NSGetModule(compMgr, fileSpec) {
   return dsnModule;
 }
-
-

@@ -36,18 +36,18 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!-- General Setting -->
-<!ENTITY dsnTitle.label     "Avis de remise">
-<!ENTITY dsnAlwaysSend.label "A l'envoi, toujours demander un avis de remise>
-<!ENTITY dsnAlwaysSend.accesskey "T">
+<!ENTITY dsnTitle.label                 "Avis de remise">
+<!ENTITY dsnAlwaysSend.label            "Lors de l'envoi d'un message, toujours demander un avis de remise">
+<!ENTITY dsnAlwaysSend.accesskey        "L">
 
 <!-- Option Settings -->
-<!ENTITY dsnOptionTitle.label "Demander un avis en cas :">
-<!ENTITY dsnRequestOnSuccess.label "de succés de la remise">
-<!ENTITY dsnRequestOnSuccess.accesskey "S">
-<!ENTITY dsnRequestOnFailure.label "d'échec de la remise">
-<!ENTITY dsnRequestOnFailure.accesskey "E">
-<!ENTITY dsnRequestOnDelay.label "d'échec de la remise ayant pour cause un délai trop important">
-<!ENTITY dsnRequestOnDelay.accesskey "D">
+<!ENTITY dsnOptionTitle.label           "Demander un avis de remise en cas de :">
+<!ENTITY dsnRequestOnSuccess.label      "succès de remise">
+<!ENTITY dsnRequestOnSuccess.accesskey  "s">
+<!ENTITY dsnRequestOnFailure.label      "échec de remise">
+<!ENTITY dsnRequestOnFailure.accesskey  "é">
+<!ENTITY dsnRequestOnDelay.label        "délai trop long lors de la remise">
+<!ENTITY dsnRequestOnDelay.accesskey    "d">
 
-<!ENTITY dsnRequestNever.label "Ne jamais recevoir d'avis de remise">
-<!ENTITY dsnRequestNever.accesskey "N">
+<!ENTITY dsnRequestNever.label          "Ne jamais recevoir d'avis de remise">
+<!ENTITY dsnRequestNever.accesskey      "N">
