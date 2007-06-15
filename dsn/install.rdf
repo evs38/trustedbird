@@ -44,9 +44,9 @@
 
         <em:id>DSN@milimail.org</em:id>
         <em:name>DSN Extension</em:name>
-        <em:version>0.1.1.0</em:version>
+        <em:version>0.1.2.0</em:version>
         <em:description>DSN Features</em:description>
-        <em:creator>Olivier PARNIERE BT.COM France</em:creator>
+        <em:creator>Olivier PARNIERE</em:creator>
 
         <!-- optional items -->
         <em:homepageURL>http://www.milimail.org/</em:homepageURL>
