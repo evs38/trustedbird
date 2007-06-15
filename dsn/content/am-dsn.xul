@@ -152,9 +152,6 @@
                 iscontrolcontainer="true"
                 oncommand="checkParameters(event.target)" />
 
-            <!-- Seperator to have a nice UI -->
-            <separator class="thin" />
-
             <!-- When this checkbox is enabled, DSN request is sent with never option request -->
             <checkbox
                 id="identity.dsn_request_never"
@@ -168,11 +165,5 @@
                 oncommand="checkParameters(event.target)" />
 
         </vbox>
-
-
-
     </groupbox>
-
-
-
 </page>
