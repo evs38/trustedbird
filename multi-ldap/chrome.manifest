@@ -20,6 +20,7 @@
 #
 # Contributor(s):
 #   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
+#   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -40,5 +41,6 @@ content milimail-multi-ldap content/
 locale milimail-multi-ldap  en locale/en_US/
 locale milimail-multi-ldap  fr locale/fr_FR/
 
-overlay chrome://messenger/content/preferences/preferences.xul chrome://milimail-multi-ldap/content/preferences/preferencesOverlay.xul
-overlay chrome://messenger/content/am-addressingOverlay.xul chrome://milimail-multi-ldap/content/account/am-addressingOverlay.xul
+overlay	chrome://messenger/content/messengercompose/messengercompose.xul chrome://milimail-multi-ldap/content/messengercompose/messengercompose_overlay.xul
+overlay chrome://messenger/content/preferences/preferences.xul           chrome://milimail-multi-ldap/content/preferences/preferencesOverlay.xul
+overlay chrome://messenger/content/am-addressingOverlay.xul              chrome://milimail-multi-ldap/content/account/am-addressingOverlay.xul

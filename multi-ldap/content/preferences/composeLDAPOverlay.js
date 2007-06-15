@@ -429,8 +429,8 @@ var gComposePane = {
      try {
        document.getElementById('msgcompose.background_color').reset();
      } catch (ex) {}
-   },  
-};
+   }
+}
 
 //Function which deal user event on LDAP AutoComplete List
 function updateLDAPList(target){
