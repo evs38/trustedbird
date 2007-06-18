@@ -40,7 +40,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:id>card_viewer_extended@milimail.org</em:id>
         <em:name>Card Viewer Extended</em:name>
-        <em:version>0.1.0.0</em:version>
+        <em:version>0.1.1.0</em:version>
         <em:creator>Eric BALLET BAZ</em:creator>
         <em:targetApplication>
             <Description>
