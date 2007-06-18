@@ -40,7 +40,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:id>mdn_extended@milimail.org</em:id>
         <em:name>MDN Extended</em:name>
-        <em:version>0.1.1.0</em:version>
+        <em:version>0.1.2.0</em:version>
         <em:creator>Eric BALLET BAZ</em:creator>
         <em:targetApplication>
             <Description>
