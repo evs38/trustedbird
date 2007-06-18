@@ -76,7 +76,7 @@ InitializeGlobalVariables = function multildap_InitializeGlobalVariables() {
 InitializeGlobalVariables();
 
 // Replace the built in ReleaseGlobalVariables function with our own...
-var multildap_ReleaseGlobalVariables = ReleaseGlobalVariables;
+var multildap_OriginalReleaseGlobalVariables = ReleaseGlobalVariables;
 ReleaseGlobalVariables = function multildap_ReleaseGlobalVariables() {
 
     // Call built in ReleaseGlobalVariables function
