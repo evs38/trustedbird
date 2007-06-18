@@ -40,7 +40,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:id>send_format_ldap@milimail.org</em:id>
         <em:name>send_format_ldap</em:name>
-        <em:version>0.1.2.0</em:version>
+        <em:version>0.1.3.0</em:version>
         <em:creator>Eric BALLET BAZ</em:creator>
         <em:targetApplication>
             <Description>
