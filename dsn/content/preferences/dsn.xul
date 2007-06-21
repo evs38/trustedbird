@@ -50,12 +50,6 @@
     dlgbuttons="accept,cancel"
     title="&dsnTitle.label;"
     onload="checkParameters(event.target)">
-	
-    <stringbundleset id="stringbundleset">
-        <stringbundle
-            id="string-bundle"
-            src="chrome://milimail-dsn/locale/dsn.properties" />
-    </stringbundleset>
 
     <script
         type="application/x-javascript"
