@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+	<?xml version="1.0"?>
 <!-- ====================================================================== 
      May 29, 2007 3:27:59 PM                                                        
 
@@ -53,6 +53,8 @@
 		<mkdir dir="${tag.mdn.0110.local}" />
 		<mkdir dir="${tag.gfd.0110.local}" />
 		<mkdir dir="${tag.dsn.0100.local}" />
+		<mkdir dir="${tag.multildap.0101.local}" />
+		
 		<mkdir dir="${tag.languages.0100.local}/mozilla" />
 	</target>
 
@@ -73,7 +75,7 @@
 			<checkout url="${tag.gfd.0110.url}" destpath="${tag.gfd.0110.local}" />
 			<checkout url="${tag.dsn.0100.url}" destpath="${tag.dsn.0100.local}" />
 			<checkout url="${tag.languages.0100.url}" destpath="${tag.languages.0100.local}" />
-
+			<checkout url="${tag.multildap.0101.url}" destpath="${tag.multildap.0101.local}" />
 		</svn>
 
 	</target>
@@ -183,7 +185,7 @@
 		<zip destfile="${local.destination}/${tag.gfd.0110.name}.xpi" basedir="${tag.mdn.0110.local}" />
 		<zip destfile="${local.destination}/${tag.dsn.0100.name}.xpi" basedir="${tag.dsn.0100.local}" />
 		<zip destfile="${local.destination}/${tag.languages.0100.name}.xpi" basedir="${tag.languages.0100.local}" />
-
+		<zip destfile="${local.destination}/${tag.multildap.0101.name}.xpi" basedir="${tag.multildap.0101.local}" />
 	</target>
 
 
