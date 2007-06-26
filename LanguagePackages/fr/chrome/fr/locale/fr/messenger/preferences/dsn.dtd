@@ -1,0 +1,17 @@
+<!ENTITY dialog.title               "Avis de remise">
+<!ENTITY requestAlways.label        "Lors de l'envoi d'un message, toujours demander un avis de remise">
+<!ENTITY requestAlways.accesskey    "L">
+<!ENTITY optionTitle.label          "Demander un avis de remise en cas de :">
+<!ENTITY requestOnSucess.label      "Succès de remise">
+<!ENTITY requestOnSucess.accesskey  "S">
+<!ENTITY requestOnFailure.label     "Echec de remise">
+<!ENTITY requestOnFailure.accesskey "E">
+<!ENTITY requestOnDelay.label       "Délai trop long lors de la remise">
+<!ENTITY requestOnDelay.accesskey   "D">
+<!ENTITY requestNever.label         "Ne jamais recevoir d'avis de remise">
+<!ENTITY requestNever.accesskey     "N">
+<!ENTITY RET_FailureMessage.label   "Message d'échec :">
+<!ENTITY RET_FULL.label             "Message complet">
+<!ENTITY RET_FULL.accesskey         "M">
+<!ENTITY RET_HDRS.label             "En-têtes seulement">
+<!ENTITY RET_HDRS.accesskey         "t">

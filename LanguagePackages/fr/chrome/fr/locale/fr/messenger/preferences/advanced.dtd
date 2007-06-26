@@ -35,6 +35,9 @@
 <!ENTITY returnReceiptsInfo.label      "Gestion des accusés de réception dans &brandShortName;">
 <!ENTITY showReturnReceipts.label      "Accusés de réception…">
 <!ENTITY showReturnReceipts.accesskey  "c">
+<!ENTITY dsnInfo.label                 "Gestion des avis de remise dans &brandShortName;">
+<!ENTITY showDSN.label                 "Avis de remise…">
+<!ENTITY showDSN.accesskey             "v">
 
 <!-- Update -->
 <!ENTITY autoCheck.label                "Rechercher automatiquement des mises à jour pour :">

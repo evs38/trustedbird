@@ -129,6 +129,8 @@
 
 <!ENTITY returnReceiptMenu.label "Demander un accusé de réception">
 <!ENTITY returnReceiptMenu.accesskey "t">
+<!ENTITY dsnMenu.label "Demander un avis de remise">
+<!ENTITY dsnMenu.accesskey "D">
 <!ENTITY outputFormatMenu.label "Format">
 <!ENTITY outputFormatMenu.accesskey  "f">
 <!ENTITY autoFormatCmd.label "Détection automatique">
