@@ -45,7 +45,7 @@
 
         <em:id>multildap@milimail.org</em:id>
         <em:name>Multi LDAP</em:name>
-        <em:version>0.2.2.0</em:version>
+        <em:version>0.2.3.0</em:version>
         <em:description>Enable multi LDAP for autocomplete</em:description>
         <em:creator>Olivier PARNIERE</em:creator>
 
