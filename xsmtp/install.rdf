@@ -40,12 +40,12 @@
     <Description about="urn:mozilla:install-manifest">
       <em:id>xsmtp@milimail.org</em:id>
       <em:name>XSMTP Extension</em:name>
-      <em:version>0.2.0.0</em:version>
+      <em:version>0.2.0.1</em:version>
       <em:creator>Bruno Lebon</em:creator>
       <em:targetApplication>
           <Description>
               <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
-              <em:minVersion>2.0.0.0</em:minVersion>
+              <em:minVersion>2.0</em:minVersion>
               <em:maxVersion>2.0.0.*</em:maxVersion>
           </Description>
       </em:targetApplication>
