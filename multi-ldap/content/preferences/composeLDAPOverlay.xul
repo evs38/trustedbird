@@ -188,6 +188,7 @@
                      id="LDAPList"
                      ref="moz-abdirectory://"
                      datasources="rdf:addressdirectory"
+                     rows="6"
                      onclick="updateLDAPList(event.target)">
                      <listhead>
                          <listheader label="&directory.label;" />
