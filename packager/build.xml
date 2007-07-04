@@ -43,7 +43,6 @@
         description="--> Prepare file layout">
         <mkdir dir="${local.repository}" />
         <mkdir dir="${local.destination}" />
-        <mkdir dir="${trunk.dsn.local}" />
         <mkdir dir="${trunk.mdn.local}" />
         <mkdir dir="${trunk.xsmtp.local}" />
         <mkdir dir="${trunk.gfd.local}" />
