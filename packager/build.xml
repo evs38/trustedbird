@@ -43,6 +43,7 @@
         description="--> Prepare file layout">
         <mkdir dir="${local.repository}" />
         <mkdir dir="${local.destination}" />
+        <mkdir dir="${trunk.dsn.local}" />
         <mkdir dir="${trunk.mdn.local}" />
         <mkdir dir="${trunk.xsmtp.local}" />
         <mkdir dir="${trunk.gfd.local}" />
@@ -81,8 +82,7 @@
                 destpath="${tag.mdn.0110.local}" />
             <checkout url="${tag.gfd.0110.url}"
                 destpath="${tag.gfd.0110.local}" />
-            <checkout url="${tag.dsn.0100.url}"
-                destpath="${tag.dsn.0100.local}" />
+         
             <checkout url="${tag.languages.0100.url}"
                 destpath="${tag.languages.0100.local}" />
             <checkout url="${tag.multildap.0101.url}"
@@ -215,8 +215,7 @@
             basedir="${tag.mdn.0110.local}" />
         <zip destfile="${local.destination}/${tag.gfd.0110.name}.xpi"
             basedir="${tag.mdn.0110.local}" />
-        <zip destfile="${local.destination}/${tag.dsn.0100.name}.xpi"
-            basedir="${tag.dsn.0100.local}" />
+  
         <zip
             destfile="${local.destination}/${tag.languages.0100.name}.xpi"
             basedir="${tag.languages.0100.local}" />
