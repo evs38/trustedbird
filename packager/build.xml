@@ -67,8 +67,6 @@
 
         <svn username="oparnier" password="Meeshohg" javahl="false"
             svnkit="true">
-            <checkout url="${trunk.dsn.url}"
-                destpath="${trunk.dsn.local}" />
             <checkout url="${trunk.mdn.url}"
                 destpath="${trunk.mdn.local}" />
             <checkout url="${trunk.xsmtp.url}"
