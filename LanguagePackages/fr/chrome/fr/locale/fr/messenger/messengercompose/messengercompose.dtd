@@ -155,7 +155,7 @@
 <!ENTITY highestPriorityCmd.label "Maximale">
 <!ENTITY highestPriorityCmd.accesskey "M">
 <!ENTITY deliveringPriorityMenu.label "Priorité de remise">
-<!ENTITY deliveringPriorityMenu.accesskey "l">
+<!ENTITY deliveringPriorityMenu.accesskey "r">
 <!ENTITY noneDeliveringPriorityCmd.label "None">
 <!ENTITY noneDeliveringPriorityCmd.accesskey "N">
 <!ENTITY routineDeliveringPriorityCmd.label "Routine">
