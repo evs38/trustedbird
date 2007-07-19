@@ -31,19 +31,19 @@
 <!ENTITY menu_viewSecurityStatus.label "Infos de sécurité du message">
 <!ENTITY menu_viewSecurityStatus.accesskey "I">
 
-<!ENTITY menu_securityLabels.label "Labels de sécurité">
-<!ENTITY menu_securityLabels.accesskey "L">
-<!ENTITY menu_securityLabels_topSecret.label "Top Secret">
-<!ENTITY menu_securityLabels_topSecret.accesskey "T">
-<!ENTITY menu_securityLabels_secret.label "Secret">
-<!ENTITY menu_securityLabels_secret.accesskey "S">
-<!ENTITY menu_securityLabels_confidential.label "Confidential">
-<!ENTITY menu_securityLabels_confidential.accesskey "C">
-<!ENTITY menu_securityLabels_restricted.label "Restricted">
-<!ENTITY menu_securityLabels_restricted.accesskey "R">
-<!ENTITY menu_securityLabels_unclassified.label "Unclassified">
-<!ENTITY menu_securityLabels_unclassified.accesskey "n">
-<!ENTITY menu_securityLabels_unmarked.label "Unmarked">
-<!ENTITY menu_securityLabels_unmarked.accesskey "U">
-<!ENTITY menu_securityLabels_none.label "None">
-<!ENTITY menu_securityLabels_none.accesskey "N">
+<!ENTITY menu_securityLabel.label "Labels de sécurité">
+<!ENTITY menu_securityLabel.accesskey "L">
+<!ENTITY menu_securityClassification_topSecret.label "Top Secret">
+<!ENTITY menu_securityClassification_topSecret.accesskey "T">
+<!ENTITY menu_securityClassification_secret.label "Secret">
+<!ENTITY menu_securityClassification_secret.accesskey "S">
+<!ENTITY menu_securityClassification_confidential.label "Confidential">
+<!ENTITY menu_securityClassification_confidential.accesskey "C">
+<!ENTITY menu_securityClassification_restricted.label "Restricted">
+<!ENTITY menu_securityClassification_restricted.accesskey "R">
+<!ENTITY menu_securityClassification_unclassified.label "Unclassified">
+<!ENTITY menu_securityClassification_unclassified.accesskey "n">
+<!ENTITY menu_securityClassification_unmarked.label "Unmarked">
+<!ENTITY menu_securityClassification_unmarked.accesskey "U">
+<!ENTITY menu_securityClassification_none.label "None">
+<!ENTITY menu_securityClassification_none.accesskey "N">
