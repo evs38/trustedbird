@@ -36,7 +36,6 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY dialog.title "Message size control">
-<!ENTITY dialog.description "Enable or disable the message size control">
-<!ENTITY button.activ.label "Enable">
-<!ENTITY button.desactiv.label "Disable">
+<!ENTITY dialog.title "Options">
+<!ENTITY xsmtp.size.check.enable.label "Enable control of messages size based on their priority">
+<!ENTITY xsmtp.flash.allow.attachment.label "Allow attachment when sending flash message">

@@ -35,7 +35,6 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY dialog.title "Contrôle de la taille des messages">
-<!ENTITY dialog.description  "Activer ou désactiver le contrôle de la taille des messages en fonctions de leur priorité">
-<!ENTITY button.activ.label "Activer">
-<!ENTITY button.desactiv.label "Désactiver">
+<!ENTITY dialog.title "Options">
+<!ENTITY xsmtp.size.check.enable.label "Activer le contrôle de la taille des messages en fonctions de leur priorité">
+<!ENTITY xsmtp.flash.allow.attachment.label "Autoriser les pièces jointes lors de l'envoi d'un message flash">

@@ -61,10 +61,14 @@ function getDraftMessage(){
 var GenericSendMessage_ori = GenericSendMessage;
 GenericSendMessage = function xSMTPGenericSendMessage(msgType)
 {
-//alert("non con"+gContainer+" cus"+customedHeaders);
    if ((gContainer==0) && (customedHeaders=="")){
       customedHeaders=getDraftMessage();
    }
+   
+    // Check attachments for flash messages
+	if (!xsmtp_checkAllowAttachmentForFlashMessage()) {
+   		return;
+	}
    
   if (!MSCListenerFunction()) return;
   GenericSendMessage_ori(msgType);
@@ -168,8 +172,7 @@ function getCustomHeadersSize()
 	var size=0;
 	try{
 	var msgCompFields = gMsgCompose.compFields;
-	//alert(xSMTPGMsgCompose.domWindow.customedHeaders); 
-	//alert(msgCompFields.otherRandomHeaders);
+
 	if (msgCompFields.otherRandomHeaders){
 		size = msgCompFields.otherRandomHeaders.length;// * 7 / 8;
 	//return size;
@@ -181,30 +184,25 @@ function getCustomHeadersSize()
 }
 	
 ////get body inserted element size.
-//get  header what is responsible of the priority
-function getHeader()
-{
-      var headers=customedHeaders;	
-      var copyPrecedence="";
-	  var xSMTPHeadersHash = new Array(); 
-	  if (customedHeaders){
-		  var headers=customedHeaders;	
-		  var array1=headers.split("\r\n");
-		  for (var i = 0; i< array1.length; i++) {
-			var head=array1[i];
-			if (head){
-				var regval = new RegExp("^([^:]*):([^:]*)");
-				regval.test(array1[i]);
-				xSMTPHeadersHash[RegExp.$1] = RegExp.$2;
+//get header what is responsible of the priority
+function getPriorityFromHeaders() {
+	return xsmtp_getHeaderValue(XSMTP_HEADER_X_P772_PRIMARY_PRECEDENCE);
+}
+
+function xsmtp_getHeaderValue(header) {
+
+  	if (customedHeaders) {
+		var splittedHeaders = customedHeaders.split("\r\n");
+		for (var i = 0; i < splittedHeaders.length; i++) {
+			if (splittedHeaders[i]) {
+				var headerName = TrimString(splittedHeaders[i].substring(0, splittedHeaders[i].indexOf(':')));
+				if (headerName == header) {
+					return TrimString(splittedHeaders[i].substring(splittedHeaders[i].indexOf(':') + 1));
+				}
 			}
-		  }
-		 if (TrimString(xSMTPHeadersHash[XSMTP_HEADER_X_P772_COPY_PRECEDENCE])){
-		    var copyPrecedence = xSMTPHeadersHash[XSMTP_HEADER_X_P772_COPY_PRECEDENCE];
-			copyPrecedence = copyPrecedence.substring(0,copyPrecedence.indexOf('('));
-			copyPrecedence = 'xsmtp.size.'+TrimString(copyPrecedence);
 		}
-	  }
-	  return copyPrecedence;  
+	}
+	return null;
 }
 
 function getInsertBodySize()
@@ -268,19 +266,17 @@ function getInsertBodySize()
 	return size;
 }
 //return body size
-function getBodySize()
-{
-	var  editorBody = GetCurrentEditor();
-	var outputMessage = editorBody.outputToString(editorBody.contentsMIMEType,2);
-	outputMessage =outputMessage.replace(/<br>|\/li>|\/ol>|\/ul>/gi,"<br>\r\n");
+function getBodySize() {
+	var editorBody = GetCurrentEditor();
+	var outputMessage = editorBody.outputToString(editorBody.contentsMIMEType, 2);
+	outputMessage = outputMessage.replace(/<br>|\/li>|\/ol>|\/ul>/gi,"<br>\r\n");
 
 	var size = outputMessage.length + getInsertBodySize();
 	return size;
 }
 
 //// get  attachements size	
-function getAttachementSize()
-{
+function getAttachementSize() {
 	var bucket = document.getElementById("attachmentBucket");
 	var buketSize=0;
 	var numerOfLine=0;
@@ -288,7 +284,6 @@ function getAttachementSize()
 	if (bucket.childNodes.length !=0){
 		buketSize += bundarySize;
 	}
-	
 	
 	for (var index = 0; index < bucket.childNodes.length; index++)
 	{
@@ -317,94 +312,115 @@ function getAttachementSize()
 }
 
 //// get message size	
-function getSizeKo(size)
-{
+function getSizeKo(size) {
 	var unit = new Array();
 	var i = 0;
 	
 	size = size + 455;
-	//	alert ("bob "+size);
-	size = size / 1024;	//size  in Ko	
+	size = size / 1024;	//size in Ko	
 	return size;	
 }
 
 
 // overlay of commandClose function.
 var DoCommandClose_ori = DoCommandClose;
-DoCommandClose = function xSMTPDoCommandClose()
-{ 
-  try{
-  initialyzeXsmtpGVariables();
-  DoCommandClose_ori();
-  }catch(ex){}
+DoCommandClose = function xSMTPDoCommandClose() {
+	try {
+  		initialyzeXsmtpGVariables();
+  		DoCommandClose_ori();
+  	} catch (ex) {
+  	}
 }
 
 //////////////////////////
 //////////  Main  /////////
 /////////////////////////
 // message size listener
-function MSCListenerFunction()
-{
-	var MSCbundle = window.document.getElementById("string-bundle");
-	var size=0;	
-	var sizeControl=0;
+function MSCListenerFunction() {
 	var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-	if (getHeader() != ''){
-		var fromSize = document.getElementById("msgIdentity").getAttribute("label").length;
-	    var subjectBoxSize = document.getElementById("msgSubject").value.length + 9;
-		var recipientsSize = getRecipientsSize();
-		
-		var allsize=fromSize+subjectBoxSize+recipientsSize+455;
-		var customHeadersSize = getCustomHeadersSize();
-		var attachementSize = getAttachementSize();
-		var bodySize = getBodySize();
-		
-		size = size + fromSize + recipientsSize + subjectBoxSize + bodySize + customHeadersSize + attachementSize;
-		size = getSizeKo(size);
-		
-		sizeControl = gPrefs.getIntPref(TrimString(getHeader()));
-		var isEnable = gPrefs.getBoolPref('xsmtp.size.check.enable');
-		if ((size > sizeControl) && (isEnable)){
-			var message = MSCbundle.getString("message.title")+" "+(Math.round(size*10)/10)+"ko.\n"+MSCbundle.getString("message.error")+sizeControl+" ko";
-			alert (message);
+	var isEnable = gPrefs.getBoolPref('xsmtp.size.check.enable');
+
+	if (isEnable) {
+		var priority = getPriorityFromHeaders();
+
+		if (priority) {
+			var fromSize = document.getElementById("msgIdentity").getAttribute("label").length;
+		    var subjectBoxSize = document.getElementById("msgSubject").value.length + 9;
+			var recipientsSize = getRecipientsSize();
+			var customHeadersSize = getCustomHeadersSize();
+			var attachementSize = getAttachementSize();
+			var bodySize = getBodySize();
+			
+			var size = fromSize + subjectBoxSize + recipientsSize + customHeadersSize + attachementSize + bodySize;
+			size = getSizeKo(size);
+	
+			priority = priority.substring(0, priority.indexOf('('));
+			var sizeLimit = gPrefs.getIntPref("xsmtp.size." + TrimString(priority));
+	
+			if (size > sizeLimit){
+				var MSCbundle = window.document.getElementById("string-bundle");
+				var message = MSCbundle.getString("xsmtp.size.control.messsage")+ " " + (Math.round(size*10)/10) + "ko.\n" + MSCbundle.getString("xsmtp.size.control.error") + sizeLimit + " ko";
+				alert (message);
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+function xsmtp_checkAllowAttachmentForFlashMessage() {
+	var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+	
+	var allowAttachment = xsmtp_getBoolPref("xsmtp.flash.allow.attachment", false);
+	if (!allowAttachment) {
+
+		var priority = getPriorityFromHeaders();
+		if (priority == XSMTP_PRIORITY_FLASH && xsmtp_hasAttachements()) {
+			var stringBundle = window.document.getElementById("string-bundle");
+			alert(stringBundle.getString("xsmtp.flash.attachment.error"));
 			return false;
 		}
 	}
 	return true;
 }
 
+function xsmtp_hasAttachements() {
+	var bucket = document.getElementById("attachmentBucket");
+	return bucket.childNodes.length > 0;
+}
 
 //register customed headers
-var xSMTPMailSendObserver =
-{
-  observe: function(subject, topic, data)
-  {
-	  try{
-	  var msgCompFields = gMsgCompose.compFields;
+var xSMTPMailSendObserver = {
+	observe: function(subject, topic, data) {
+		try {
+	  		var msgCompFields = gMsgCompose.compFields;
 	 
-	  if (customedHeaders){
-		  var headers=customedHeaders;	
-		  var priority="";
-		  var array1=headers.split("\r\n");
-		  for (var i = 0; i< array1.length; i++) {
-			var head=array1[i];
-			if (head){
-				var regval = new RegExp("^([^:]*):([^:]*)");
-				regval.test(array1[i]);
-				var value = RegExp.$2; var field = RegExp.$1;
-				if (/Info$/.test(field)){continue;}
-				if (field == "" || field == " "){
-					continue;
+	  		if (customedHeaders) {
+				var headers = customedHeaders;	
+		  		var priority = "";
+				var array1 = headers.split("\r\n");
+				for (var i = 0; i < array1.length; i++) {
+					var head = array1[i];
+					if (head) {
+						var regval = new RegExp("^([^:]*):([^:]*)");
+						regval.test(array1[i]);
+						var value = RegExp.$2;
+						var field = RegExp.$1;
+						if (/Info$/.test(field)){
+							continue;
+						}
+						if (field == "" || field == " ") {
+							continue;
+						}
+						msgCompFields.otherRandomHeaders += field + ": " + TrimString(value) +"\r\n";
+					}
 				}
-				msgCompFields.otherRandomHeaders += field+": " + TrimString(value) +"\r\n";
-			}
-		  }
-		 msgCompFields.otherRandomHeaders += XSMTP_HEADER_X_P772_EXTENDED_AUTHORISATION_INFO + ": " + getRFC2822Date(new Date()) + "\r\n";
-		 gContainer=1;
-	  }
-	  
-	 }catch(ex){}
-  }
+		 		msgCompFields.otherRandomHeaders += XSMTP_HEADER_X_P772_EXTENDED_AUTHORISATION_INFO + ": " + getRFC2822Date(new Date()) + "\r\n";
+		 		gContainer = 1;
+	  		}  
+		} catch (ex) {
+		}
+  	}
 }
 
 var xSMTPObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);

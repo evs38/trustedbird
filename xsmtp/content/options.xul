@@ -36,32 +36,18 @@
    - the terms of any one of the MPL, the GPL or the LGPL.
    -
    - ***** END LICENSE BLOCK ***** -->
-<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
 <!DOCTYPE dialog SYSTEM "chrome://xsmtp/locale/options.dtd">
 
-<dialog id="options"
-	    title="&dialog.title;"
-        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        buttons="accept,cancel"
-        ondialogaccept="return doOK();"
-        onload="onLoad();">
+<prefwindow title="&dialog.title;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <prefpane>
+        <preferences>
+            <preference id="xsmtp_size_check_enable"      name="xsmtp.size.check.enable"      type="bool"/>
+            <preference id="xsmtp_flash_allow_attachment" name="xsmtp.flash.allow.attachment" type="bool"/>
+        </preferences>
 
- 	<stringbundleset id="stringbundleset">
-    	<stringbundle id="string-bundle" src="chrome://xsmtp/locale/options.properties"/>
-  	</stringbundleset>
- 
-  	<script type="application/x-javascript" src="options.js"/>
-  
-  	<vbox>
-    	<label value="&dialog.description;"/>
-    	<spacer/>
-    	<hbox align="center">
-	      	<radiogroup id="group">
-			  	<radio id="xSMTPControle1" value="true" label="&button.activ.label;"/>
-			  	<radio id="xSMTPControle2" value="false" label="&button.desactiv.label;"/>
-		  	</radiogroup>
-    	</hbox>  
-  	</vbox>
-  
-</dialog>
+    	<checkbox label="&xsmtp.size.check.enable.label;" preference="xsmtp_size_check_enable"/>
+    	<checkbox label="&xsmtp.flash.allow.attachment.label;" preference="xsmtp_flash_allow_attachment"/>
+    </prefpane>
+</prefwindow>

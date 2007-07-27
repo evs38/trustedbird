@@ -86,10 +86,20 @@ const ALL_XSMTP_HEADERS = [
 	XSMTP_HEADER_X_P772_SPECIAL_HANDLING_INSTRUCTIONS
 ];
 
+const XSMTP_PRIORITY_FLASH = "flash (4)";
 
-//Remove whitespace from both ends of a string
-function TrimString(string) //ok
-{
+// Remove whitespace from both ends of a string
+function TrimString(string) {
   if (!string) return "";
   return string.replace(/(^\s+)|(\s+$)/g, '')
+}
+
+function xsmtp_getBoolPref(preference, defaultValue) {
+	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+	try {
+		return preferences.getBoolPref(preference);
+	} catch (e) {
+		// Preference doesn't exists
+	}
+	return defaultValue;
 }
