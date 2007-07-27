@@ -1,4 +1,3 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
@@ -20,8 +19,8 @@
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
-   -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
    -   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
+   -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,20 +36,5 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-
-<!DOCTYPE dialog SYSTEM "chrome://xsmtp/locale/xSMTPInsertedRecordSize.dtd">
-
-<dialog
-    id="mSCOptionsInsertedRecordSize"
-    title="&title.dialogSize.label;"
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	onCancel="window.close();"
-    onload="mscOptions_Size_Onload();">
-	
-    <script type="application/x-javascript" src="chrome://xsmtp/content/xSMTPInsertedRecordSize.js"/>
-    
-    <description>&info.message;</description>
-    
-    <progressmeter id="mSCOptions_progressmeter" mode="undetermined"/>
-</dialog>
+<!ENTITY title.dialogSize.label "Inserted element size control from recorded message">
+<!ENTITY info.message "We're controlling message size. Wait a minute, please !">

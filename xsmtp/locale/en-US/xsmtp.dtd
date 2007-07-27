@@ -20,6 +20,7 @@
    -
    - Contributor(s):
    -   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
+   -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,7 +36,31 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY dialog.title "Contrôle de la taille des messages">
-<!ENTITY dialog.description  "Activer ou désactiver le contrôle de la taille des messages en fonctions de leur priorité">
-<!ENTITY button.activ.label "Activer">
-<!ENTITY button.desactiv.label "Désactiver">
+<!ENTITY X-P772-Version.label 						"XSMTP-Version">
+<!ENTITY X-P772-Priority-Level-Qualifier.label 		"Priority-Level-Qualifier">
+<!ENTITY X-P772-Extended-Grade-Of-Delivery.label 	"Extended-Grade-Of-Delivery">
+<!ENTITY X-P772-Primary-Precedence.label 			"Primary-Precedence">
+<!ENTITY X-P772-Copy-Precedence.label 				"Copy-Precedence">
+<!ENTITY X-P772-Message-Type.label 					"Message-Type">
+<!ENTITY X-P772-Address-List-Indicator.label 		"Address-List-Indicator">
+<!ENTITY X-P772-Exempted-Address.label 				"Exempted-Address">
+<!ENTITY X-P772-Extended-Authorisation-Info.label 	"Extended-Authorisation-Info">
+<!ENTITY X-P772-Distribution-Codes.label 			"Distribution-Codes">
+<!ENTITY X-P772-MCA.label 							"MCA">
+<!ENTITY X-P772-Handling-Instructions.label 		"Handling-Instructions">
+<!ENTITY X-P772-Message-Instructions.label 			"Message-Instructions">
+<!ENTITY X-P772-Codress-Message.label 				"Codress-Message">
+<!ENTITY X-P772-Originator-Reference.label 			"Originator-Reference">
+<!ENTITY X-P772-ReferenceIndication.label 			"ReferenceIndication">
+<!ENTITY X-P772-Other-Recipient-Indicator.label 	"Other-Recipient-Indicator">
+<!ENTITY X-P772-Acp-Message-Identifier.label 		"Acp-Message-Identifier">
+<!ENTITY X-P772-Originator-PLAD.label 				"Originator-PLAD">
+<!ENTITY X-P772-Acp-Notification-Request.label 		"Acp-Notification-Request">
+<!ENTITY X-P772-Acp-Notification-Response.label 	"Acp-Notification-Response">
+<!ENTITY X-P772-Security-Classification.label 		"Security-Classification">
+<!ENTITY X-P772-Special-Handling-Instructions.label "Special-Handling-Instructions">
+
+<!ENTITY xsmtp.properties.tab 	"Properties">
+<!ENTITY xsmtp.advanced.tab 	"Advanced">
+<!ENTITY xsmtp.advancedmore.tab "More advanced">
+<!ENTITY xsmtp.header.title 	"XSMTP">

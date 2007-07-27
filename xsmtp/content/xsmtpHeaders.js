@@ -15,12 +15,13 @@
  * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
- *   BT Global Services / Etat français Ministère de la Défense
+ *   BT Global Services / Etat francais Ministere de la Defense
  * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Bruno Lebon BT Global Services / Etat français Ministère de la Défense
+ *   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -35,10 +36,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
 //global variable
+var gMsgCompose = window.opener['gMsgCompose'];
 var xSMTPMessenger = Components.classes["@mozilla.org/messenger;1"].createInstance();
 xSMTPMessenger = xSMTPMessenger.QueryInterface(Components.interfaces.nsIMessenger);
-//var customedHeaders;
 
 
 //get message URI

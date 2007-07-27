@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="UTF-8"?> 
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is Mozilla Communicator
+   -
+   - The Initial Developer of the Original Code is
+   -   BT Global Services / Etat francais Ministere de la Defense
+   - Portions created by the Initial Developer are Copyright (C) 2002
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
+   -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://messenger/skin/addressbook/cardDialog.css" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://xsmtp/locale/xsmtp.dtd">
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:nc="http://home.netscape.com/NC-rdf#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+		onload="xsmtp_onDialogLoad();"
+		title="&xsmtp.header.title;"
+        ondialogaccept="return xsmtp_onDialogAccept();">
+
+	<!-- move needed functions into a single js file -->
+	<script type="application/x-javascript" src="chrome://xsmtp/content/global.js"/>
+	<script type="application/x-javascript" src="chrome://xsmtp/content/validator.js"/>
+	<script type="application/x-javascript" src="chrome://xsmtp/content/xsmtpdialog.js"/>
+	<script type="application/x-javascript" src="chrome://xsmtp/content/xsmtpHeaders.js"/>
+	<script type="application/x-javascript" src="chrome://xsmtp/content/test/xsmtp_unit_tests.js"/>
+	 
+	<stringbundle id="xsmtp_stringbundle" src="chrome://xsmtp/locale/xsmtp.properties"/>
+	
+	<!-- Keyboard Shortcut to launch unit tests -->
+	<keyset>
+	  <key modifiers="alt" key="T" oncommand="xsmtp_unit_tests();"/>
+	</keyset>
+
+	<spacer style="height:1em"/>
+   
+	<vbox>
+
+	    <tabbox>
+			<tabs>
+				<tab label="&xsmtp.properties.tab;"/>
+				<tab label="&xsmtp.advanced.tab;"/>
+				<tab label="&xsmtp.advancedmore.tab;"/>
+			</tabs>
+	
+	      	<tabpanels>
+	
+		        <!-- Main tab -->
+				<vbox index="must">
+					<groupbox>
+						<grid>
+				            <columns>
+				            	<column/>
+					            <column flex="1"/>
+					        </columns>
+		        		    <rows>
+					        	<row>
+					        		<label value="&X-P772-Primary-Precedence.label;"/>
+									<listbox id="X-P772-Primary-Precedence" rows="4" datasources="xsmtpdialog.rdf" ref="http://home.netscape.com/X-P772-Primary-Precedence"
+											 onselect="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);">
+										<template>
+											<listitem uri="rdf:*" label="rdf:http://home.netscape.com/rdf#name" value="rdf:http://home.netscape.com/rdf#name"/>
+										</template>
+									</listbox>
+					        	</row>
+		
+					        	<row hidden="true">
+					        		<label value="&X-P772-Extended-Authorisation-Info.label;"/>
+					        		<textbox id="X-P772-Extended-Authorisation-Info" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+					        	</row>
+		
+					        	<row>
+									<label value="&X-P772-Originator-Reference.label;"/>
+									<textbox id="X-P772-Originator-Reference" maxlength="69" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+					        	</row>
+		
+					        	<row>
+									<label value="&X-P772-Security-Classification.label;"/>
+									<listbox id="X-P772-Security-Classification" rows="14" datasources="xsmtpdialog.rdf" ref="http://home.netscape.com/X-P772-Security-Classification"
+											 onselect="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);">
+										<template>
+											<listitem uri="rdf:*" label="rdf:http://home.netscape.com/rdf#name" value="rdf:http://home.netscape.com/rdf#name"/>
+										</template>
+									</listbox>
+					        	</row>
+				        	</rows>
+			        	</grid>
+					</groupbox>
+				</vbox>
+	
+			    <!-- Advanced Tab -->
+			    <vbox index="Advanced">
+		        	<groupbox>
+						<grid>
+				            <columns>
+				            	<column/>
+					            <column flex="1"/>
+					        </columns>
+		        		    <rows>
+					        	<row>
+					        		<label value="&X-P772-Version.label;"/>
+					        		<textbox id="X-P772-Version" value="1.1" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+					        	</row>
+					        	
+					        	<row>
+									<label value="&X-P772-Priority-Level-Qualifier.label;"/>
+									<menulist id="X-P772-Priority-Level-Qualifier" datasources="xsmtpdialog.rdf" ref="http://home.netscape.com/X-P772-Priority-Level-Qualifier" label=""
+											  oncommand="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);">
+										<template>
+											<menupopup>
+												<menuitem uri="rdf:*" label="rdf:http://home.netscape.com/rdf#name" value="rdf:http://home.netscape.com/rdf#name"/>
+											</menupopup>
+										</template>
+									</menulist>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Extended-Grade-Of-Delivery.label;"/>
+									<textbox id="X-P772-Extended-Grade-Of-Delivery" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+					        	</row>
+					        	
+					        	<row>
+									<label value="&X-P772-Message-Type.label;"/>
+									<hbox>
+										<menulist id="X-P772-Message-Type1" flex="1" datasources="xsmtpdialog.rdf" ref="http://home.netscape.com/X-P772-Message-Type" label=""
+												  oncommand="xsmtp_checkCompoundHeaderValueFormatAndAlert(XSMTP_HEADER_X_P772_MESSAGE_TYPE, this, document.getElementById('X-P772-Message-Type2'));">
+											<template>							
+												<menupopup>
+													<menuitem uri="rdf:*" label="rdf:http://home.netscape.com/rdf#name" value="rdf:http://home.netscape.com/rdf#name" oncommand="xsmtp_toggleDependentElements(this, document.getElementById('X-P772-Message-Type2'));"/>
+												</menupopup>
+											</template>
+										</menulist>
+										<textbox id='X-P772-Message-Type2' oninput="xsmtp_checkCompoundHeaderValueFormatAndAlert(XSMTP_HEADER_X_P772_MESSAGE_TYPE, document.getElementById('X-P772-Message-Type1'), this);" disabled="true"/>
+									</hbox>
+					        	</row>
+		
+					        	<row>
+									<label value="&X-P772-Copy-Precedence.label;"/>
+									<menulist id="X-P772-Copy-Precedence" datasources="xsmtpdialog.rdf" ref="http://home.netscape.com/X-P772-Copy-Precedence" label=""
+											  oncommand="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);">
+										<template>
+											<menupopup>
+												<menuitem uri="rdf:*" label="rdf:http://home.netscape.com/rdf#name" value="rdf:http://home.netscape.com/rdf#name"/>
+											</menupopup>
+										</template>
+									</menulist>
+					        	</row>
+					        	
+					        	<row>
+									<label value="&X-P772-Exempted-Address.label;"/>
+									<textbox id="X-P772-Exempted-Address" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Address-List-Indicator.label;"/>
+									<textbox id="X-P772-Address-List-Indicator" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+					        	</row>
+					        	
+					        	<row>
+									<label value="&X-P772-Distribution-Codes.label;"/>
+									<textbox id="X-P772-Distribution-Codes" maxlength="71" oninput="xsmtp_toggleExclusiveElements(this, document.getElementById('X-P772-MCA'));xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+					        	</row>
+					        	
+					        	<row>
+									<label value="&X-P772-MCA.label;"/>
+									<textbox id="X-P772-MCA" maxlength="83" oninput="xsmtp_toggleExclusiveElements(this, document.getElementById('X-P772-Distribution-Codes'));xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+					        	</row>
+		
+				        	</rows>
+			        	</grid>
+		        	</groupbox>
+		    	</vbox>
+	
+			    <!-- Other Tab -->
+			    <vbox index="other">
+					<groupbox>
+						<grid>
+				            <columns>
+				            	<column/>
+					            <column flex="1"/>
+					        </columns>
+			       		    <rows>
+					        	<row>
+									<label value="&X-P772-Handling-Instructions.label;"/>
+									<textbox id="X-P772-Handling-Instructions" maxlength="69" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Message-Instructions.label;"/>
+									<textbox id="X-P772-Message-Instructions" maxlength="69" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Codress-Message.label;"/>
+									<textbox id="X-P772-Codress-Message" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-ReferenceIndication.label;"/>
+									<textbox id="X-P772-ReferenceIndication" maxlength="69" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Other-Recipient-Indicator.label;"/>
+									<textbox id="X-P772-Other-Recipient-Indicator"  oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Acp-Message-Identifier.label;"/>
+									<textbox id="X-P772-Acp-Message-Identifier" maxlength="69" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Originator-PLAD.label;"/>
+									<textbox id="X-P772-Originator-PLAD" maxlength="69" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Acp-Notification-Request.label;"/>
+									<textbox id="X-P772-Acp-Notification-Request" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+			
+					        	<row>
+									<label value="&X-P772-Acp-Notification-Response.label;"/>
+									<textbox id="X-P772-Acp-Notification-Response" oninput="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);"/>
+								</row>
+								
+					        	<row>
+									<label value="&X-P772-Special-Handling-Instructions.label;"/>
+									<listbox id="X-P772-Special-Handling-Instructions" rows="8" seltype="multiple" datasources="xsmtpdialog.rdf" ref="http://home.netscape.com/X-P772-Special-Handling-Instructions"
+											 onselect="xsmtp_checkHeaderValueFormatAndAlert(this.id, this);">
+										<template>
+											<listitem uri="rdf:*" label="rdf:http://home.netscape.com/rdf#name" value="rdf:http://home.netscape.com/rdf#name"/>
+										</template>
+									</listbox>
+								</row>
+						   	</rows>
+				        </grid>
+					</groupbox>
+			    </vbox>
+			</tabpanels>
+		</tabbox>
+	</vbox>
+</dialog>

@@ -55,14 +55,16 @@
   tooltiptext="xSMPT headers"
   image="chrome://xsmtp/content/icons/xsmtp.gif"
   orient="vertical"
-  oncommand="window.openDialog('chrome://xsmtp/content/messengercomposeXSMTP.xul', '', 'chrome,resizable=yes,titlebar,modal,width=600,height=600');"/>
+  oncommand="window.openDialog('chrome://xsmtp/content/xsmtpdialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=500,height=500');"/>
   
-  <stringbundleset id="stringbundleset">
-    <stringbundle id="string-bundle" src="chrome://xsmtp/locale/mSCOptions.properties"/>
-  </stringbundleset>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/messengercomposeXSMTPOverlay.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/xsmtpHeaders.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/daterfc.js"/>
-  <script type="application/x-javascript" src="chrome://xsmtp/content/messengercomposeMSC0verlay.js"/>
-  
+  	<stringbundleset id="stringbundleset">
+    	<stringbundle id="string-bundle" src="chrome://xsmtp/locale/options.properties"/>
+  	</stringbundleset>
+
+	<script type="application/x-javascript" src="chrome://xsmtp/content/global.js"/>
+  	<script type="application/x-javascript" src="chrome://xsmtp/content/validator.js"/>
+  	<script type="application/x-javascript" src="chrome://xsmtp/content/messengercomposeXSMTPOverlay.js"/>
+  	<script type="application/x-javascript" src="chrome://xsmtp/content/xsmtpHeaders.js"/>
+
+
  </overlay>

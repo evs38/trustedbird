@@ -1,4 +1,4 @@
-/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ï»¿/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -15,12 +15,13 @@
  * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
- *   BT Global Services / Etat français Ministère de la Défense
+ *   BT Global Services / Etat francais Ministere de la Defense
  * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Bruno Lebon BT Global Services / Etat français Ministère de la Défense
+ *   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -35,33 +36,24 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-function doOK()
-{
-  var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-  try {
-	var valeur=false;
-	if(document.getElementById("group").selectedItem.value == "true"){valeur=true;}
-	prefs.setBoolPref("xsmtp.size.check.enable", valeur);
-	
-  } catch (e) {
-  }
+
+function doOK() {
+  	var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+	var isSizeCheckEnable = false;
+	if (document.getElementById("group").selectedItem.value == "true") {
+		isSizeCheckEnable = true;
+	}
+	prefs.setBoolPref("xsmtp.size.check.enable", isSizeCheckEnable);
 }
 
-
-function doCancel()
-{
-  return true;
-}
-
-
-function onLoad()
-{
+function onLoad() {
   var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
   try {
 	if (prefs.getBoolPref("xsmtp.size.check.enable")){
-		document.getElementById('xSMTPControle1').setAttribute("selected","true");
-	}else{
-		document.getElementById('xSMTPControle2').setAttribute("selected","true");
+		document.getElementById('xSMTPControle1').setAttribute("selected", "true");
+
+	} else {
+		document.getElementById('xSMTPControle2').setAttribute("selected", "true");
 	}
   } catch (e) {
     // error loading values, setting default

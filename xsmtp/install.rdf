@@ -50,6 +50,6 @@
           </Description>
       </em:targetApplication>
       <em:description>XSMTP extension</em:description>
-	  <em:optionsURL>chrome://xsmtp/content/mSCOptions.xul</em:optionsURL>
+	  <em:optionsURL>chrome://xsmtp/content/options.xul</em:optionsURL>
     </Description>
 </RDF>

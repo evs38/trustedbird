@@ -21,7 +21,7 @@
  *
  * Contributor(s):
  *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
- * and Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
+ *   Bruno Lebon BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
