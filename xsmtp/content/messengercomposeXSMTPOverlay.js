@@ -50,7 +50,7 @@ function initialyzeXsmtpGVariables(){
 //get header from recorded message
 function getDraftMessage(){
     var catchHeaderFromURI="";
-	catchHeaderFromURI = getXsmtpHeadersFromURI(msgWindow,window);
+	catchHeaderFromURI = getXsmtpHeadersFromURI();
 	if ((catchHeaderFromURI)){
 			//window.customedHeaders = catchHeaderFromURI; //record field value initialization
 		return catchHeaderFromURI;
@@ -393,7 +393,9 @@ var xSMTPMailSendObserver =
 				regval.test(array1[i]);
 				var value = RegExp.$2; var field = RegExp.$1;
 				if (/Info$/.test(field)){continue;}
-				if ((field == "available") || (field == "") || (field == " ")){ continue;}
+				if (field == "" || field == " "){
+					continue;
+				}
 				msgCompFields.otherRandomHeaders += field+": " + TrimString(value) +"\r\n";
 			}
 		  }

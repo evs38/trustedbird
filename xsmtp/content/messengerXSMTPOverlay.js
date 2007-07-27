@@ -36,520 +36,110 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-var verif="";
-//custom preference initialization
-var XP772=new Array("X-P772-Version","X-P772-Priority-Level-Qualifier","X-P772-Extended-Grade-Of-Delivery","X-P772-Primary-Precedence","X-P772-Copy-Precedence","X-P772-Message-Type","X-P772-Address-List-Indicator","X-P772-Exempted-Address","X-P772-Extended-Authorisation-Info","X-P772-Distribution-Codes","X-P772-MCA","X-P772-Handling-Instructions","X-P772-Message-Instructions","X-P772-Codress-Message","X-P772-Originator-Reference","X-P772-ReferenceIndication","X-P772-Other-Recipient-Indicator","X-P772-Acp-Message-Identifier","X-P772-Originator-PLAD","X-P772-Acp-Notification-Request","X-P772-Acp-Notification-Response","X-P772-Security-Classification","X-P772-Special-Handling-Instructions","available");
-var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-//var gDBView = Components.classes["@mozilla.org/messenger/msgdbview;1?type=search"].createInstance(Components.interfaces.nsIMsgDBView);
-//addCustomPref('mail.compose.other.header');
 
-addCustomPref(XP772,'mailnews.customHeaders');
-addCustomPref(XP772,'mailnews.customDBHeaders','yes');
+// Custom preference initialization
+var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+
+xsmtp_registerCustomPreferences('mailnews.customHeaders', ALL_XSMTP_HEADERS, false);
+xsmtp_registerCustomPreferences('mailnews.customDBHeaders', ALL_XSMTP_HEADERS, true);
+
 gPrefs.setIntPref('xsmtp.size.flash', 10);
 gPrefs.setIntPref('xsmtp.size.immediate', 50);
 gPrefs.setIntPref('xsmtp.size.priority', 1000);
 gPrefs.setIntPref('xsmtp.size.routine', 10000);
 
 //add custom headers pref
-function addCustomPref(XP772,val,lower)
-{
-   var customedHeaders = "";
-   var headrs = "";
-   try {
-		headrs = gPrefs.getCharPref(val);
-   }catch(ex){}
+function xsmtp_registerCustomPreferences(preference, values, lower) {
+	var headrs = "";
+	try {
+		headrs = gPrefs.getCharPref(preference);
+	} catch(ex) {
+	}
    
-   for (var i=0; i< XP772.length; i++){
-	 if ( (headrs.indexOf(XP772[i]) != -1) || (headrs.indexOf(XP772[i].toLowerCase()) != -1) ){
-	 }else {
-		if (headrs != ""){headrs +=",";}
-			headrs += XP772[i];
-	}
-  }
-  if (lower == "yes"){headrs = headrs.replace(/,/g, " ").toLowerCase();}
-  gPrefs.setCharPref(val, headrs);
+   	for (var i = 0; i < values.length; i++) {
+     	if (headrs.indexOf(values[i]) == -1 && headrs.indexOf(values[i].toLowerCase()) == -1) {
+        	if (headrs != "") {
+        		headrs += ",";
+        	}
+            headrs += values[i];
+    	}
+  	}
+  	if (lower) {
+  		headrs = headrs.replace(/,/g, " ").toLowerCase();
+  	}
+  	gPrefs.setCharPref(preference, headrs);
 }
-//handler definition
-var X_P772_Version =
-{
- getCellText: function(row, col)
-  {
+
+// Column handler template definition
+function xsmtp_StringColumnHandler(property) {
+	// Properties
+	this.property = property;
+	this.isString = true;
+	
+	// Functions
+	this.getSortStringForRow = xsmtp_ColumnHandler_getSortStringForRow;
+	this.isString            = xsmtp_ColumnHandler_isString;
+	this.getCellProperties   = xsmtp_ColumnHandler_getCellProperties;
+	this.getRowProperties    = xsmtp_ColumnHandler_getRowProperties;
+	this.getImageSrc         = xsmtp_ColumnHandler_getImageSrc;
+	this.getSortLongForRow   = xsmtp_ColumnHandler_getSortLongForRow;
+	this.getCellText         = xsmtp_ColumnHandler_getCellText;
+}
+
+// Column handler template definition
+function xsmtp_LongColumnHandler(property) {
+	// Properties
+	this.property = property;
+	this.isString = false;
+	
+	// Functions
+	this.getSortStringForRow = xsmtp_ColumnHandler_getSortStringForRow;
+	this.isString            = xsmtp_ColumnHandler_isString;
+	this.getCellProperties   = xsmtp_ColumnHandler_getCellProperties;
+	this.getRowProperties    = xsmtp_ColumnHandler_getRowProperties;
+	this.getImageSrc         = xsmtp_ColumnHandler_getImageSrc;
+	this.getSortLongForRow   = xsmtp_ColumnHandler_getSortLongForRow;
+	this.getCellText         = xsmtp_ColumnHandler_getCellText;
+}
+
+function xsmtp_ColumnHandler_getSortStringForRow(hdr)           { return (this.isString) ? hdr.getStringProperty(this.property) : ""; }
+function xsmtp_ColumnHandler_isString()                         { return this.isString; }
+function xsmtp_ColumnHandler_getCellProperties(row, col, props) {}
+function xsmtp_ColumnHandler_getRowProperties(row, props)       {}
+function xsmtp_ColumnHandler_getImageSrc(row, col)              {return null; }
+function xsmtp_ColumnHandler_getSortLongForRow(hdr)             { return (this.isString) ? 0 : new Number(hdr.getStringProperty(this.property)).value; }
+
+function xsmtp_ColumnHandler_getCellText(row, col) {
     var key = gDBView.getKeyAt(row);
     var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-version");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-version"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
+    return hdr.getStringProperty(this.property);
 }
 
-var X_P772_Priority_Level_Qualifier =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-priority-level-qualifier");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-priority-level-qualifier"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Extended_Grade_Of_Delivery =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-extended-grade-of-delivery");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-extended-grade-of-delivery"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Primary_Precedence =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-primary-precedence");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-primary-precedence"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Copy_Precedence =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-copy-precedence");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-copy-precedence"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Message_Type =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-message-type");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-message-type"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Address_List_Indicator =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-address-list-indicator");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-address-list-indicator"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Exempted_Address =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-exempted-address");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-exempted-address"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Extended_Authorisation_Info =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-extended-authorisation-info");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-extended-authorisation-info"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Distribution_Codes =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-distribution-codes");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-distribution-codes"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_MCA =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-mca");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-mca"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Handling_Instructions =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-handling-instructions");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-handling-instructions"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Message_Instructions =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-message-instructions");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-message-instructions"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Codress_Message =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-codress-message");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-codress-message"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Originator_Reference =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-originator-reference");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-originator-reference"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_ReferenceIndication =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-referenceindication");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-referenceindication"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Other_Recipient_Indicator =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-other-recipient-indicator");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-other-recipient-indicator"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Acp_Message_Identifier =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-acp-message-identifier");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-acp-message-identifier"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Originator_PLAD =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-originator-plad");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-originator-plad"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Acp_Notification_Request =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-acp-notification-request");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-acp-notification-request"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Acp_Notification_Response =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-acp-notification-response");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-acp-notification-response"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Security_Classification =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-security-classification");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-security-classification"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-var X_P772_Special_Handling_Instructions =
-{
- getCellText: function(row, col)
-  {
-    var key = gDBView.getKeyAt(row);
-    var hdr = gDBView.db.GetMsgHdrForKey(key);
-
-    return hdr.getStringProperty("x-p772-special-handling-instructions");
-  },
-
- getSortStringForRow:	function(hdr)		       { return hdr.getStringProperty("x-p772-special-handling-instructions"); },
-  isString:             function()   { return true; },
-  getCellProperties:	function(row, col, props)	{ },
-  getRowProperties : 	function(row,props){},
-  getImageSrc:          function(row, col) {return null;},
-  getSortLongForRow:	function(hdr) { return 0; }
-
-}
-
-//column handler add
-function addCustomColumnHandler() 
-{ 
-    if (gDBView){
-		gDBView.addColumnHandler("X-P772-Version", X_P772_Version);
-		gDBView.addColumnHandler('X-P772-Priority-Level-Qualifier', X_P772_Priority_Level_Qualifier);
-		gDBView.addColumnHandler("X-P772-Extended-Grade-Of-Delivery", X_P772_Extended_Grade_Of_Delivery);
-		gDBView.addColumnHandler("X-P772-Primary-Precedence", X_P772_Primary_Precedence);
-		gDBView.addColumnHandler("X-P772-Copy-Precedence", X_P772_Copy_Precedence);
-		gDBView.addColumnHandler("X-P772-Message-Type", X_P772_Message_Type);
-		gDBView.addColumnHandler("X-P772-Address-List-Indicator", X_P772_Address_List_Indicator);
-		gDBView.addColumnHandler("X-P772-Exempted-Address", X_P772_Exempted_Address);
-		gDBView.addColumnHandler("X-P772-Extended-Authorisation-Info", X_P772_Extended_Authorisation_Info);
-		gDBView.addColumnHandler("X-P772-Distribution-Codes", X_P772_Distribution_Codes);
-		gDBView.addColumnHandler("X-P772-MCA", X_P772_MCA);
-		gDBView.addColumnHandler("X-P772-Handling-Instructions", X_P772_Handling_Instructions);
-		gDBView.addColumnHandler("X-P772-Message-Instructions", X_P772_Message_Instructions);
-		gDBView.addColumnHandler("X-P772-Codress-Message", X_P772_Codress_Message);
-		gDBView.addColumnHandler("X-P772-Originator-Reference", X_P772_Originator_Reference);
-		gDBView.addColumnHandler("X-P772-ReferenceIndication", X_P772_ReferenceIndication);
-		gDBView.addColumnHandler("X-P772-Other-Recipient-Indicator", X_P772_Other_Recipient_Indicator);
-		gDBView.addColumnHandler("X-P772-Acp-Message-Identifier", X_P772_Acp_Message_Identifier);
-		gDBView.addColumnHandler("X-P772-Originator-PLAD", X_P772_Originator_PLAD);
-		gDBView.addColumnHandler("X-P772-Acp-Notification-Request", X_P772_Acp_Notification_Request);
-		gDBView.addColumnHandler("X-P772-Acp-Notification-Response", X_P772_Acp_Notification_Response);
-		gDBView.addColumnHandler("X-P772-Security-Classification", X_P772_Security_Classification);
-		gDBView.addColumnHandler("X-P772-Special-Handling-Instructions", X_P772_Special_Handling_Instructions);
-	}
+// Column handler registration
+function addCustomColumnHandler() {
+    if (gDBView) {
+    	for (var i = 0; i < ALL_XSMTP_HEADERS.length; i++) {
+    		if (ALL_XSMTP_HEADERS[i] == XSMTP_HEADER_X_P772_CODRESS_MESSAGE) {
+    			gDBView.addColumnHandler(ALL_XSMTP_HEADERS[i], new xsmtp_LongColumnHandler(ALL_XSMTP_HEADERS[i].toLowerCase()));
+    		} else {
+	    		gDBView.addColumnHandler(ALL_XSMTP_HEADERS[i], new xsmtp_StringColumnHandler(ALL_XSMTP_HEADERS[i].toLowerCase()));
+	    	}
+    	}
+    }
 }
 
 //get event
 window.addEventListener("load", doOnceLoaded, false);
 
 function doOnceLoaded() {
-  var ObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-  ObserverService.addObserver(CreateDbObserver, "MsgCreateDBView", false);
-  window.document.getElementById('folderTree').addEventListener("select",addCustomColumnHandler,false);
+	var ObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+	ObserverService.addObserver(CreateDbObserver, "MsgCreateDBView", false);
+	window.document.getElementById('folderTree').addEventListener("select", addCustomColumnHandler, false);
 }
 
 var CreateDbObserver = {
-  // Components.interfaces.nsIObserver
-  observe: function(aMsgFolder, aTopic, aData)
-  {  
-     addCustomColumnHandler();
-  }
+	// Components.interfaces.nsIObserver
+	observe: function(aMsgFolder, aTopic, aData) {  
+		addCustomColumnHandler();
+	}
 }

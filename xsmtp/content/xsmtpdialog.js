@@ -38,7 +38,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Global variables
-var xsmtp_msgCompFields = window.opener['gMsgCompose'].compFields;
+var gMsgCompose = window.opener['gMsgCompose'];
+var xsmtp_msgCompFields = gMsgCompose.compFields;
 
 // window first initialisation
 window.opener.customedHeaders = xsmtp_msgCompFields.otherRandomHeaders;
@@ -77,7 +78,7 @@ function xsmtp_onDialogDeferredLoad() {
 
 // Retrieve headers from draft
 function xsmtp_retrieveHeadersFromDraft(defaultHeaders) {
-	var headersFromDraft = getXsmtpHeadersFromURI(window.opener['msgWindow'], window.opener);
+	var headersFromDraft = getXsmtpHeadersFromURI();
 	if (headersFromDraft && window.opener.gContainer != 1) {
 		return headersFromDraft;
 	}

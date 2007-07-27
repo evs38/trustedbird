@@ -38,17 +38,15 @@
  * ***** END LICENSE BLOCK ***** */
 
 //global variable
-var gMsgCompose = window.opener['gMsgCompose'];
 var xSMTPMessenger = Components.classes["@mozilla.org/messenger;1"].createInstance();
 xSMTPMessenger = xSMTPMessenger.QueryInterface(Components.interfaces.nsIMessenger);
-
 
 //get message URI
 function GetSelectedMessagesXSMTP()
 {
   if (gMsgCompose) {  
 	var mailWindow = gMsgCompose.compFields.draftId;
-    mailWindow=mailWindow.substring(mailWindow, mailWindow.indexOf('?'));
+    mailWindow = mailWindow.substring(mailWindow, mailWindow.indexOf('?'));
 	if (mailWindow) {
       return mailWindow;
     }
@@ -58,13 +56,12 @@ function GetSelectedMessagesXSMTP()
 } 
 
 //get message headers
-function GetHeadersFromURI(messageURI,opener) {  
+function GetHeadersFromURI(messageURI) {  
     var messageService = xSMTPMessenger.messageServiceFromURI(messageURI);
     var messageStream = Components.classes["@mozilla.org/network/sync-stream-listener;1"].createInstance().QueryInterface(Components.interfaces.nsIInputStream);
     var inputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance().QueryInterface(Components.interfaces.nsIScriptableInputStream);
     inputStream.init(messageStream);
-    var msgWindow = opener;
-    var newuri = messageService.streamMessage(messageURI,messageStream, msgWindow, null, false, null); 
+    var newuri = messageService.streamMessage(messageURI,messageStream, null, null, false, null); 
 
     var content = "";
     inputStream.available();
@@ -99,25 +96,28 @@ function GetHeadersFromURI(messageURI,opener) {
 }
 
 //get xsmtp headers
-function getXsmtpHeadersFromURI(opener,fenetre){
+function getXsmtpHeadersFromURI() {
     var messageURI = "";
 	if ((gMsgCompose.type == 9) || (gMsgCompose.type == 10)){
-	    var regex=gMsgCompose.type+":uri";
-	    var regval = new RegExp("^"+regex);
-		var xSMTPHeaders="";
+	    var regex = gMsgCompose.type + ":uri";
+	    var regval = new RegExp("^" + regex);
+		var xSMTPHeaders = "";
 	 
-		messageURI=GetSelectedMessagesXSMTP();
+		messageURI = GetSelectedMessagesXSMTP();
 		
-		if (/null/.test(messageURI)){return false;}
-		var head=GetHeadersFromURI(messageURI,opener).allHeaders;
+		if (/null/.test(messageURI)) {
+			return false;
+		}
+
+		var head = GetHeadersFromURI(messageURI).allHeaders;
 		var allHeaders = head.split('\r\n');
 		for (i in allHeaders){ 
-			if (!(allHeaders[i].indexOf('X-P772'))){
+			if (!(allHeaders[i].indexOf('X-P772'))) {
 				xSMTPHeaders += allHeaders[i]+ "\r\n";
 			}
 		}
 		return xSMTPHeaders;
-	}else return messageURI;
+
+	} else
+		return messageURI;
 }
-
-

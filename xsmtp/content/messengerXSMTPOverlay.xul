@@ -39,66 +39,82 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://xsmtp/locale/xsmtp.dtd">
 
-<overlay id="rescomclienticon"
-         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
          
 	<script type="application/x-javascript" src="chrome://xsmtp/content/global.js"/>
 	<script type="text/javascript" src="chrome://xsmtp/content/messengerXSMTPOverlay.js"/>
 
+	<tree id="threadTree">
+  		<treecols id="threadCols">
 
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Version" label="&X-P772-Version.label;" tooltiptext="&X-P772-Version.label;"/>
 
-<tree id="threadTree">
-  <treecols id="threadCols">
-  
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Version" persist="hidden ordinal width " flex="2" hidden="true" label="&X-P772-Version.label;" tooltiptext="&X-P772-Version.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Priority-Level-Qualifier" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Priority-Level-Qualifier.label;" tooltiptext="&X-P772-Priority-Level-Qualifier.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Extended-Grade-Of-Delivery" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Extended-Grade-Of-Delivery.label;" tooltiptext="&X-P772-Extended-Grade-Of-Delivery.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Primary-Precedence" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Primary-Precedence.label;" tooltiptext="&X-P772-Primary-Precedence.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Copy-Precedence" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Copy-Precedence.label;" tooltiptext="&X-P772-Copy-Precedence.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Message-Type" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Message-Type.label;" tooltiptext="&X-P772-Message-Type.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Address-List-Indicator" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Address-List-Indicator.label;" tooltiptext="&X-P772-Address-List-Indicator.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Exempted-Address" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Exempted-Address.label;" tooltiptext="&X-P772-Exempted-Address.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Extended-Authorisation-Info" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Extended-Authorisation-Info.label;" tooltiptext="&X-P772-Extended-Authorisation-Info.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Distribution-Codes" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Distribution-Codes.label;" tooltiptext="&X-P772-Distribution-Codes.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-MCA" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-MCA.label;" tooltiptext="&X-P772-MCA.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Handling-Instructions" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Handling-Instructions.label;" tooltiptext="&X-P772-Handling-Instructions.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Message-Instructions" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Message-Instructions.label;" tooltiptext="&X-P772-Message-Instructions.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Codress-Message" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Codress-Message.label;" tooltiptext="&X-P772-Codress-Message.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Originator-Reference" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Originator-Reference.label;" tooltiptext="&X-P772-Originator-Reference.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-ReferenceIndication" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-ReferenceIndication.label;" tooltiptext="&X-P772-ReferenceIndication.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Other-Recipient-Indicator" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Other-Recipient-Indicator.label;" tooltiptext="&X-P772-Other-Recipient-Indicator.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Acp-Message-Identifier" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Acp-Message-Identifier.label;" tooltiptext="&X-P772-Acp-Message-Identifier.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Originator-PLAD" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Originator-PLAD.label;" tooltiptext="&X-P772-Originator-PLAD.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Acp-Notification-Request" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Acp-Notification-Request.label;" tooltiptext="&X-P772-Acp-Notification-Request.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Acp-Notification-Response" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Acp-Notification-Response.label;" tooltiptext="&X-P772-Acp-Notification-Response.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Security-Classification" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Security-Classification.label;" tooltiptext="&X-P772-Security-Classification.label;"/>
-	<splitter class="tree-splitter"/>
-	<treecol id="X-P772-Special-Handling-Instructions" persist="hidden ordinal width" flex="2" hidden="true" label="&X-P772-Special-Handling-Instructions.label;" tooltiptext="&X-P772-Special-Handling-Instructions.label;"/>
- 
- </treecols>
-</tree>
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Priority-Level-Qualifier" label="&X-P772-Priority-Level-Qualifier.label;" tooltiptext="&X-P772-Priority-Level-Qualifier.label;"/>
 
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Extended-Grade-Of-Delivery" label="&X-P772-Extended-Grade-Of-Delivery.label;" tooltiptext="&X-P772-Extended-Grade-Of-Delivery.label;"/>
 
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Primary-Precedence" label="&X-P772-Primary-Precedence.label;" tooltiptext="&X-P772-Primary-Precedence.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Copy-Precedence" label="&X-P772-Copy-Precedence.label;" tooltiptext="&X-P772-Copy-Precedence.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Message-Type" label="&X-P772-Message-Type.label;" tooltiptext="&X-P772-Message-Type.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Address-List-Indicator" label="&X-P772-Address-List-Indicator.label;" tooltiptext="&X-P772-Address-List-Indicator.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Exempted-Address" label="&X-P772-Exempted-Address.label;" tooltiptext="&X-P772-Exempted-Address.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Extended-Authorisation-Info" label="&X-P772-Extended-Authorisation-Info.label;" tooltiptext="&X-P772-Extended-Authorisation-Info.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Distribution-Codes" label="&X-P772-Distribution-Codes.label;" tooltiptext="&X-P772-Distribution-Codes.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-MCA" label="&X-P772-MCA.label;" tooltiptext="&X-P772-MCA.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Handling-Instructions" label="&X-P772-Handling-Instructions.label;" tooltiptext="&X-P772-Handling-Instructions.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Message-Instructions" label="&X-P772-Message-Instructions.label;" tooltiptext="&X-P772-Message-Instructions.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Codress-Message" label="&X-P772-Codress-Message.label;" tooltiptext="&X-P772-Codress-Message.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Originator-Reference" label="&X-P772-Originator-Reference.label;" tooltiptext="&X-P772-Originator-Reference.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-ReferenceIndication" label="&X-P772-ReferenceIndication.label;" tooltiptext="&X-P772-ReferenceIndication.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Other-Recipient-Indicator" label="&X-P772-Other-Recipient-Indicator.label;" tooltiptext="&X-P772-Other-Recipient-Indicator.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Acp-Message-Identifier" label="&X-P772-Acp-Message-Identifier.label;" tooltiptext="&X-P772-Acp-Message-Identifier.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Originator-PLAD" label="&X-P772-Originator-PLAD.label;" tooltiptext="&X-P772-Originator-PLAD.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Acp-Notification-Request" label="&X-P772-Acp-Notification-Request.label;" tooltiptext="&X-P772-Acp-Notification-Request.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Acp-Notification-Response" label="&X-P772-Acp-Notification-Response.label;" tooltiptext="&X-P772-Acp-Notification-Response.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Security-Classification" label="&X-P772-Security-Classification.label;" tooltiptext="&X-P772-Security-Classification.label;"/>
+
+			<splitter class="tree-splitter"/>
+			<treecol persist="hidden ordinal width" flex="2" hidden="true" id="X-P772-Special-Handling-Instructions" label="&X-P772-Special-Handling-Instructions.label;" tooltiptext="&X-P772-Special-Handling-Instructions.label;"/>
+		</treecols>
+	</tree>
 </overlay>
