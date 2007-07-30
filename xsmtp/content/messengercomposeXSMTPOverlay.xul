@@ -51,8 +51,8 @@
 <!-- button details -->
 <toolbarbutton
   id="toolbarbutton-xsmtp"
-  label="xSMTP"
-  tooltiptext="xSMPT headers"
+  label="XSMTP"
+  tooltiptext="XSMPT headers"
   image="chrome://xsmtp/content/icons/xsmtp.gif"
   orient="vertical"
   oncommand="window.openDialog('chrome://xsmtp/content/xsmtpdialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=500,height=500');"/>
