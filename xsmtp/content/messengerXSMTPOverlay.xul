@@ -43,7 +43,8 @@
          
 	<script type="application/x-javascript" src="chrome://xsmtp/content/global.js"/>
 	<script type="text/javascript" src="chrome://xsmtp/content/messengerXSMTPOverlay.js"/>
-
+	<script type="text/javascript" src="chrome://xsmtp/content/alert/alert.js"/>
+	
 	<tree id="threadTree">
   		<treecols id="threadCols">
 

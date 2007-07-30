@@ -75,7 +75,7 @@ function xsmtp_StringColumnHandler(property) {
 	// Properties
 	this.property = property;
 	this.isString = true;
-	
+
 	// Functions
 	this.getSortStringForRow = xsmtp_ColumnHandler_getSortStringForRow;
 	this.isString            = xsmtp_ColumnHandler_isString;
@@ -91,7 +91,7 @@ function xsmtp_LongColumnHandler(property) {
 	// Properties
 	this.property = property;
 	this.isString = false;
-	
+
 	// Functions
 	this.getSortStringForRow = xsmtp_ColumnHandler_getSortStringForRow;
 	this.isString            = xsmtp_ColumnHandler_isString;
