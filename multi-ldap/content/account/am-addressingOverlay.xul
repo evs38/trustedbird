@@ -36,7 +36,12 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE window SYSTEM "chrome://milimail-multi-ldap/locale/account/am-addressingOverlay.dtd">
+<!DOCTYPE overlay [
+<!ENTITY % composeDTD SYSTEM "chrome://messenger/locale/preferences/compose.dtd">
+<!ENTITY % addressingOverlay SYSTEM "chrome://milimail-multi-ldap/locale/account/am-addressingOverlay.dtd">
+%composeDTD;
+%addressingOverlay;
+]>
 
 <overlay
     id="LDAPComposePaneOverlay"
@@ -52,44 +57,42 @@
         id="compositionAndAddressing">
         <groupbox>
             <caption label="&addressingTitle.label;" />
+			<description>
+				&autocompleteText.label;
+			</description>
+
             <checkbox
                 id="ldap_2.identity.id.multi_ldap_use_custom_preferences"
-                label="Use Custom Preferences"
-                oncommand="enableCustomPreferences(event.target)" />
-            <listbox
+                label="&useCustomPreferences.label;"
+				accesskey="&directories.accesskey;"
+                oncommand="enableCustomPreferences(event.target)"
+				pref="true" preftype="bool" prefattribute="value"
+                prefstring="ldap_2.identity.%identitykey%.multi_ldap_use_custom_preferences"
+				/>
+
+			<listbox
                 id="LDAPList"
-                ref="moz-abdirectory://"
-                datasources="rdf:addressdirectory"
-                onclick="updateLDAPList(event.target)">
-
-                <listhead>
-                    <listheader label="LDAP" />
-                    <listheader label="&addressingAutocomplete.label;" />
-                </listhead>
-
-                <listcols>
-                    <listcol flex="1" />
-                    <listcol flex="1" />
-                </listcols>
-
-                <template>
-                    <listitem
-                        uri="rdf:*"
-                        allowevents="true">
-
-                        <listcell
-                            uri="rdf:*"
-                            label="rdf:http://home.netscape.com/NC-rdf#DirName"
-                            value="rdf:http://home.netscape.com/NC-rdf#DirUri" />
-
-                        <listcell>
-                            <checkbox />
-                        </listcell>
-
-                    </listitem>
-                </template>
-
+				row="6"
+ 				onclick="updateLDAPServerListPreference(event.target);"
+				>
+				<listhead>
+					<listheader label="&addressingAutocomplete.label;" />
+				</listhead>
+				<listcols>
+					<listcol flex="1"/>
+				</listcols>
+				<!-- 
+					listitem inserted dynamicaly see createDirectoriesListCheckBox function from composeLDAPOverlay.js 
+				 -->
             </listbox>
+
+			<hbox align="center">
+				<button
+					id="editButton"
+					label="&editDirectories.label;"
+					oncommand="editDirectories();"
+					accesskey="&editDirectories.accesskey;" />
+			</hbox>
         </groupbox>
     </vbox>
 </overlay>

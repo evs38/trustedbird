@@ -41,11 +41,15 @@ const kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
 var gRefresh = false; // leftover hack from the old preferences dialog
 
 var gComposePane = {
-  mInitialized: false,
-  mDirectories: null,
-  mLDAPPrefsService: null,
-  mSpellChecker: null,
-  mDictCount : 0,
+	mInitialized: false,
+	mDirectories: null,
+	mLDAPPrefsService: null,
+	mSpellChecker: null,
+	// Original preference to save preference with only the valid server
+	mOriginalPreference: null,
+	// OBr 18/07/07 correction of the entry ID 484
+	mAutoCompletePref: null,
+	mDictCount : 0,
 
   init: function ()
   {
@@ -58,10 +62,9 @@ var gComposePane = {
     // builder because of Bug #285076, 
     this.createLocalDirectoriesList();
     
-   // this.enableAutocomplete();
-	
-	initLDAPAutocompleteList();
-	
+    // build the LDAP address book server list box. We do this by hand instead of using the xul template
+ 	this.initMultiLDAPDirectoriesList();
+
     this.initLanguageMenu();
 
     this.populateFonts();
@@ -101,30 +104,6 @@ var gComposePane = {
     document.documentElement.openSubDialog("chrome://messenger/content/preferences/htmlcompose.xul","", null);  
   },
 
- /* enableAutocomplete: function() 
-  {
-    var directoriesList =  document.getElementById("directoriesList"); 
-    var directoriesListPopup = document.getElementById("directoriesListPopup");
-    var editButton = document.getElementById("editButton");
-
-    if (document.getElementById("autocompleteLDAP").checked) 
-    {
-      editButton.removeAttribute("disabled");
-      directoriesList.removeAttribute("disabled");
-      directoriesListPopup.removeAttribute("disabled");
-    }
-    else 
-    {
-      directoriesList.setAttribute("disabled", true);
-      directoriesListPopup.setAttribute("disabled", true);
-      editButton.setAttribute("disabled", true);
-    }
-
-    // if we do not have any directories disable the dropdown list box
-    if (!this.mDirectories || (this.mDirectories < 1))
-      directoriesList.setAttribute("disabled", true);  
-  },
-*/
   createLocalDirectoriesList: function () 
   {
     var abPopup = document.getElementById("abPopup-menupopup");
@@ -181,9 +160,8 @@ var gComposePane = {
     var arrayOfDirectories;
     var position;
     var dirType;
-    var prefService;
     
-    prefService = Components.classes["@mozilla.org/preferences-service;1"]
+    var prefService = Components.classes["@mozilla.org/preferences-service;1"]
                             .getService(Components.interfaces.nsIPrefBranch);
     
     if (!this.mDirectories) 
@@ -289,11 +267,15 @@ var gComposePane = {
       if (popup) 
         while (popup.hasChildNodes())
           popup.removeChild(popup.lastChild);
-
     }
-
     this.mDirectories = null;
     this.loadDirectories(popup);
+    
+    // Remove LDAP server list to update list box
+	this.removeMultiLDAPDirectoriesList();
+	// Create LDAP server list with new list
+	this.createMultiLDAPDirectoriesList();
+
     gRefresh = false;
   },
 
@@ -429,35 +411,312 @@ var gComposePane = {
      try {
        document.getElementById('msgcompose.background_color').reset();
      } catch (ex) {}
-   }
+    },
+	
+	//Init prefernce string to Create list of the LDAP server in the list box LDAPList
+	initMultiLDAPDirectoriesList: function()
+	{
+		var uri;
+		var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+			.getService(Components.interfaces.nsIPrefBranch);
+		//URI of All Autocomplete repositories
+		var prefLDAPURI = "ldap_2.autoComplete.ldapServers";
+		// Initialize global variable. Used to update preference of the LDAP list
+		mOriginalPreference = mAutoCompletePref = getSafeCharPref(prefService, prefLDAPURI);
+		dump("initMultiLDAPDirectoriesList "+ prefLDAPURI +"='" + mAutoCompletePref + "'.\n");
+
+		this.createMultiLDAPDirectoriesList();
+	},
+	
+	//Create list of the LDAP server in the list box LDAPList
+	createMultiLDAPDirectoriesList: function()
+	{
+		dump("createMultiLDAPDirectoriesList started.\n");
+
+		var directoriesListBox = document.getElementById("LDAPList");
+		if (directoriesListBox){
+			this.createCheckBoxList( directoriesListBox);
+		}
+		//URI of All Autocomplete repositories
+		var prefLDAPURI = "ldap_2.autoComplete.ldapServers";
+		var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+				.getService(Components.interfaces.nsIPrefBranch);
+		// Update the preferences string when a server has been deleted
+		prefService.setCharPref(prefLDAPURI, mOriginalPreference);
+
+		//Enable LDAP list control
+		this.enableAutocomplete();
+		dump("createMultiLDAPDirectoriesList ended.\n");
+	},
+ 
+	createCheckBoxList: function(aPopup)
+	{
+		var prefCount = {value:0};
+		var description = "";
+		var item;
+		var j=0;
+		var arrayOfDirectories;
+		var position;
+		var dirType;
+		var prefService;
+
+		dump("\tloadDirectoriesCheckBox started.\n");
+		dump("\t\tInitialize check box with preferences '"+ mAutoCompletePref + "'.\n");
+		if (!this.mDirectories)
+			this.loadDirectories();
+		{
+			prefService = Components.classes["@mozilla.org/preferences-service;1"]
+				.getService(Components.interfaces.nsIPrefBranch);
+
+			try 
+			{
+				if (this.mLDAPPrefsService)
+					arrayOfDirectories = this.mLDAPPrefsService.getServerList(prefService, prefCount);
+			}
+			catch (ex) {}
+
+			if (arrayOfDirectories) 
+			{
+			    var arrayPreferences = mAutoCompletePref.split(',');
+				for (var i = 0; i < prefCount.value; i++)
+				{
+					if ((arrayOfDirectories[i] != "ldap_2.servers.pab") && 
+						(arrayOfDirectories[i] != "ldap_2.servers.history")) 
+					{
+						try 
+						{
+							position = prefService.getIntPref(arrayOfDirectories[i]+".position");
+						}
+						catch(ex)
+						{
+							position = 1;
+						}
+
+						try
+						{
+							dirType = prefService.getIntPref(arrayOfDirectories[i]+".dirType");
+						}
+						catch(ex)
+						{
+							dirType = 1;
+						}
+
+						if ((position != 0) && (dirType == 1)) 
+						{
+							dump( "\t\tTreat entry name =>'" + arrayOfDirectories[i]+"'\n" );
+							try
+							{
+								description = prefService.getComplexValue(arrayOfDirectories[i]+".description",
+									Components.interfaces.nsISupportsString).data;
+							}
+							catch(ex)
+							{
+								description="";
+							}
+
+							if (description != "") 
+							{
+								if (aPopup) 
+								{
+									var checked = isInPreferenceSeverList(arrayOfDirectories[i], arrayPreferences);
+
+									item = this.createCheckBoxItem( i, description, arrayOfDirectories[i], checked );
+									if ( item ) 
+										aPopup.appendChild(item);
+								}
+							}
+						}
+						else
+						{
+							mOriginalPreference = this.checkPreferenceServerValidity(arrayOfDirectories[i]);
+						}
+					}
+				}
+			}
+		}
+		dump("\tloadDirectoriesCheckBox ended.\n");
+	},
+
+	/* 
+	 * Create an entry for each LDAP server like this
+	 *	<listitem allowevents="true">
+	 *		<listcell  value="Directory URI">
+	 *			<checkbox label="LDAP Name" />
+	 *		</listcell>
+	 *	</listitem>
+	 */
+	createCheckBoxItem :function( index, name, value, checked)
+	{
+		dump("\t\t\tCreate field " + index + " name='" + name + "' value='" + value + "' set to '" + checked + "'.\n");
+		var item = document.createElement('listitem');
+	    item.setAttribute("id", "listitem" + index);
+	    item.setAttribute("allowevents", "true");
+		var listCell = document.createElement( 'listcell');  
+	    listCell.setAttribute("id", "listcell" + index);
+		listCell.setAttribute('type', "checkbox");
+		listCell.setAttribute( 'value', value);
+		item.appendChild( listCell);
+		var checkBox = document.createElement('checkbox');
+		checkBox.setAttribute( 'id', value); // Set the LDAP URI as ID of the check box
+		checkBox.setAttribute( 'checked', checked);
+		checkBox.setAttribute( 'label', name);
+		listCell.appendChild( checkBox );
+		return( item);
+	},
+
+	removeMultiLDAPDirectoriesList: function()
+	{
+		dump("removeMultiLDAPDirectoriesList started.\n");
+
+		var directoriesListBox = document.getElementById("LDAPList");
+		if (directoriesListBox){
+			this.removeCheckBoxList( directoriesListBox);
+		}
+		dump("removeMultiLDAPDirectoriesList ended.\n");
+	},
+
+	removeCheckBoxList: function(aPopup)
+	{
+		var prefCount = {value:0};
+		var description = "";
+		var item;
+		var j=0;
+		var arrayOfDirectories;
+		var position;
+		var dirType;
+		var prefService;
+		var uri;
+
+		dump("\tremoveCheckBoxList started.\n");
+
+		if (aPopup) 
+		{
+			var childs = aPopup.childNodes;
+			var tabs = 2;
+			if (childs){
+				for (var i = 0 ; i< childs.length; i++)
+			  	{
+			  		if ( (childs[i].localName == "listitem") ){
+						this.dumpWithTabs( tabs, "Remove child ID='" + childs[i].id + "'.");
+						tabs = this.removeChilds( ++tabs, childs[i] );
+						aPopup.removeChild(childs[i]);
+						this.dumpWithTabs( tabs, "...");
+						i = 0;
+					}
+			  	}
+			} else {
+				dump("\t\tNothing to update.\n");
+			}
+		}
+		dump("\tremoveCheckBoxList ended.\n");
+	},
+
+	removeChilds: function( tabs, child){
+		while (child.hasChildNodes()){
+			this.dumpWithTabs( tabs, "Remove child ID='" + child.lastChild.id + "'.");
+			if(child.lastChild.hasChildNodes()){
+				tabs = this.removeChilds( ++tabs, child.lastChild);
+			}
+			child.removeChild(child.lastChild);
+			this.dumpWithTabs( tabs, "..." );
+		}
+		--tabs;
+		return tabs;
+	},
+	
+	dumpWithTabs : function( tabs, message ){
+		while( tabs > 0 ){
+			dump("\t");
+			tabs--;
+		}
+		dump( message + "\n" );
+	},
+
+	// Enable or disable the LDAPList control
+	enableAutocomplete: function() 
+	{
+		var list = document.getElementById("LDAPList");
+		if (document.getElementById("autocompleteLDAP").checked == false) 
+		{
+			disableListBox(list, true);
+		}
+		else
+		{
+			disableListBox(list, false);
+		}
+		// if we do not have any directories disable the dropdown list box
+		if (!this.mDirectories || (this.mDirectories < 1))
+			directoriesList.setAttribute("disabled", true);  
+	},
+ 
+	/*
+	* Rebuild the LDAP list prefernce selected by the user.
+	* Return : string that contain all LDAP name separated by coma. This is saved in the 
+	* Added for correction of the entry ID 484
+	*/
+    updateLDAPServerListPreference : function(target)
+	{
+		dump("Update preference temporary.\n");
+		return buildPreferenceValue(target);
+	},
+	
+	/*
+	 * Check the validity of the server list prefernece after an edit of the LDAP server list.
+	 * Remove the deleted server in the preference string.
+	 */
+	checkPreferenceServerValidity : function(serverToCheck)
+	{
+	    var arraySeverPreference = mOriginalPreference.split(',');
+		arraySeverPreference = removeFromArray(serverToCheck, arraySeverPreference);
+		return convertPrefArrayToString(arraySeverPreference);
+	}
+
 }
 
 //Function which deal user event on LDAP AutoComplete List
-function updateLDAPList(target){
-	
-var list = document.getElementById("LDAPList");
-var item = list.currentItem;
+function buildPreferenceValue(target){
+	dump("buildPreferenceValue() started.\n");
+	var list = document.getElementById("LDAPList");
+	var item = list.currentItem;
+	var nameCell = 	item.childNodes.item(0);
+	var checkbox = nameCell.firstChild;
+	dump("\t" + nameCell.tagName+" > ");
+	dump(checkbox.getAttribute("label")+" : ");
+	dump(nameCell.getAttribute("value")+" is " +checkbox.checked+ ".\n");
+	var newPreference = buildLDAPlistString(nameCell.getAttribute("value"), checkbox.checked);
+	dump("buildPreferenceValue() ended.\n");
+	return newPreference;
+}
 
-var nameCell = 	item.childNodes.item(0);
-var checkBoxCell = item.childNodes.item(1);
-dump(nameCell.tagName+"\n");
-dump(nameCell.getAttribute("label")+" : ");
-dump(nameCell.getAttribute("value")+"\n");
-var checkbox = checkBoxCell.firstChild;
-dump(checkbox.checked+"\n");
+function buildLDAPlistString(LDAPUri, checked){
+	dump("\tbuildLDAPlistString() started\n");
 
-updateLDAPAutocompletePref(nameCell.getAttribute("value"), checkbox.checked);
+    dump("\t\tCurrent selected item : '" + LDAPUri + "'.\n");
+    // OBr 18/07/07 correction of the entry ID 484
+	var autoCompletePref = mAutoCompletePref;
+    dump("\t\tOld preference : '" + mAutoCompletePref + "'.\n");
+    
+    var allPrefs = autoCompletePref.split(',');
+    
+    var prefsFiltered = removeFromArray(LDAPUri, allPrefs);
+   
+   	if (checked)
+   		prefsFiltered.push(LDAPUri);
+   	
+   	mAutoCompletePref = convertPrefArrayToString(prefsFiltered);
+	dump("\t\tNew preference : '" + mAutoCompletePref + "'.\n");
+	dump("\tbuildLDAPlistString() ended.\n");
+	return mAutoCompletePref;
 }
 
 //Helper function return an array minus an value
 function removeFromArray(value, allPrefs){
 	var prefs = new Array();
 	
-	for (i = 0; i < allPrefs.length; i++){
+	for (var i = 0; i < allPrefs.length; i++){
 		if (allPrefs[i] != value)
 			prefs.push(allPrefs[i]);
 	}
-	
 	return prefs;
 }
 
@@ -465,57 +724,28 @@ function removeFromArray(value, allPrefs){
 function convertPrefArrayToString(array){
 	var s = "";
 	
-	for (i = 0 ; i < array.length ; i++){
-		if (array[i].length != 0)
-			{
-				s+=array[i];
-				s +=',';
-			}
+	for (var i = 0 ; i < array.length ; i++){
+		if (array[i].length != 0){
+			s+=array[i];
+			s +=',';
+		}
 	}
-	
-	
 	return s.slice(0,-1);
 }
 
-function updateLDAPAutocompletePref(LDAPUri, checked){
-	dump("Enter saveLDAPList()" + "\n");
-	var prefLDAPURI = "ldap_2.autoComplete.ldapServers";
-	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                            .getService(Components.interfaces.nsIPrefBranch);
-    var localPrefMap = new Object();                       
-    localPrefMap["abook.mab"]="ldap_2.autoComplete.useAddressBooks";
-    localPrefMap["history.mab"]="mail.enable_autocomplete";
-    
-    var LDAPPrefValue = LDAPUri.split("//")[1];
-    dump("saveLDAPList() LDAPPrefValue : " + LDAPPrefValue + "\n");
-    
-    var uri = "";
-    
-    if (LDAPPrefValue.search("ldap_2") != -1){
-    	uri=prefLDAPURI;
-    } else{
-        dump("pref local "+ localPrefMap[LDAPPrefValue] + " "+ checked);
-    	prefService.setBoolPref(localPrefMap[LDAPPrefValue], checked);
-        return;
-    }
-    
-    var autoCompletePref = getSafeCharPref(prefService, uri);
-    dump("saveLDAPList() old autoCompletePref : " + autoCompletePref + "\n");
-    
-    var allPrefs = autoCompletePref.split(',');
-    
-    var prefsFiltered = removeFromArray(LDAPPrefValue, allPrefs);
-   
-   	if (checked)
-   		prefsFiltered.push(LDAPPrefValue);
-   	
-   	var newPref = convertPrefArrayToString(prefsFiltered);
-  
-    prefService.setCharPref(uri, newPref);
-    
-    autoCompletePref = getSafeCharPref(prefService, uri);
-    dump("saveLDAPList() new autoCompletePref : " + autoCompletePref + "\n");
+// Check the name of server if it was found in the preference
+function isInPreferenceSeverList(nameToCheck, array){
+	dump("Check " + nameToCheck + "\n");
+	for (var i = 0; i < array.length; i++){
+		if (array[i] == nameToCheck){
+			dump( "\t" + nameToCheck + " found with it " + array[i] + "\n");
+			return true;
+		}
+	}
+	dump( nameToCheck + " not found\n");
+	return false;
 }
+
 /*
  * Get preference safety, if preference does not exist it returns empty string
  */
@@ -537,50 +767,27 @@ function getSafeBoolPref(prefService, uri){
 	} catch(e){}
 	return value;
 }
+function disableListBox(list, bool){
+	//see Bugzilla Bug 338156
+	var childs = list.childNodes;
+	if (!childs)
+		return;	
 
-//Init AutoComplete List Box LDAP
-function initLDAPAutocompleteList(){
-	var list = document.getElementById("LDAPList");
-	var count = list.getRowCount();
-	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                            .getService(Components.interfaces.nsIPrefBranch);
-                            
-    //URI of All Autocomplete repositories
-    var prefLDAPURI = "ldap_2.autoComplete.ldapServers";
-    var prefLocalHistoryURI = "mail.enable_autocomplete";
-    var prefLocalAddressUri = "ldap_2.autoComplete.useAddressBooks";
-    
-    //Get all LDAP where AutoComplete is set from User Prefs
-    var prefLDAP = getSafeCharPref(prefService, prefLDAPURI);
-    var prefLocalHistoryBool = getSafeBoolPref(prefService, prefLocalHistoryURI);
-    var prefLocalAddressBool = getSafeBoolPref(prefService, prefLocalAddressUri);
-	
-	//Loop over all LDAP servers                       
-	for ( i = 0; i < count ; i++){
-		item = list.getItemAtIndex(i);
-		var ldapUri = item.childNodes.item(0).getAttribute("value");
-		var ldapPrefValue = ldapUri.split("//")[1];
-		var checkBox = item.childNodes.item(1).firstChild;
-		
-		//Test if pref contains ldapPrefValue to initialize checkboxes
-		if (( prefLDAP.indexOf(ldapPrefValue) >= 0))
-			checkBox.checked = true;
-		else
-			checkBox.checked = false;
-	
-        //Case of Local Directory : AddressBook and History		
-		if (ldapPrefValue=="abook.mab")
-		    if (prefLocalAddressBool)
-		       checkBox.checked = true;
-		    else
-		       checkBox.checked = false;
-		    
-		if (ldapPrefValue=="history.mab")
-		 if (prefLocalHistoryBool)
-		    checkBox.checked = true;
-		  else
-		    checkBox.checked = false;
-	}
-
-
+	for (var i = 0 ; i< childs.length; i++)
+  	{
+  		 if ( (childs[i].localName == "listitem") ){
+  			if (bool == true){
+  				var c = childs[i].childNodes;
+  				c[0].setAttribute("disabled", "true");
+  				var checkbox = c[0].childNodes;
+  				checkbox[0].setAttribute("disabled", "true");
+  			}
+  		 	else{
+  		 		var c = childs[i].childNodes;
+  				c[0].removeAttribute("disabled");
+  				var checkbox = c[0].childNodes;
+  				checkbox[0].removeAttribute("disabled");
+  		 	}
+  		 }
+  	}
 }

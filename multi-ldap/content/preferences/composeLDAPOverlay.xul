@@ -72,7 +72,8 @@
       <preference id="mailnews.wraplength" name="mailnews.wraplength" type="int"/>
       <preference id="mail.enable_autocomplete" name="mail.enable_autocomplete" type="bool"/>
       <preference id="ldap_2.autoComplete.useDirectory" name="ldap_2.autoComplete.useDirectory" type="bool"/>
-      <!--  preference id="ldap_2.autoComplete.directoryServer" name="ldap_2.autoComplete.directoryServer" type="string"/-->
+      <preference id="ldap_2.autoComplete.directoryServer" name="ldap_2.autoComplete.directoryServer" type="string"/>
+      <preference id="ldap_2.autoComplete.ldapServers" name="ldap_2.autoComplete.ldapServers" type="string"/>
       <preference id="mail.collect_email_address_outgoing" name="mail.collect_email_address_outgoing" type="bool"/>
       <preference id="mail.collect_addressbook" name="mail.collect_addressbook" type="string"/>
       <preference id="spellchecker.dictionary"  name="spellchecker.dictionary"   type="unichar"/>
@@ -184,40 +185,31 @@
                      &autocompleteText.label;
                  </description>
 
+				<hbox id="controlLocalDirectoriesCheckBox" align="center">
+					<checkbox id="addressingLocalDirectoriesAutocomplete" label="&addressingEnable.label;"
+					preference="mail.enable_autocomplete"
+					accesskey="&addressingEnable.accesskey;"/>
+				</hbox>
+				<hbox id="controlUseDirectoryCheckBox" align="center">
+					<checkbox id="autocompleteLDAP" label="&usedirectories.label;" 
+                        preference="ldap_2.autoComplete.useDirectory" 
+                        oncommand="gComposePane.enableAutocomplete();"
+                        accesskey="&directories.accesskey;"/>
+				</hbox>
                  <listbox
-                     id="LDAPList"
-                     ref="moz-abdirectory://"
-                     datasources="rdf:addressdirectory"
-                     rows="6"
-                     onclick="updateLDAPList(event.target)">
+					id="LDAPList"
+					rows="4"
+					preference="ldap_2.autoComplete.ldapServers"
+					onsynctopreference="return gComposePane.updateLDAPServerListPreference(event.target);">
                      <listhead>
-                         <listheader label="&directory.label;" />
                          <listheader label="&ldapAutocomplete.label;" />
                      </listhead>
                      <listcols>
-                         <listcol flex="1" />
-                         <listcol flex="1" />
+                         <listcol flex="1"/>
                      </listcols>
-
-                     <template>
-
-                         <listitem
-                             uri="rdf:*"
-                             allowevents="true">
-
-                             <listcell
-                                 uri="rdf:*"
-                                 label="rdf:http://home.netscape.com/NC-rdf#DirName"
-                                 value="rdf:http://home.netscape.com/NC-rdf#DirUri" />
-
-                             <listcell>
-                                 <checkbox />
-                             </listcell>
-
-                         </listitem>
-
-                     </template>
-
+					<!-- 
+						listitem inserted dynamicaly see createDirectoriesListCheckBox function from composeLDAPOverlay.js 
+					 -->
                  </listbox>
 
                  <hbox align="center">

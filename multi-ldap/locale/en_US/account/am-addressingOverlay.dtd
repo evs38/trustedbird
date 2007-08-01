@@ -36,4 +36,5 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!ENTITY addressingTitle.label "Addressing">
-<!ENTITY addressingAutocomplete.label "Autocomplete">
+<!ENTITY addressingAutocomplete.label "Autocomplete with">
+<!ENTITY useCustomPreferences.label "Personalize LDAP Preferences for this Account">
