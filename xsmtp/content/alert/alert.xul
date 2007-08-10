@@ -47,7 +47,7 @@
 		buttons="accept"
 		buttonlabelaccept="&xsmtp.alert.showmessage;"
 		onload="xsmtp_blinkAlertMessage();xsmtp_playSoundAlert();"
-		ondialogaccept='window.openDialog("chrome://messenger/content/messageWindow.xul", "_blank", "all,chrome,dialog=no,status,toolbar", window.arguments[0], window.arguments[1], null);'>
+		ondialogaccept='xsmtp_onDialogAccept()'>
 
     <script type="application/x-javascript" src="chrome://xsmtp/content/alert/alert.js"/>
 

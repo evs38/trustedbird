@@ -36,37 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Alert listener for flash messages
-var xsmtp_flashAlertFolderListener = {
-   	OnItemAdded: function(parentItem, item) {
-   		var hdr = item.QueryInterface(Components.interfaces.nsIMsgDBHdr);
-   		var key = hdr.messageKey;
-
-    	if (!hdr.isRead) {
-    		// If this is a flash message
-        	if (hdr.getStringProperty(XSMTP_HEADER_X_P772_PRIMARY_PRECEDENCE.toLowerCase()) == XSMTP_PRIORITY_FLASH) {
-    			// Set focus on the message just current added
-       			gDBView.selectMsgByKey(key);
-
-       			// Open alert popup
-        		window.openDialog("chrome://xsmtp/content/alert/alert.xul", "_blank", "all,chrome,dialog=no,modal,centerscreen", hdr.folder.getUriForMsg(hdr), hdr.folder.URI);
-        	}
-    	}
-	},
-
-    OnItemBoolPropertyChanged:		function(item, property, oldValue, newValue) {},
-    OnItemEvent:					function(item, event) {},
-    OnItemIntPropertyChanged:		function(item, property, oldValue, newValue) {},
-    OnItemPropertyChanged:			function(item, property, oldValue, newValue) {},
-    OnItemPropertyFlagChanged:		function(item, property, oldFlag, newFlag) {},
-    OnItemRemoved:					function(parentItem, item) {},
-    OnItemUnicharPropertyChanged:	function(item, property, oldValue, newValue) {}
-};
-
-// Add folder listener
-var xsmtp_mailSession = Components.classes["@mozilla.org/messenger/services/session;1"].getService(Components.interfaces.nsIMsgMailSession);
-xsmtp_mailSession.AddFolderListener(xsmtp_flashAlertFolderListener, Components.interfaces.nsIFolderListener.all);
-
 // Sound player
 function xsmtp_playSoundAlert() {
    	var soundUri = Components.classes['@mozilla.org/network/standard-url;1'].createInstance(Components.interfaces.nsIURI);
@@ -93,7 +62,13 @@ function xsmtp_blinkAlertMessage() {
     	document.getElementById("xsmtp.alert.message").style.color = "white";
   	}
   	xsmtp_blink = !xsmtp_blink;
-  	
+
   	// Loop
   	setTimeout("xsmtp_blinkAlertMessage()", 250);
+}
+
+function xsmtp_onDialogAccept() {
+    // Open the flash message : delay it and ask the opener to do it (to prevent a bug with imap messages) 
+    var command = 'window.openDialog("chrome://messenger/content/messageWindow.xul", "_blank", "all,chrome,dialog=no,status,toolbar","' + window.arguments[0] + '", "' + window.arguments[1] + '", null)';
+    window.opener.setTimeout(command, 1);
 }

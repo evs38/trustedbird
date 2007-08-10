@@ -116,7 +116,7 @@ function xsmtp_ColumnHandler_getCellText(row, col) {
 }
 
 // Column handler registration
-function addCustomColumnHandler() {
+function xsmtp_addCustomColumnHandler() {
     if (gDBView) {
     	for (var i = 0; i < ALL_XSMTP_HEADERS.length; i++) {
     		if (ALL_XSMTP_HEADERS[i] == XSMTP_HEADER_X_P772_CODRESS_MESSAGE) {
@@ -128,18 +128,52 @@ function addCustomColumnHandler() {
     }
 }
 
-//get event
-window.addEventListener("load", doOnceLoaded, false);
+// Alert listener for flash messages
+var xsmtp_flashAlertFolderListener = {
+  itemAdded: function(item) {
+    var hdr;
+    try {
+      hdr = item.QueryInterface(Components.interfaces.nsIMsgDBHdr);
+    } catch (ex) {
+      // This could happen if item is a folder instead of a message
+    }
 
-function doOnceLoaded() {
-	var ObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-	ObserverService.addObserver(CreateDbObserver, "MsgCreateDBView", false);
-	window.document.getElementById('folderTree').addEventListener("select", addCustomColumnHandler, false);
+    if (hdr && !hdr.isRead) {
+        // If this is a flash message
+        if (hdr.getStringProperty(XSMTP_HEADER_X_P772_PRIMARY_PRECEDENCE.toLowerCase()) == XSMTP_PRIORITY_FLASH) {
+            // Set focus on the message just current added
+            gDBView.selectMsgByKey(hdr.messageKey);
+
+            // Open alert popup
+            window.openDialog("chrome://xsmtp/content/alert/alert.xul", "_blank", "all,chrome,dialog=no,modal,centerscreen", hdr.folder.getUriForMsg(hdr), hdr.folder.URI);
+        }
+    }
+  },
+
+  itemDeleted:           function(aMove, aSrcItems, aDestFolder) {},
+  itemMoveCopyCompleted: function(item, property, oldValue, newValue) {},
+  folderRenamed:         function(aOrigFolder, aNewFolder) {},
 }
 
-var CreateDbObserver = {
+// MsgCreateDBView observer
+var xsmtp_MsgCreateDBViewObserver = {
 	// Components.interfaces.nsIObserver
-	observe: function(aMsgFolder, aTopic, aData) {  
-		addCustomColumnHandler();
+	observe: function(aMsgFolder, aTopic, aData) {
+		// Add custom ColumnHandlers
+		xsmtp_addCustomColumnHandler();
 	}
 }
+
+// Add folder listener
+var xsmtp_msgFolderNotificationService = Components.classes["@mozilla.org/messenger/msgnotificationservice;1"].getService(Components.interfaces.nsIMsgFolderNotificationService);
+xsmtp_msgFolderNotificationService.addListener(xsmtp_flashAlertFolderListener);
+
+// Onload event
+function xsmtp_doOnceLoaded() {
+	var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+	observerService.addObserver(xsmtp_MsgCreateDBViewObserver, "MsgCreateDBView", false);
+	window.document.getElementById('folderTree').addEventListener("select", xsmtp_addCustomColumnHandler, false);
+}
+
+// Register onload event
+window.addEventListener("load", xsmtp_doOnceLoaded, false);
