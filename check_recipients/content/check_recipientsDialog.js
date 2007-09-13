@@ -38,8 +38,9 @@
 
 // Global variables and constants.
 
-// User preference defining LDAP server.
-const CHECK_RECIPIENTS_PREF_LDAP_SERVER = "ldap_2.autoComplete.directoryServer";
+// User preference defining LDAP servers.
+const CHECK_RECIPIENTS_PREF_LDAP_SERVERS = "ldap_2.autoComplete.ldapServers";
+var check_recipients_ldapServeursArray = new Array();
 
 // The following variables are needed by the LDAP asynchronous calls.
 var check_recipients_LdapServerURL;
@@ -90,6 +91,14 @@ function check_recipients_onLoadDialog() {
             }
         }
 
+        // Retrieve LDAP attributes from user preferences
+        var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+        var prefs = prefService.getBranch(null);
+        var ldapServeursPref = prefs.getCharPref(CHECK_RECIPIENTS_PREF_LDAP_SERVERS);
+        if (ldapServeursPref) {
+            check_recipients_ldapServeursArray = ldapServeursPref.split(',');
+        }
+        
         // Init and process the LDAP search (Delay execution to allow UI to refresh)
         setTimeout(check_recipients_initLDAPAndSearch, 1);
     }
@@ -134,7 +143,7 @@ var check_recipients_LDAPMessageListener = {
             check_recipients_initNewLDAPOperation();
             check_recipients_LdapOperation.simpleBind(check_recipients_getPassword());
         } catch (e) {
-            alert(e + " exception when binding to ldap\n");
+            alert("Exception when binding to ldap: " + e);
         }
     },
 
@@ -143,14 +152,20 @@ var check_recipients_LDAPMessageListener = {
         
         // Search is done
         if (Components.interfaces.nsILDAPMessage.RES_SEARCH_RESULT == aMessage.type) {
-            var progressmeter = document.getElementById("card_viewer_extended_progressmeter");
-            if (progressmeter) {
-                progressmeter.setAttribute("hidden", "true");
-            }
-            var images = document.getElementsByTagName("image");
-            for (var i = 0; i < images.length; i++) {
-                if (images[i].getAttribute("class") == "check_recipients_searching") {
-                    images[i].setAttribute("class", "check_recipients_notfound");
+            // Is there any other ldap to search on ?
+            if (check_recipients_ldapServeursArray.length > 0) {
+                check_recipients_initLDAPAndSearch();
+            // Search is finish
+            } else {
+                var progressmeter = document.getElementById("card_viewer_extended_progressmeter");
+                if (progressmeter) {
+                    progressmeter.setAttribute("hidden", "true");
+                }
+                var images = document.getElementsByTagName("image");
+                for (var i = 0; i < images.length; i++) {
+                    if (images[i].getAttribute("class") == "check_recipients_searching") {
+                        images[i].setAttribute("class", "check_recipients_notfound");
+                    }
                 }
             }
             return;
@@ -159,7 +174,7 @@ var check_recipients_LDAPMessageListener = {
         // Binding is done
         if (Components.interfaces.nsILDAPMessage.RES_BIND == aMessage.type) {
             if (Components.interfaces.nsILDAPErrors.SUCCESS != aMessage.errorCode) {
-                alert("Error with code " + aMessage.errorCode + " when binding to ldap\n");
+                alert("Error with code " + aMessage.errorCode + " when binding to ldap");
             } else {
                 // Kick off search ...
                 check_recipients_kickOffSearch();
@@ -196,7 +211,11 @@ function check_recipients_initLDAPAndSearch() {
     var prefs = prefService.getBranch(null);
 
     // Get the login to authenticate as, if there is one
-    var directoryPref = prefs.getCharPref(CHECK_RECIPIENTS_PREF_LDAP_SERVER);
+    var directoryPref = check_recipients_ldapServeursArray.pop();
+
+    if (!directoryPref) {
+        return;
+    }
 
     prefs = prefService.getBranch(directoryPref);
     try {
@@ -225,7 +244,7 @@ function check_recipients_initLDAPAndSearch() {
             Components.interfaces.nsILDAPConnection.VERSION3);
 
         } catch (e) {
-            alert(e + " exception when creating ldap connection\n");
+            alert("Exception when creating ldap connection:" + e);
     }
 }
 
@@ -321,7 +340,7 @@ function check_recipients_kickOffSearch() {
             nbRecipients); // Max search results
             
     } catch (e) {
-        alert(e + " exception when searching on ldap\n");
+        alert("Exception when searching on ldap: " + e);
     }
 }
 
