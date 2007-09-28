@@ -338,7 +338,13 @@ DoCommandClose = function xSMTPDoCommandClose() {
 // message size listener
 function MSCListenerFunction() {
 	var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-	var isEnable = gPrefs.getBoolPref('xsmtp.size.check.enable');
+	var isEnable = false;
+	try {
+		isEnable = gPrefs.getBoolPref('xsmtp.size.check.enable');
+	} catch (ex) {
+		// Variable 'xsmtp.size.check.enable' not define then define it and set the default value to false
+		gPrefs.setBoolPref('xsmtp.size.check.enable', isEnable);
+	}
 
 	if (isEnable) {
 		var priority = getPriorityFromHeaders();

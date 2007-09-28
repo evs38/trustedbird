@@ -43,11 +43,12 @@ var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService
 xsmtp_registerCustomPreferences('mailnews.customHeaders', ALL_XSMTP_HEADERS, false);
 xsmtp_registerCustomPreferences('mailnews.customDBHeaders', ALL_XSMTP_HEADERS, true);
 
-gPrefs.setIntPref('xsmtp.size.flash', 10);
+/*
+gPrefs.setCharPref('xsmtp.size.flash', 10);
 gPrefs.setIntPref('xsmtp.size.immediate', 50);
 gPrefs.setIntPref('xsmtp.size.priority', 1000);
-gPrefs.setIntPref('xsmtp.size.routine', 10000);
-
+gPrefs.setCharPref('xsmtp.size.routine', 10000);
+*/
 //add custom headers pref
 function xsmtp_registerCustomPreferences(preference, values, lower) {
 	var headrs = "";
@@ -152,7 +153,7 @@ var xsmtp_flashAlertFolderListener = {
 
   itemDeleted:           function(aMove, aSrcItems, aDestFolder) {},
   itemMoveCopyCompleted: function(item, property, oldValue, newValue) {},
-  folderRenamed:         function(aOrigFolder, aNewFolder) {},
+  folderRenamed:         function(aOrigFolder, aNewFolder) {}
 }
 
 // MsgCreateDBView observer
