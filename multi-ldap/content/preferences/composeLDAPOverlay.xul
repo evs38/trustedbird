@@ -208,7 +208,7 @@
                          <listcol flex="1"/>
                      </listcols>
 					<!-- 
-						listitem inserted dynamicaly see createDirectoriesListCheckBox function from composeLDAPOverlay.js 
+						listitem inserted dynamicaly see createMultiLDAPDirectoriesList function from composeLDAPOverlay.js 
 					 -->
                  </listbox>
 
