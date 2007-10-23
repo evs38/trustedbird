@@ -109,7 +109,7 @@
     <target name="compile-milimail-linux"
         depends="checkout-milimail,copy-config-linux" if="isLinux"
         description="--> compile Milimail">
-        <exec executable="make" dir="${br.th.v0.local}">
+    	<exec executable="make" dir="${br.th.v0.local}">
             <arg value="-f" />
             <arg value="client.mk" />
             <arg value="build" />
