@@ -198,8 +198,7 @@
         ================================= -->
     <target name="package-extensions" depends="checkout-extensions"
         description="--> description">
-        <zip destfile="${local.destination}/${trunk.dsn.name}.xpi"
-            basedir="${trunk.dsn.local}" excludes="build.xml" />
+     
         <zip destfile="${local.destination}/${trunk.mdn.name}.xpi"
             basedir="${trunk.mdn.local}" />
         <zip destfile="${local.destination}/${trunk.xsmtp.name}.xpi"
