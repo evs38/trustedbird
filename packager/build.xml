@@ -43,7 +43,7 @@
         description="--> Prepare file layout">
         <mkdir dir="${local.repository}" />
         <mkdir dir="${local.destination}" />
-        <mkdir dir="${trunk.dsn.local}" />
+       
         <mkdir dir="${trunk.mdn.local}" />
         <mkdir dir="${trunk.xsmtp.local}" />
         <mkdir dir="${trunk.gfd.local}" />
@@ -52,7 +52,7 @@
 
         <mkdir dir="${tag.mdn.0110.local}" />
         <mkdir dir="${tag.gfd.0110.local}" />
-        <mkdir dir="${tag.dsn.0100.local}" />
+     
         <mkdir dir="${tag.multildap.0101.local}" />
 
         <mkdir dir="${tag.languages.0100.local}/mozilla" />
