@@ -65,10 +65,11 @@ var notificationsProcessor = {
 				.getService();
 		RDF = RDF.QueryInterface(Components.interfaces.nsIRDFService);
 		var sentboxArray = this.listAllSentBox();
-
+        
+        //loop over all Sent Box
 		for (var index = 0;index < sentboxArray.length; index++) {
 			var folderRessource = RDF
-					.GetResource(sentboxArray[i]);
+					.GetResource(sentboxArray[index]);
 			var folder = folderRessource
 					.QueryInterface(Components.interfaces.nsIMsgFolder);
 
@@ -78,7 +79,7 @@ var notificationsProcessor = {
           
             //Header found, do not need to continue
             if (hdr != null)
-              return;
+              return hdr;
 
 		}
 
