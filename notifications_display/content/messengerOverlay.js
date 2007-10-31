@@ -47,7 +47,7 @@ var notificationsProcessor = {
 			hdr = this.findMsgHdr(originalID);
 
 			if (hdr == null) {
-				dump("Notifications Display Extension (messengerOverlay.js) Original Message Found Not Found ID = "
+				dump("Notifications Display Extension (messengerOverlay.js) Original Message Not Found ID = "
 						+ originalID + "\n");
 			}
 
@@ -65,21 +65,25 @@ var notificationsProcessor = {
 				.getService();
 		RDF = RDF.QueryInterface(Components.interfaces.nsIRDFService);
 		var sentboxArray = this.listAllSentBox();
-        
-        //loop over all Sent Box
+
+		//loop over all Sent Box
 		for (var index = 0;index < sentboxArray.length; index++) {
-			var folderRessource = RDF
-					.GetResource(sentboxArray[index]);
+			var folderRessource = RDF.GetResource(sentboxArray[index]);
 			var folder = folderRessource
 					.QueryInterface(Components.interfaces.nsIMsgFolder);
 
 			var db = folder.getMsgDatabase(null);
+			//folder.ForceDBClosed();
+			// db.Close(true);
+			//folder.startFolderLoading();
+			//folder.updateFolder(null);
+			// folder.ForceDBClosed();
 
 			var hdr = db.getMsgHdrForMessageID(originalID);
-          
-            //Header found, do not need to continue
-            if (hdr != null)
-              return hdr;
+
+			//Header found, do not need to continue
+			if (hdr != null)
+				return hdr;
 
 		}
 
@@ -87,6 +91,25 @@ var notificationsProcessor = {
 
 	},
 
+	updateAllSentBox : function() {
+
+		var RDF = Components.classes['@mozilla.org/rdf/rdf-service;1']
+				.getService();
+		RDF = RDF.QueryInterface(Components.interfaces.nsIRDFService);
+		var sentboxArray = notificationsProcessor.listAllSentBox();
+
+		//loop over all Sent Box
+		for (var index = 0;index < sentboxArray.length; index++) {
+			var folderRessource = RDF.GetResource(sentboxArray[index]);
+			var folder = folderRessource
+					.QueryInterface(Components.interfaces.nsIMsgFolder);
+
+			folder.startFolderLoading();
+			folder.updateFolder(null);
+
+		}
+
+	},
 	isMDNDisplayed : function(message) {
 		if (message.toString().match(NOTIFICATION_MDN_DISPLAYED) != null)
 			return true;
@@ -151,7 +174,12 @@ var incomeMsgManager = {
 
 		itemAdded : function(item) {
 			dump("Notifications Display Extension (messengerOverlay.js) Item Added : OK\n");
+            
+            dump("Notifications Display Extension (messengerOverlay.js) Update All Sent Box\n")
+            notificationsProcessor.updateAllSentBox();
+            
 			var hdr;
+
 			try {
 				hdr = item.QueryInterface(Components.interfaces.nsIMsgDBHdr);
 			} catch (ex) {
