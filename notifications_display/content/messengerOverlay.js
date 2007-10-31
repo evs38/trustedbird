@@ -45,7 +45,7 @@ var notificationsProcessor = {
 			dump("Notifications Display Extension (messengerOverlay.js) Tag Original Message Begin\n");
 
 			hdr = this.findMsgHdr(originalID);
-
+            
 			if (hdr == null) {
 				dump("Notifications Display Extension (messengerOverlay.js) Original Message Not Found ID = "
 						+ originalID + "\n");
@@ -54,7 +54,9 @@ var notificationsProcessor = {
 			var author = hdr.author;
 			dump("Notifications Display Extension (messengerOverlay.js) Original Found, its author is : "
 					+ author + " \n");
-			dump("Notifications Display Extension (messengerOverlay.js) Tag Original Message End\n");
+			
+            hdr.setProperty(MSG_MDN_PROPERTY_BOOL_DISPLAYED, true);
+            dump("Notifications Display Extension (messengerOverlay.js) Tag Original Message End\n");
 		}
 
 	},
