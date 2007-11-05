@@ -6,6 +6,8 @@
 
     <script type="text/javascript"
         src="chrome://notifications_display/content/constant.js" />
+        <script type="text/javascript"
+        src="chrome://notifications_display/content/columnHider.js" />
     <script type="text/javascript"
         src="chrome://notifications_display/content/columnManager.js" />
     <script type="text/javascript"
@@ -18,7 +20,6 @@
                 hidden="true" id="MDN"
                 label="MDN"
                 tooltiptext="MDN" />
-
         </treecols>
     </tree>
 </overlay>
