@@ -1,13 +1,13 @@
 // Custom preference initialization
-//var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-//gPrefs.setCharPref("mailnews.customDBHeaders",MSG_MDN_PROPERTY_BOOL_DISPLAYED);
-//gPrefs.setCharPref("mailnews.customHeaders",MSG_MDN_PROPERTY_BOOL_DISPLAYED);
+var gPrefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+gPrefs.setCharPref("mailnews.customDBHeaders",MSG_MDN_PROPERTY_BOOL_DISPLAYED);
+gPrefs.setCharPref("mailnews.customHeaders",MSG_MDN_PROPERTY_BOOL_DISPLAYED);
 
 // Column handler template definition
 function n_StringColumnHandler(property) {
   // Properties
   this.property = property;
-  this.isString = true;
+ 
 
   // Functions
   this.getSortStringForRow = n_ColumnHandler_getSortStringForRow;
@@ -20,10 +20,10 @@ function n_StringColumnHandler(property) {
 }
 
 function n_ColumnHandler_getSortStringForRow(hdr) {
-	return (this.isString) ? hdr.getStringProperty(this.property) : "";
+	return hdr.getStringProperty(this.property) ;
 }
 function n_ColumnHandler_isString() {
-	return this.isString;
+	return true;
 }
 function n_ColumnHandler_getCellProperties(row, col, props) {
 }
@@ -33,14 +33,13 @@ function n_ColumnHandler_getImageSrc(row, col) {
 	return null;
 }
 function n_ColumnHandler_getSortLongForRow(hdr) {
-	return (this.isString) ? 0 : new Number(hdr
-			.getStringProperty(this.property)).value;
+	return 0;
 }
 
 function n_ColumnHandler_getCellText(row, col) {
 	var key = gDBView.getKeyAt(row);
 	var hdr = gDBView.db.GetMsgHdrForKey(key);
-  
+   
 	return hdr.getStringProperty(this.property);
 }
 // Column handler registration

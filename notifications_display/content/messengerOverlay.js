@@ -1,6 +1,6 @@
 
 
-function readOnline(mail) {
+function readOnline(mail, folder) {
 	var key = mail.messageKey;
 
 	var uri = mail.folder.generateMessageURI(key);
@@ -12,20 +12,31 @@ function readOnline(mail) {
 	var messageService = messenger.messageServiceFromURI(uri);
 
 	var aurl = new Object();
-	messageService.CopyMessage(uri, myStreamListener, false, null, msgWindow,
-			aurl);
+	messageService.CopyMessage(uri, new myStreamListener(mail,folder), false, null,
+			msgWindow, aurl);
 }
 
 var notificationsProcessor = {
 
-	process : function(message) {
-
-		var isMDNDisplayed = this.isMDNDisplayed(message);
+	process : function(mail, messageTxt, folder) {
+    
+        dump("Notifications Display Extension (messengerOverlay.js), Message coming into Folder : " + folder.name + "\n");
+        if (folder.name == "Sent"){
+          if (this.isThisMDNAsk(messageTxt)){
+             dump("Notifications Display Extension (messengerOverlay.js), This Message is an MDN ask, Tag it! \n");
+             this.tagSentMessage(mail);
+             dump("Notifications Display Extension (messengerOverlay.js), This Message is an MDN ask, Tagged! \n");
+          }
+          return;
+        }
+        
+        
+		var isMDNDisplayed = this.isMDNDisplayed(messageTxt);
 
 		var originalID;
 
 		if (isMDNDisplayed) {
-			originalID = this.getOriginalID(message);
+			originalID = this.getOriginalID(messageTxt);
 			dump("Notifications Display Extension (messengerOverlay.js) Notification From Original Message ID : "
 					+ originalID + " \n");
 		}
@@ -38,14 +49,29 @@ var notificationsProcessor = {
 		}
 
 	},
+  
+    isThisMDNAsk : function(messageTxt){
+     var pattern = /Disposition-Notification-To/m;
+		var result = messageTxt.match(pattern);
 
+		if (result.length != null)
+			return true;
+		else
+			return false;
+    },
+    
+    tagSentMessage : function(message){
+      var hdr = message.QueryInterface(Components.interfaces.nsIMsgDBHdr);
+      hdr.setProperty(MSG_MDN_PROPERTY_BOOL_DISPLAYED, false);
+    },
+    
 	tagOriginalMessage : function(originalID) {
 		if (gDBView) {
 
 			dump("Notifications Display Extension (messengerOverlay.js) Tag Original Message Begin\n");
 
 			hdr = this.findMsgHdr(originalID);
-            
+
 			if (hdr == null) {
 				dump("Notifications Display Extension (messengerOverlay.js) Original Message Not Found ID = "
 						+ originalID + "\n");
@@ -54,9 +80,9 @@ var notificationsProcessor = {
 			var author = hdr.author;
 			dump("Notifications Display Extension (messengerOverlay.js) Original Found, its author is : "
 					+ author + " \n");
-			
-            hdr.setProperty(MSG_MDN_PROPERTY_BOOL_DISPLAYED, true);
-            dump("Notifications Display Extension (messengerOverlay.js) Tag Original Message End\n");
+
+			hdr.setProperty(MSG_MDN_PROPERTY_BOOL_DISPLAYED, true);
+			dump("Notifications Display Extension (messengerOverlay.js) Tag Original Message End\n");
 		}
 
 	},
@@ -75,12 +101,7 @@ var notificationsProcessor = {
 					.QueryInterface(Components.interfaces.nsIMsgFolder);
 
 			var db = folder.getMsgDatabase(null);
-			//folder.ForceDBClosed();
-			// db.Close(true);
-			//folder.startFolderLoading();
-			//folder.updateFolder(null);
-			// folder.ForceDBClosed();
-
+			
 			var hdr = db.getMsgHdrForMessageID(originalID);
 
 			//Header found, do not need to continue
@@ -144,9 +165,11 @@ var notificationsProcessor = {
 	}
 };
 
-var myStreamListener = {
-	bodyAndHdr : "",
-	onDataAvailable : function(request, context, inputStream, offset, count) {
+function myStreamListener(mail, folder) {
+	this.bodyAndHdr = "";
+    this.folder = folder;
+    this.mail = mail;
+	this.onDataAvailable = function(request, context, inputStream, offset, count) {
 
 		this.bodyAndHdr = "";
 
@@ -158,28 +181,29 @@ var myStreamListener = {
 		} catch (ex) {
 			alert("exception caught: " + ex.message + "\n");
 		}
-	},
+	}
 
-	onStartRequest : function(request, context) {
-	},
+	this.onStartRequest = function(request, context) {
+	}
 
-	onStopRequest : function(aRequest, aContext, aStatusCode) {
+	this.onStopRequest = function(aRequest, aContext, aStatusCode) {
 		dump("Notifications Display Extension (messengerOverlay.js) Message Content is : \n"
 				+ this.bodyAndHdr + "\n");
-		notificationsProcessor.process(this.bodyAndHdr);
+		notificationsProcessor.process(mail, this.bodyAndHdr, folder);
 	}
-};
+}
 
 var incomeMsgManager = {
 
 	folderListener : {
 
 		itemAdded : function(item) {
+
 			dump("Notifications Display Extension (messengerOverlay.js) Item Added : OK\n");
-            
-            dump("Notifications Display Extension (messengerOverlay.js) Update All Sent Box\n")
-            notificationsProcessor.updateAllSentBox();
-            
+
+			dump("Notifications Display Extension (messengerOverlay.js) Update All Sent Box\n")
+			notificationsProcessor.updateAllSentBox();
+
 			var hdr;
 
 			try {
@@ -188,13 +212,16 @@ var incomeMsgManager = {
 				// This could happen if item is a folder instead of a message
 				return;
 			}
+			var folder = hdr.folder;
+
+		
 
 			dump("Notifications Display Extension (messengerOverlay.js) Message received from : "
 					+ hdr.author + "\n");
 			dump("Notifications Display Extension (messengerOverlay.js) Message received id : "
 					+ hdr.messageId + "\n");
 
-			readOnline(item);
+			readOnline(item, folder);
 		},
 
 		itemDeleted : function(aMove, aSrcItems, aDestFolder) {
