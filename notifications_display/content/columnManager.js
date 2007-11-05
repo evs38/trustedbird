@@ -19,22 +19,6 @@ function n_StringColumnHandler(property) {
   this.getCellText         = n_ColumnHandler_getCellText;
 }
 
-// Column handler template definition
-function n_LongColumnHandler(property) {
-	// Properties
-	this.property = property;
-	this.isString = false;
-
-	// Functions
-	this.getSortStringForRow = n_ColumnHandler_getSortStringForRow;
-	this.isString = n_ColumnHandler_isString;
-	this.getCellProperties = n_ColumnHandler_getCellProperties;
-	this.getRowProperties = n_ColumnHandler_getRowProperties;
-	this.getImageSrc = n_ColumnHandler_getImageSrc;
-	this.getSortLongForRow = n_ColumnHandler_getSortLongForRow;
-	this.getCellText = n_ColumnHandler_getCellText;
-}
-
 function n_ColumnHandler_getSortStringForRow(hdr) {
 	return (this.isString) ? hdr.getStringProperty(this.property) : "";
 }
@@ -56,8 +40,7 @@ function n_ColumnHandler_getSortLongForRow(hdr) {
 function n_ColumnHandler_getCellText(row, col) {
 	var key = gDBView.getKeyAt(row);
 	var hdr = gDBView.db.GetMsgHdrForKey(key);
-    
-    dump(hdr.getStringProperty(this.property));
+  
 	return hdr.getStringProperty(this.property);
 }
 // Column handler registration
