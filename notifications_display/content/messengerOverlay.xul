@@ -18,7 +18,7 @@
             <splitter class="tree-splitter" />
             <treecol persist="hidden ordinal width" flex="2"
                 hidden="true" id="MDN"
-                label="MDN"
+                label="Avis de Lecture"
                 tooltiptext="MDN" />
         </treecols>
     </tree>
