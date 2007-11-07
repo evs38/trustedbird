@@ -6,7 +6,7 @@
 
     <script type="text/javascript"
         src="chrome://notifications_display/content/constant.js" />
-        <script type="text/javascript"
+    <script type="text/javascript"
         src="chrome://notifications_display/content/columnHider.js" />
     <script type="text/javascript"
         src="chrome://notifications_display/content/columnManager.js" />
@@ -17,8 +17,7 @@
         <treecols id="threadCols">
             <splitter class="tree-splitter" />
             <treecol persist="hidden ordinal width" flex="2"
-                hidden="true" id="MDN"
-                label="Avis de Lecture"
+                hidden="true" id="MDN" label="Avis de Lecture"
                 tooltiptext="MDN" />
         </treecols>
     </tree>
