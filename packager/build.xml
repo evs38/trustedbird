@@ -65,8 +65,7 @@
         depends="prepare-layout,load-svn-ant-libray"
         description="--> checkout all extension from repository">
 
-        <svn username="oparnier" password="Meeshohg" javahl="false"
-            svnkit="true">
+        <svn javahl="false" svnkit="true">
             <checkout url="${trunk.mdn.url}"
                 destpath="${trunk.mdn.local}" />
             <checkout url="${trunk.xsmtp.url}"
