@@ -1,0 +1,43 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+#! /bin/sh
+#
+# The contents of this file are subject to the Netscape Public
+# License Version 1.1 (the "License"); you may not use this file
+# except in compliance with the License. You may obtain a copy of
+# the License at http://www.mozilla.org/NPL/
+#
+# Software distributed under the License is distributed on an "AS
+# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# rights and limitations under the License.
+#
+# The Original Code is BT Global Services / Etat francais Ministere de la Defense
+#
+# The Initial Developer of the Original Code is Netscape
+# Communications Corporation.  Portions created by Netscape are
+# Copyright (C) 1999 Netscape Communications Corporation. All
+# Rights Reserved.
+
+AC_PREREQ(2.61)
+AC_INIT([MilimailMRS], [0.2], olivier.parniere@gmail.com)
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_LIBTOOL
+
+AC_ARG_WITH(mozilla-sdk,
+    [  --with-mozilla-sdk=DIR		include mozilla thunderbird sdk in DIR],
+    mozilla_sdk=$withval,
+    [  AC_MSG_ERROR([--with-mozilla-sdk=DIR is mandatory])])
+AC_SUBST(mozilla_sdk)
+
+# Checks for header files.
+
+#AC_SUBST(ROOT_MOZILLA, [/home/oparnier/workspace/mozilla-2.0/dist])
+
+AC_CONFIG_FILES([Makefile src/Makefile src/corba/Makefile src/xpcom/Makefile])
+AC_OUTPUT
