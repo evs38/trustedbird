@@ -39,11 +39,19 @@
 
 #include "Services.hh"
 
+/*!
+ * Corba AccountServicePOA Implementation
+ */
 class AccountService_i : public POA_AccountService
 {
 public:
 	AccountService_i();
 	virtual ~AccountService_i();
+
+	/*!
+	 *
+	 * \return All Accounts of the current Thunderbird Profile
+	 */
 	virtual Accounts* GetAllAccounts();
 };
 
