@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -37,26 +38,26 @@
  * ***** END LICENSE BLOCK ***** */
 
 #toolbarbutton-check_recipients {
-  list-style-image: url("chrome://check_recipients/content/icons/button.png");
-  -moz-image-region: rect(0px 72px 24px 48px);
+  list-style-image: url("chrome://check_recipients/content/icons/checkRecipients.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
 }
 
 #toolbarbutton-check_recipients:hover {
-  -moz-image-region: rect(24px 72px 48px 48px);
+  -moz-image-region: rect(24px 24px 48px 0px);
 }
 
 #toolbarbutton-check_recipients[disabled="true"] {
-  -moz-image-region: rect(48px 72px 72px 48px) !important;
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
 }
 
 .check_recipients_searching {
-   list-style-image: url("chrome://check_recipients/content/icons/searching.png");
+   list-style-image: url("chrome://check_recipients/content/icons/checkRecipientsSearching.png");
 }
 
 .check_recipients_found {
-   list-style-image: url("chrome://check_recipients/content/icons/found.png");
+   list-style-image: url("chrome://check_recipients/content/icons/checkRecipientsFound.png");
 }
 
 .check_recipients_notfound {
-   list-style-image: url("chrome://check_recipients/content/icons/notfound.png");
+   list-style-image: url("chrome://check_recipients/content/icons/checkRecipientsNotfound.png");
 }

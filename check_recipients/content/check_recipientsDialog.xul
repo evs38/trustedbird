@@ -21,6 +21,7 @@
    -
    - Contributor(s):
    -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+   -   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,6 +45,7 @@
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:nc="http://home.netscape.com/NC-rdf#"
         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+		id="checkRecipients"
 		onload="check_recipients_onLoadDialog();"
         ondialogcancel="check_recipients_onDialogCancelFetchingStatuts();"
 		title="&check_recipients.header.title;"
@@ -56,11 +58,11 @@
     <listbox id="check_recipients_recipientsList" flex="1">
         <listhead>
             <listheader label="&check_recipients.recipient.label;"/>
-            <listheader label="LDAP"/>
+            <listheader label="&check_recipients.addrbook.label;"/>
         </listhead>
         <listcols>
             <listcol flex="1"/>
-            <listcol style="width: 50px"/>
+            <listcol flex="1" style="width: 100px"/>
         </listcols>
     </listbox>
 

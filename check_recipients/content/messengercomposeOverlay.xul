@@ -21,6 +21,7 @@
    -
    - Contributor(s):
    -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+   -   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,7 +39,8 @@
 
 <?xml-stylesheet href="chrome://check_recipients/content/css/check_recipients.css" type="text/css"?>
    
-<!DOCTYPE overlay >
+<!DOCTYPE dialog SYSTEM "chrome://check_recipients/locale/check_recipients.dtd">
+
 
 <overlay id="custombutton-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
@@ -53,8 +55,9 @@
 <!-- button details -->
 <toolbarbutton
   id="toolbarbutton-check_recipients"
-  label="Check recipients"
-  tooltiptext="Check recipients"
+  label="&check_recipients.header.short.title;"
+  tooltiptext="&check_recipients.header.title;"
+  style="list-style-image: url(chrome://check_recipients/content/icons/checkRecipients.png);-moz-image-region: rect(0px 24px 24px 0px);"
   orient="vertical"
   oncommand="window.openDialog('chrome://check_recipients/content/check_recipientsDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=350,height=225');"/>
 
