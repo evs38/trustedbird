@@ -41,18 +41,35 @@
 #include "nsIMsgComposeParams.h"
 #include "nsIMsgIdentity.h"
 #include "nsIServiceManager.h"
+
+/*!
+ * Corba MessageComposeServicePOA Implementation
+ */
 class MessageComposeService_i : public POA_MessageComposeService
 {
 public:
-    virtual void SendMessage(const Account& p_account, const CMessage& p_message, MessageSendListener_ptr p_listener);
-	MessageComposeService_i();
-	virtual ~MessageComposeService_i();
-	
+
+  /*!
+   *  This method is used to Send a Message
+   *  \param p_account is the account that will be used to send the message (FROM)
+   *  \param p_message is the message to send 
+   *  \param p_listener is the listener, which receives the sending process events
+   */
+  virtual void SendMessage(const Account& p_account, const CMessage& p_message,
+                           MessageSendListener_ptr p_listener);
+
+  MessageComposeService_i();
+  virtual ~MessageComposeService_i();
+
 private:
-  void FillMsgComposeParams(const CMessage& p_message, nsIMsgComposeParams * pMsgComposeParams);
+  /*!
+   * Helper method used to prepare Message Sending Process
+   */
+  void FillMsgComposeParams(const CMessage& p_message,
+                            nsIMsgComposeParams * pMsgComposeParams);
   void GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const Account& p_account);
   nsCOMPtr<nsIServiceManager> svcMgr;
-  
+
 };
 
 #endif /*MESSAGECOMPOSESERVICE_I_H_*/
