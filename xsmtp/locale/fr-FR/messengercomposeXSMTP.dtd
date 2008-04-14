@@ -1,0 +1,59 @@
+﻿<!ENTITY X-P772-Version.id "X-P772-Version">
+<!ENTITY X-P772-Version.label "xSMTP-Version">
+<!ENTITY X-P772-Priority-Level-Qualifier.id "X-P772-Priority-Level-Qualifier">
+<!ENTITY X-P772-Priority-Level-Qualifier.label "Priority-Level-Qualifier">
+<!ENTITY X-P772-Extended-Grade-Of-Delivery.id "X-P772-Extended-Grade-Of-Delivery">
+<!ENTITY X-P772-Extended-Grade-Of-Delivery.label "Extended-Grade-Of-Delivery">
+<!ENTITY X-P772-Primary-Precedence.id "X-P772-Primary-Precedence">
+<!ENTITY X-P772-Primary-Precedence.label "Primary-Precedence">
+<!ENTITY X-P772-Copy-Precedence.id "X-P772-Copy-Precedence">
+<!ENTITY X-P772-Copy-Precedence.label "Copy-Precedence">
+<!ENTITY X-P772-Message-Type.id "X-P772-Message-Type">
+<!ENTITY X-P772-Message-Type.label "Message-Type">
+<!ENTITY X-P772-Message-Type2.label "Message-Type Description (Optionnelle)">
+<!ENTITY X-P772-Address-List-Indicator.id "X-P772-Address-List-Indicator">
+<!ENTITY X-P772-Address-List-Indicator.label "Address-List-Indicator">
+<!ENTITY X-P772-Exempted-Address.id "X-P772-Exempted-Address">
+<!ENTITY X-P772-Exempted-Address.label "Exempted-Address">
+<!ENTITY X-P772-Extended-Authorisation-Info.id "X-P772-Extended-Authorisation-Info">
+<!ENTITY X-P772-Extended-Authorisation-Info.label "Extended-Authorisation-Info">
+<!ENTITY X-P772-Distribution-Codes.id "X-P772-Distribution-Codes">
+<!ENTITY X-P772-Distribution-Codes.label "Distribution-Codes">
+<!ENTITY X-P772-MCA.id "X-P772-MCA">
+<!ENTITY X-P772-MCA.label "MCA">
+<!ENTITY X-P772-Handling-Instructions.id "X-P772-Handling-Instructions">
+<!ENTITY X-P772-Handling-Instructions.label "Handling-Instructions">
+<!ENTITY X-P772-Message-Instructions.id "X-P772-Message-Instructions">
+<!ENTITY X-P772-Message-Instructions.label "Message-Instructions">
+<!ENTITY X-P772-Codress-message-indicator.id "X-P772-Codress-message-indicator">
+<!ENTITY X-P772-Codress-message-indicator.label "Codress-message-indicator">
+<!ENTITY X-P772-Originator-Reference.id "X-P772-Originator-Reference">
+<!ENTITY X-P772-Originator-Reference.label "Originator-Reference">
+<!ENTITY X-P772-ReferenceIndication.id "X-P772-ReferenceIndication">
+<!ENTITY X-P772-ReferenceIndication.label "ReferenceIndication">
+<!ENTITY X-P772-Other-Recipient-Indicator.id "X-P772-Other-Recipient-Indicator">
+<!ENTITY X-P772-Other-Recipient-Indicator.label "Other-Recipient-Indicator">
+<!ENTITY X-P772-Acp-Message-identifier.id "X-P772-Acp-Message-identifier">
+<!ENTITY X-P772-Acp-Message-identifier.label "Acp-Message-identifier">
+<!ENTITY X-P772-Originator-PLAD.id "X-P772-Originator-PLAD">
+<!ENTITY X-P772-Originator-PLAD.label "Originator-PLAD">
+<!ENTITY X-P772-Acp-Notification-Request.id "X-P772-Acp-Notification-Request">
+<!ENTITY X-P772-Acp-Notification-Request.label "Acp-Notification-Request">
+<!ENTITY X-P772-Acp-Notification-Response.id "X-P772-Acp-Notification-Response">
+<!ENTITY X-P772-Acp-Notification-Response.label "Acp-Notification-Response">
+<!ENTITY X-P772-Security-Classification.id "X-P772-Security-Classification">
+<!ENTITY X-P772-Security-Classification.label "Security-Classification">
+<!ENTITY X-P772-Special-Handling-Instructions.id "X-P772-Special-Handling-Instructions">
+<!ENTITY X-P772-Special-Handling-Instructions.label "Special-Handling-Instructions">
+<!ENTITY X-P772-Special-Handling-Instructions1.label "Special-Handling-Instructions Available : ">
+<!ENTITY X-P772-Special-Handling-Instructions2.label "Special-Handling-Instructions Choice : ">
+<!ENTITY xsmtp.properties.tab "Propriétés">
+<!ENTITY xsmtp.advanced.tab "Avancées">
+<!ENTITY xsmtp.advanced.box "Avancées">
+<!ENTITY xsmtp.advancedmore.tab "Avancées +">
+<!ENTITY xsmtp.advancedmore.box "Avancées +">
+<!ENTITY xsmtp.header.title "Entêtes XSMTP">
+<!ENTITY xsmtp.must.box "Obligatoires">
+<!ENTITY xsmtp.menulist.label "">
+<!ENTITY xsmtp.needed "--Needed--">
+
