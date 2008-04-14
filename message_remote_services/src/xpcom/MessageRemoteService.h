@@ -60,13 +60,26 @@ public:
 
 private:
   ~MessageRemoteService();
-  NS_IMETHODIMP SaveServiceIOR(const char * const, const char * const);
+  
+  /*!
+   * Helper Method used to save IOR of corba service to local file in the
+   * directory .milimail in the home directory
+   * \param ior is the IOR of service
+   * \param fileName is the name of the file wich contains the ior
+   */
+  NS_IMETHODIMP SaveServiceIOR(const char * const ior, const char * const fileName);
+  
   CORBA::ORB_ptr orb;
   PRThread * orbThread;
   AccountService_i * accountService;
   MessageComposeService_i * messageComposeService;
   
-  static void InternalThreadFunc(void *);
+  /*!
+   * 
+   * Thread method wich is used to launch all services, to prevent UI blocking
+   * \param orb is used to launch the corba server
+   */
+  static void InternalThreadFunc(void * orb);
 protected:
   /* additional members */
 };
