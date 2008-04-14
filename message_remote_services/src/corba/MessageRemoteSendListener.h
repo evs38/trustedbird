@@ -39,7 +39,6 @@
 
 #include "MessageComposeService_i.h"
 #include "nsIMsgSendListener.h"
-#include <iostream>
 
 using namespace std;
 
@@ -57,32 +56,26 @@ public:
 
   /* void OnStartSending (in string aMsgID, in PRUint32 aMsgSize); */
   NS_IMETHOD OnStartSending(const char *aMsgID, PRUint32 aMsgSize) {
-    cout << "INFO : MessageRemoteSendListener OnStartSending()" << endl;
-    return NS_OK;}
+    return NS_OK;
+  }
 
   /* void OnProgress (in string aMsgID, in PRUint32 aProgress, in PRUint32 aProgressMax); */
   NS_IMETHOD OnProgress(const char *aMsgID, PRUint32 aProgress, PRUint32 aProgressMax) {
-    cout << "INFO : MessageRemoteSendListener OnProgress()" << endl;
     return NS_OK;
   }
 
   /* void OnStatus (in string aMsgID, in wstring aMsg); */
   NS_IMETHOD OnStatus(const char *aMsgID, const PRUnichar *aMsg) {
-    cout << "INFO : MessageRemoteSendListener OnStatus()" << endl;
     return NS_OK;}
 
   /* void OnStopSending (in string aMsgID, in nsresult aStatus, in wstring aMsg, in nsIFileSpec returnFileSpec); */
   NS_IMETHOD OnStopSending(const char *aMsgID, nsresult aStatus, const PRUnichar *aMsg,
       nsIFileSpec *returnFileSpec) {
-    
-    cout << "INFO : MessageRemoteSendListener OnStopSending()" << endl;
-    cout << "INFO : MessageRemoteSendListener OnStopSending() : Status = " << aStatus << " msg = " << aMsg << endl ;
-    
     bool success = false;
-    
+
     if (aStatus == 0)
       success = true;
-    
+
     p_listener->OnStop(msg.uuid, success);
     m_done = PR_TRUE;
     return NS_OK;
@@ -91,7 +84,6 @@ public:
   /* void OnSendNotPerformed */
   NS_IMETHOD OnSendNotPerformed(const char *aMsgID, nsresult aStatus)
   {
-    cout << "INFO : MessageRemoteSendListener OnSendNotPerformed()" << endl;
     return OnStopSending(aMsgID, aStatus, nsnull, nsnull);
   }
 
