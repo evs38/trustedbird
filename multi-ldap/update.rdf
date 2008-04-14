@@ -20,8 +20,6 @@
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
-   -   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
-   -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
    -   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
@@ -41,26 +39,50 @@
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
+	<!-- Add the following line to your extension install.rdf file
+		<em:updateURL>http://admisource.gouv.fr/svn/milimail/trunk/multi-ldap/update.rdf</em:updateURL>
+	-->
+	
 	<rdf:Description rdf:about="urn:mozilla:extension:multildap@milimail.org">
 		<em:updates><!-- Show the update available -->
 			<rdf:Seq>
+				<!--	
+					Uncomment to add new update version example 0.2.5.0
+					<rdf:li RDF:resource="urn:mozilla:extension:multildap@milimail.org:0.2.5.0"/> 
+				-->
 				<rdf:li rdf:resource="urn:mozilla:extension:multildap@milimail.org:0.2.4.0"/>
 			</rdf:Seq>
 		</em:updates>
 	</rdf:Description>
 
-	<!--Détails sur les mises à jour indiquées-->
+	<!-- update details for verson 0.2.4.0 -->
 	<rdf:Description rdf:about="urn:mozilla:extension:multildap@milimail.org:0.2.4.0">
+        <em:creator>Olivier BRUN</em:creator>
 		<em:version>0.2.4.0</em:version>
-        <!-- Thunderbird -->
         <em:targetApplication>
 			<rdf:Description>
-                <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+                <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- Thunderbird UUID -->
                 <em:minVersion>2.0</em:minVersion>
                 <em:maxVersion>2.0.0.*</em:maxVersion>
+				<!-- Link to the extension for the update -->
 				<em:updateLink>http://admisource.gouv.fr/frs/download.php/378/multi_ldap-0.2.4.0.xpi</em:updateLink>
  			</rdf:Description>
         </em:targetApplication>
 	</rdf:Description>
 
+	<!-- update details for verson 0.2.5.0 remove comment to add new update version ->
+	<rdf:Description rdf:about="urn:mozilla:extension:multildap@milimail.org:0.2.4.0">
+        <em:creator>Olivier BRUN</em:creator>
+		<em:version>0.2.5.0</em:version>
+        <em:targetApplication>
+			<rdf:Description>
+                <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!- Thunderbird UUID ->
+                <em:minVersion>2.0</em:minVersion>
+                <em:maxVersion>2.0.0.*</em:maxVersion>
+				<!- Link to the extension for the update ->
+				<em:updateLink>http://admisource.gouv.fr/frs/download.php/378/multi_ldap-0.2.5.0.xpi</em:updateLink>
+ 			</rdf:Description>
+        </em:targetApplication>
+	</rdf:Description>
+	-->
 </rdf:RDF>
