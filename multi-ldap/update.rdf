@@ -82,7 +82,7 @@
                 <em:minVersion>2.0</em:minVersion>
                 <em:maxVersion>2.0.0.*</em:maxVersion>
 				<!-- Link to the extension for the update -->
-				<em:updateLink>http://admisource.gouv.fr/frs/download.php/502/multi_ldap-0.2.5.0.xpi</em:updateLink>
+				<em:updateLink>http://admisource.gouv.fr/frs/download.php/503/multi_ldap-0.2.5.0.xpi</em:updateLink>
  			</rdf:Description>
         </em:targetApplication>
 	</rdf:Description>
