@@ -36,7 +36,8 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+<rdf:RDF 
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
 	<!-- Add the following line to your extension install.rdf file
