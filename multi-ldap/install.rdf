@@ -38,15 +38,17 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<RDF
+<rdf:RDF
     xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
-    <Description about="urn:mozilla:install-manifest">
+    <rdf:Description  about="urn:mozilla:install-manifest">
+
+		<em:updateURL>http://admisource.gouv.fr/svn/milimail/trunk/multi-ldap/update.rdf</em:updateURL>
 
         <em:id>multildap@milimail.org</em:id>
         <em:name>Multi LDAP</em:name>
-        <em:version>0.2.4.0</em:version>
+        <em:version>0.2.5.0</em:version>
         <em:description>Enable multi LDAP for autocomplete</em:description>
         <em:creator>Olivier PARNIERE</em:creator>
 
@@ -60,13 +62,13 @@
 
         <!-- Thunderbird -->
         <em:targetApplication>
-            <Description>
+            <rdf:Description>
                 <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
                 <em:minVersion>2.0</em:minVersion>
                 <em:maxVersion>2.0.0.*</em:maxVersion>
-            </Description>
+            </rdf:Description>
         </em:targetApplication>
 
-    </Description>
+    </rdf:Description>
 
-</RDF>
+</rdf:RDF>

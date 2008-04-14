@@ -52,10 +52,13 @@ var gPreferenceService = null;
 var gDirectories = null;
 var gLDAPPrefsService = null;
 
+// Set to true to activate traces in console
+var bActiveDump = false;
+
 onInit = function onInitHook(aPageId, aServerId) 
 {
 	onInitOriginal();
-	dump("onInit for Identity key='" + gIdentity.key + "' started.\n");
+	displayTrace("onInit for Identity key='" + gIdentity.key + "' started.");
 	loadPreferences();
 	setupUI();
 	if (gDirectories){
@@ -68,7 +71,7 @@ onInit = function onInitHook(aPageId, aServerId)
 		// build the LDAP address book server list box. We do this by hand instead of using the xul template
 		createMultiLDAPDirectoriesList();
 	}
-	dump("onInit ended.\n");
+	displayTrace("onInit ended.");
 }
 
 //Hook original OnLoad function
@@ -90,8 +93,15 @@ function loadPreferences(){
 	gPreferenceService = Components.classes["@mozilla.org/preferences-service;1"].
                 getService(Components.interfaces.nsIPrefBranch);
 	try  {
+        var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+        var prefs = prefService.getBranch(null);
+
+		//Initialize console traces
+		bActiveDump = prefs.getBoolPref("javascript.options.showInConsole");
+
+        // Retrieve LDAP attributes from user preferences
 		useCustomPref = gPreferenceService.getBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences");
-		dump("loadPreferences for user " + gIdentity.key +" value=" + useCustomPref + ".\n");
+		displayTrace("loadPreferences for user " + gIdentity.key +" value=" + useCustomPref + ".");
 	} catch (e){
 		dump("loadPreferences() -> Setting default useCustomPref\n");
 		gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences",false);
@@ -105,7 +115,7 @@ function savePreferences(){
 	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".autoComplete.overrideGlobalPref",checkBoxUseCustomPref.checked);
 	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences",checkBoxUseCustomPref.checked);
     gPreferenceService.setCharPref("ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers", gAutoCompletePref );
-	dump("savePreferences for user " + gIdentity.key +".\n");
+	displayTrace("savePreferences for user " + gIdentity.key +".");
 }
 
 //Setup UI Control From Preferences
@@ -113,7 +123,7 @@ function setupUI(){
 	var checkBoxUseCustomPref = document.getElementById("ldap_2.identity.id.multi_ldap_use_custom_preferences");
 	checkBoxUseCustomPref.checked = useCustomPref;
 	enableCustomPreferences(checkBoxUseCustomPref);
-	dump("setupUI for user " + gIdentity.key +" value=" + useCustomPref + ".\n");
+	displayTrace("setupUI for user " + gIdentity.key +" value=" + useCustomPref + ".");
 }
 
 function editDirectories()
@@ -165,14 +175,13 @@ function initMultiLDAPDirectoriesList()
 	var prefLDAPURI = "ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers";
 	// Initialize global variable. Used to update preference of the LDAP list
 	gOriginalPreference = gAutoCompletePref = getSafeCharPref(gPreferenceService, prefLDAPURI);
-	dump("initMultiLDAPDirectoriesList="+ prefLDAPURI +"='" + gAutoCompletePref + "'.\n");
+	displayTrace("initMultiLDAPDirectoriesList="+ prefLDAPURI +"='" + gAutoCompletePref + "'.");
 }
 
 //Create list of the LDAP server in the list box LDAPList
 function createMultiLDAPDirectoriesList()
 {
-	dump("createMultiLDAPDirectoriesList started.\n");
-
+	displayTrace("createMultiLDAPDirectoriesList started.");
 	var directoriesListBox = document.getElementById("LDAPList");
 	if (directoriesListBox){
 		createCheckBoxList( directoriesListBox);
@@ -182,7 +191,7 @@ function createMultiLDAPDirectoriesList()
 
 	//Enable LDAP list control
 	enableCustomPreferences();
-	dump("createMultiLDAPDirectoriesList ended.\n");
+	displayTrace("createMultiLDAPDirectoriesList ended.");
 }
 
 function createCheckBoxList(aPopup)
@@ -196,8 +205,8 @@ function createCheckBoxList(aPopup)
 	var dirType;
 	var uri;
 
-	dump("\tcreateCheckBoxList started.\n");
-	dump("\t\tInitialize check box with preferences '"+ gAutoCompletePref + "'.\n");
+	displayTrace("\tcreateCheckBoxList started.");
+	displayTrace("\t\tInitialize check box with preferences '"+ gAutoCompletePref + "'.");
 	if (!gDirectories) 
 	{
 		gPreferenceService = Components.classes["@mozilla.org/preferences-service;1"]
@@ -238,7 +247,7 @@ function createCheckBoxList(aPopup)
 
 					if ((position != 0) && (dirType == 1)) 
 					{
-						dump( "\t\tTreat entry name =>'" + arrayOfDirectories[i]+"'\n" );
+						displayTrace( "\t\tTreat entry name =>'" + arrayOfDirectories[i]+"'" );
 						try
 						{
 							description = gPreferenceService.getComplexValue(arrayOfDirectories[i]+".description",
@@ -270,9 +279,9 @@ function createCheckBoxList(aPopup)
 			}
 		}
 	} else {
-		dump("\t\tDirectory already loaded.\n");
+		displayTrace("\t\tDirectory already loaded.");
 	}
-	dump("\tcreateCheckBoxList ended.\n");
+	displayTrace("\tcreateCheckBoxList ended.");
 }
 
 /* 
@@ -298,13 +307,13 @@ function createCheckBoxItem( index, name, value, checked)
 	checkBox.setAttribute( 'checked', checked);
 	checkBox.setAttribute( 'label', name);
 	listCell.appendChild( checkBox );
-	dump("\t\t\tCreate check box ID='" + value + " name='" + name + "' set to '" + checked + "'.\n");
+	displayTrace("\t\t\tCreate check box ID='" + value + " name='" + name + "' set to '" + checked + "'.");
 	return( item);
 }
 
 function updateMultiLDAPDirectoriesList()
 {
-	dump("updateMultiLDAPDirectoriesList started.\n");
+	displayTrace("updateMultiLDAPDirectoriesList started.");
 
 	var directoriesListBox = document.getElementById("LDAPList");
 	if (directoriesListBox){
@@ -312,7 +321,7 @@ function updateMultiLDAPDirectoriesList()
 	}
 	//Enable LDAP list control
 	enableCustomPreferences();
-	dump("updateMultiLDAPDirectoriesList ended.\n");
+	displayTrace("updateMultiLDAPDirectoriesList ended.");
 }
 
 function updateCheckBoxList(aPopup)
@@ -326,7 +335,7 @@ function updateCheckBoxList(aPopup)
 	var dirType;
 	var uri;
 
-	dump("\tupdateCheckBoxList started.\n");
+	displayTrace("\tupdateCheckBoxList started.");
 	
 	gPreferenceService = Components.classes["@mozilla.org/preferences-service;1"]
 		.getService(Components.interfaces.nsIPrefBranch);
@@ -337,7 +346,7 @@ function updateCheckBoxList(aPopup)
 	var prefLDAP = getSafeCharPref(gPreferenceService, prefLDAPURI);
 	// Initialize global variable. Used to update preference of the LDAP list
 	gAutoCompletePref = prefLDAP;
-	dump("\t\tGet preferences value for "+ prefLDAPURI +"='" + prefLDAP + "'.\n");
+	displayTrace("\t\tGet preferences value for "+ prefLDAPURI +"='" + prefLDAP + "'.");
 	if (aPopup) 
 	{
 		var childs = aPopup.childNodes;
@@ -353,25 +362,25 @@ function updateCheckBoxList(aPopup)
 					{//Update check control value, Test if pref contains ldapPrefValue to initialize checkboxes
 						checkBox[0].checked = isInPreferenceSeverList(checkBoxID, arrayPreferences);
 					}
-					dump("\t\tUpdate check box ID='" + checkBoxID + "' set to '" + checkBox[0].checked + "'.\n");
+					displayTrace("\t\tUpdate check box ID='" + checkBoxID + "' set to '" + checkBox[0].checked + "'.");
 				}
 		  	}
 		} else {
-			dump("\t\tNothing to update.\n");
+			displayTrace("\t\tNothing to update.");
 		}
 	}
-	dump("\tupdateCheckBoxList ended.\n");
+	displayTrace("\tupdateCheckBoxList ended.");
 }
 
 function removeMultiLDAPDirectoriesList()
 {
-	dump("removeMultiLDAPDirectoriesList started.\n");
+	displayTrace("removeMultiLDAPDirectoriesList started.");
 
 	var directoriesListBox = document.getElementById("LDAPList");
 	if (directoriesListBox){
 		removeCheckBoxList( directoriesListBox);
 	}
-	dump("removeMultiLDAPDirectoriesList ended.\n");
+	displayTrace("removeMultiLDAPDirectoriesList ended.");
 }
 
 function removeCheckBoxList(aPopup)
@@ -385,7 +394,7 @@ function removeCheckBoxList(aPopup)
 	var dirType;
 	var uri;
 
-	dump("\tremoveCheckBoxList started.\n");
+	displayTrace("\tremoveCheckBoxList started.");
 
 	if (aPopup) 
 	{
@@ -403,10 +412,10 @@ function removeCheckBoxList(aPopup)
 				}
 			}
 		} else {
-			dump("\t\tNothing to update.\n");
+			displayTrace("\t\tNothing to update.");
 		}
 	}
-	dump("\tremoveCheckBoxList ended.\n");
+	displayTrace("\tremoveCheckBoxList ended.");
 }
 
 function removeChilds( tabs, child){
@@ -422,14 +431,6 @@ function removeChilds( tabs, child){
 	return tabs;
 }
 	
-function dumpWithTabs( tabs, message ){
-	while( tabs > 0 ){
-		dump("\t");
-		tabs--;
-	}
-	dump( message + "\n" );
-}
-
 // Enable or disable the LDAPList control
 function enableCustomPreferences(target) 
 {
@@ -451,22 +452,22 @@ function enableCustomPreferences(target)
 */
 function updateLDAPServerListPreference(target)
 {
-	dump("Update preference temporary.\n");
+	displayTrace("Update preference temporary.");
 	return buildPreferenceValue(target);
 }
 	
 //Function which deal user event on LDAP AutoComplete List
 function buildPreferenceValue(target){
-	dump("buildPreferenceValue() started.\n");
+	displayTrace("buildPreferenceValue() started.");
 	var list = document.getElementById("LDAPList");
 	var item = list.currentItem;
 	var nameCell = 	item.childNodes.item(0);
 	var checkbox = nameCell.firstChild;
-	dump("\t" + nameCell.tagName+" > ");
-	dump(checkbox.getAttribute("label")+" : ");
-	dump(nameCell.getAttribute("value")+" is " +checkbox.checked+ ".\n");
+	var sMessage = "\t" + nameCell.tagName+" > ";
+	sMessage += checkbox.getAttribute("label")+" : ";
+	displayTrace(sMessage + nameCell.getAttribute("value")+" is " +checkbox.checked+ ".");
 	var newPreference = buildLDAPlistString(nameCell.getAttribute("value"), checkbox.checked);
-	dump("buildPreferenceValue() ended.\n");
+	displayTrace("buildPreferenceValue() ended.");
 	return newPreference;
 }
 
@@ -474,12 +475,12 @@ function buildPreferenceValue(target){
  * Get preference safety, if preference does not exist it returns empty string
  */
 function buildLDAPlistString(LDAPUri, checked){
-	dump("\tbuildLDAPlistString() started\n");
+	displayTrace("\tbuildLDAPlistString() started.");
 
-    dump("\t\tCurrent selected item : '" + LDAPUri + "'.\n");
+    displayTrace("\t\tCurrent selected item : '" + LDAPUri + "'.");
     // OBr 18/07/07 correction of the entry ID 484
 	var autoCompletePref = gAutoCompletePref;
-    dump("\t\tOld preference : '" + gAutoCompletePref + "'.\n");
+    displayTrace("\t\tOld preference : '" + gAutoCompletePref + "'.");
     
     var allPrefs = autoCompletePref.split(',');
     
@@ -489,8 +490,8 @@ function buildLDAPlistString(LDAPUri, checked){
    		prefsFiltered.push(LDAPUri);
    	
 	gAutoCompletePref = convertPrefArrayToString(prefsFiltered);
-	dump("\t\tNew preference : '" + gAutoCompletePref + "'.\n");
-	dump("\tbuildLDAPlistString() ended.\n");
+	displayTrace("\t\tNew preference : '" + gAutoCompletePref + "'.");
+	displayTrace("\tbuildLDAPlistString() ended.");
 	return gAutoCompletePref;
 }
 
@@ -572,3 +573,20 @@ function disableListBox(list, bool){
   		 }
   	}
 }
+
+// Display trace in console if bActiveDump is set to true
+function displayTrace(pMessage) {
+	if( bActiveDump == false )
+		return;
+	dump(pMessage + "\n");
+}
+function dumpWithTabs( tabs, message ){
+	if( bActiveDump == false )
+		return;
+	while( tabs > 0 ){
+		dump("\t");
+		tabs--;
+	}
+	displayTrace( message );
+}
+

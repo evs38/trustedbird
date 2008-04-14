@@ -41,6 +41,7 @@ var gCurrentAutocompleteDirectoryList;
 var gLDAPSessions;
 var gLDAPSessionList;
 var gSessionsAdded;
+var bActiveDump = true;
 
 // Replace the built in ComposeLoad function with our own...
 var multildap_OriginalComposeLoad = ComposeLoad;
@@ -52,13 +53,16 @@ ComposeLoad = function multildap_ComposeLoad() {
         sPrefs = prefService.getBranch(null);
         sPrefBranchInternal = sPrefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
         sPrefs.setIntPref("mail.autoComplete.commentColumn", 1);
+
+		//Initialize console traces
+		bActiveDump = prefs.getBoolPref("javascript.options.showInConsole");
     } catch (ex) {
         dump("Failed to get preferences service\n");
     }
 
     // Call built in ComposeLoad function
     multildap_OriginalComposeLoad();
-
+	displayTrace("ComposeLoad Multi-LDAP done.");
 }
 
 // Replace the built in InitializeGlobalVariables function with our own...
@@ -89,14 +93,18 @@ ReleaseGlobalVariables = function multildap_ReleaseGlobalVariables() {
 
 function AddDirectorySettingsObserver(autocompleteDirectoryList)
 {
-     for(var i=0; i<autocompleteDirectoryList.length; i++)
-       sPrefBranchInternal.addObserver(autocompleteDirectoryList[i], directoryServerObserver, false);
+	for(var i=0; i<autocompleteDirectoryList.length; i++){
+		sPrefBranchInternal.addObserver(autocompleteDirectoryList[i], directoryServerObserver, false);
+		displayTrace("\tAddDirectorySettingsObserver='" + autocompleteDirectoryList[i] + "'." );
+	}
 }
 
 function RemoveDirectorySettingsObserver(autocompleteDirectoryList)
 {
-  for(var i=0; i<autocompleteDirectoryList.length; i++)
-     sPrefBranchInternal.removeObserver(autocompleteDirectoryList[i], directoryServerObserver);
+	for(var i=0; i<autocompleteDirectoryList.length; i++){
+		sPrefBranchInternal.removeObserver(autocompleteDirectoryList[i], directoryServerObserver);
+		displayTrace("\tRemoveDirectorySettingsObserver='" + autocompleteDirectoryList[i] + "'." );
+	}
 }
 
 function multildap_getSafeBoolPref(prefService, uri, defaultValue){
@@ -128,22 +136,22 @@ function setupLdapAutocompleteSession()
     var prevAutocompleteDirectoryList = gCurrentAutocompleteDirectoryList;
     var directoryNb = 0;
     var i;
-
+	
     autocompleteLdapList = sPrefs.getBoolPref("ldap_2.autoComplete.useDirectory");
-    dump("Multi-LDAP : autocompleteLdapList = "+autocompleteLdapList+"\n");
+	displayTrace("\tautocompleteLdapList="+autocompleteLdapList);
 
   	var isGlobalPrefOverrided = multildap_getSafeBoolPref(sPrefs, "ldap_2.identity."+gCurrentIdentity.key+".autoComplete.overrideGlobalPref", false);
   	if (isGlobalPrefOverrided){
-  	    autocompleteDirectoryList = multildap_getSafeCharPref(sPrefs,
-            "ldap_2.identity."+gCurrentIdentity.key+".autoComplete.ldapServers",
-            "");
-            dump("identity ldap list : "+autocompleteDirectoryList+"\n");
+		autocompleteDirectoryList = multildap_getSafeCharPref(sPrefs,
+			"ldap_2.identity."+gCurrentIdentity.key+".autoComplete.ldapServers",
+			"");
+		dump("identity ldap list : "+autocompleteDirectoryList+"\n");
   	} else
         if (autocompleteLdapList)
         autocompleteDirectoryList = sPrefs.getCharPref(
             "ldap_2.autoComplete.ldapServers");
 
-     dump("Multi-LDAP : autocompleteDirectoryList = "+autocompleteDirectoryList+"\n");
+	displayTrace("\tautocompleteDirectoryList="+autocompleteDirectoryList);
 
      //case there is no LDAP to loop on.
      if (autocompleteDirectoryList.length > 0)
@@ -433,4 +441,10 @@ function setupLdapAutocompleteSession()
 
     gLDAPSessions = LDAPSessions;
     gSetupLdapAutocomplete = true;
+}
+// Display trace in console if bActiveDump is set to true
+function displayTrace(pMessage) {
+	if( bActiveDump == false )
+		return;
+	dump(pMessage + "\n");
 }
