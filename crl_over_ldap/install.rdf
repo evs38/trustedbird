@@ -47,7 +47,7 @@
 
         <em:id>crl_over_ldap@milimail.org</em:id>
         <em:name>CRL over LDAP</em:name>
-        <em:version>0.1.0.0</em:version>
+        <em:version>0.1.1.0</em:version>
         <em:creator>Eric BALLET BAZ</em:creator>
 
         <!-- optional items -->
