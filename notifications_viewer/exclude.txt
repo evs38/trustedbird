@@ -1,0 +1,9 @@
+*.*~
+*/CVS/*
+CVS/*
+*/.svn/*
+.svn/*
+exclude.txt
+*.sh
+doc/*
+unit_test*
