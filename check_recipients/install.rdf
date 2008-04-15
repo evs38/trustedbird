@@ -37,34 +37,41 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-    <Description about="urn:mozilla:install-manifest">
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+    <rdf:Description  about="urn:mozilla:install-manifest">
+
+		<em:updateURL>http://admisource.gouv.fr/svn/milimail/trunk/check_recipients/update.rdf</em:updateURL>
+
 		<em:id>check_recipients@milimail.org</em:id>
 		<em:name>Check recipients</em:name>
 		<em:version>0.1.2.0</em:version>
 		<em:creator>Eric Ballet Baz</em:creator>
+		<em:iconURL>chrome://check_recipients/content/icons/logo_extension.png</em:iconURL>
 
 		<!-- optional items -->
 		<em:contributor>Olivier BRUN</em:contributor>
         <em:homepageURL>http://www.milimail.org/</em:homepageURL>
 
 		<em:targetApplication>
-			<Description>
+			<rdf:Description>
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
 				<em:minVersion>2.0</em:minVersion>
 				<em:maxVersion>2.0.0.*</em:maxVersion>
-			</Description>
+			</rdf:Description>
 		</em:targetApplication>
 		<em:description>Check recipients</em:description>
 	  	
-		<!-- extensions required to work properly -->
+		<!-- extensions required -->
 		<em:requires>
-			<Description >
+			<rdf:Description >
 				<em:id>multildap@milimail.org</em:id>
 				<em:name>Multi LDAP</em:name>
 				<em:minVersion>0.2.0.*</em:minVersion>
 				<em:maxVersion>0.2.*</em:maxVersion>
-			</Description>
+			</rdf:Description>
 		</em:requires>
-    </Description>
-</RDF>
+    </rdf:Description>
+</rdf:RDF>
