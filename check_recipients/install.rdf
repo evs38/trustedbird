@@ -47,7 +47,7 @@
 
 		<em:id>check_recipients@milimail.org</em:id>
 		<em:name>Check recipients</em:name>
-		<em:version>0.1.2.0</em:version>
+		<em:version>0.1.3.0</em:version>
 		<em:creator>Eric Ballet Baz</em:creator>
 		<em:iconURL>chrome://check_recipients/content/icons/logo_extension.png</em:iconURL>
 
