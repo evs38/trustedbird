@@ -40,6 +40,8 @@
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
+	<em:creator>Olivier BRUN</em:creator>
+
 	<!-- Add the following line to your extension install.rdf file
 		<em:updateURL>http://admisource.gouv.fr/svn/milimail/trunk/xsmtp/update.rdf</em:updateURL>
 	-->
@@ -74,7 +76,6 @@
 
 	<!-- update details for verson 0.5.2.0 -->
 	<rdf:Description rdf:about="urn:mozilla:extension:xsmtp@milimail.org:0.5.2.0">
-        <em:creator>Olivier BRUN</em:creator>
 		<em:version>0.5.2.0</em:version>
         <em:targetApplication>
 			<rdf:Description>
@@ -89,7 +90,6 @@
 
 	<!-- update details for verson 0.5.3.0 remove comment to add new update version ->
 	<rdf:Description rdf:about="urn:mozilla:extension:xsmtp@milimail.org:0.5.3.0">
-        <em:creator>Olivier BRUN</em:creator>
 		<em:version>0.5.3.0</em:version>
         <em:targetApplication>
 			<rdf:Description>
