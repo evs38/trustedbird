@@ -48,11 +48,11 @@
 */
 function Services() {
 	/** @type string */
-	this.extensionName="dsnviewer";
+	this.extensionName="notifications_viewer";
 	/** @type string */
 	this.extensionKey="extensions."+this.extensionName;
 	/** define current version for this extension @type string */
-	this.extensionVersion="0.5.2";
+	this.extensionVersion="0.5.2.0";
 	/** preferences @type Preferences */
 	this.preferences=new Preferences();
 	/** set debug mode @type boolean */
@@ -137,8 +137,8 @@ var prefDialogBox = {
 		document.getElementById("considerTimeout").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
 		document.getElementById("timeOut").value = this.services.preferences.getIntPref(this.services.extensionKey+".timeout");
 		this.enableTimeOut();
-		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_dsn_as_read");
-		document.getElementById("moveDsn").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
+		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
+		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
 	},
 
 	/**
@@ -159,8 +159,8 @@ var prefDialogBox = {
 		}
 		this.services.preferences.setBoolPref(this.services.extensionKey+".enabled_timeout",document.getElementById("considerTimeout").checked);
 		this.services.preferences.setIntPref(this.services.extensionKey+".timeout",timeOutValue);
-		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_dsn_as_read",document.getElementById("markRead").checked);
-		this.services.preferences.setBoolPref(this.services.extensionKey+".thread_on_original_message",document.getElementById("moveDsn").checked);
+		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_notifications_as_read",document.getElementById("markRead").checked);
+		this.services.preferences.setBoolPref(this.services.extensionKey+".thread_on_original_message",document.getElementById("moveNotification").checked);
 		return true;
 	},
 

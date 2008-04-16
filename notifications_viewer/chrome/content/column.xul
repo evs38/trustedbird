@@ -34,22 +34,22 @@
      - 
      -  ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE overlay SYSTEM "chrome://dsnviewer/locale/default.dtd">
-<?xml-stylesheet href="chrome://dsnviewer/skin/default.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://notifications_viewer/locale/default.dtd">
+<?xml-stylesheet href="chrome://notifications_viewer/skin/default.css" type="text/css"?>
 
 <overlay id="TestTreeColOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/misc.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/column.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/preferences.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/findMsgDb.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/writePropertiesToHdr.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/deliveryReport.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/mailParser.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/dsnParser.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/ManageMsgAsDN.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/customProperties.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/notifyNewMsg.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/main.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/misc.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/column.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/findMsgDb.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/writePropertiesToHdr.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/deliveryReport.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/mailParser.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/dsnParser.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/ManageMsgAsDN.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/customProperties.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/notifyNewMsg.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/main.js" />
 	<tree id="threadTree">
 		<treecols id="threadCols">
 			<splitter class="tree-splitter" />

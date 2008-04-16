@@ -54,7 +54,7 @@ function ManageMsgAsDN() {
 		file name
 		@type string
 	*/
-	this.fileName="dsnviewer_listofmsg.cache";
+	this.fileName="notifications_viewer_listofmsg.cache";
 	/** @type number */
 	this.MODE_RDWR= 0x20 | 0x04;
 	/** @type number */
@@ -65,7 +65,7 @@ function ManageMsgAsDN() {
 	*/
 	this.msgList= null;
 	// get path for this extension
-	var id="dsnviewer@marine.defense.gouv.fr";
+	var id="notificationsviewer@milimail.org";
 	var file = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
 		.getInstallLocation(id)
@@ -179,7 +179,7 @@ ManageMsgAsDN.prototype = {
 	},
 
 	/**
-		Check if messages were expired (timeout). In this case, update x-dsnviewer properties.
+		Check if messages were expired (timeout). In this case, update x-notifications_viewer properties.
 		Read list of messages, search message and if necessary update datas.
 	*/
 	updateList: function() {
@@ -205,16 +205,16 @@ ManageMsgAsDN.prototype = {
 				// message found
 
 				// get properties from message
-				var deliveredToP=messageHdr.getStringProperty("x-dsnviewer-to");
-				var statusP=messageHdr.getStringProperty("x-dsnviewer-status");
-				var summaryP=messageHdr.getStringProperty("x-dsnviewer-summary");
-				var flagsP=messageHdr.getStringProperty("x-dsnviewer-flags");
+				var deliveredToP=messageHdr.getStringProperty("x-notifications_viewer-to");
+				var statusP=messageHdr.getStringProperty("x-notifications_viewer-status");
+				var summaryP=messageHdr.getStringProperty("x-notifications_viewer-summary");
+				var flagsP=messageHdr.getStringProperty("x-notifications_viewer-flags");
 
-				srv.logSrv("ManageMsgAsDN - current DsnViewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv("ManageMsgAsDN - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				if (deliveredToP=="" && summaryP=="") {
 					 // No DSNViewer properties present
-					srv.logSrv("ManageMsgAsDN - No DSNViewer properties present, remove from the list");
+					srv.logSrv("ManageMsgAsDN - No notifications_viewer properties present, remove from the list");
 					this.removeElement(cloneMsgList[i]);
 					continue;
 				}
@@ -240,13 +240,13 @@ ManageMsgAsDN.prototype = {
 					summaryP=customProp.getSummaryProperty();
 					flagsP=customProp.getFlagsProperty();
 
-					srv.logSrv("ManageMsgAsDN - new DsnViewer properties - "+deliveredToP+" "+statusP+" "+summaryP+" "+flagsP);
+					srv.logSrv("ManageMsgAsDN - new notifications_viewer properties - "+deliveredToP+" "+statusP+" "+summaryP+" "+flagsP);
 
 					// save properties
-					messageHdr.setStringProperty("x-dsnviewer-to",deliveredToP);
-					messageHdr.setStringProperty("x-dsnviewer-status",statusP);
-					messageHdr.setStringProperty("x-dsnviewer-summary",summaryP);
-					messageHdr.setStringProperty("x-dsnviewer-flags",flagsP);
+					messageHdr.setStringProperty("x-notifications_viewer-to",deliveredToP);
+					messageHdr.setStringProperty("x-notifications_viewer-status",statusP);
+					messageHdr.setStringProperty("x-notifications_viewer-summary",summaryP);
+					messageHdr.setStringProperty("x-notifications_viewer-flags",flagsP);
 
 					srv.logSrv("ManageMsgAsDN - this message expired, remove from the list");
 					// remove from the list

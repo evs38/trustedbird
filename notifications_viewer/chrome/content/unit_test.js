@@ -35,7 +35,7 @@
 
 
 /**
-	@fileoverview Unit Test for DSN Viewer - Require MozLab add-ons
+	@fileoverview Unit Test for Notifications Viewer - Require MozLab add-ons
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */
 
@@ -48,14 +48,14 @@ var assert = mozlab.mozunit.assertions;
 var loader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 
 // includes
-loader.loadSubScript("chrome://dsnviewer/content/preferences.js");
-loader.loadSubScript("chrome://dsnviewer/content/misc.js");
-loader.loadSubScript("chrome://dsnviewer/content/deliveryReport.js");
-loader.loadSubScript("chrome://dsnviewer/content/customProperties.js");
-loader.loadSubScript("chrome://dsnviewer/content/unit_test_inc.js");
-loader.loadSubScript("chrome://dsnviewer/content/mailParser.js");
+loader.loadSubScript("chrome://notifications_viewer/content/preferences.js");
+loader.loadSubScript("chrome://notifications_viewer/content/misc.js");
+loader.loadSubScript("chrome://notifications_viewer/content/deliveryReport.js");
+loader.loadSubScript("chrome://notifications_viewer/content/customProperties.js");
+loader.loadSubScript("chrome://notifications_viewer/content/unit_test_inc.js");
+loader.loadSubScript("chrome://notifications_viewer/content/mailParser.js");
 var dsnparser = new Object();
-loader.loadSubScript("chrome://dsnviewer/content/dsnParser.js",dsnparser);
+loader.loadSubScript("chrome://notifications_viewer/content/dsnParser.js",dsnparser);
 
 
 var tc_Preferences = new TestCase('Preferences');
@@ -267,9 +267,9 @@ tc_dsnparser.tests = {
 
 var preferences=new Preferences();
 var wordList = ["erable","chaine","bouleau"];
-var keyCharTest="extensions.dsnviewer.unittestchar";
-var keyBoolTest="extensions.dsnviewer.unittestbool";
-var keyIntTest="extensions.dsnviewer.unittestint";
+var keyCharTest="extensions.notifications_viewer.unittestchar";
+var keyBoolTest="extensions.notifications_viewer.unittestbool";
+var keyIntTest="extensions.notifications_viewer.unittestint";
 
 /**
 	Preferences unit test

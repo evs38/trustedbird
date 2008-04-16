@@ -237,19 +237,19 @@ var notifyListener = {
 				mMsgAsDsnReq.addElement(msgDBHdrOrigin.messageId);
 
 				// If user wants the DSN message is marked as read
-				var dsnAsReadPref=srv.preferences.getBoolPref(srv.extensionKey+".mark_dsn_as_read");
+				var dsnAsReadPref=srv.preferences.getBoolPref(srv.extensionKey+".mark_notifications_as_read");
 				if (dsnAsReadPref)
 					header.markRead ( true );
 
 				// now, tag header
 
-				// get properties for DsnViewer
-				var deliveredToP=msgDBHdrOrigin.getStringProperty("x-dsnviewer-to");
-				var statusP=msgDBHdrOrigin.getStringProperty("x-dsnviewer-status");
-				var summaryP=msgDBHdrOrigin.getStringProperty("x-dsnviewer-summary");
-				var flagsP=msgDBHdrOrigin.getStringProperty("x-dsnviewer-flags");
+				// get properties for notifications_viewer
+				var deliveredToP=msgDBHdrOrigin.getStringProperty("x-notifications_viewer-to");
+				var statusP=msgDBHdrOrigin.getStringProperty("x-notifications_viewer-status");
+				var summaryP=msgDBHdrOrigin.getStringProperty("x-notifications_viewer-summary");
+				var flagsP=msgDBHdrOrigin.getStringProperty("x-notifications_viewer-flags");
 
-				srv.logSrv("DSN (MsgKey="+header.messageKey+") - current DsnViewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv("DSN (MsgKey="+header.messageKey+") - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				// first delivery notification received for this message
 				if (deliveredToP=="") {
@@ -266,7 +266,7 @@ var notifyListener = {
 						var oneRecipient=regExp.exec(recipientsArray[i]);
 						if (oneRecipient && oneRecipient.length>1) {
 							// a valid address
-							// add to x-dsnviewer-to string property
+							// add to x-notifications_viewer-to string property
 							if (i>0) deliveredToP+="\n\t";
 							deliveredToP+=oneRecipient[1]+";;;0";
 						}
@@ -288,13 +288,13 @@ var notifyListener = {
 				summaryP=customProp.getSummaryProperty();
 				flagsP=customProp.getFlagsProperty();
 
-				srv.logSrv("DSN (MsgKey="+header.messageKey+") - new DsnViewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv("DSN (MsgKey="+header.messageKey+") - new notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				// save properties in the original message
-				msgDBHdrOrigin.setStringProperty("x-dsnviewer-to",deliveredToP);
-				msgDBHdrOrigin.setStringProperty("x-dsnviewer-status",statusP);
-				msgDBHdrOrigin.setStringProperty("x-dsnviewer-summary",summaryP);
-				msgDBHdrOrigin.setStringProperty("x-dsnviewer-flags",flagsP);
+				msgDBHdrOrigin.setStringProperty("x-notifications_viewer-to",deliveredToP);
+				msgDBHdrOrigin.setStringProperty("x-notifications_viewer-status",statusP);
+				msgDBHdrOrigin.setStringProperty("x-notifications_viewer-summary",summaryP);
+				msgDBHdrOrigin.setStringProperty("x-notifications_viewer-flags",flagsP);
 
 				// If user want to create a thread on the original message, move DSN message
 				var threadPref=srv.preferences.getBoolPref(srv.extensionKey+".thread_on_original_message");

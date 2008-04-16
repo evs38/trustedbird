@@ -42,7 +42,7 @@
 <!ENTITY PrefsDialog.timeOut "Time (hours)">
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Notification Messages">
 <!ENTITY PrefsDialog.markRead "Mark read">
-<!ENTITY PrefsDialog.moveDsn "Add the DSN in the thread of the original message">
+<!ENTITY PrefsDialog.moveNotification "Add the notification in the thread of the original message">
 
 
 

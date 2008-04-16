@@ -42,17 +42,17 @@
 			 em:minVersion="1.5"
 			 em:maxVersion="2.0.0.*" />
 	<RDF:Description RDF:about="urn:mozilla:install-manifest"
-			 em:id="dsnviewer@marine.defense.gouv.fr"
-			 em:description="Delivery Status Notification Viewer"
-			 em:version="0.5.2"
+			 em:id="notificationsviewer@milimail.org"
+			 em:description="Notifications Viewer"
+			 em:version="0.5.2.0"
 			 em:type="2"
-			 em:name="DSN Viewer"
+			 em:name="Notifications Viewer"
 			 em:creator="DIRSIM - Marine Nationale"
 			 em:developer="Daniel Rocher / Etat francais Ministere de la Defense"
-			 em:homepageURL="http://svn-dcsim.marine.defense.gouv.fr/MNM"
-			 em:updateURL="http://explorer.marine.defense.gouv.fr/tlc/chargement/Messagerie/Melinda/dsnviewer_update.rdf"
-			 em:optionsURL="chrome://dsnviewer/content/preferences.xul"
-			 em:iconURL="chrome://dsnviewer/skin/dsnviewer.png">
+			 em:homepageURL="http://www.milimail.org"
+			 em:updateURL="http://admisource.gouv.fr/frs/download.php/TODO/notifications_viewer_update.rdf"
+			 em:optionsURL="chrome://notifications_viewer/content/preferences.xul"
+			 em:iconURL="chrome://notifications_viewer/skin/notificationsviewer.png">
 		<em:targetApplication RDF:resource="rdf:#$iOC3.1"/>
 	</RDF:Description>
 </RDF:RDF>

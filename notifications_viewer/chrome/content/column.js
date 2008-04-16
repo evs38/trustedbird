@@ -41,7 +41,7 @@
 */
 
 /**
-	Sort the messages from the property "x-dsnviewer-status" and "x-dsnviewer-flags"
+	Sort the messages from the property "x-notifications_viewer-status" and "x-notifications_viewer-flags"
 	@param {string} Status ("bad", "middle", "good", or "");
 	@param {string} flags (timeout, ...)
 	@return {number}
@@ -68,12 +68,12 @@ var columnHandlerDSN = {
 	getCellText: function(row, column) {
 		var key = gDBView.getKeyAt(row);
 		var hdr = gDBView.db.GetMsgHdrForKey(key);
-		return hdr.getStringProperty("x-dsnviewer-summary");
+		return hdr.getStringProperty("x-notifications_viewer-summary");
 	},
 
 	getSortStringForRow: function(hdr) {
-		// Sort the messages from the property "x-dsnviewer-status" and "x-dsnviewer-flags"
-		return sortColumn(hdr.getStringProperty("x-dsnviewer-status"),hdr.getStringProperty("x-dsnviewer-flags"));
+		// Sort the messages from the property "x-notifications_viewer-status" and "x-notifications_viewer-flags"
+		return sortColumn(hdr.getStringProperty("x-notifications_viewer-status"),hdr.getStringProperty("x-notifications_viewer-flags"));
 	},
 	isString: function() {return true;},
 
@@ -82,10 +82,10 @@ var columnHandlerDSN = {
 	getRowProperties:  function(row, props){
 		var key = gDBView.getKeyAt(row);
 		var hdr = gDBView.db.GetMsgHdrForKey(key);
-		var statusP=hdr.getStringProperty("x-dsnviewer-status");
+		var statusP=hdr.getStringProperty("x-notifications_viewer-status");
 		if (srv.preferences.getBoolPref(srv.extensionKey+".enabled_timeout")) {
 			// if user want to consider timeout
-			var timeOutP=hdr.getStringProperty("x-dsnviewer-flags");
+			var timeOutP=hdr.getStringProperty("x-notifications_viewer-flags");
 			if (parseInt(timeOutP) & 0x1) //timeout
 				statusP="timeout";
 		}

@@ -34,18 +34,18 @@
      - 
      -  ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE overlay SYSTEM "chrome://dsnviewer/locale/default.dtd">
-<?xml-stylesheet href="chrome://dsnviewer/skin/default.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://notifications_viewer/locale/default.dtd">
+<?xml-stylesheet href="chrome://notifications_viewer/skin/default.css" type="text/css"?>
 
 <overlay id="dsnHdrOverlay"
 	 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	 xmlns:html="http://www.w3.org/1999/xhtml">
 	
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/customProperties.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/misc.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/preferences.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/findMsgDb.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/msgHdrViewOverlay.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/customProperties.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/misc.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/findMsgDb.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/msgHdrViewOverlay.js" />
 	
 	<hbox id="expandedHeaderView" class="header-part1 headerContainer" flex="1">
 		<vbox id="expandedHeaders" flex="1">

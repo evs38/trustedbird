@@ -35,10 +35,10 @@
      -  ***** END LICENSE BLOCK ***** -->
 
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
-<!DOCTYPE overlay SYSTEM "chrome://dsnviewer/locale/default.dtd">
+<!DOCTYPE overlay SYSTEM "chrome://notifications_viewer/locale/default.dtd">
 
-<dialog id="dsnviewerPrefsDialog"
-	title="DSN Viewer Preferences"
+<dialog id="notifications_viewerPrefsDialog"
+	title="Notifications Viewer Preferences"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	buttons="accept, cancel"
 	onload=" prefDialogBox.initPrefDialog();"
@@ -46,11 +46,11 @@
 	width="450" height="300">
 	
 	<stringbundleset id="strbundles">
-		<stringbundle id="prefStr" src="chrome://dsnviewer/locale/default.properties"/>
+		<stringbundle id="prefStr" src="chrome://notifications_viewer/locale/default.properties"/>
 	</stringbundleset>
 	
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/misc.js" />
-	<script type="application/x-javascript" src="chrome://dsnviewer/content/preferences.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/misc.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
 	<tabbox flex="1">
 		<tabs id="prefTabBox">
 			<tab id="settingsGeneralities"  label="&PrefsDialog.generalities;"/>
@@ -74,7 +74,7 @@
 							<checkbox id="markRead" label="&PrefsDialog.markRead;" flex="1" style="padding-top:0px;padding-left:10px;padding-bottom:10px;"/>
 						</hbox>
 						<hbox flex="1">
-							<checkbox id="moveDsn" label="&PrefsDialog.moveDsn;" flex="1" style="padding-top:0px;padding-left:10px;padding-bottom:10px;"/>
+							<checkbox id="moveNotification" label="&PrefsDialog.moveNotification;" flex="1" style="padding-top:0px;padding-left:10px;padding-bottom:10px;"/>
 						</hbox>
 					</groupbox>
 				</vbox>

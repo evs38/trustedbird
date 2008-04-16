@@ -83,7 +83,7 @@ var msgHdrViewOverlay = {
 		// Internationalization
 		strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService().QueryInterface(Components.interfaces.nsIStringBundleService);
 		if (strBundleService)
-			strbundle=strBundleService.createBundle("chrome://dsnviewer/locale/default.properties");
+			strbundle=strBundleService.createBundle("chrome://notifications_viewer/locale/default.properties");
 	},
 
 	onStartHeaders: function() {
@@ -101,14 +101,14 @@ var msgHdrViewOverlay = {
 		var msgKey=gDBView.getKeyAt (msgViewIndex );
 		var msgDBHdr=gDBView.msgFolder.GetMessageHeader ( msgKey );
 
-		this.cacheDeliveredTo=msgDBHdr.getStringProperty("x-dsnviewer-to");
+		this.cacheDeliveredTo=msgDBHdr.getStringProperty("x-notifications_viewer-to");
 
 		if (this.cacheDeliveredTo=="")
 			return; // custom properties not present
 
-		this.cacheStatus=msgDBHdr.getStringProperty("x-dsnviewer-status");
-		this.cacheSummary=msgDBHdr.getStringProperty("x-dsnviewer-summary");
-		this.cacheFlags=msgDBHdr.getStringProperty("x-dsnviewer-flags");
+		this.cacheStatus=msgDBHdr.getStringProperty("x-notifications_viewer-status");
+		this.cacheSummary=msgDBHdr.getStringProperty("x-notifications_viewer-summary");
+		this.cacheFlags=msgDBHdr.getStringProperty("x-notifications_viewer-flags");
 
 		this.cacheCustomProperties=new customProperties(this.cacheDeliveredTo ,this.cacheStatus, this.cacheSummary, this.cacheFlags );
 	},

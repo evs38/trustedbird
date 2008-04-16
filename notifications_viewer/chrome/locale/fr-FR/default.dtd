@@ -42,6 +42,6 @@
 <!ENTITY PrefsDialog.timeOut "Délais (en heures)">
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Messages de notification">
 <!ENTITY PrefsDialog.markRead "Marquer comme lu">
-<!ENTITY PrefsDialog.moveDsn "Ajouter le DSN dans le fil du message d'origine">
+<!ENTITY PrefsDialog.moveNotification "Ajouter la notification dans le fil du message d'origine">
 
 

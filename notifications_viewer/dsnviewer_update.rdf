@@ -37,22 +37,22 @@
 <RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
 	 xmlns:NC="http://home.netscape.com/NC-rdf#"
 	 xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-	<RDF:Description about="urn:mozilla:extension:dsnviewer@marine.defense.gouv.fr">
+	<RDF:Description about="urn:mozilla:extension:notificationsviewer@milimail.org">
 		<em:updates>
 			<RDF:Seq>
-				<RDF:li resource="urn:mozilla:extension:dsnviewer@marine.defense.gouv.fr:0.5.2"/>
+				<RDF:li resource="urn:mozilla:extension:notificationsviewer@milimail.org:0.5.2.0"/>
 			</RDF:Seq>
 		</em:updates>
 	</RDF:Description>
 
-	<RDF:Description about="urn:mozilla:extension:dsnviewer@marine.defense.gouv.fr:0.5.2">
-		<em:version>0.5.2</em:version>
+	<RDF:Description about="urn:mozilla:extension:notificationsviewer@milimail.org:0.5.2.0">
+		<em:version>0.5.2.0</em:version>
 			<em:targetApplication>
 			<Description>
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
 				<em:minVersion>1.5</em:minVersion>
 				<em:maxVersion>2.0.0.*</em:maxVersion>
-				<em:updateLink>http://explorer.marine.defense.gouv.fr/tlc/chargement/Messagerie/Melinda/dsn_viewer.xpi</em:updateLink>
+				<em:updateLink>http://admisource.gouv.fr/frs/download.php/TODO/notifications_viewer.xpi</em:updateLink>
 			</Description>
 		</em:targetApplication>
 	</RDF:Description>

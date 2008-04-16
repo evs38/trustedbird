@@ -5,7 +5,7 @@
 
 
 # Extension name
-name="dsn_viewer.xpi"
+name="notifications_viewer.xpi"
 
 #Exclude list
 exclude="exclude.txt"

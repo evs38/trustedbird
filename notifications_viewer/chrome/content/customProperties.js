@@ -70,15 +70,15 @@ function DeliveredTo (finalRecipient,actionValue,messageId,flags) {
 	@constructor
 	@version 0.9.2
 	@author Daniel Rocher / Etat francais Ministere de la Defense
-	@param {string} deliveredToProperty x-dsnviewer-to property
-	@param {string} statusProperty x-dsnviewer-status property ("good","middle", "bad")
-	@param {string} summaryProperty x-dsnviewer-summary property (number/total)
-	@param {string} flagsProperty x-dsnviewer-flags property
+	@param {string} deliveredToProperty x-notifications_viewer-to property
+	@param {string} statusProperty x-notifications_viewer-status property ("good","middle", "bad")
+	@param {string} summaryProperty x-notifications_viewer-summary property (number/total)
+	@param {string} flagsProperty x-notifications_viewer-flags property
 */
 function customProperties(deliveredToProperty,statusProperty,summaryProperty,flagsProperty) {
 
 	/**
-		x-dsnviewer-to property
+		x-notifications_viewer-to property
 		<p>
 		Access functions:
 		<ul>
@@ -89,7 +89,7 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	this.deliveredToProperty=deliveredToProperty;
 
 	/**
-		x-dsnviewer-status property ("good","middle", "bad")
+		x-notifications_viewer-status property ("good","middle", "bad")
 		<p>
 		Access functions:
 		<ul>
@@ -100,7 +100,7 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	this.statusProperty=statusProperty;
 
 	/**
-		x-dsnviewer-summary property (number/total)
+		x-notifications_viewer-summary property (number/total)
 		<p>
 		Access functions:
 		<ul>
@@ -120,7 +120,7 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	if (isNaN(flagsProperty))
 		flagsProperty=0;
 	/**
-		x-dsnviewer-flags property
+		x-notifications_viewer-flags property
 		@type number
 	*/
 	this.flagsProperty=flagsProperty;
@@ -363,7 +363,7 @@ customProperties.prototype = {
 
 
 	/**
-		@return {string} Return x-dsnviewer-to property
+		@return {string} Return x-notifications_viewer-to property
 	*/
 	getDeliveredToProperty: function() {
 		var Values="";
@@ -377,21 +377,21 @@ customProperties.prototype = {
 	},
 
 	/**
-		@return {string} Return x-dsnviewer-status property ("good" ,"bad" , "middle" or "")
+		@return {string} Return x-notifications_viewer-status property ("good" ,"bad" , "middle" or "")
 	*/
 	getStatusProperty: function() {
 		return this.statusProperty;
 	},
 
 	/**
-		@return {string} Return x-dsnviewer-summary property (number/total)
+		@return {string} Return x-notifications_viewer-summary property (number/total)
 	*/
 	getSummaryProperty: function() {
 		return this.summaryProperty;
 	},
 
 	/**
-		@return {string} Return x-dsnviewer-flags property
+		@return {string} Return x-notifications_viewer-flags property
 	*/
 	getFlagsProperty: function() {
 		return (this.flagsProperty).toString();

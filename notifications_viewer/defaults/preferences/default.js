@@ -34,33 +34,33 @@
  * ***** END LICENSE BLOCK ***** */
 
 /*
-   Default pref values for dsn viewer
+   Default pref values for notifications viewer
 */
 
-// the last configured dsnviewer version
-pref("extensions.dsnviewer.version","");
+// the last configured notifications_viewer version
+pref("extensions.notifications_viewer.version","");
 
 // debug
-pref("extensions.dsnviewer.debug",false);
+pref("extensions.notifications_viewer.debug",false);
 
 // include all accounts when searching original message-ID (default=false)
-pref("extensions.dsnviewer.search_original_msgid.include_all_accounts",false);
+pref("extensions.notifications_viewer.search_original_msgid.include_all_accounts",false);
 
 // include trash folders when searching original message-ID (default=false)
-pref("extensions.dsnviewer.search_original_msgid.include_trash_folders",false);
+pref("extensions.notifications_viewer.search_original_msgid.include_trash_folders",false);
 
 // create a thread on the original message
-pref("extensions.dsnviewer.thread_on_original_message",true);
+pref("extensions.notifications_viewer.thread_on_original_message",true);
 
-// mark DSN message as read
-pref("extensions.dsnviewer.mark_dsn_as_read",true);
+// mark notification message as read
+pref("extensions.notifications_viewer.mark_notifications_as_read",true);
 
 // enabled or not message received timeout
-pref("extensions.dsnviewer.enabled_timeout",false);
+pref("extensions.notifications_viewer.enabled_timeout",false);
 
 // timeout
-pref("extensions.dsnviewer.timeout",24);
+pref("extensions.notifications_viewer.timeout",24);
 
 // interval, in seconds, between two requests to ManageMsgAsDN
-pref("extensions.dsnviewer.check_msg_expired.interval",600);
+pref("extensions.notifications_viewer.check_msg_expired.interval",600);
 
