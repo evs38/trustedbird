@@ -57,6 +57,7 @@ function checkPref() {
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-status");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-to");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-flags");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-type");
 	srv.preferences.setCharPref(srv.extensionKey+".version",srv.extensionVersion);
 	srv.logSrv("checkPref()");
 }
@@ -74,6 +75,13 @@ function updateMsgList() {
 }
 
 /**
+	Copy notifications messages (thread messages)
+*/
+function updateThreadNotifications() {
+	writePropertiesToHdr.CopyFilesMsg();
+}
+
+/**
  	Program entry (first time)
 */
 function main() {
@@ -87,5 +95,6 @@ function main() {
 	interval=srv.preferences.getIntPref(srv.extensionKey+".check_msg_expired.interval"); // in seconds
 	setTimeout("updateMsgList()",10000); // firs time (after 10s)
 	window.setInterval(updateMsgList, interval*1000);
+	window.setInterval(updateThreadNotifications,2000);
 
 }

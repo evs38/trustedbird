@@ -88,7 +88,7 @@ function moveMessage (msgHdr, srcFolder, dstFolder) {
 
 /**
 	listener which will be called when a message is added to the folder
-	@version 0.9.1
+	@version 0.9.2
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@see GLOBALS#notifyInit
 
@@ -116,8 +116,13 @@ var notifyListener = {
 		}
 		
 		// Check if this message is new
-		if (header.flags & MSG_FLAG_NEW)
+		if (header.flags & MSG_FLAG_NEW) {
+			// test if already parsed
+			if (header.getStringProperty("x-notifications_viewer-type")=="DSN")
+				return;
+
 			this.getMsgSrc(header);
+		}
 	},
 	OnItemBoolPropertyChanged: function(item, property, oldValue, newValue) {},
 	OnItemEvent: function(item, event) {},
@@ -199,6 +204,9 @@ var notifyListener = {
 		{
 			// It's a new DSN
 			SetBusyCursor(window, true);
+
+			// tag this message
+			header.setStringProperty("x-notifications_viewer-type","DSN");
 
 			srv.logSrv("DSN (MsgKey="+header.messageKey+") - in /"+folder.prettyName + "/ folder (" + folder.rootFolder.prettyName+ ")");
 			// parse DSN
@@ -299,11 +307,14 @@ var notifyListener = {
 				// If user want to create a thread on the original message, move DSN message
 				var threadPref=srv.preferences.getBoolPref(srv.extensionKey+".thread_on_original_message");
 				if (threadPref) {
+					var targetFolder = RDF.GetResource(msgDBHdrOrigin.folder.URI).QueryInterface(Components.interfaces.nsIMsgFolder);
 					// add References and In-Reply-To properties
 					var arrayProperties=new Array();
+					// tag this message
+					arrayProperties.push(new propertyObj("X-Notifications_viewer-Type","DSN"));
 					arrayProperties.push(new propertyObj("References","<"+msgDBHdrOrigin.messageId+">"));
 					arrayProperties.push(new propertyObj("In-Reply-To","<"+msgDBHdrOrigin.messageId+">"));
-					writePropertiesToHdr.createMsgSrc(header,msgDBHdrOrigin.folder,arrayProperties);
+					writePropertiesToHdr.createMsgSrc(header,targetFolder,arrayProperties);
 				}
 			}
 			else {

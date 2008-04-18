@@ -70,6 +70,8 @@ function tmpFilesObj(msgDBHdr,targetDBFolder,file) {
 	this.targetDBFolder=targetDBFolder;
 	/** @type string */
 	this.file = file;
+	/** @type number */
+	this.count = 0;
 }
 
 
@@ -105,44 +107,113 @@ var writePropertiesToHdr = {
 		Copy Files to messages
 	*/
 	CopyFilesMsg : function() {
-		if (writePropertiesToHdr.lock)
-			setTimeout("writePropertiesToHdr.CopyFilesMsg()",800);
-	
+		if (writePropertiesToHdr.lock) {
+			srv.logSrv("writePropertiesToHdr.CopyFilesMsg locked - try later");
+		}
 		writePropertiesToHdr.lock=true;
-		var fileSpec = Components.classes["@mozilla.org/filespec;1"].createInstance();
-		fileSpec = fileSpec.QueryInterface( Components.interfaces.nsIFileSpec);
 		var fArray=writePropertiesToHdr.filesArray;
 		for (var i=0; i <fArray.length; i++) {
+			var fileSpec = Components.classes["@mozilla.org/filespec;1"].createInstance();
+			fileSpec = fileSpec.QueryInterface( Components.interfaces.nsIFileSpec);
+
 			var msgDBHdr=fArray[i].msgDBHdr;
 			var flags=msgDBHdr.flags;
 			var targetFolder=fArray[i].targetDBFolder;
+			var count=fArray[i].count++;
 			var file=fArray[i].file;
 			fileSpec.nativePath =file;
 
-			// remove old msgDbHdr before (it's important to do that first)
-			var list = Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
-			list.AppendElement(msgDBHdr);
-			msgDBHdr.folder.deleteMessages(list,msgWindow,true,true,null,false);
+			// test if file exist
+			if (fileSpec.exists()) {
+				var serviceListener=writePropertiesToHdr.newCopyServiceListener(); //FIXME copy listener doesn't work with IMAP
+				serviceListener.flagged = msgDBHdr.isFlagged;
+				serviceListener.label = msgDBHdr.label;
+				serviceListener.folder = targetFolder;
+				serviceListener.isRead = msgDBHdr.isRead;
+				serviceListener.key = msgDBHdr.messageKey;
+				serviceListener.file = file;
+	
+				// remove old msgDbHdr before (it's important to do that first)
+				var list = Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
+				list.AppendElement(msgDBHdr);
+				msgDBHdr.folder.deleteMessages(list,msgWindow,true,true,null,false);
+	
+				srv.logSrv("writePropertiesToHdr.CopyFilesMsg - file: "+file+" - target folder /"+targetFolder.prettyName + "/ (" + targetFolder.rootFolder.prettyName+ ")");
+	
+				try {
+					targetFolder.copyFileMessage(fileSpec, null, false,flags, msgWindow, serviceListener);
+				}
+				catch (e) {
+					srv.logSrv("writePropertiesToHdr.CopyFilesMsg - TB's busy, try later");
+					// if a loop
+					if (count < 5)
+						continue;
+				}
 
-			srv.logSrv("writePropertiesToHdr.CopyFilesMsg - file: "+file+" - target folder /"+targetFolder.prettyName + "/ (" + targetFolder.rootFolder.prettyName+ ")");
-
-			try {
-				targetFolder.copyFileMessage(fileSpec, null, false, flags , msgWindow, null);
+			} else {
+				srv.warningSrv("writePropertiesToHdr.CopyFilesMsg - file "+file+"doesn't exist");
 			}
-			catch (e) {
-				srv.errorSrv("writePropertiesToHdr.CopyFilesMsg - error : \n"+e);
-				continue;
-			}
 
-			// now remove tmp file
-			writePropertiesToHdr.removeFile(file);
-
-			fArray.splice(i,1); // remove
+			// remove record
+			fArray.splice(i,1);
 			i--;
 		}
 
 		writePropertiesToHdr.lock=false;
 	},
+
+	/**
+		Create a <i>nsIMsgCopyServiceListener</i> object
+		@return {nsIMsgCopyServiceListener} A copyServiceListener
+	*/
+	newCopyServiceListener: function() {
+		var copyServiceListener = {
+			flagged: null,
+			label: null,
+			folder: null,
+			isRead: null,
+			key: null,
+			file: null,
+			QueryInterface : function(iid)  {
+				if (iid.equals(Components.interfaces.nsIMsgCopyServiceListener) ||
+					iid.equals(Components.interfaces.nsISupports))
+						return this;
+				throw Components.results.NS_NOINTERFACE;
+				return 0;
+			},
+			OnProgress: function (progress, progressMax) {},
+			OnStartCopy: function () {},
+			OnStopCopy: function (status) {},
+			SetMessageKey: function (key) {
+				this.key=key;
+				setTimeout(writePropertiesToHdr.cleanUp,300,this.file,this.key,this.flagged,this.label,this.folder,this.isRead);
+			}
+		}
+		return copyServiceListener;
+	},
+
+	/**
+		@param {string} file file name
+		@param {nsMsgKey} messageKey
+		@param {boolean} flagged
+		@param {nsMsgLabelValue} label
+		@param {nsIMsgFolder} folder
+		@param {boolean} isRead
+		after a message has been copied this method cleans up things. Remove tmp file.
+	*/
+	cleanUp:  function(file,messageKey, flagged, label, folder,isRead) {
+			srv.logSrv("writePropertiesToHdr.cleanUp");
+	
+			var hdr = folder.GetMessageHeader(messageKey);
+			if (hdr) {
+				hdr.markFlagged(flagged);
+				hdr.markRead(isRead);
+				hdr.label = label;
+			}
+
+			// now remove tmp file
+			writePropertiesToHdr.removeFile(file);
+		},
 
 	/**
 		Remove file
@@ -164,7 +235,7 @@ var writePropertiesToHdr = {
 	},
 	
 	/**
-		create message source.
+		create message source. First, get message source.
 		@param {nsIMsgDBHdr} msgDBHdr message to change
 		@param {nsIMsgFolder} targetDBFolder target folder
 		@param {Array} properties list of {@link propertyObj}<p>if property value = <i>null</i>, remove it
@@ -242,6 +313,10 @@ var writePropertiesToHdr = {
 				var regExp=new RegExp("^"+propertyNameExpReg+": ","i");
 		
 				for (var i=0; i < hdrLineArray.length; i++) {
+					// remove X-Mozilla tags
+					if ((/^X-Mozilla-/gi).test(hdrLineArray[i]))
+						continue;
+
 					if (regExp.test(hdrLineArray[i])) {
 						// property exist, replace it
 	
@@ -251,9 +326,7 @@ var writePropertiesToHdr = {
 						propertyExist=true;
 						continue;
 					}
-					else {
-						newHdrLineArray.push(hdrLineArray[i]);
-					}
+					newHdrLineArray.push(hdrLineArray[i]);
 				}
 			
 				if (!propertyExist && properties[j].propertyValue!=null)
@@ -284,7 +357,6 @@ var writePropertiesToHdr = {
 			stream.close();
 
 			writePropertiesToHdr.filesArray.push(new tmpFilesObj(msgDBHdr,targetDBFolder,tempFileNativePath));
-			setTimeout("writePropertiesToHdr.CopyFilesMsg()",600);
 		}
 		catch (e) {
 			srv.errorSrv("writePropertiesToHdr.makeNewMsgSrc - "+e);

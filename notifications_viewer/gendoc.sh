@@ -21,7 +21,7 @@ outputDirectory="doc"
 
 
 # remove old files
-if [ -d  $outputDirectory ] ; then rm $outputDirectory -rf 2>/dev/null ; fi
+if [ -d  $outputDirectory ] ; then rm $outputDirectory/* -f 2>/dev/null ; fi
 
 
 perl $JsDocPath -d $outputDirectory --project-summary $projectSummary  --no-sources $files
