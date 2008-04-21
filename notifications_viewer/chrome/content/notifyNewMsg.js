@@ -244,9 +244,9 @@ var notifyListener = {
 				// add to the list
 				mMsgAsDsnReq.addElement(msgDBHdrOrigin.messageId);
 
-				// If user wants the DSN message is marked as read
-				var dsnAsReadPref=srv.preferences.getBoolPref(srv.extensionKey+".mark_notifications_as_read");
-				if (dsnAsReadPref)
+				// If user wants the notification is marked as read
+				var notifAsReadPref=srv.preferences.getBoolPref(srv.extensionKey+".mark_notifications_as_read");
+				if (notifAsReadPref)
 					header.markRead ( true );
 
 				// now, tag header

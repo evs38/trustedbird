@@ -113,11 +113,10 @@ var writePropertiesToHdr = {
 		writePropertiesToHdr.lock=true;
 		var fArray=writePropertiesToHdr.filesArray;
 		for (var i=0; i <fArray.length; i++) {
-			var fileSpec = Components.classes["@mozilla.org/filespec;1"].createInstance();
-			fileSpec = fileSpec.QueryInterface( Components.interfaces.nsIFileSpec);
+			var fileSpec = Components.classes["@mozilla.org/filespec;1"].createInstance(Components.interfaces.nsIFileSpec);
+			var copyService = Components.classes["@mozilla.org/messenger/messagecopyservice;1"].getService(Components.interfaces.nsIMsgCopyService);
 
 			var msgDBHdr=fArray[i].msgDBHdr;
-			var flags=msgDBHdr.flags;
 			var targetFolder=fArray[i].targetDBFolder;
 			var count=fArray[i].count++;
 			var file=fArray[i].file;
@@ -125,33 +124,38 @@ var writePropertiesToHdr = {
 
 			// test if file exist
 			if (fileSpec.exists()) {
-				var serviceListener=writePropertiesToHdr.newCopyServiceListener(); //FIXME copy listener doesn't work with IMAP
-				serviceListener.flagged = msgDBHdr.isFlagged;
-				serviceListener.label = msgDBHdr.label;
+				var serviceListener=writePropertiesToHdr.newCopyServiceListener();
+				serviceListener.file = file;
+				serviceListener.messageId = msgDBHdr.messageId;
 				serviceListener.folder = targetFolder;
 				serviceListener.isRead = msgDBHdr.isRead;
-				serviceListener.key = msgDBHdr.messageKey;
-				serviceListener.file = file;
-	
-				// remove old msgDbHdr before (it's important to do that first)
+				serviceListener.flags=msgDBHdr.flags;
+				serviceListener.isFlagged=msgDBHdr.isFlagged;
+
+				// remove old msgDbHdr. It's important to do that first
 				var list = Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
 				list.AppendElement(msgDBHdr);
 				msgDBHdr.folder.deleteMessages(list,msgWindow,true,true,null,false);
-	
+
 				srv.logSrv("writePropertiesToHdr.CopyFilesMsg - file: "+file+" - target folder /"+targetFolder.prettyName + "/ (" + targetFolder.rootFolder.prettyName+ ")");
-	
+
 				try {
-					targetFolder.copyFileMessage(fileSpec, null, false,flags, msgWindow, serviceListener);
+					copyService.CopyFileMessage(fileSpec, targetFolder, null, false, null, serviceListener, msgWindow);
 				}
-				catch (e) {
-					srv.logSrv("writePropertiesToHdr.CopyFilesMsg - TB's busy, try later");
-					// if a loop
-					if (count < 5)
-						continue;
+				catch (e) { // copy failed
+					if (count < 5) {
+						srv.logSrv("writePropertiesToHdr.CopyFilesMsg - TB's busy, try later");
+						break; // try later
+					} else {
+						// there's probably a loop, copy failed
+						srv.errorSrv("writePropertiesToHdr.CopyFilesMsg - Impossible to copy file "+file);
+						// remove tmp file
+						writePropertiesToHdr.removeFile(file); //TODO perhaps keep the file ?
+					}
 				}
 
 			} else {
-				srv.warningSrv("writePropertiesToHdr.CopyFilesMsg - file "+file+"doesn't exist");
+				srv.warningSrv("writePropertiesToHdr.CopyFilesMsg - tmp file "+file+" doesn't exist");
 			}
 
 			// remove record
@@ -168,12 +172,13 @@ var writePropertiesToHdr = {
 	*/
 	newCopyServiceListener: function() {
 		var copyServiceListener = {
-			flagged: null,
-			label: null,
-			folder: null,
-			isRead: null,
-			key: null,
-			file: null,
+			file:null,
+			key:null,
+			messageId:null,
+			folder:null,
+			isRead:null,
+			flags:null,
+			isFlagged:null,
 			QueryInterface : function(iid)  {
 				if (iid.equals(Components.interfaces.nsIMsgCopyServiceListener) ||
 					iid.equals(Components.interfaces.nsISupports))
@@ -183,32 +188,50 @@ var writePropertiesToHdr = {
 			},
 			OnProgress: function (progress, progressMax) {},
 			OnStartCopy: function () {},
-			OnStopCopy: function (status) {},
+			OnStopCopy: function (status) {
+				if (status==0)
+					setTimeout(writePropertiesToHdr.cleanUp,600,this.file,this.key,this.messageId,this.folder,this.isRead,this.flags,this.isFlagged);
+			},
 			SetMessageKey: function (key) {
-				this.key=key;
-				setTimeout(writePropertiesToHdr.cleanUp,300,this.file,this.key,this.flagged,this.label,this.folder,this.isRead);
+				this.key=key; // doesn't work with IMAP protocol
 			}
 		}
 		return copyServiceListener;
 	},
 
 	/**
+		after a message has been copied this method cleans up things. Remove tmp file.
 		@param {string} file file name
-		@param {nsMsgKey} messageKey
-		@param {boolean} flagged
-		@param {nsMsgLabelValue} label
+		@param {number} key
+		@param {string} messageId
 		@param {nsIMsgFolder} folder
 		@param {boolean} isRead
-		after a message has been copied this method cleans up things. Remove tmp file.
+		@param {number} flags
+		@param {boolean} isFlagged
 	*/
-	cleanUp:  function(file,messageKey, flagged, label, folder,isRead) {
+	cleanUp:  function(file,key,messageId,folder,isRead,flags,isFlagged) {
 			srv.logSrv("writePropertiesToHdr.cleanUp");
-	
-			var hdr = folder.GetMessageHeader(messageKey);
+
+			var hdr=null;
+
+			if (key) {
+				// get message header by key (no key returned for IMAP)
+				hdr=folder.GetMessageHeader(key);
+			} else {
+				// only IMAP here
+				var findMsg=new findMsgDb(folder);
+				findMsg.includeSubFolders(false);
+				findMsg.includeAllAccounts(false);
+				var hdr=findMsg.searchByMsgId(messageId);
+			}
+
 			if (hdr) {
-				hdr.markFlagged(flagged);
-				hdr.markRead(isRead);
-				hdr.label = label;
+				// message found
+				hdr.markRead (isRead);
+				hdr.flags=flags;
+				hdr.markFlagged(isFlagged);
+			} else {
+				srv.warningSrv("writePropertiesToHdr.cleanUp (MsgId="+messageId+") - notification has not been found");
 			}
 
 			// now remove tmp file
