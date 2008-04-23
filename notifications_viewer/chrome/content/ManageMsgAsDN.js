@@ -179,7 +179,7 @@ ManageMsgAsDN.prototype = {
 	},
 
 	/**
-		Check if messages were expired (timeout). In this case, update x-notifications_viewer properties.
+		Check if messages were expired (timeout). In this case, update x-nviewer properties.
 		Read list of messages, search message and if necessary update datas.
 	*/
 	updateList: function() {
@@ -205,10 +205,10 @@ ManageMsgAsDN.prototype = {
 				// message found
 
 				// get properties from message
-				var deliveredToP=messageHdr.getStringProperty("x-notifications_viewer-to");
-				var statusP=messageHdr.getStringProperty("x-notifications_viewer-status");
-				var summaryP=messageHdr.getStringProperty("x-notifications_viewer-summary");
-				var flagsP=messageHdr.getStringProperty("x-notifications_viewer-flags");
+				var deliveredToP=messageHdr.getStringProperty("x-nviewer-dsn-to");
+				var statusP=messageHdr.getStringProperty("x-nviewer-dsn-status");
+				var summaryP=messageHdr.getStringProperty("x-nviewer-dsn-summary");
+				var flagsP=messageHdr.getStringProperty("x-nviewer-dsn-flags");
 
 				srv.logSrv("ManageMsgAsDN - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
@@ -243,10 +243,10 @@ ManageMsgAsDN.prototype = {
 					srv.logSrv("ManageMsgAsDN - new notifications_viewer properties - "+deliveredToP+" "+statusP+" "+summaryP+" "+flagsP);
 
 					// save properties
-					messageHdr.setStringProperty("x-notifications_viewer-to",deliveredToP);
-					messageHdr.setStringProperty("x-notifications_viewer-status",statusP);
-					messageHdr.setStringProperty("x-notifications_viewer-summary",summaryP);
-					messageHdr.setStringProperty("x-notifications_viewer-flags",flagsP);
+					messageHdr.setStringProperty("x-nviewer-dsn-to",deliveredToP);
+					messageHdr.setStringProperty("x-nviewer-dsn-status",statusP);
+					messageHdr.setStringProperty("x-nviewer-dsn-summary",summaryP);
+					messageHdr.setStringProperty("x-nviewer-dsn-flags",flagsP);
 
 					srv.logSrv("ManageMsgAsDN - this message expired, remove from the list");
 					// remove from the list

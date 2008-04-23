@@ -53,11 +53,11 @@ var mMsgAsDsnReq=new ManageMsgAsDN();
 	Check Preferences
 */
 function checkPref() {
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-summary");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-status");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-to");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-flags");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-notifications_viewer-type");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-summary");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-status");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-to");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-flags");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-tags");
 	srv.preferences.setCharPref(srv.extensionKey+".version",srv.extensionVersion);
 	srv.logSrv("checkPref()");
 }
@@ -74,12 +74,6 @@ function updateMsgList() {
 	mMsgAsDsnReq.updateList();
 }
 
-/**
-	Copy notifications messages (thread messages)
-*/
-function updateThreadNotifications() {
-	writePropertiesToHdr.CopyFilesMsg();
-}
 
 /**
  	Program entry (first time)
@@ -95,6 +89,4 @@ function main() {
 	interval=srv.preferences.getIntPref(srv.extensionKey+".check_msg_expired.interval"); // in seconds
 	setTimeout("updateMsgList()",10000); // firs time (after 10s)
 	window.setInterval(updateMsgList, interval*1000);
-	window.setInterval(updateThreadNotifications,2000);
-
 }

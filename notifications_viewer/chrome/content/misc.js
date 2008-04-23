@@ -70,7 +70,7 @@ Services.prototype = {
 	{
 		if (!this.modeDebug) return;
 		this.consoleService.logStringMessage(this.extensionName+" : "+msg);
-		dump(this.extensionName+" : "+msg+"\n");
+		dump(".. "+this.currentDate()+" : "+msg+"\n");
 	},
 
 	/**
@@ -81,7 +81,7 @@ Services.prototype = {
 		var scriptError = Components.classes["@mozilla.org/scripterror;1"].createInstance(Components.interfaces.nsIScriptError);
 		scriptError.init(this.extensionName+" : "+err, "", "", 0,0,0,0);
 		this.consoleService.logMessage(scriptError);
-		dump(this.extensionName+" : "+err+"\n");
+		dump("EE "+this.currentDate()+" : "+err+"\n");
 	},
 
 	/**
@@ -93,7 +93,17 @@ Services.prototype = {
 		var scriptWarning = Components.classes["@mozilla.org/scripterror;1"].createInstance(Components.interfaces.nsIScriptError);
 		scriptWarning.init(this.extensionName+" : "+msg, "", "", 0,0,1,0);
 		this.consoleService.logMessage(scriptWarning);
-		dump(this.extensionName+" : "+msg+"\n");
+		dump("WW "+this.currentDate()+" : "+msg+"\n");
+	},
+
+	/**
+		return current date
+		@return {string} current date
+	*/
+	currentDate: function ()
+	{
+		date=new Date();
+		return date.toGMTString();
 	}
 }
 

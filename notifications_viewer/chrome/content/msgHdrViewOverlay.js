@@ -101,14 +101,14 @@ var msgHdrViewOverlay = {
 		var msgKey=gDBView.getKeyAt (msgViewIndex );
 		var msgDBHdr=gDBView.msgFolder.GetMessageHeader ( msgKey );
 
-		this.cacheDeliveredTo=msgDBHdr.getStringProperty("x-notifications_viewer-to");
+		this.cacheDeliveredTo=msgDBHdr.getStringProperty("x-nviewer-dsn-to");
 
 		if (this.cacheDeliveredTo=="")
 			return; // custom properties not present
 
-		this.cacheStatus=msgDBHdr.getStringProperty("x-notifications_viewer-status");
-		this.cacheSummary=msgDBHdr.getStringProperty("x-notifications_viewer-summary");
-		this.cacheFlags=msgDBHdr.getStringProperty("x-notifications_viewer-flags");
+		this.cacheStatus=msgDBHdr.getStringProperty("x-nviewer-dsn-status");
+		this.cacheSummary=msgDBHdr.getStringProperty("x-nviewer-dsn-summary");
+		this.cacheFlags=msgDBHdr.getStringProperty("x-nviewer-dsn-flags");
 
 		this.cacheCustomProperties=new customProperties(this.cacheDeliveredTo ,this.cacheStatus, this.cacheSummary, this.cacheFlags );
 	},
