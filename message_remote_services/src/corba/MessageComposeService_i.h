@@ -37,7 +37,7 @@
 #ifndef MESSAGECOMPOSESERVICE_I_H_
 #define MESSAGECOMPOSESERVICE_I_H_
 
-#include "Services.hh"
+#include "Services.h"
 #include "nsIMsgComposeParams.h"
 #include "nsIMsgIdentity.h"
 #include "nsIServiceManager.h"

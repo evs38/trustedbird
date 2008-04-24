@@ -40,7 +40,6 @@
 #include "MessageComposeService_i.h"
 #include "nsIMsgSendListener.h"
 
-using namespace std;
 
 class MessageRemoteSendListener : public nsIMsgSendListener
 {

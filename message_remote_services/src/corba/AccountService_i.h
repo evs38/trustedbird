@@ -37,7 +37,7 @@
 #ifndef ACCOUNTSERVICE_I_H_
 #define ACCOUNTSERVICE_I_H_
 
-#include "Services.hh"
+#include "Services.h"
 
 /*!
  * Corba AccountServicePOA Implementation
