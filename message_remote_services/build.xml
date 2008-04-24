@@ -71,8 +71,7 @@
 	<target name="package"  depends="prepare-layout" description="--> package MRS in Thunderbird xpi">
 		<copy file="src/xpcom/.libs/libMessageRemoteService.so.0.0.0" todir="xpi/platform/Linux_x86-gcc3/components/"/>
 		<move file="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so.0.0.0" tofile="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so"/>
-		<copy file="dist/IMessageRemoteService.xpt" todir="xpi/components"/>
-
+	
 		<tstamp/>
 		<zip destfile="Milimail-${component}-${DSTAMP}-${TSTAMP}.xpi">
 			<fileset dir="xpi" id="id">
@@ -87,7 +86,6 @@
 	<target name="clean" description="--> clean">
 		<delete>
 			<fileset dir="xpi">
-				<include name="components/**"/>
 				<include name="platform/**"/>
 			</fileset>
 		</delete>
