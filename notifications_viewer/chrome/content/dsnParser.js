@@ -40,10 +40,52 @@
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */ 
 
+/**
+	@class A delivery report object
+	@constructor
+*/
+function deliveryReport () {
+	/**
+		The Final-Recipient field indicates the recipient for which this set
+		of per-recipient fields applies.  This field MUST be present in each
+		set of per-recipient data.
+		@type string
+	*/
+	this.finalRecipient = "";
+	/**
+		Indicates the original recipient address as specified by the sender
+		of the message for which the DSN is being issued.
+		@type string
+	*/
+	this.originalRecipient = "";
+	/**
+		Indicates the action performed by the Reporting-MTA
+		as a result of its attempt to deliver the message to this recipient
+		address.
+		<b>action-value</b> = <i>"failed" / "delayed" / "delivered" / "relayed" / "expanded"</i>
+		@type string
+	*/
+	this.actionValue = "";
+	/**
+		The per-recipient Status field contains a transport-independent
+		status code that indicates the delivery status of the message to that
+		recipient.
+		@type string
+	*/
+	this.statusValue = "";
+	/**
+		For a "failed" or "delayed" recipient, the Diagnostic-Code DSN field
+		contains the actual diagnostic code issued by the mail transport.
+		@type string
+	*/
+	this.diagnosticCode = "";
+}
+
+
 
 /**
-	@class This Class is a DSN Parser.
-	@version 0.9.1
+	@class This Class is a DSN Parser (see rfc3464).
+	@version 0.9.2
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@constructor
 	@param {string} message message source
@@ -100,9 +142,9 @@ dsnParser.prototype = new mailParser();
 	regular expressions cache
 */
 dsnParser.prototype.dsnRegExpCache = {
-		validReport: new RegExp("delivered|delayed|relayed|failed|expanded","i"),
-		multipartReport: new RegExp("multipart/report","i"),
-		findDeliveryStatus: new RegExp("report\-type[ \\s]*=[ \\s]*delivery\-status","i")
+	validReport: new RegExp("delivered|delayed|relayed|failed|expanded","i"),
+	multipartReport: new RegExp("multipart/report","i"),
+	findDeliveryStatus: new RegExp("report\-type[ \\s]*=[ \\s]*\"?delivery\-status\"?","i")
 }
 
 
@@ -243,7 +285,7 @@ dsnParser.prototype.isValidReport = function(report) {
 	Status: 4.0.0<br>
 	Diagnostic-Code: smtp; 426 connection timed out<br>
 	</pre>
-	@return {deliveryReport} A deliveryReport object or null if is not a DSN
+	@return {deliveryReport} A {@link deliveryReport} object or null if is not a DSN
 
 */
 dsnParser.prototype.getReportFromFields = function(dsnFieds) {

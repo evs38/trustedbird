@@ -261,4 +261,71 @@ var msgBadDSN=["From: MAILER-DAEMON@vraimentbidon.org (Mail Delivery System)\n"+
 		"--E9AED1FF86.1202908278/mydesktop.vraimentbidon.org--\n\n"
 		];
 
- 
+var MdnDenied="Return-Path: <daniel@vraimentbidon.org>\n"+
+"From: Daniel Rocher <daniel@vraimentbidon.org>\n"+
+"Reply-To: daniel@vraimentbidon.org\n"+
+"To: daniel@vraimentbidon.org\n"+
+"Subject: Message Disposition Notification\n"+
+"Date: Thu, 24 Apr 2008 20:41:22 +0200\n"+
+"User-Agent: KMail/1.9.6 (enterprise 0.20070907.709405)\n"+
+"MIME-Version: 1.0\n"+
+"Content-Type: Multipart/report;\n"+
+"  boundary=\"Boundary-00=_SRNEI7gNBqMQFGs\";\n"+
+"  report-type=\"disposition-notification\"\n"+
+"In-Reply-To: <200804242037.37481.daniel@vraimentbidon.org>\n"+
+"References: <200804242037.37481.daniel@vraimentbidon.org>\n"+
+"Message-Id: <200804242041.22950.daniel@vraimentbidon.org>\n"+
+"\n"+
+"--Boundary-00=_SRNEI7gNBqMQFGs\n"+
+"Content-Type: text/plain;\n"+
+"  charset=\"iso-8859-1\"\n"+
+"Content-Transfer-Encoding: quoted-printable\n"+
+"\n"+
+"Le message envoy=E9 le 24/04/2008 20:37 =E0 daniel@vraimentbidon.org avec l=\n"+
+"e sujet =AB=A0MDN rejet=E9=A0=BB a =E9t=E9 manipul=E9. L'exp=E9diteur n'a p=\n"+
+"as souhait=E9 vous donner plus de d=E9tails.\n"+
+"--Boundary-00=_SRNEI7gNBqMQFGs\n"+
+"Content-Type: Message/disposition-notification\n"+
+"Content-Transfer-Encoding: 7bit\n"+
+"\n"+
+"Reporting-UA: villou-gutsy; KMime 0.1.0\n"+
+"Final-Recipient: rfc822; Daniel Rocher <daniel@vraimentbidon.org>\n"+
+"Original-Message-ID: <200804242037.37481.daniel@vraimentbidon.org>\n"+
+"Disposition: manual-action/MDN-sent-manually; denied\n"+
+"\n"+
+"--Boundary-00=_SRNEI7gNBqMQFGs--\n";
+
+
+var MdnDisplayed="From: Daniel Rocher <daniel@vraimentbidon.org>"+
+"Reply-To: daniel@vraimentbidon.org\n"+
+"To: daniel@vraimentbidon.org\n"+
+"Subject: Message Disposition Notification\n"+
+"Date: Thu, 24 Apr 2008 20:41:29 +0200\n"+
+"User-Agent: KMail/1.9.6 (enterprise 0.20070907.709405)\n"+
+"MIME-Version: 1.0\n"+
+"Content-Type: Multipart/report;\n"+
+"  boundary=\"Boundary-00=_ZRNEIbB9odfUlkp\";\n"+
+"  report-type=\"disposition-notification\"\n"+
+"In-Reply-To: <200804242037.54209.daniel@vraimentbidon.org>\n"+
+"References: <200804242037.54209.daniel@vraimentbidon.org>\n"+
+"Message-Id: <200804242041.29452.daniel@vraimentbidon.org>\n"+
+"\n"+
+"--Boundary-00=_ZRNEIbB9odfUlkp\n"+
+"Content-Type: text/plain;\n"+
+"  charset=\"iso-8859-1\"\n"+
+"Content-Transfer-Encoding: quoted-printable\n"+
+"\n"+
+"Le message envoy=E9 le 24/04/2008 20:37 =E0 daniel@vraimentbidon.org avec l=\n"+
+"e sujet =AB=A0AR accept=E9=A0=BB a =E9t=E9 affich=E9. Il n'est pas certain =\n"+
+"qu'il ait =E9t=E9 lu ou compris.\n"+
+"--Boundary-00=_ZRNEIbB9odfUlkp\n"+
+"Content-Type: Message/disposition-notification\n"+
+"Content-Transfer-Encoding: 7bit\n"+
+"\n"+
+"Reporting-UA: villou-gutsy; KMime 0.1.0\n"+
+"Final-Recipient: rfc822; Daniel Rocher <daniel@vraimentbidon.org>\n"+
+"Original-Message-ID: <200804242037.54209.daniel@vraimentbidon.org>\n"+
+"Disposition: manual-action/MDN-sent-manually; displayed\n"+
+"\n"+
+"--Boundary-00=_ZRNEIbB9odfUlkp--\n";
+

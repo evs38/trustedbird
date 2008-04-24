@@ -50,19 +50,18 @@ var loader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getSer
 // includes
 loader.loadSubScript("chrome://notifications_viewer/content/preferences.js");
 loader.loadSubScript("chrome://notifications_viewer/content/misc.js");
-loader.loadSubScript("chrome://notifications_viewer/content/deliveryReport.js");
 loader.loadSubScript("chrome://notifications_viewer/content/customProperties.js");
 loader.loadSubScript("chrome://notifications_viewer/content/unit_test_inc.js");
 loader.loadSubScript("chrome://notifications_viewer/content/mailParser.js");
-var dsnparser = new Object();
-loader.loadSubScript("chrome://notifications_viewer/content/dsnParser.js",dsnparser);
+loader.loadSubScript("chrome://notifications_viewer/content/dsnParser.js");
+loader.loadSubScript("chrome://notifications_viewer/content/mdnParser.js");
 
 
 var tc_Preferences = new TestCase('Preferences');
 var tc_dsnparser= new TestCase('dsnParser');
+var tc_mdnparser= new TestCase('mdnParser');
 var tc_mailparser= new TestCase('mailParser');
 var tc_custom_properties= new TestCase('customProperties');
-
 
 /**
 	Compare two arrays
@@ -126,17 +125,41 @@ function isDeliveredToEquals(deliveredTo1,deliveredTo2)
 }
 
 
+/**
+	check if mdnReport objects are equals
+	@param {mdnReport} mdnReport1
+	@param {mdnReport} mdnReport2
+	@return {boolean} true if mdnReport objects are equals
+*/
+function isMdnReportEquals(mdnReport1,mdnReport2)
+{
+	// if is not a mdnReport
+	if (typeof(mdnReport1)!="object" || typeof(mdnReport2)!="object") return false;
+	if (!(mdnReport1 instanceof mdnReport) || !(mdnReport2 instanceof mdnReport)) return false;
 
+	// check equality
+	if (mdnReport1.reportingUA!=mdnReport2.reportingUA) return false;
+	if (mdnReport1.mdnGateway!=mdnReport2.mdnGateway) return false;
+	if (mdnReport1.originalRecipient!=mdnReport2.originalRecipient) return false;
+	if (mdnReport1.finalRecipient!=mdnReport2.finalRecipient) return false;
+	if (mdnReport1.originalMessageId!=mdnReport2.originalMessageId) return false;
+	if (mdnReport1.dispositionMode!=mdnReport2.dispositionMode) return false;
+	if (mdnReport1.dispositionType!=mdnReport2.dispositionType) return false;
+	return true;
+}
 
 
 
 // create dsnParser Objects
-var objParser = new dsnparser.dsnParser(msgDSN.join("")); // a valid delivery report (action=delivered)
-var objParser2 = new dsnparser.dsnParser(msgDSN2.join("")); // a valid delivery report (action=failed)
-var objParserKo = new dsnparser.dsnParser(msgNoDSN.join("")); // a multipart message (no DSN)
-var objParserKo2 = new dsnparser.dsnParser(msgBadDSN.join("")); // an invalid delivery report
+var objParser = new dsnParser(msgDSN.join("")); // a valid delivery report (action=delivered)
+var objParser2 = new dsnParser(msgDSN2.join("")); // a valid delivery report (action=failed)
+var objParserKo = new dsnParser(msgNoDSN.join("")); // a multipart message (no DSN)
+var objParserKo2 = new dsnParser(msgBadDSN.join("")); // an invalid delivery report
 
-
+// create mdnParser Objects
+var objMdnParser= new mdnParser(MdnDisplayed); // a displayed message
+var objMdnParser2= new mdnParser(MdnDenied); // a Denied message
+var objMdnParser3= new mdnParser(msgDSN.join("")); // a DSN !
 
 /**
 	mailParser unit test
@@ -263,7 +286,77 @@ tc_dsnparser.tests = {
 	}
 }
 
+/**
+	mdnParser unit test
+	@see mdnParser
+*/
+tc_mdnparser.tests = {
+	'isValidDisposition': function() {
+		assert.isTrue(objMdnParser.isValidDisposition("displayed"));
+		assert.isTrue(objMdnParser.isValidDisposition("deleted"));
+		assert.isTrue(objMdnParser.isValidDisposition("dispatched"));
+		assert.isTrue(objMdnParser.isValidDisposition("processed"));
+		assert.isTrue(objMdnParser.isValidDisposition("denied"));
+		assert.isTrue(objMdnParser.isValidDisposition("failed"));
+		assert.isFalse(objMdnParser.isValidDisposition("bad"));
+	},
+	'isMessageDisposition': function() {
+		assert.isTrue(objMdnParser.isMessageDisposition());
+		assert.isTrue(objMdnParser2.isMessageDisposition());
+		assert.isFalse(objMdnParser3.isMessageDisposition());
+	},
+	'getMdnReport': function() {
+		var resu=objMdnParser.getMdnReport();
+		assert.isTrue(typeof(resu)=="object");
+		assert.isTrue(resu instanceof mdnReport);
+		myMdnReport=new mdnReport();
+		myMdnReport.reportingUA="villou-gutsy; KMime 0.1.0";
+		myMdnReport.finalRecipient="rfc822; Daniel Rocher <daniel@vraimentbidon.org>";
+		myMdnReport.originalMessageId="<200804242037.54209.daniel@vraimentbidon.org>";
+		myMdnReport.dispositionMode="manual-action/MDN-sent-manually";
+		myMdnReport.dispositionType="displayed";
 
+		// check equality
+		assert.isTrue(isMdnReportEquals(resu,myMdnReport));
+
+		resu=objMdnParser2.getMdnReport();
+		assert.isTrue(typeof(resu)=="object");
+		assert.isTrue(resu instanceof mdnReport);
+		myMdnReport.originalMessageId="<200804242037.37481.daniel@vraimentbidon.org>";
+		myMdnReport.dispositionType="denied";
+
+		// check equality
+		assert.isTrue(isMdnReportEquals(resu,myMdnReport));
+
+		resu=objMdnParser3.getMdnReport(); //not a MDN
+		assert.isTrue(resu==null);
+	},
+	'getReportFromFields': function() {
+		myMdnReport=new mdnReport();
+		myMdnReport.reportingUA="villou-gutsy; KMime 0.1.0";
+		myMdnReport.finalRecipient="rfc822; Daniel Rocher <daniel@vraimentbidon.org>";
+		myMdnReport.originalMessageId="<200804242037.54209.daniel@vraimentbidon.org>";
+		myMdnReport.dispositionMode="manual-action/MDN-sent-manually";
+		myMdnReport.dispositionType="displayed";
+
+		var report=objMdnParser.getReportFromFields("Reporting-UA: villou-gutsy; KMime 0.1.0\n"+
+			"Final-Recipient: rfc822; Daniel Rocher <daniel@vraimentbidon.org>\n"+
+			"Original-Message-ID: <200804242037.54209.daniel@vraimentbidon.org>\n"+
+			"Disposition: manual-action/MDN-sent-manually; displayed\n\n");
+		// check equality
+		assert.isTrue(isMdnReportEquals(report,myMdnReport))
+;
+		myMdnReport.originalMessageId="<200804242037.37481.daniel@vraimentbidon.org>";
+		myMdnReport.dispositionType="denied";
+
+		report=objMdnParser2.getReportFromFields("Reporting-UA: villou-gutsy; KMime 0.1.0\n"+
+			"Final-Recipient: rfc822; Daniel Rocher <daniel@vraimentbidon.org>\n"+
+			"Original-Message-ID: <200804242037.37481.daniel@vraimentbidon.org>\n"+
+			"Disposition: manual-action/MDN-sent-manually; denied\n\n");
+		// check equality
+		assert.isTrue(isMdnReportEquals(report,myMdnReport));
+	}
+}
 
 var preferences=new Preferences();
 var wordList = ["erable","chaine","bouleau"];

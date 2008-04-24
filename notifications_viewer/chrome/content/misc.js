@@ -70,7 +70,7 @@ Services.prototype = {
 	{
 		if (!this.modeDebug) return;
 		this.consoleService.logStringMessage(this.extensionName+" : "+msg);
-		dump(".. "+this.currentDate()+" : "+msg+"\n");
+		dump(this.extensionName+":..:"+this.currentDate()+": "+msg+"\n");
 	},
 
 	/**
@@ -81,7 +81,7 @@ Services.prototype = {
 		var scriptError = Components.classes["@mozilla.org/scripterror;1"].createInstance(Components.interfaces.nsIScriptError);
 		scriptError.init(this.extensionName+" : "+err, "", "", 0,0,0,0);
 		this.consoleService.logMessage(scriptError);
-		dump("EE "+this.currentDate()+" : "+err+"\n");
+		dump(this.extensionName+":EE:"+this.currentDate()+": "+err+"\n");
 	},
 
 	/**
@@ -93,7 +93,7 @@ Services.prototype = {
 		var scriptWarning = Components.classes["@mozilla.org/scripterror;1"].createInstance(Components.interfaces.nsIScriptError);
 		scriptWarning.init(this.extensionName+" : "+msg, "", "", 0,0,1,0);
 		this.consoleService.logMessage(scriptWarning);
-		dump("WW "+this.currentDate()+" : "+msg+"\n");
+		dump(this.extensionName+":WW:"+this.currentDate()+": "+msg+"\n");
 	},
 
 	/**

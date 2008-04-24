@@ -3,14 +3,14 @@
 <HTML>
 <HEAD>
 <TITLE>
-dsnParser
+mdnParser
 </TITLE>
 <LINK REL ="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
 </HEAD>
 <SCRIPT>
 function asd()
 {
-parent.document.title="dsnParser";
+parent.document.title="mdnParser";
 }
 </SCRIPT>
 <BODY BGCOLOR="white" onload="asd();">
@@ -24,7 +24,7 @@ parent.document.title="dsnParser";
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
   <TR ALIGN="center" VALIGN="top">
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-dsnParser.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-mdnParser.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev">&nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
@@ -41,10 +41,10 @@ parent.document.title="dsnParser";
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="deliveryReport.html"><B>PREV CLASS</B></A><!-- 
+&nbsp;<A HREF="ManageMsgAsDN.html"><B>PREV CLASS</B></A><!-- 
    NEXT CLASS 
 -->
-&nbsp;<A HREF="findMsgDb.html"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="mdnReport.html"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -72,12 +72,12 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <HR>
 
 <!-- ======== START OF CLASS DATA ======== -->
-<H2>Class dsnParser</H2>
+<H2>Class mdnParser</H2>
 <PRE>Object
    |
    +--<a href='mailParser.html'>mailParser</a>
          |
-         +--<b>dsnParser</b>
+         +--<b>mdnParser</b>
 </PRE>
 
 
@@ -85,7 +85,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <DL>
    <!-- Class definition -->
    <DT>class 
-   <B>dsnParser</B>
+   <B>mdnParser</B>
    
       <DT>extends <a href='mailParser.html'>mailParser</a> 
    
@@ -93,8 +93,8 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 </DL>
    
    <P>
-   <BR/>This Class is a DSN Parser (see rfc3464).
-	<BR/><B>Version: </B>0.9.2 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/><I>Defined in <a href='overview-summary-dsnParser.js.html'>dsnParser.js</a></I><BR/><BR/>
+   <BR/>This Class is a MDN Parser (see rfc3798).
+	<BR/><B>Version: </B>0.9.0 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/><I>Defined in <a href='overview-summary-mdnParser.js.html'>mdnParser.js</a></I><BR/><BR/>
    </P>
    
    <HR>
@@ -118,46 +118,33 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;Array</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#cacheDeliveryReports">cacheDeliveryReports</A></B></CODE>
+   <TD><CODE><B><A HREF="#cacheMdnReport">cacheMdnReport</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cache of delivery Reports
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cache of MDN Report
 		<p>
 		Access functions:
 		<ul>
-			<li><a href="#getDeliveryReports">getDeliveryReports()</a>
-		</ul></TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;string</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#cacheOriginalMsgId">cacheOriginalMsgId</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this property holds original message-id for this DSN
-		<p>
-		Access functions:
-		<ul>
-			<li><a href="#getOriginalMsgId">getOriginalMsgId()</a>
+			<li><a href="#getMdnReport">getMdnReport()</a>
 		</ul></TD>
    </TR>
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;boolean</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#dsnAvailable">dsnAvailable</A></B></CODE>
+   <TD><CODE><B><A HREF="#mdnAvailable">mdnAvailable</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this property holds whether the message contains delivery status notifications
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this property holds whether the message contains message disposition notification
 		<p>
 		Access functions:
 		<ul>
-			<li><a href="#isDeliveryStatus">isDeliveryStatus()</a>
+			<li><a href="#isMessageDisposition">isMessageDisposition()</a>
 		</ul></TD>
    </TR>
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;Object</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#dsnRegExpCache">dsnRegExpCache</A></B></CODE>
+   <TD><CODE><B><A HREF="#mdnRegExpCache">mdnRegExpCache</A></B></CODE>
    <BR>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regular expressions cache</TD>
    </TR>
@@ -199,7 +186,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TD>
       <CODE>
 	 <B>
-	    <A HREF="#dsnParser()">dsnParser</A></B>(&lt;string&gt; message)
+	    <A HREF="#mdnParser()">mdnParser</A></B>(&lt;string&gt; message)
       </CODE>
       <BR>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -225,51 +212,34 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
-	    <CODE>&nbsp;Array</CODE>
+	    <CODE>&nbsp;<a href="mdnReport.html">mdnReport</a></CODE>
 	 </FONT>
       </TD>
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#getDeliveryReports">getDeliveryReports</A></B>()
+	       <A HREF="#getMdnReport">getMdnReport</A></B>()
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Get delivery reports
+	 Get MDN report
       </TD>
    </TR>
 
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
-	    <CODE>&nbsp;string</CODE>
+	    <CODE>&nbsp;<a href="mdnReport.html">mdnReport</a></CODE>
 	 </FONT>
       </TD>
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#getOriginalMsgId">getOriginalMsgId</A></B>()
+	       <A HREF="#getReportFromFields">getReportFromFields</A></B>(&lt;string&gt; mdnFieds)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Get original message-id for this DSN.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="deliveryReport.html">deliveryReport</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getReportFromFields">getReportFromFields</A></B>(&lt;string&gt; dsnFieds)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Return one delivery Report.
+	 Return a MDN Report.
       </TD>
    </TR>
 
@@ -282,11 +252,11 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#isDeliveryStatus">isDeliveryStatus</A></B>()
+	       <A HREF="#isMessageDisposition">isMessageDisposition</A></B>()
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Test if this message is a delivery status
+	 Test if this message is a MDN
       </TD>
    </TR>
 
@@ -299,19 +269,19 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#isValidReport">isValidReport</A></B>(&lt;string&gt; report)
+	       <A HREF="#isValidDisposition">isValidDisposition</A></B>(&lt;string&gt; report)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Test if a report is valid
+	 Test if report is valid
 	<p>
 	examples:
 	<pre>
-	isValidReport("delivered");
+	isValidDisposition("displayed");
 	// return true
-	isValidReport("failed");
+	isValidDisposition("deleted");
 	// return true
-	isValidReport("not");
+	isValidDisposition("not");
 	// return false
 	</pre>
       </TD>
@@ -350,51 +320,37 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TABLE>
 
    
-   <A NAME="cacheDeliveryReports"><!-- --></A>
-   <H3>cacheDeliveryReports</H3>
-   <PRE>Array&nbsp;<B>cacheDeliveryReports</B></PRE>
+   <A NAME="cacheMdnReport"><!-- --></A>
+   <H3>cacheMdnReport</H3>
+   <PRE>Array&nbsp;<B>cacheMdnReport</B></PRE>
    <UL>
-   cache of delivery Reports
+   cache of MDN Report
 		<p>
 		Access functions:
 		<ul>
-			<li><a href="#getDeliveryReports">getDeliveryReports()</a>
+			<li><a href="#getMdnReport">getMdnReport()</a>
 		</ul>
    
    </UL>
    <HR>
    
-   <A NAME="cacheOriginalMsgId"><!-- --></A>
-   <H3>cacheOriginalMsgId</H3>
-   <PRE>string&nbsp;<B>cacheOriginalMsgId</B></PRE>
+   <A NAME="mdnAvailable"><!-- --></A>
+   <H3>mdnAvailable</H3>
+   <PRE>boolean&nbsp;<B>mdnAvailable</B></PRE>
    <UL>
-   this property holds original message-id for this DSN
+   this property holds whether the message contains message disposition notification
 		<p>
 		Access functions:
 		<ul>
-			<li><a href="#getOriginalMsgId">getOriginalMsgId()</a>
+			<li><a href="#isMessageDisposition">isMessageDisposition()</a>
 		</ul>
    
    </UL>
    <HR>
    
-   <A NAME="dsnAvailable"><!-- --></A>
-   <H3>dsnAvailable</H3>
-   <PRE>boolean&nbsp;<B>dsnAvailable</B></PRE>
-   <UL>
-   this property holds whether the message contains delivery status notifications
-		<p>
-		Access functions:
-		<ul>
-			<li><a href="#isDeliveryStatus">isDeliveryStatus()</a>
-		</ul>
-   
-   </UL>
-   <HR>
-   
-   <A NAME="dsnRegExpCache"><!-- --></A>
-   <H3>dsnRegExpCache</H3>
-   <PRE>Object&nbsp;<B>dsnRegExpCache</B></PRE>
+   <A NAME="mdnRegExpCache"><!-- --></A>
+   <H3>mdnRegExpCache</H3>
+   <PRE>Object&nbsp;<B>mdnRegExpCache</B></PRE>
    <UL>
    regular expressions cache
    
@@ -416,9 +372,9 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TR>
 </TABLE>
 
-<A NAME="dsnParser()"><!-- --></A><H3>
-dsnParser</H3>
-<PRE><B>dsnParser</B>(&lt;string&gt; message)</PRE>
+<A NAME="mdnParser()"><!-- --></A><H3>
+mdnParser</H3>
+<PRE><B>mdnParser</B>(&lt;string&gt; message)</PRE>
 
 
 
@@ -440,7 +396,7 @@ dsnParser</H3>
 <!-- ADDITIONAL ATTRIBUTES -->
 
 <UL>   
-<B>Version: </B>0.9.2 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/>
+<B>Version: </B>0.9.0 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/>
 </UL>
 
 <HR/>
@@ -462,11 +418,11 @@ dsnParser</H3>
 
 <!-- One single method detail entry -->
 
-   <A NAME="getDeliveryReports"><!-- --></A>
-   <H3>getDeliveryReports</H3>
-   <PRE>Array <B>getDeliveryReports</B>()</PRE>
+   <A NAME="getMdnReport"><!-- --></A>
+   <H3>getMdnReport</H3>
+   <PRE><a href="mdnReport.html">mdnReport</a> <B>getMdnReport</B>()</PRE>
    
-      <UL>Get delivery reports</UL>
+      <UL>Get MDN report</UL>
    
 
    <!-- METHOD PARAMETERS START -->
@@ -477,7 +433,7 @@ dsnParser</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         <b>Array of <a href="deliveryReport.html#">deliveryReport</a></b> or null if is not a DSN message 	 
+         a <a href="mdnReport.html#">mdnReport</a> Object or null if is not a MDN message 	 
         </UL>
    </UL>
    
@@ -485,42 +441,17 @@ dsnParser</H3>
    <!-- ADDITIONAL ATTRIBUTES START -->
    
    <UL>   
-   <B>See:</B><UL>- <a href="deliveryReport.html#">deliveryReport</a></UL>
+   <B>See:</B><UL>- <a href="mdnReport.html#">mdnReport</a></UL>
    </UL>
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getOriginalMsgId"><!-- --></A>
-   <H3>getOriginalMsgId</H3>
-   <PRE>string <B>getOriginalMsgId</B>()</PRE>
-   
-      <UL>Get original message-id for this DSN.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         return message-id fields from the original message 	<p> 	In order to conform to RFC 822, the Message-ID must have the format 	<pre>"<" "unique" "&#64;" "full domain name" ">"</pre> 	<p> 	Example: <Pre>&#60;20080213131118.4DD991FF88&#64;mydomain.org&#62;</pre> 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
    
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
    <A NAME="getReportFromFields"><!-- --></A>
    <H3>getReportFromFields</H3>
-   <PRE><a href="deliveryReport.html">deliveryReport</a> <B>getReportFromFields</B>(&lt;string&gt; dsnFieds)</PRE>
+   <PRE><a href="mdnReport.html">mdnReport</a> <B>getReportFromFields</B>(&lt;string&gt; mdnFieds)</PRE>
    
-      <UL>Return one delivery Report.</UL>
+      <UL>Return a MDN Report.</UL>
    
 
    <!-- METHOD PARAMETERS START -->
@@ -528,7 +459,7 @@ dsnParser</H3>
    <UL>
    <B>Parameters:</B>
    
-     <UL><CODE>dsnFieds</CODE> -  group of per-recipient fields. 	<p> 	The syntax for the group of per-recipient fields is as follows (RFC 3464): 	<p> 	<ul> 		<li>[ original-recipient-field CRLF ] 		<li>final-recipient-field CRLF 		<li>action-field CRLF 		<li>status-field CRLF 	</ul> 	example: 	<pre> 	Original-Recipient: rfc822;louisl&#64;larry.slip.umd.edu<br> 	Final-Recipient: rfc822;louisl&#64;larry.slip.umd.edu<br> 	Action: failed<br> 	Status: 4.0.0<br> 	Diagnostic-Code: smtp; 426 connection timed out<br> 	</pre> 	
+     <UL><CODE>mdnFieds</CODE> -  group of per-recipient fields. 	<p> 	The syntax for the group of per-recipient fields is as follows (RFC 3798) 	
       </UL> 
    
    </UL>
@@ -539,7 +470,7 @@ dsnParser</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         A <a href="deliveryReport.html#">deliveryReport</a> object or null if is not a DSN 
+         a <a href="mdnReport.html#">mdnReport</a> object or null if is not a MDN 
         </UL>
    </UL>
    
@@ -549,11 +480,11 @@ dsnParser</H3>
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
-   <A NAME="isDeliveryStatus"><!-- --></A>
-   <H3>isDeliveryStatus</H3>
-   <PRE>boolean <B>isDeliveryStatus</B>()</PRE>
+   <A NAME="isMessageDisposition"><!-- --></A>
+   <H3>isMessageDisposition</H3>
+   <PRE>boolean <B>isMessageDisposition</B>()</PRE>
    
-      <UL>Test if this message is a delivery status</UL>
+      <UL>Test if this message is a MDN</UL>
    
 
    <!-- METHOD PARAMETERS START -->
@@ -564,7 +495,7 @@ dsnParser</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         <b>true</b> if this message is a delivery status 
+         <b>true</b> if this message is a message disposition notification 
         </UL>
    </UL>
    
@@ -574,19 +505,19 @@ dsnParser</H3>
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
-   <A NAME="isValidReport"><!-- --></A>
-   <H3>isValidReport</H3>
-   <PRE>boolean <B>isValidReport</B>(&lt;string&gt; report)</PRE>
+   <A NAME="isValidDisposition"><!-- --></A>
+   <H3>isValidDisposition</H3>
+   <PRE>boolean <B>isValidDisposition</B>(&lt;string&gt; report)</PRE>
    
-      <UL>Test if a report is valid
+      <UL>Test if report is valid
 	<p>
 	examples:
 	<pre>
-	isValidReport("delivered");
+	isValidDisposition("displayed");
 	// return true
-	isValidReport("failed");
+	isValidDisposition("deleted");
 	// return true
-	isValidReport("not");
+	isValidDisposition("not");
 	// return false
 	</pre></UL>
    
@@ -596,7 +527,7 @@ dsnParser</H3>
    <UL>
    <B>Parameters:</B>
    
-     <UL><CODE>report</CODE> -  report (<i>delivered, delayed, relayed, failed </i>or<i> expanded</i>) 	
+     <UL><CODE>report</CODE> -  report (<i>displayed, deleted</i>) 	
       </UL> 
    
    </UL>
@@ -632,7 +563,7 @@ dsnParser</H3>
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
   <TR ALIGN="center" VALIGN="top">
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-dsnParser.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-mdnParser.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><b>Tree</b></FONT></A>&nbsp;</TD>
   <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
@@ -649,10 +580,10 @@ dsnParser</H3>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="deliveryReport.html"><B>PREV CLASS</B></A><!-- 
+&nbsp;<A HREF="ManageMsgAsDN.html"><B>PREV CLASS</B></A><!-- 
    NEXT CLASS 
 -->
-&nbsp;<A HREF="findMsgDb.html"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="mdnReport.html"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;
