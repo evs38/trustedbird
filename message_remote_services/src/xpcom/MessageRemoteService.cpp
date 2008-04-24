@@ -52,6 +52,8 @@
 
 #include <fstream>
 
+using namespace std;
+
 /* Implementation file */
 NS_IMPL_ISUPPORTS1(MessageRemoteService, IMessageRemoteService)
 
@@ -136,8 +138,8 @@ void MessageRemoteService::InternalThreadFunc(void *orb) {
 
 NS_IMETHODIMP MessageRemoteService::SaveServiceIOR(const char * const ior, const char * const fileName) {
   nsresult rv;
-  nsCOMPtr<nsILocalFile> file;
-  cout << "MessageRemoteService" << endl;
+  
+  cout << "MessageRemoteService SaveServiceIOR() Start" << endl;
   nsCOMPtr<nsIServiceManager> svcMgr;
   rv = NS_GetServiceManager(getter_AddRefs(svcMgr));
   
@@ -150,50 +152,51 @@ NS_IMETHODIMP MessageRemoteService::SaveServiceIOR(const char * const ior, const
   NS_ENSURE_SUCCESS(rv, rv);
 
   //Get Home User Path
-  pDirectoryService->Get(NS_OS_HOME_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
+  nsCOMPtr<nsILocalFile> file;
+  
+  //NS_WIN_APPDATA_DIR for XP et NS_OS_HOME_DIR for Linux
+  #ifdef XP_WIN
+  rv = pDirectoryService->Get(NS_WIN_APPDATA_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
+  #else
+   rv = pDirectoryService->Get(NS_OS_HOME_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
+  #endif 
+  
+  NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoString homePath;
   rv = file->GetPath(homePath);
   
   NS_ENSURE_SUCCESS(rv, rv);
   
-  
   //Create Directory .milimail in user Home
-  nsCOMPtr<nsILocalFile> pServicesDirectory = do_CreateInstance (NS_LOCAL_FILE_CONTRACTID, &rv);
+  nsCOMPtr<nsILocalFile> pServicesDirectory (do_CreateInstance (NS_LOCAL_FILE_CONTRACTID, &rv));
   
   NS_ENSURE_SUCCESS(rv,rv);
-  
   
   rv = pServicesDirectory->InitWithPath(homePath);
   
   NS_ENSURE_SUCCESS(rv,rv);
-
   //Append doe not work (only one character) under Linux Why? Windows?
-  rv = pServicesDirectory->AppendNative(nsDependentCString(".milimail"));
+  rv = pServicesDirectory->AppendNative(nsDependentCString("milimail"));
   
   NS_ENSURE_SUCCESS(rv,rv);
-  
   //Dont check success, directory may exist
   rv = pServicesDirectory->Create(nsIFile::DIRECTORY_TYPE, 0755);
   
   //IOR Services File Create
-  
   rv = pServicesDirectory->AppendNative(nsDependentCString(fileName));
   
   
   nsAutoString serviceIORPath;
   rv = pServicesDirectory->GetPath(serviceIORPath);
   
-  
   NS_ConvertUTF16toUTF8 temp(serviceIORPath);
   
   //c++ std style, more elegant and simple than XPCOM Style
-  
-  cout << temp.get() << endl ;
   ofstream outfile(temp.get());
   outfile << ior ;
   outfile.close();
-  
+  cout << "MessageRemoteService SaveServiceIOR() End" << endl;
   return NS_OK;
   
 }
