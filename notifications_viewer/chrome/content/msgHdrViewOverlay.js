@@ -125,6 +125,7 @@ var msgHdrViewOverlay = {
 	
 	buildView:   function() {
 		var enabledTimeout=services.preferences.getBoolPref(services.extensionKey+".enabled_timeout");
+		var notificationsDisplayTextAndIcons=services.preferences.getIntPref(services.extensionKey+".display_text_and_icons");
 
 		// Summary
 		if (! this.cacheSummary) {
@@ -183,6 +184,7 @@ var msgHdrViewOverlay = {
 					}
 				}
 
+
 				// create labels
 				var labelAddress = document.createElement("label");
 				labelAddress.setAttribute("value",finalRecipient);
@@ -191,13 +193,24 @@ var msgHdrViewOverlay = {
 				labelAddress.setAttribute("class",classRecipient);
 				aRow.appendChild(labelAddress);
 
-				var labelStatus = document.createElement("label");
-				labelStatus.setAttribute("value",i18n_actionValue);
-				if (messageId.length>0)
-					labelStatus.setAttribute("onclick",onClickCommand);
-				labelStatus.setAttribute("class",classRecipient);
+				if (notificationsDisplayTextAndIcons & 0x2) { // if user want icon
+					// create image
+					var imageStatus = document.createElement("image");
+					imageStatus.setAttribute("class",classRecipient+"_img");
+					imageStatus.setAttribute("tooltiptext",i18n_actionValue);
+					if (messageId.length>0)
+						imageStatus.setAttribute("onclick",onClickCommand);
+					aRow.appendChild(imageStatus);
+				}
 
-				aRow.appendChild(labelStatus);
+				if (notificationsDisplayTextAndIcons & 0x1) { // if user want text
+					var labelStatus = document.createElement("label");
+					labelStatus.setAttribute("value",i18n_actionValue);
+					if (messageId.length>0)
+						labelStatus.setAttribute("onclick",onClickCommand);
+					labelStatus.setAttribute("class",classRecipient);
+					aRow.appendChild(labelStatus);
+				}
 			}
 
 			// change color for Summary

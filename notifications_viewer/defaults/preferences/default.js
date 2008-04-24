@@ -64,3 +64,9 @@ pref("extensions.notifications_viewer.timeout",24);
 // interval, in seconds, between two requests to ManageMsgAsDN
 pref("extensions.notifications_viewer.check_msg_expired.interval",600);
 
+/* display notifications with icons and/or text
+	b.1 text (0x1)
+	b1. icon (0x2)
+*/
+pref("extensions.notifications_viewer.display_text_and_icons",2);
+

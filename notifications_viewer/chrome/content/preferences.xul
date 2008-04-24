@@ -54,6 +54,7 @@
 	<tabbox flex="1">
 		<tabs id="prefTabBox">
 			<tab id="settingsGeneralities"  label="&PrefsDialog.generalities;"/>
+			<tab id="settingsDisplay"  label="&PrefsDialog.display;"/>
 		</tabs>
 		<tabpanels flex="1">
 			<tabpanel id="settingsGeneralities">
@@ -76,6 +77,21 @@
 						<hbox flex="1">
 							<checkbox id="moveNotification" label="&PrefsDialog.moveNotification;" flex="1" style="padding-top:0px;padding-left:10px;padding-bottom:10px;"/>
 						</hbox>
+					</groupbox>
+				</vbox>
+			</tabpanel>
+			<tabpanel id="settingsDisplay">
+				<vbox flex="1">
+					<groupbox flex="1">
+						<caption label="&PrefsDialog.groupBoxHdrView;" />
+						<groupbox  flex="1">
+							<caption label="&PrefsDialog.groupBoxHdrView.notificationsDisplayTextAndIcons;"/>
+							<radiogroup id="notificationsDisplayTextAndIcons">
+								<radio id="textOnly" value="1" label="&PrefsDialog.groupBoxHdrView.textOnly;"/>
+								<radio id="iconOnly" value="2" label="&PrefsDialog.groupBoxHdrView.iconOnly;"/>
+								<radio id="textAndIcon" value="3" label="&PrefsDialog.groupBoxHdrView.textAndIcon;"/>
+							</radiogroup>
+						</groupbox>
 					</groupbox>
 				</vbox>
 			</tabpanel>

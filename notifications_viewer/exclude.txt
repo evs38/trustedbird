@@ -8,3 +8,4 @@ exclude.txt
 doc/*
 unit_test*
 *.cache
+notifications_viewer_update.rdf

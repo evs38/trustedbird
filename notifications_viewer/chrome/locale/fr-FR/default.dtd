@@ -43,5 +43,11 @@
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Messages de notification">
 <!ENTITY PrefsDialog.markRead "Marquer comme lu">
 <!ENTITY PrefsDialog.moveNotification "Ajouter la notification dans le fil du message d'origine">
+<!ENTITY PrefsDialog.display "Affichage">
+<!ENTITY PrefsDialog.groupBoxHdrView "En-têtes">
+<!ENTITY PrefsDialog.groupBoxHdrView.notificationsDisplayTextAndIcons "Afficher les notifications avec">
+<!ENTITY PrefsDialog.groupBoxHdrView.textOnly "Texte seulement">
+<!ENTITY PrefsDialog.groupBoxHdrView.iconOnly "Icones seulement">
+<!ENTITY PrefsDialog.groupBoxHdrView.textAndIcon "Texte et icones">
 
 

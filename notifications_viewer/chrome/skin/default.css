@@ -130,6 +130,36 @@ treechildren::-moz-tree-row(good) {}
 	text-decoration: underline;
 }
 
+.dsn_failed_img {
+	list-style-image: url("chrome://notifications_viewer/skin/dsn_failed.png");
+	cursor: pointer;
+}
+
+.dsn_delivered_img,.dsn_expanded_img {
+	list-style-image: url("chrome://notifications_viewer/skin/dsn_delivered.png");
+	cursor: pointer;
+}
+
+.dsn_relayed_img {
+	list-style-image: url("chrome://notifications_viewer/skin/dsn_relayed.png");
+	cursor: pointer;
+}
+
+.dsn_timeout_img {
+	list-style-image: url("chrome://notifications_viewer/skin/dsn_timeout.png");
+	cursor: pointer;
+}
+
+.mdn_read_img {
+	list-style-image: url("chrome://notifications_viewer/skin/mdn_read.png");
+	cursor: pointer;
+}
+
+.mdn_delete_img {
+	list-style-image: url("chrome://notifications_viewer/skin/mdn_delete.png");
+	cursor: pointer;
+}
+
 
 /* view expand and collapse twisties */
 

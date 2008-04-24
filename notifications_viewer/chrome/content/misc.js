@@ -52,7 +52,7 @@ function Services() {
 	/** @type string */
 	this.extensionKey="extensions."+this.extensionName;
 	/** define current version for this extension @type string */
-	this.extensionVersion="0.5.2";
+	this.extensionVersion="0.5.3";
 	/** preferences @type Preferences */
 	this.preferences=new Preferences();
 	/** set debug mode @type boolean */
@@ -149,6 +149,7 @@ var prefDialogBox = {
 		this.enableTimeOut();
 		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
 		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
+		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
 	},
 
 	/**
@@ -167,10 +168,12 @@ var prefDialogBox = {
 			alert(strbundle.getString("invalidTimeOutValue"));
 			return false;
 		}
+
 		this.services.preferences.setBoolPref(this.services.extensionKey+".enabled_timeout",document.getElementById("considerTimeout").checked);
 		this.services.preferences.setIntPref(this.services.extensionKey+".timeout",timeOutValue);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_notifications_as_read",document.getElementById("markRead").checked);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".thread_on_original_message",document.getElementById("moveNotification").checked);
+		this.services.preferences.setIntPref(this.services.extensionKey+".display_text_and_icons",(document.getElementById("notificationsDisplayTextAndIcons").selectedIndex)+1);
 		return true;
 	},
 

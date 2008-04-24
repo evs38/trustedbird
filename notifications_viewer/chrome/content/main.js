@@ -79,6 +79,12 @@ function updateMsgList() {
  	Program entry (first time)
 */
 function main() {
+	srv.logSrv("Current version: "+srv.extensionVersion);
+
+	// first time, open window preferences
+	if (srv.preferences.getCharPref(srv.extensionKey+".version")=="")
+		window.openDialog("chrome://notifications_viewer/content/preferences.xul","notifications_viewerPrefsDialog","chrome,modal");
+
 	// check pref
 	checkPref();
 	// Adds a listener which will be called only when a message is added to the folder
