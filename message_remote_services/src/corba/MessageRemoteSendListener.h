@@ -67,7 +67,17 @@ public:
   NS_IMETHOD OnStatus(const char *aMsgID, const PRUnichar *aMsg) {
     return NS_OK;}
 
-  /* void OnStopSending (in string aMsgID, in nsresult aStatus, in wstring aMsg, in nsIFileSpec returnFileSpec); */
+  /*!
+   * 
+   * This method is called after each sending process.\n
+   * The implementation calls the clients servant to inform him of the success or failure
+   *  of the sending process.
+   * 
+   * \param aMsgID is the Identification of the message
+   * \param is the status of the process (aStatus == 0 means OK)
+   * \param aMsg is the content of the message
+   * 
+   */
   NS_IMETHOD OnStopSending(const char *aMsgID, nsresult aStatus, const PRUnichar *aMsg,
       nsIFileSpec *returnFileSpec) {
     bool success = false;
