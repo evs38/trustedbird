@@ -1,2 +1,2 @@
-idlj -td src/  ../MessageRemoteService/src/corba/Services.idl
-idlj -fall -td src/  ../MessageRemoteService/src/corba/ClientServices.idl
+idlj -td src/  ../../src/corba/Services.idl
+idlj -fall -td src/  ../../src/corba/ClientServices.idl
