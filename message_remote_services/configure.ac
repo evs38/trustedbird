@@ -35,9 +35,5 @@ AC_ARG_WITH(mozilla-sdk,
     [  AC_MSG_ERROR([--with-mozilla-sdk=DIR is mandatory])])
 AC_SUBST(mozilla_sdk)
 
-# Checks for header files.
-
-#AC_SUBST(ROOT_MOZILLA, [/home/oparnier/workspace/mozilla-2.0/dist])
-
 AC_CONFIG_FILES([Makefile src/Makefile src/corba/Makefile src/xpcom/Makefile])
 AC_OUTPUT
