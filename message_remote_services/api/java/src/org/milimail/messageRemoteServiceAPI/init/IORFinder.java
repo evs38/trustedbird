@@ -53,7 +53,7 @@ public class IORFinder {
 	public static String getIOR(String service) throws IOException{
 		
 		String filename = System.getProperty("user.home") + 
-        System.getProperty("file.separator") + ".milimail" + System.getProperty("file.separator") +
+        System.getProperty("file.separator") + "milimail" + System.getProperty("file.separator") +
         service + ".ior";
     	
 		File file = new File(filename);
