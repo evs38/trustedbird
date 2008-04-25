@@ -154,9 +154,9 @@ NS_IMETHODIMP MessageRemoteService::SaveServiceIOR(const char * const ior, const
   //Get Home User Path
   nsCOMPtr<nsILocalFile> file;
   
-  //NS_WIN_APPDATA_DIR for XP et NS_OS_HOME_DIR for Linux
+  //NS_WIN_HOME_DIR for XP et NS_OS_HOME_DIR for Linux
   #ifdef XP_WIN
-  rv = pDirectoryService->Get(NS_WIN_APPDATA_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
+  rv = pDirectoryService->Get(NS_WIN_HOME_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
   #else
    rv = pDirectoryService->Get(NS_OS_HOME_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
   #endif 
