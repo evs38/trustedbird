@@ -72,7 +72,7 @@ public class MessageServiceTestWithError extends TestCase {
 		composeService.sendMessage(account, message, messageListener);
 	}
 
-	//Currently fail, need to control validity server side
+	//Currently fail and block (max usage of thunderbird), need to control validity server side
 	//UI dont know about our listener
 	public void testSendMessageWithoutTo() throws Exception {
 		Account[] accounts = accountService.GetAllAccounts();
@@ -85,7 +85,8 @@ public class MessageServiceTestWithError extends TestCase {
 		message.setBody("body from API");
 		composeService.sendMessage(account, message, messageListener);
 	}
-
+	
+	//Same as previous
 	public void testSendMessageMalformedTo() throws Exception {
 		Account[] accounts = accountService.GetAllAccounts();
 
