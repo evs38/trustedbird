@@ -72,9 +72,7 @@
 		<mkdir dir="classes" />
 		<javac srcdir="src" destdir="classes">
 			<classpath>
-				<fileset dir="lib">
-					<include name="**/*" />
-				</fileset>
+				<fileset dir="lib"/>
 			</classpath>
 		</javac>
 	</target>
@@ -86,39 +84,25 @@
 		<mkdir dir="classes_test_up" />
 		<javac srcdir="test_up" destdir="classes_test_up">
 			<classpath>
-				<fileset dir="lib">
-					<include name="**/*" />
-				</fileset>
-				<fileset dir="tools">
-					<include name="**/*" />
-				</fileset>
-				<fileset dir="dist/tmp">
-					<include name="**/*" />
-				</fileset>
+				<fileset dir="lib"/>
+				<fileset dir="tools"/>
+				<fileset dir="dist/tmp"/>
 			</classpath>
 		</javac>
 
 		<mkdir dir="classes_test_down" />
 		<javac srcdir="test_down" destdir="classes_test_down">
 			<classpath>
-				<fileset dir="lib">
-					<include name="**/*" />
-				</fileset>
-				<fileset dir="tools">
-					<include name="**/*" />
-				</fileset>
-				<fileset dir="dist/tmp">
-					<include name="**/*" />
-				</fileset>
+				<fileset dir="lib"/>
+				<fileset dir="tools"/>
+				<fileset dir="dist/tmp"/>
 			</classpath>
 		</javac>
 	</target>
 	<target name="dist" depends="compile,javadoc" description="create API file ready to distribute">
 		<mkdir dir="dist/tmp" />
 		<jar destfile="dist/tmp/MessageRemoteServicesAPI.jar">
-			<fileset dir="classes">
-				<include name="**/*" />
-			</fileset>
+			<fileset dir="classes"/>
 		</jar>
 		<copy todir="dist/tmp/lib">
 			<fileset dir="lib" />
