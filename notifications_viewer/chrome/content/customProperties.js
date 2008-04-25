@@ -225,7 +225,7 @@ customProperties.prototype = {
 		@param {string} messageId  message-id of notification
 		@return {boolean} <b>false</b> if an error occured
 	*/
-	addReport: function(dveryReport,messageId) {
+	addDsnReport: function(dveryReport,messageId) {
 		// check type
 		if (typeof(dveryReport)!="object") return false;
 		if (!dveryReport instanceof deliveryReport) return false;
@@ -246,6 +246,36 @@ customProperties.prototype = {
 
 		return true;
 	},
+
+	/**
+		Change properties with the {@link mdnReport} object
+		@param {mdnReport} report a {@link mdnReport} object
+		@param {string} messageId  message-id of notification
+		@return {boolean} <b>false</b> if an error occured
+	*/
+	addMdnReport: function(report,messageId) {
+		// check type
+		if (typeof(report)!="object") return false;
+		if (!report instanceof mdnReport) return false;
+
+		var finalRecipient=report.finalRecipient;
+		// TODO
+
+		// get address from final-recipient fields (see RFC3464)
+		// final-recipient-field = 
+		//        address-type ";" generic-address
+		// example: rfc822;louisl@larry.slip.umd.edu
+		var finalRecipientArray=finalRecipient.split(";");
+
+		if (finalRecipientArray.length >1)
+			finalRecipient=finalRecipientArray[1].replace(this.regExpCache.trim, "");
+
+		// TODO
+
+		return true;
+	},
+
+
 
 	/**
 		define all properties

@@ -150,13 +150,24 @@ treechildren::-moz-tree-row(good) {}
 	cursor: pointer;
 }
 
-.mdn_read_img {
-	list-style-image: url("chrome://notifications_viewer/skin/mdn_read.png");
+/** MDN  */
+.mdn_displayed_img {
+	list-style-image: url("chrome://notifications_viewer/skin/mdn_displayed.png");
 	cursor: pointer;
 }
 
-.mdn_delete_img {
-	list-style-image: url("chrome://notifications_viewer/skin/mdn_delete.png");
+.mdn_deleted_img {
+	list-style-image: url("chrome://notifications_viewer/skin/mdn_deleted.png");
+	cursor: pointer;
+}
+
+.mdn_dispatched_img,.mdn_processed_img {
+	list-style-image: url("chrome://notifications_viewer/skin/mdn_dispatched.png");
+	cursor: pointer;
+}
+
+.mdn_failed_img,.mdn_denied_img {
+	list-style-image: url("chrome://notifications_viewer/skin/mdn_failed.png");
 	cursor: pointer;
 }
 

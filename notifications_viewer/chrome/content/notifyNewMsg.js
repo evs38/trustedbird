@@ -166,7 +166,7 @@ var notifyListener = {
 		var Index=msgSrc.indexOf(separator);
 		if (Index!= -1)
 		{
-			headersSrc=msgSrc.substring(0,Index);
+			headersSrc=msgSrc.substring(0,Index)+"\n";
 			bodySrc=msgSrc.substring(Index+separator.length);
 		}
 
@@ -175,31 +175,83 @@ var notifyListener = {
 		mimeHeaders.initialize(headersSrc, headersSrc.length);
 		var contentT=mimeHeaders.extractHeader( "content-type" , false );
 
+		var strTypeNotification="";
+
+		// enum
+		var enumOfNotification = {
+			unknown : 0,
+			DSN : 1,
+			MDN : 2
+		}
+
+		var typeOfMsg=enumOfNotification.unknown;
+
 		// found Content type
-		if ((/multipart\/report/i).test(contentT) && (/report\-type[ \\s]*=[ \\s]*delivery\-status/i).test(contentT))
+		if ((/multipart\/report/i).test(contentT)) {
+			if ((/report\-type[ \\s]*=[ \\s]*"?delivery\-status"?/i).test(contentT)) {
+				// It's a DSN message, tag this message
+				header.setStringProperty("x-nviewer-tags","DSN");
+				typeOfMsg=enumOfNotification.DSN;
+				strTypeNotification="DSN";
+			}
+			if ((/report\-type[ \\s]*=[ \\s]*"?disposition\-notification"?/i).test(contentT)) {
+				// It's a MDN message, tag this message
+				header.setStringProperty("x-nviewer-tags","MDN");
+				typeOfMsg=enumOfNotification.MDN;
+				strTypeNotification="MDN";
+			}
+		}
+
+		if (typeOfMsg!=enumOfNotification.unknown)
 		{
-			// It's a new DSN
+			// It's a new notification
 			SetBusyCursor(window, true);
 
-			// tag this message
-			header.setStringProperty("x-nviewer-tags","DSN");
+			var dsnparser=null;
+			var mdnparser=null;
+			var deliveryReports=null;
+			var mdnReport=null;
+			var originalMsgId="";
 
-			srv.logSrv("DSN (MsgKey="+header.messageKey+") - in /"+folder.prettyName + "/ folder (" + folder.rootFolder.prettyName+ ")");
-			// parse DSN
-			dsnparser= new dsnParser(msgSrc);
+			srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - in /"+folder.prettyName + "/ folder (" + folder.rootFolder.prettyName+ ")");
 
-			// get delivery reports
-			var deliveryReports=dsnparser.getDeliveryReports();
+			if (typeOfMsg==enumOfNotification.DSN) {
+				// parse DSN
+				dsnparser= new dsnParser(msgSrc);
 
-			if (deliveryReports==null || deliveryReports=="") {
-				srv.warningSrv("DSN (MsgKey="+header.messageKey+") - This message doesn't contain delivery reports");
-				SetBusyCursor(window, false);
-				return;
+				// get delivery reports
+				deliveryReports=dsnparser.getDeliveryReports();
+
+				if (deliveryReports==null || deliveryReports=="") {
+					srv.warningSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - This message doesn't contain delivery reports");
+					SetBusyCursor(window, false);
+					return;
+				}
+
+				// get original Message-ID
+				originalMsgId=dsnparser.getOriginalMsgId();
 			}
 
-			// get original Message-ID
-			var originalMsgId=dsnparser.getOriginalMsgId();
-			srv.logSrv("DSN (MsgKey="+header.messageKey+") - Original message-Id: "+originalMsgId);
+
+			if (typeOfMsg==enumOfNotification.MDN) {
+				// parse MDN
+				mdnparser= new mdnParser(msgSrc);
+
+				// get MDN report
+				mdnReport=mdnparser.getMdnReport();
+
+				if (mdnReport==null || mdnReport=="") {
+					srv.warningSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - This message doesn't contain report");
+					SetBusyCursor(window, false);
+					return;
+				}
+
+				// get original Message-ID
+				originalMsgId=mdnReport.originalMessageId;
+			}
+
+
+			srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - Original message-Id: "+originalMsgId);
 
 			// read user preferences
 			var includeAllAccounts=srv.preferences.getBoolPref(srv.extensionKey+".search_original_msgid.include_all_accounts");
@@ -215,10 +267,11 @@ var notifyListener = {
 
 			if (msgDBHdrOrigin) {
 				// message found
-				srv.logSrv("DSN (MsgKey="+header.messageKey+") - found original message: "+msgDBHdrOrigin.messageId+" "+msgDBHdrOrigin.subject);
+				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - found original message: "+msgDBHdrOrigin.messageId+" "+msgDBHdrOrigin.subject);
 
-				// add to the list
-				mMsgAsDsnReq.addElement(msgDBHdrOrigin.messageId);
+				// DSN: add to the list
+				if (typeOfMsg==enumOfNotification.DSN)
+					mMsgAsDsnReq.addElement(msgDBHdrOrigin.messageId);
 
 				// If user wants the notification is marked as read
 				var notifAsReadPref=srv.preferences.getBoolPref(srv.extensionKey+".mark_notifications_as_read");
@@ -233,7 +286,7 @@ var notifyListener = {
 				var summaryP=msgDBHdrOrigin.getStringProperty("x-nviewer-dsn-summary");
 				var flagsP=msgDBHdrOrigin.getStringProperty("x-nviewer-dsn-flags");
 
-				srv.logSrv("DSN (MsgKey="+header.messageKey+") - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				// first delivery notification received for this message
 				if (deliveredToP=="") {
@@ -259,12 +312,21 @@ var notifyListener = {
 
 				var customProp=new customProperties(deliveredToP,statusP,summaryP,flagsP);
 
-				// read delivery Reports
-				for (var i=0; i < deliveryReports.length ; i++) {
-					srv.logSrv("DSN (MsgKey="+header.messageKey+") - "+deliveryReports[i].finalRecipient+" "+deliveryReports[i].actionValue);
-					// test if it's a valid report
-					if (dsnparser.isValidReport(deliveryReports[i].actionValue))
-						customProp.addReport(deliveryReports[i],header.messageId);
+
+				if (typeOfMsg==enumOfNotification.DSN) {
+					// read delivery Reports
+					for (var i=0; i < deliveryReports.length ; i++) {
+						srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - "+deliveryReports[i].finalRecipient+" "+deliveryReports[i].actionValue);
+						// test if it's a valid report
+						if (dsnparser.isValidReport(deliveryReports[i].actionValue))
+							customProp.addDsnReport(deliveryReports[i],header.messageId);
+					}
+				}
+
+				if (typeOfMsg==enumOfNotification.MDN && mdnReport) {
+					// read MDN report
+					srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - "+mdnReport.finalRecipient+" "+mdnReport.dispositionMode+" "+mdnReport.dispositionType+" "+mdnReport.originalMessageId);
+					customProp.addMdnReport(mdnReport,header.messageId);
 				}
 
 				deliveredToP=customProp.getDeliveredToProperty();
@@ -272,7 +334,7 @@ var notifyListener = {
 				summaryP=customProp.getSummaryProperty();
 				flagsP=customProp.getFlagsProperty();
 
-				srv.logSrv("DSN (MsgKey="+header.messageKey+") - new notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - new notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				// save properties in the original message
 				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-to",deliveredToP);
@@ -280,9 +342,11 @@ var notifyListener = {
 				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-summary",summaryP);
 				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-flags",flagsP);
 
-				// If user want to create a thread on the original message, move DSN message
+				// If user want to create a thread on the original message, move Notification message
 				var threadPref=srv.preferences.getBoolPref(srv.extensionKey+".thread_on_original_message");
-				if (threadPref) {
+
+				if (threadPref && typeOfMsg==enumOfNotification.DSN) {
+					// DSN
 					var targetFolder = RDF.GetResource(msgDBHdrOrigin.folder.URI).QueryInterface(Components.interfaces.nsIMsgFolder);
 					// add References and In-Reply-To properties
 					var arrayProperties=new Array();
@@ -292,9 +356,14 @@ var notifyListener = {
 					arrayProperties.push(new propertyObj("In-Reply-To","<"+msgDBHdrOrigin.messageId+">"));
 					notifyListener.threadNotification(header,msgSrc,targetFolder,arrayProperties);
 				}
+
+				if (threadPref && typeOfMsg==enumOfNotification.MDN) {
+					// MDN
+					moveMessage(header,msgDBHdrOrigin.folder);
+				}
 			}
 			else {
-				srv.warningSrv("DSN (MsgKey="+header.messageKey+") - Original message has not been found");
+				srv.warningSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - Original message has not been found");
 			}
 
 			SetBusyCursor(window, false);

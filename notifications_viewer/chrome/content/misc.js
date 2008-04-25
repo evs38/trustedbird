@@ -186,5 +186,47 @@ var prefDialogBox = {
 }
 
 
+/**
+	Move message
+	@param {nsIMsgDBHdr} msgHdr message to move
+	@param {nsIMsgFolder} dstFolder folder destination
+	@return {boolean} return <b>false</b> if an error occured
+*/
+function moveMessage (msgHdr, dstFolder) {
+
+	var srcFolder=msgHdr.folder;
+
+	// test if srcFolder and dstFolder are equals
+	if (srcFolder==dstFolder) {
+		srv.logSrv("moveMessage - source and target are equals. Exit");
+		return true;
+	}
+
+	var messagesArray = Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
+
+	messagesArray.AppendElement(msgHdr);
+
+	srv.logSrv("moveMessage - from: '" + srcFolder.abbreviatedName + "' to '" + dstFolder.abbreviatedName + "': " + msgHdr.messageId);
+
+	try {
+		dstFolder.copyMessages(
+			srcFolder,       // srcFolder
+			messagesArray,   // nsISupportsArray
+			true,            // isMove
+			msgWindow,       // nsIMsgWindow
+			null,            // nsIMsgCopyServiceListener
+			false,           // isFolder
+			true             // allowUndo
+		);
+	} catch (ex) {
+		srv.errorSrv("moveMessage - Error moving messages from '" + srcFolder.abbreviatedName + "' to '" + dstFolder.abbreviatedName + "' - MsgId: " + msgHdr.messageId);
+		return false;
+	}
+
+	return true;
+}
+
+
+
 
 

@@ -492,7 +492,7 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo1.messageId="<123456@vraimentbidon.org>";
 		dlveryReport.finalRecipient="rfc822;daniel@vraimentbidon.org";
 		dlveryReport.actionValue="delivered";
-		assert.isTrue(customprop.addReport(dlveryReport,"<123456@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<123456@vraimentbidon.org>"));
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;;;0\n\tdirsim@vraimentbidon.org;;;0\n\tsersim.fs@vraimentbidon.org;;;0");
 		assert.equals(customprop.getSummaryProperty(),"1/4");
 		assert.equals(customprop.getStatusProperty(),"");
@@ -509,7 +509,7 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo2.messageId="<91A51045@vraimentbidon.org>";
 		dlveryReport.finalRecipient="rfc822;sertim@vraimentbidon.org";
 		dlveryReport.actionValue="delayed";
-		assert.isTrue(customprop.addReport(dlveryReport,"<91A51045@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<91A51045@vraimentbidon.org>"));
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;delayed;<91A51045@vraimentbidon.org>;0\n\tdirsim@vraimentbidon.org;;;0\n\tsersim.fs@vraimentbidon.org;;;0");
 		assert.equals(customprop.getSummaryProperty(),"1/4");
 		assert.equals(customprop.getStatusProperty(),"");
@@ -526,7 +526,7 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo2.messageId="<91A51049@vraimentbidon.org>";
 		dlveryReport.finalRecipient="rfc822;sertim@vraimentbidon.org";
 		dlveryReport.actionValue="failed";
-		assert.isTrue(customprop.addReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;failed;<91A51049@vraimentbidon.org>;0\n\tdirsim@vraimentbidon.org;;;0\n\tsersim.fs@vraimentbidon.org;;;0");
 		assert.equals(customprop.getSummaryProperty(),"1/4");
 		assert.equals(customprop.getStatusProperty(),"bad");
@@ -543,7 +543,7 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo3.messageId="<91E78A09@vraimentbidon.org>";
 		dlveryReport.finalRecipient="rfc822;dirsim@vraimentbidon.org";
 		dlveryReport.actionValue="expanded";
-		assert.isTrue(customprop.addReport(dlveryReport,"<91E78A09@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<91E78A09@vraimentbidon.org>"));
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;failed;<91A51049@vraimentbidon.org>;0\n\tdirsim@vraimentbidon.org;expanded;<91E78A09@vraimentbidon.org>;0\n\tsersim.fs@vraimentbidon.org;;;0");
 		assert.equals(customprop.getSummaryProperty(),"2/4");
 		assert.equals(customprop.getStatusProperty(),"bad");
@@ -560,7 +560,7 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo2.messageId="<91A51049@vraimentbidon.org>";
 		dlveryReport.finalRecipient="rfc822;sertim@vraimentbidon.org";
 		dlveryReport.actionValue="relayed";
-		assert.isTrue(customprop.addReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;relayed;<91A51049@vraimentbidon.org>;0\n\tdirsim@vraimentbidon.org;expanded;<91E78A09@vraimentbidon.org>;0\n\tsersim.fs@vraimentbidon.org;;;0");
 		assert.equals(customprop.getSummaryProperty(),"2/4");
 		assert.equals(customprop.getStatusProperty(),"middle");
@@ -579,10 +579,10 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo4.messageId="<A87CD51@vraimentbidon.org>";
 		dlveryReport.finalRecipient="rfc822;sertim@vraimentbidon.org";
 		dlveryReport.actionValue="expanded";
-		assert.isTrue(customprop.addReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
 		dlveryReport.finalRecipient="rfc822;sersim.fs@vraimentbidon.org";
 		dlveryReport.actionValue="delivered";
-		assert.isTrue(customprop.addReport(dlveryReport,"<A87CD51@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<A87CD51@vraimentbidon.org>"));
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;expanded;<91A51049@vraimentbidon.org>;0\n\tdirsim@vraimentbidon.org;expanded;<91E78A09@vraimentbidon.org>;0\n\tsersim.fs@vraimentbidon.org;delivered;<A87CD51@vraimentbidon.org>;0");
 		assert.equals(customprop.getSummaryProperty(),"4/4");
 		assert.equals(customprop.getStatusProperty(),"good");
@@ -600,7 +600,7 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo2.flags=0x1;
 		dlveryReport.finalRecipient="rfc822;sertim@vraimentbidon.org";
 		dlveryReport.actionValue="delayed";
-		assert.isTrue(customprop.addReport(dlveryReport,""));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,""));
 
 		// test before setMsgAsExpired()
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;delayed;;0\n\tdirsim@vraimentbidon.org;expanded;<91E78A09@vraimentbidon.org>;0\n\tsersim.fs@vraimentbidon.org;delivered;<A87CD51@vraimentbidon.org>;0");
@@ -625,7 +625,7 @@ tc_custom_properties.tests = {
 		tmpDeliveredTo2.messageId="<91A51049@vraimentbidon.org>";
 		dlveryReport.finalRecipient="rfc822;sertim@vraimentbidon.org";
 		dlveryReport.actionValue="delivered";
-		assert.isTrue(customprop.addReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
+		assert.isTrue(customprop.addDsnReport(dlveryReport,"<91A51049@vraimentbidon.org>"));
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;delivered;<123456@vraimentbidon.org>;0\n\tsertim@vraimentbidon.org;delivered;<91A51049@vraimentbidon.org>;1\n\tdirsim@vraimentbidon.org;expanded;<91E78A09@vraimentbidon.org>;0\n\tsersim.fs@vraimentbidon.org;delivered;<A87CD51@vraimentbidon.org>;0");
 		assert.equals(customprop.getSummaryProperty(),"4/4");
 		assert.equals(customprop.getStatusProperty(),"good");

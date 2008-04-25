@@ -45,7 +45,7 @@
 
 /**
 	@class This Class is a mail Parser
-	@version 0.9.3
+	@version 0.9.4
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@constructor
 	@param {string} message message source
@@ -233,8 +233,8 @@ mailParser.prototype = {
 
 		// add metacharacter \ (backslash) escape keys
 		tField=escapeRegExp(tField);
-		tData+="\n";
-		var regexp=new RegExp(tField+":(.*(?:\\n[ \\t].*){0,2}\\n)","ig");
+		tData="\n"+tData+"\n";
+		var regexp=new RegExp("\\n"+tField+":(.*(?:\\n[ \\t].*){0,2}\\n)","ig");
 		regexp.lastIndex = 0;
 		var Value=regexp.exec(tData);
 		if ((Value!=null) && (Value.length>1))
