@@ -137,7 +137,7 @@
 				</fileset>
 			</batchtest>
 		</junit>
-		<echo>Test Up finished with success</echo>
+		<echo>Test Down finished with success</echo>
 	</target>
 
 
