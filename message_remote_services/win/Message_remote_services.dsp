@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /I "..\lib\omniORB-4.1.2\include" /I "C:\mozilla-v0\dist\include\xpcom" /I "C:\mozilla-v0\dist\include\nspr" /I "..\src\corba" /I "..\src\xpcom" /I "C:\mozilla-v0\dist\include\msgbase" /I "C:\mozilla-v0\dist\include\msgcompose" /I "C:\mozilla-v0\dist\include\mailnews" /I "C:\mozilla-v0\dist\include\string" /I "C:\mozilla-v0\dist\include\necko" /I "C:\mozilla-v0\dist\include\msgdb" /I "C:\mozilla-v0\dist\include\msgbaseutil" /I "C:\mozilla-v0\dist\include\appshell" /I "C:\mozilla-v0\dist\include\dom" /I "C:\mozilla-v0\dist\include\msgsmime" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /D "XPCOM_GLUE" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX  /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /D "XPCOM_GLUE" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 omniORB4_rt.lib omniDynamic4_rt.lib omnithread_rt.lib xpcom.lib string_s.lib nspr4.lib xpcom_core.lib plds4.lib plc4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"Release/messageremoteservices.dll" /libpath:"C:\mozilla-v0\dist\lib" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
+# ADD LINK32 omniORB4_rt.lib omniDynamic4_rt.lib omnithread_rt.lib xpcom.lib string_s.lib nspr4.lib xpcom_core.lib plds4.lib plc4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"Release/messageremoteservices.dll" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
 # SUBTRACT LINK32 /verbose /incremental:yes /debug /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "Message_remote_services - Win32 Debug"
