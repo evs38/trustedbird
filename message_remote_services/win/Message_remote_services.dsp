@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 omniORB4_rt.lib omniDynamic4_rt.lib omnithread_rt.lib xpcom.lib string_s.lib nspr4.lib xpcom_core.lib plds4.lib plc4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"Release/messageremoteservices.dll" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
+# ADD LINK32 omniORB4_rt.lib omniDynamic4_rt.lib omnithread_rt.lib xpcom.lib string_s.lib nspr4.lib xpcom_core.lib plds4.lib plc4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"Release/libMessageRemoteService.dll" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
 # SUBTRACT LINK32 /verbose /incremental:yes /debug /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "Message_remote_services - Win32 Debug"
