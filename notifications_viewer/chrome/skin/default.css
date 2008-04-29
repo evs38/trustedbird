@@ -130,6 +130,11 @@ treechildren::-moz-tree-row(good) {}
 	text-decoration: underline;
 }
 
+.dsn_delayed {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
 .dsn_failed_img {
 	list-style-image: url("chrome://notifications_viewer/skin/dsn_failed.png");
 	cursor: pointer;
@@ -150,7 +155,36 @@ treechildren::-moz-tree-row(good) {}
 	cursor: pointer;
 }
 
+.dsn_delayed_img {
+	list-style-image: url("chrome://notifications_viewer/skin/dsn_delayed.png");
+	cursor: pointer;
+}
+
 /** MDN  */
+
+.mdn_displayed  {
+	cursor: pointer;
+	color: green;
+	text-decoration: underline;
+}
+
+.mdn_deleted  {
+	cursor: pointer;
+	color: blue;
+	text-decoration: underline;
+}
+
+.mdn_failed,.mdn_denied  {
+	cursor: pointer;
+	color: red;
+	text-decoration: underline;
+}
+
+.mdn_dispatched,.mdn_processed {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
 .mdn_displayed_img {
 	list-style-image: url("chrome://notifications_viewer/skin/mdn_displayed.png");
 	cursor: pointer;

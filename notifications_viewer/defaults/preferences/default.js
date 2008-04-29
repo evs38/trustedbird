@@ -68,5 +68,13 @@ pref("extensions.notifications_viewer.check_msg_expired.interval",600);
 	b.1 text (0x1)
 	b1. icon (0x2)
 */
-pref("extensions.notifications_viewer.display_text_and_icons",2);
+pref("extensions.notifications_viewer.display_text_and_icons",3);
+
+// parse or not DSN
+pref("extensions.notifications_viewer.parse_dsn",true);
+
+// parse or not MDN
+pref("extensions.notifications_viewer.parse_mdn",true);
+
+
 

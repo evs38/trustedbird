@@ -3,14 +3,14 @@
 <HTML>
 <HEAD>
 <TITLE>
-Services
+mdnProperty
 </TITLE>
 <LINK REL ="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
 </HEAD>
 <SCRIPT>
 function asd()
 {
-parent.document.title="Services";
+parent.document.title="mdnProperty";
 }
 </SCRIPT>
 <BODY BGCOLOR="white" onload="asd();">
@@ -24,7 +24,7 @@ parent.document.title="Services";
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
   <TR ALIGN="center" VALIGN="top">
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-misc.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-customProperties.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev">&nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
@@ -41,10 +41,10 @@ parent.document.title="Services";
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="propertyObj.html"><B>PREV CLASS</B></A><!-- 
+&nbsp;<A HREF="mdnParser.html"><B>PREV CLASS</B></A><!-- 
    NEXT CLASS 
 -->
-&nbsp;<B>NEXT CLASS</B></FONT></TD>
+&nbsp;<A HREF="mdnReport.html"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -72,10 +72,10 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <HR>
 
 <!-- ======== START OF CLASS DATA ======== -->
-<H2>Class Services</H2>
+<H2>Class mdnProperty</H2>
 <PRE>Object
    |
-   +--<b>Services</b>
+   +--<b>mdnProperty</b>
 </PRE>
 
 
@@ -83,14 +83,14 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <DL>
    <!-- Class definition -->
    <DT>class 
-   <B>Services</B>
+   <B>mdnProperty</B>
    
 
 </DL>
    
    <P>
-   <BR/>Services for this plugin
-	<BR/><I>Defined in <a href='overview-summary-misc.js.html'>misc.js</a></I><BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense   <BR/>
+   <BR/>A MDN property object
+	<BR/><B>Version: </B>0.9.0 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/><I>Defined in <a href='overview-summary-customProperties.js.html'>customProperties.js</a></I><BR/><BR/>
    </P>
    
    <HR>
@@ -113,50 +113,18 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;nsIConsoleService</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#consoleService">consoleService</A></B></CODE>
+   <CODE>&nbsp;string</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#dispositionType">dispositionType</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dispositionType</TD>
    </TR>
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;string</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#extensionKey">extensionKey</A></B></CODE>
+   <TD><CODE><B><A HREF="#messageId">messageId</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;string</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#extensionName">extensionName</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;string</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#extensionVersion">extensionVersion</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;define current version for this extension</TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;boolean</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#modeDebug">modeDebug</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set debug mode</TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;<a href="Preferences.html">Preferences</a></CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#preferences">preferences</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;preferences</TD>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messageId</TD>
    </TR>
    
 
@@ -181,7 +149,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TD>
       <CODE>
 	 <B>
-	    <A HREF="#Services()">Services</A></B>()
+	    <A HREF="#mdnProperty()">mdnProperty</A></B>(&lt;string&gt; dispositionType,&lt;string&gt; messageId)
       </CODE>
       <BR>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -195,85 +163,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 &nbsp;
 
 <!-- ========== METHOD SUMMARY =========== -->
-
-<A NAME="method_summary"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TD COLSPAN=2><FONT SIZE="+2">
-<B>Method Summary</B></FONT></TD>
-</TR>
-
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;string</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#currentDate">currentDate</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 return current date
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;void</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#errorSrv">errorSrv</A></B>(err)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 reports error to console
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;void</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#logSrv">logSrv</A></B>( &lt;string&gt; msg )
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 log message to console (only if debug mode is enabled)
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;void</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#warningSrv">warningSrv</A></B>(msg)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 reports warning to console
-      </TD>
-   </TR>
-
-
-</TABLE>
 
 
 
@@ -291,56 +180,20 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TABLE>
 
    
-   <A NAME="consoleService"><!-- --></A>
-   <H3>consoleService</H3>
-   <PRE>nsIConsoleService&nbsp;<B>consoleService</B></PRE>
+   <A NAME="dispositionType"><!-- --></A>
+   <H3>dispositionType</H3>
+   <PRE>string&nbsp;<B>dispositionType</B></PRE>
    <UL>
-   
+   dispositionType
    
    </UL>
    <HR>
    
-   <A NAME="extensionKey"><!-- --></A>
-   <H3>extensionKey</H3>
-   <PRE>string&nbsp;<B>extensionKey</B></PRE>
+   <A NAME="messageId"><!-- --></A>
+   <H3>messageId</H3>
+   <PRE>string&nbsp;<B>messageId</B></PRE>
    <UL>
-   
-   
-   </UL>
-   <HR>
-   
-   <A NAME="extensionName"><!-- --></A>
-   <H3>extensionName</H3>
-   <PRE>string&nbsp;<B>extensionName</B></PRE>
-   <UL>
-   
-   
-   </UL>
-   <HR>
-   
-   <A NAME="extensionVersion"><!-- --></A>
-   <H3>extensionVersion</H3>
-   <PRE>string&nbsp;<B>extensionVersion</B></PRE>
-   <UL>
-   define current version for this extension
-   
-   </UL>
-   <HR>
-   
-   <A NAME="modeDebug"><!-- --></A>
-   <H3>modeDebug</H3>
-   <PRE>boolean&nbsp;<B>modeDebug</B></PRE>
-   <UL>
-   set debug mode
-   
-   </UL>
-   <HR>
-   
-   <A NAME="preferences"><!-- --></A>
-   <H3>preferences</H3>
-   <PRE><a href="Preferences.html">Preferences</a>&nbsp;<B>preferences</B></PRE>
-   <UL>
-   preferences
+   messageId
    
    </UL>
    <HR>
@@ -360,13 +213,23 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TR>
 </TABLE>
 
-<A NAME="Services()"><!-- --></A><H3>
-Services</H3>
-<PRE><B>Services</B>()</PRE>
+<A NAME="mdnProperty()"><!-- --></A><H3>
+mdnProperty</H3>
+<PRE><B>mdnProperty</B>(&lt;string&gt; dispositionType,&lt;string&gt; messageId)</PRE>
 
 
 
 
+   <UL>
+   <B>Parameters:</B>
+   
+     <UL><CODE>dispositionType</CODE> -  ("displayed" / "deleted" / "dispatched" / "processed" / "denied" / "failed") 	
+     </UL>
+   
+     <UL><CODE>messageId</CODE> -   message-id of notification   
+     </UL>
+   
+   
    </UL>
 
 
@@ -377,7 +240,7 @@ Services</H3>
 <!-- ADDITIONAL ATTRIBUTES -->
 
 <UL>   
-<B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense   <BR/>
+<B>Version: </B>0.9.0 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/>
 </UL>
 
 <HR/>
@@ -387,121 +250,6 @@ Services</H3>
 
 
 <!-- ============ METHOD DETAIL START ========== -->
-
-<A NAME="method_detail"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-   <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-      <TD COLSPAN=1><FONT SIZE="+2">
-         <B>Method Detail</B></FONT>
-      </TD>
-   </TR>
-</TABLE>
-
-<!-- One single method detail entry -->
-
-   <A NAME="currentDate"><!-- --></A>
-   <H3>currentDate</H3>
-   <PRE>string <B>currentDate</B>()</PRE>
-   
-      <UL>return current date</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         current date 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="errorSrv"><!-- --></A>
-   <H3>errorSrv</H3>
-   <PRE>void <B>errorSrv</B>(err)</PRE>
-   
-      <UL>reports error to console</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>err</CODE> -  error to report 	  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="logSrv"><!-- --></A>
-   <H3>logSrv</H3>
-   <PRE>void <B>logSrv</B>( &lt;string&gt; msg )</PRE>
-   
-      <UL>log message to console (only if debug mode is enabled)</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>msg</CODE> -  Message to log   
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="warningSrv"><!-- --></A>
-   <H3>warningSrv</H3>
-   <PRE>void <B>warningSrv</B>(msg)</PRE>
-   
-      <UL>reports warning to console</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>msg</CODE> -  warning to report 	  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
 
 
 <!-- ============ METHOD DETAIL END ========== -->
@@ -517,7 +265,7 @@ Services</H3>
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
   <TR ALIGN="center" VALIGN="top">
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-misc.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-customProperties.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><b>Tree</b></FONT></A>&nbsp;</TD>
   <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
@@ -534,10 +282,10 @@ Services</H3>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="propertyObj.html"><B>PREV CLASS</B></A><!-- 
+&nbsp;<A HREF="mdnParser.html"><B>PREV CLASS</B></A><!-- 
    NEXT CLASS 
 -->
-&nbsp;<B>NEXT CLASS</B></FONT></TD>
+&nbsp;<A HREF="mdnReport.html"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;

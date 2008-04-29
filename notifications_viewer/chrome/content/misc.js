@@ -52,7 +52,7 @@ function Services() {
 	/** @type string */
 	this.extensionKey="extensions."+this.extensionName;
 	/** define current version for this extension @type string */
-	this.extensionVersion="0.5.3";
+	this.extensionVersion="0.6.0";
 	/** preferences @type Preferences */
 	this.preferences=new Preferences();
 	/** set debug mode @type boolean */

@@ -205,10 +205,10 @@ ManageMsgAsDN.prototype = {
 				// message found
 
 				// get properties from message
-				var deliveredToP=messageHdr.getStringProperty("x-nviewer-dsn-to");
-				var statusP=messageHdr.getStringProperty("x-nviewer-dsn-status");
-				var summaryP=messageHdr.getStringProperty("x-nviewer-dsn-summary");
-				var flagsP=messageHdr.getStringProperty("x-nviewer-dsn-flags");
+				var deliveredToP=messageHdr.getStringProperty("x-nviewer-to");
+				var statusP=messageHdr.getStringProperty("x-nviewer-status");
+				var summaryP=messageHdr.getStringProperty("x-nviewer-summary");
+				var flagsP=messageHdr.getStringProperty("x-nviewer-flags");
 
 				srv.logSrv("ManageMsgAsDN - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
@@ -243,10 +243,10 @@ ManageMsgAsDN.prototype = {
 					srv.logSrv("ManageMsgAsDN - new notifications_viewer properties - "+deliveredToP+" "+statusP+" "+summaryP+" "+flagsP);
 
 					// save properties
-					messageHdr.setStringProperty("x-nviewer-dsn-to",deliveredToP);
-					messageHdr.setStringProperty("x-nviewer-dsn-status",statusP);
-					messageHdr.setStringProperty("x-nviewer-dsn-summary",summaryP);
-					messageHdr.setStringProperty("x-nviewer-dsn-flags",flagsP);
+					messageHdr.setStringProperty("x-nviewer-to",deliveredToP);
+					messageHdr.setStringProperty("x-nviewer-status",statusP);
+					messageHdr.setStringProperty("x-nviewer-summary",summaryP);
+					messageHdr.setStringProperty("x-nviewer-flags",flagsP);
 
 					srv.logSrv("ManageMsgAsDN - this message expired, remove from the list");
 					// remove from the list

@@ -53,10 +53,10 @@ var mMsgAsDsnReq=new ManageMsgAsDN();
 	Check Preferences
 */
 function checkPref() {
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-summary");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-status");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-to");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-flags");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-summary");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-status");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-to");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-flags");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-tags");
 	srv.preferences.setCharPref(srv.extensionKey+".version",srv.extensionVersion);
 	srv.logSrv("checkPref()");

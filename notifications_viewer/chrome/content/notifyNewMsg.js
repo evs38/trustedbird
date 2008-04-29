@@ -94,7 +94,7 @@ var notifyListener = {
 		if (header.flags & MSG_FLAG_NEW) {
 			var nViewerTag=header.getStringProperty("x-nviewer-tags");
 			// if not already parsed
-			if (! (/(WORKING|CHECKED|DSN|MDN)/i).test(nViewerTag)) { // parse message source only if this header is not tagged
+			if (nViewerTag.length==0) { // parse message source only if this header is not tagged
 				header.setStringProperty("x-nviewer-tags","WORKING"); // tag
 				this.getMsgSrc(header);
 			}
@@ -186,17 +186,26 @@ var notifyListener = {
 
 		var typeOfMsg=enumOfNotification.unknown;
 
+		// read user preferences
+		var parseDSN=srv.preferences.getBoolPref(srv.extensionKey+".parse_dsn");
+		var parseMDN=srv.preferences.getBoolPref(srv.extensionKey+".parse_mdn");
+
+
 		// found Content type
 		if ((/multipart\/report/i).test(contentT)) {
 			if ((/report\-type[ \\s]*=[ \\s]*"?delivery\-status"?/i).test(contentT)) {
 				// It's a DSN message, tag this message
 				header.setStringProperty("x-nviewer-tags","DSN");
+				if (! parseDSN)
+					return; // user doesn't want to parse DSN
 				typeOfMsg=enumOfNotification.DSN;
 				strTypeNotification="DSN";
 			}
 			if ((/report\-type[ \\s]*=[ \\s]*"?disposition\-notification"?/i).test(contentT)) {
 				// It's a MDN message, tag this message
 				header.setStringProperty("x-nviewer-tags","MDN");
+				if (! parseMDN)
+					return; // user doesn't want to parse MDN
 				typeOfMsg=enumOfNotification.MDN;
 				strTypeNotification="MDN";
 			}
@@ -281,10 +290,10 @@ var notifyListener = {
 				// now, tag original message header
 
 				// get properties
-				var deliveredToP=msgDBHdrOrigin.getStringProperty("x-nviewer-dsn-to");
-				var statusP=msgDBHdrOrigin.getStringProperty("x-nviewer-dsn-status");
-				var summaryP=msgDBHdrOrigin.getStringProperty("x-nviewer-dsn-summary");
-				var flagsP=msgDBHdrOrigin.getStringProperty("x-nviewer-dsn-flags");
+				var deliveredToP=msgDBHdrOrigin.getStringProperty("x-nviewer-to");
+				var statusP=msgDBHdrOrigin.getStringProperty("x-nviewer-status");
+				var summaryP=msgDBHdrOrigin.getStringProperty("x-nviewer-summary");
+				var flagsP=msgDBHdrOrigin.getStringProperty("x-nviewer-flags");
 
 				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
@@ -303,9 +312,9 @@ var notifyListener = {
 						var oneRecipient=regExp.exec(recipientsArray[i]);
 						if (oneRecipient && oneRecipient.length>1) {
 							// a valid address
-							// add to x-nviewer-dsn-to string property
+							// add to x-nviewer-to string property
 							if (i>0) deliveredToP+="\n\t";
-							deliveredToP+=oneRecipient[1]+";;;0";
+							deliveredToP+=oneRecipient[1]+";0";
 						}
 					}
 				}
@@ -313,7 +322,7 @@ var notifyListener = {
 				var customProp=new customProperties(deliveredToP,statusP,summaryP,flagsP);
 
 
-				if (typeOfMsg==enumOfNotification.DSN) {
+				if (typeOfMsg==enumOfNotification.DSN && deliveryReports) {
 					// read delivery Reports
 					for (var i=0; i < deliveryReports.length ; i++) {
 						srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - "+deliveryReports[i].finalRecipient+" "+deliveryReports[i].actionValue);
@@ -326,7 +335,8 @@ var notifyListener = {
 				if (typeOfMsg==enumOfNotification.MDN && mdnReport) {
 					// read MDN report
 					srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - "+mdnReport.finalRecipient+" "+mdnReport.dispositionMode+" "+mdnReport.dispositionType+" "+mdnReport.originalMessageId);
-					customProp.addMdnReport(mdnReport,header.messageId);
+					if (mdnparser.isValidDisposition(mdnReport.dispositionType))
+						customProp.addMdnReport(mdnReport,header.messageId);
 				}
 
 				deliveredToP=customProp.getDeliveredToProperty();
@@ -337,10 +347,10 @@ var notifyListener = {
 				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - new notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				// save properties in the original message
-				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-to",deliveredToP);
-				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-status",statusP);
-				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-summary",summaryP);
-				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-flags",flagsP);
+				msgDBHdrOrigin.setStringProperty("x-nviewer-to",deliveredToP);
+				msgDBHdrOrigin.setStringProperty("x-nviewer-status",statusP);
+				msgDBHdrOrigin.setStringProperty("x-nviewer-summary",summaryP);
+				msgDBHdrOrigin.setStringProperty("x-nviewer-flags",flagsP);
 
 				// If user want to create a thread on the original message, move Notification message
 				var threadPref=srv.preferences.getBoolPref(srv.extensionKey+".thread_on_original_message");

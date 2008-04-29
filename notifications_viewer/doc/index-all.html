@@ -73,19 +73,19 @@ parent.document.title="Index ()";
 <B>A</B></H2>
 
 <DL>
-<DT><A HREF="DeliveredTo.html#actionValue"><B>actionValue</B></A> - 
-Instance field in  class <A HREF="DeliveredTo.html">DeliveredTo</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
 <DT><A HREF="deliveryReport.html#actionValue"><B>actionValue</B></A> - 
 Instance field in  class <A HREF="deliveryReport.html">deliveryReport</A>
 <DD>&nbsp;
 </DL>
 
 <DL>
-<DT><A HREF="customProperties.html#addDeliveredTo"><B>addDeliveredTo(finalRecipient,actionValue,messageId,flags)</B></A> - 
+<DT><A HREF="dsnProperty.html#actionValue"><B>actionValue</B></A> - 
+Instance field in  class <A HREF="dsnProperty.html">dsnProperty</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="customProperties.html#addDeliveredTo"><B>addDeliveredTo(finalRecipient,flags)</B></A> - 
 Instance method in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
 </DL>
@@ -185,12 +185,6 @@ Instance field in  class <A HREF="mailParser.html">mailParser</A>
 </DL>
 
 <DL>
-<DT><A HREF="customProperties.html#calculateAllProperties"><B>calculateAllProperties()</B></A> - 
-Instance method in  class <A HREF="customProperties.html">customProperties</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
 <DT><A HREF="Preferences.html#charPrefExist"><B>charPrefExist(key)</B></A> - 
 Instance method in  class <A HREF="Preferences.html">Preferences</A>
 <DD>&nbsp;
@@ -256,7 +250,7 @@ Constructor in  class <A HREF="customProperties.html">customProperties</A>
 </DL>
 
 <DL>
-<DT><A HREF="DeliveredTo.html#constructor_detail"><B>DeliveredTo(finalRecipient,actionValue,messageId,flags)</B></A> - 
+<DT><A HREF="DeliveredTo.html#constructor_detail"><B>DeliveredTo(finalRecipient,flags)</B></A> - 
 Constructor in  class <A HREF="DeliveredTo.html">DeliveredTo</A>
 <DD>&nbsp;
 </DL>
@@ -298,6 +292,12 @@ Instance field in  class <A HREF="mdnReport.html">mdnReport</A>
 </DL>
 
 <DL>
+<DT><A HREF="mdnProperty.html#dispositionType"><B>dispositionType</B></A> - 
+Instance field in  class <A HREF="mdnProperty.html">mdnProperty</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
 <DT><A HREF="mdnReport.html#dispositionType"><B>dispositionType</B></A> - 
 Instance field in  class <A HREF="mdnReport.html">mdnReport</A>
 <DD>&nbsp;
@@ -310,6 +310,12 @@ Instance field in  class <A HREF="dsnParser.html">dsnParser</A>
 </DL>
 
 <DL>
+<DT><A HREF="DeliveredTo.html#dsnList"><B>dsnList</B></A> - 
+Instance field in  class <A HREF="DeliveredTo.html">DeliveredTo</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
 <DT><A HREF="dsnParser.html#"><B>dsnParser</B></A> - 
  class <A HREF="dsnParser.html">dsnParser</A>
 <DD>&nbsp;
@@ -318,6 +324,18 @@ Instance field in  class <A HREF="dsnParser.html">dsnParser</A>
 <DL>
 <DT><A HREF="dsnParser.html#constructor_detail"><B>dsnParser(message)</B></A> - 
 Constructor in  class <A HREF="dsnParser.html">dsnParser</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="dsnProperty.html#"><B>dsnProperty</B></A> - 
+ class <A HREF="dsnProperty.html">dsnProperty</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="dsnProperty.html#constructor_detail"><B>dsnProperty(actionValue,messageId)</B></A> - 
+Constructor in  class <A HREF="dsnProperty.html">dsnProperty</A>
 <DD>&nbsp;
 </DL>
 
@@ -442,6 +460,12 @@ Instance field in  class <A HREF="findMsgDb.html">findMsgDb</A>
 <DL>
 <DT><A HREF="findMsgDb.html#FLAG_TYPE_SEARCH"><B>FLAG_TYPE_SEARCH</B></A> - 
 Instance field in  class <A HREF="findMsgDb.html">findMsgDb</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="customProperties.html#FLAG_VERSION"><B>FLAG_VERSION</B></A> - 
+Instance field in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
 </DL>
 
@@ -648,6 +672,18 @@ Instance method in  class <A HREF="dsnParser.html">dsnParser</A>
 </DL>
 
 <DL>
+<DT><A HREF="GLOBALS.html#isDsnPropertyEquals"><B>isDsnPropertyEquals(dsnProperty1,dsnProperty2)</B></A> - 
+Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="GLOBALS.html#isMdnPropertyEquals"><B>isMdnPropertyEquals(mdnProperty1,mdnProperty2)</B></A> - 
+Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
 <DT><A HREF="GLOBALS.html#isMdnReportEquals"><B>isMdnReportEquals(mdnReport1,mdnReport2)</B></A> - 
 Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
 <DD>&nbsp;
@@ -742,6 +778,12 @@ Instance field in  class <A HREF="mdnReport.html">mdnReport</A>
 </DL>
 
 <DL>
+<DT><A HREF="DeliveredTo.html#mdnList"><B>mdnList</B></A> - 
+Instance field in  class <A HREF="DeliveredTo.html">DeliveredTo</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
 <DT><A HREF="mdnParser.html#"><B>mdnParser</B></A> - 
  class <A HREF="mdnParser.html">mdnParser</A>
 <DD>&nbsp;
@@ -750,6 +792,18 @@ Instance field in  class <A HREF="mdnReport.html">mdnReport</A>
 <DL>
 <DT><A HREF="mdnParser.html#constructor_detail"><B>mdnParser(message)</B></A> - 
 Constructor in  class <A HREF="mdnParser.html">mdnParser</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="mdnProperty.html#"><B>mdnProperty</B></A> - 
+ class <A HREF="mdnProperty.html">mdnProperty</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="mdnProperty.html#constructor_detail"><B>mdnProperty(dispositionType,messageId)</B></A> - 
+Constructor in  class <A HREF="mdnProperty.html">mdnProperty</A>
 <DD>&nbsp;
 </DL>
 
@@ -778,14 +832,20 @@ Instance field in  class <A HREF="mailParser.html">mailParser</A>
 </DL>
 
 <DL>
-<DT><A HREF="DeliveredTo.html#messageId"><B>messageId</B></A> - 
-Instance field in  class <A HREF="DeliveredTo.html">DeliveredTo</A>
+<DT><A HREF="dsnProperty.html#messageId"><B>messageId</B></A> - 
+Instance field in  class <A HREF="dsnProperty.html">dsnProperty</A>
 <DD>&nbsp;
 </DL>
 
 <DL>
 <DT><A HREF="findMsgDb.html#messageId"><B>messageId</B></A> - 
 Instance field in  class <A HREF="findMsgDb.html">findMsgDb</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="mdnProperty.html#messageId"><B>messageId</B></A> - 
+Instance field in  class <A HREF="mdnProperty.html">mdnProperty</A>
 <DD>&nbsp;
 </DL>
 
@@ -1170,6 +1230,6 @@ Instance method in  class <A HREF="Preferences.html">Preferences</A>
 <FONT SIZE="-1">
 
 </FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/">JSDoc</a> on Fri Apr 25 11:44:31 2008</div>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/">JSDoc</a> on Tue Apr 29 15:41:42 2008</div>
 </BODY>
 </HTML>

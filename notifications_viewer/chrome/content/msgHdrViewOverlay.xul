@@ -60,10 +60,12 @@
 							<label id="dsnHeader" class="headerName" value="&headerView.label;:"/>
 							<label class="emailDisplayButton plain" id="dsn-summary"/>
 						</hbox>
-						<grid id="detailDSN" collapsed="true">
+						<grid id="detailDSN" collapsed="true" flex="1">
 							<columns>
-								<column flex="3"/>
-								<column flex="0"/>
+								<column/>
+								<column/>
+								<column/>
+								<column/>
 							</columns>
 							<!-- here, rows when DSN header exist -->
 						</grid>

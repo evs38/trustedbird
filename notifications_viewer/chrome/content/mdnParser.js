@@ -163,7 +163,7 @@ function mdnParser(message) {
 		<ul>
 			<li>{@link #getMdnReport}
 		</ul>
-		@type Array
+		@type mdnReport
 	*/
 	this.cacheMdnReport = null;
 

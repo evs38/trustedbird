@@ -90,7 +90,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
    <P>
    <BR/>manage custom properties
-	<BR/><B>Version: </B>0.9.2 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/><I>Defined in <a href='overview-summary-customProperties.js.html'>customProperties.js</a></I><BR/><BR/>
+	<BR/><B>Version: </B>0.9.3 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/><I>Defined in <a href='overview-summary-customProperties.js.html'>customProperties.js</a></I><BR/><BR/>
    </P>
    
    <HR>
@@ -132,7 +132,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <CODE>&nbsp;string</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#deliveredToProperty">deliveredToProperty</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-dsn-to property
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-to property
 		<p>
 		Access functions:
 		<ul>
@@ -151,9 +151,18 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;number</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#FLAG_VERSION">FLAG_VERSION</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;customProperties Version
+		<pre>b 001.</TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&nbsp;number</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#flagsProperty">flagsProperty</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-dsn-flags property</TD>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-flags property</TD>
    </TR>
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
@@ -169,7 +178,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <CODE>&nbsp;string</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#statusProperty">statusProperty</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-dsn-status property ("good","middle", "bad")
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-status property ("good","middle", "bad")
 		<p>
 		Access functions:
 		<ul>
@@ -182,7 +191,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <CODE>&nbsp;string</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#summaryProperty">summaryProperty</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-dsn-summary property (number/total)
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-summary property (number/total)
 		<p>
 		Access functions:
 		<ul>
@@ -216,7 +225,13 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       </CODE>
       <BR>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      
+      format for deliveredToProperty (<i>x-nviewer-to</i>) property:
+	<p>
+	<pre>
+	<b>field separator: ";"
+	row separator: "\n\t"</b>
+
+
       </TD>
 </TR>
 </TABLE>
@@ -238,13 +253,13 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
-	    <CODE>&nbsp;boolean</CODE>
+	    <CODE>&nbsp;<a href="DeliveredTo.html">DeliveredTo</a></CODE>
 	 </FONT>
       </TD>
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#addDeliveredTo">addDeliveredTo</A></B>(&lt;string&gt; finalRecipient,&lt;string&gt; actionValue,&lt;string&gt; messageId,&lt;number&gt; flags)
+	       <A HREF="#addDeliveredTo">addDeliveredTo</A></B>(&lt;string&gt; finalRecipient,&lt;number&gt; flags)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -283,23 +298,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	 Change properties with the <a href="mdnReport.html#">mdnReport</a> object
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;void</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#calculateAllProperties">calculateAllProperties</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 define all properties
       </TD>
    </TR>
 
@@ -446,7 +444,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <H3>deliveredToProperty</H3>
    <PRE>string&nbsp;<B>deliveredToProperty</B></PRE>
    <UL>
-   x-nviewer-dsn-to property
+   x-nviewer-to property
 		<p>
 		Access functions:
 		<ul>
@@ -465,11 +463,21 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </UL>
    <HR>
    
+   <A NAME="FLAG_VERSION"><!-- --></A>
+   <H3>FLAG_VERSION</H3>
+   <PRE>number&nbsp;<B>FLAG_VERSION</B></PRE>
+   <UL>
+   customProperties Version
+		<pre>b 001. version 1
+   
+   </UL>
+   <HR>
+   
    <A NAME="flagsProperty"><!-- --></A>
    <H3>flagsProperty</H3>
    <PRE>number&nbsp;<B>flagsProperty</B></PRE>
    <UL>
-   x-nviewer-dsn-flags property
+   x-nviewer-flags property
    
    </UL>
    <HR>
@@ -487,7 +495,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <H3>statusProperty</H3>
    <PRE>string&nbsp;<B>statusProperty</B></PRE>
    <UL>
-   x-nviewer-dsn-status property ("good","middle", "bad")
+   x-nviewer-status property ("good","middle", "bad")
 		<p>
 		Access functions:
 		<ul>
@@ -501,7 +509,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <H3>summaryProperty</H3>
    <PRE>string&nbsp;<B>summaryProperty</B></PRE>
    <UL>
-   x-nviewer-dsn-summary property (number/total)
+   x-nviewer-summary property (number/total)
 		<p>
 		Access functions:
 		<ul>
@@ -531,21 +539,55 @@ customProperties</H3>
 <PRE><B>customProperties</B>(&lt;string&gt; deliveredToProperty,&lt;string&gt; statusProperty,&lt;string&gt; summaryProperty,&lt;string&gt; flagsProperty)</PRE>
 
 
+<UL>
+   format for deliveredToProperty (<i>x-nviewer-to</i>) property:
+	<p>
+	<pre>
+	<b>field separator: ";"
+	row separator: "\n\t"</b>
+
+	<b>fields:                   type</b>
+	final recipient           string
+	flags                     number
+	DSN Count                 number
+	DSN                       string
+	DSN message-Id            string
+	MDN Count                 number
+	MDN                       string
+	MDN message-Id            string
+
+	final recipient;flags;DSN Count[;DSN;DSN message-Id]*;MDN Count[;MDN;MDN message-Id]*
+	</pre>
+	example:
+	<pre>
+	daniel&#64;vraimentbidon.org;0;1;delivered;&#60;123456&#64;vraimentbidon.org&#62;;1;displayed;&#60;AZERG&#64;vraimentbidon.org&#62;\n\t
+	sersim&#64;vraimentbidon.org;1;1;delivered;&#60;543211&#64;vraimentbidon.org&#62;;2;displayed;&#60;GBI4E&#64;vraimentbidon.org&#62;;deleted;&#60;AZT564&#64;vraimentbidon.org&#62;
+	</pre>
+	<p>
+	format for flagsProperty (<i>x-nviewer-flags</i>) property:
+	<p>
+	<b>NOT FROZEN</b>
+	<pre>
+	b ...x  time out (global)
+	b xxx.  customProperties version
+	</pre>
+</UL>
+
 
 
    <UL>
    <B>Parameters:</B>
    
-     <UL><CODE>deliveredToProperty</CODE> -  x-nviewer-dsn-to property 	
+     <UL><CODE>deliveredToProperty</CODE> -  x-nviewer-to property 	
      </UL>
    
-     <UL><CODE>statusProperty</CODE> -  x-nviewer-dsn-status property ("good","middle", "bad") 	
+     <UL><CODE>statusProperty</CODE> -  x-nviewer-status property ("good","middle", "bad") 	
      </UL>
    
-     <UL><CODE>summaryProperty</CODE> -  x-nviewer-dsn-summary property (number/total) 	
+     <UL><CODE>summaryProperty</CODE> -  x-nviewer-summary property (number/total) 	
      </UL>
    
-     <UL><CODE>flagsProperty</CODE> -  x-nviewer-dsn-flags property
+     <UL><CODE>flagsProperty</CODE> -  x-nviewer-flags property
      </UL>
    
    
@@ -559,7 +601,7 @@ customProperties</H3>
 <!-- ADDITIONAL ATTRIBUTES -->
 
 <UL>   
-<B>Version: </B>0.9.2 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/>
+<B>Version: </B>0.9.3 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/>
 </UL>
 
 <HR/>
@@ -583,7 +625,7 @@ customProperties</H3>
 
    <A NAME="addDeliveredTo"><!-- --></A>
    <H3>addDeliveredTo</H3>
-   <PRE>boolean <B>addDeliveredTo</B>(&lt;string&gt; finalRecipient,&lt;string&gt; actionValue,&lt;string&gt; messageId,&lt;number&gt; flags)</PRE>
+   <PRE><a href="DeliveredTo.html">DeliveredTo</a> <B>addDeliveredTo</B>(&lt;string&gt; finalRecipient,&lt;number&gt; flags)</PRE>
    
       <UL>create a <a href="DeliveredTo.html#">DeliveredTo</a> object if finalRecipient doesn't exist, otherwise update data</UL>
    
@@ -594,12 +636,6 @@ customProperties</H3>
    <B>Parameters:</B>
    
      <UL><CODE>finalRecipient</CODE> -  final recipient 		
-      </UL> 
-   
-     <UL><CODE>actionValue</CODE> -  ("failed" / "delayed" / "delivered" / "relayed" / "expanded") 		
-      </UL> 
-   
-     <UL><CODE>messageId</CODE> -  message-id of notification 		
       </UL> 
    
      <UL><CODE>flags</CODE> -  ( see <a href="DeliveredTo.html#">DeliveredTo</a>) 		
@@ -613,7 +649,7 @@ customProperties</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         <b>false</b> if an error occured 
+         a <a href="DeliveredTo.html#">DeliveredTo</a> object 
         </UL>
    </UL>
    
@@ -695,24 +731,6 @@ customProperties</H3>
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
-   <A NAME="calculateAllProperties"><!-- --></A>
-   <H3>calculateAllProperties</H3>
-   <PRE>void <B>calculateAllProperties</B>()</PRE>
-   
-      <UL>define all properties</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
    <A NAME="getDeliveredToProperty"><!-- --></A>
    <H3>getDeliveredToProperty</H3>
    <PRE>string <B>getDeliveredToProperty</B>()</PRE>
@@ -726,7 +744,7 @@ customProperties</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         Return x-nviewer-dsn-to property 
+         Return x-nviewer-to property 
         </UL>
    </UL>
    
@@ -749,7 +767,7 @@ customProperties</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         Return x-nviewer-dsn-flags property 
+         Return x-nviewer-flags property 
         </UL>
    </UL>
    
@@ -803,7 +821,7 @@ customProperties</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         Return x-nviewer-dsn-status property ("good" ,"bad" , "middle" or "") 
+         Return x-nviewer-status property ("good" ,"bad" , "middle" or "") 
         </UL>
    </UL>
    
@@ -826,7 +844,7 @@ customProperties</H3>
    <UL>
    <B>Returns:</B>
         <UL>
-         Return x-nviewer-dsn-summary property (number/total) 
+         Return x-nviewer-summary property (number/total) 
         </UL>
    </UL>
    
@@ -920,6 +938,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <FONT SIZE="-1">
 
 </FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Fri Apr 25 11:44:31 2008</div>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Tue Apr 29 15:41:42 2008</div>
 </BODY>
 </HTML>

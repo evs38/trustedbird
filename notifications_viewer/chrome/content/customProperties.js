@@ -44,41 +44,101 @@
 /**
 	@class A delivered-to property object
 	@constructor
-	@version 0.9.0
+	@version 0.9.1
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@param {string} finalRecipient final recipient
-	@param {string} actionValue ("failed" / "delayed" / "delivered" / "relayed" / "expanded")
-	@param {string} messageId  message-id of notification
 	@param {number} flags flags for this object - <b>NOT FROZEN</b>
 */
-function DeliveredTo (finalRecipient,actionValue,messageId,flags) {
+function DeliveredTo (finalRecipient,flags) {
 	/** final recipient @type string */
 	this.finalRecipient = finalRecipient;
-	/** actionValue @type string */
-	this.actionValue = actionValue;
-	/** messageId @type string */
-	this.messageId = messageId;
 	/** flags <b>(NOT FROZEN)</b> @type number */
 	this.flags = flags;
 	/** <pre>b ...1 Time out </pre> @type number */
 	this.FLAG_TIMEOUT= 0x1;
+	/** a DSN list @type Array */
+	this.dsnList = new Array();
+	/** a MDN list @type Array */
+	this.mdnList = new Array();
+}
+
+/**
+	@class A DSN property object
+	@constructor
+	@version 0.9.0
+	@author Daniel Rocher / Etat francais Ministere de la Defense
+	@param {string} actionValue ("failed" / "delayed" / "delivered" / "relayed" / "expanded")
+	@param {string} messageId  message-id of notification
+*/
+function dsnProperty (actionValue,messageId) {
+	/** actionValue @type string */
+	this.actionValue = actionValue;
+	/** messageId @type string */
+	this.messageId = messageId;
+}
+
+/**
+	@class A MDN property object
+	@constructor
+	@version 0.9.0
+	@author Daniel Rocher / Etat francais Ministere de la Defense
+	@param {string} dispositionType ("displayed" / "deleted" / "dispatched" / "processed" / "denied" / "failed")
+	@param {string} messageId  message-id of notification
+*/
+function mdnProperty (dispositionType,messageId) {
+	/** dispositionType @type string */
+	this.dispositionType = dispositionType;
+	/** messageId @type string */
+	this.messageId = messageId;
 }
 
 
+
 /**
+	format for deliveredToProperty (<i>x-nviewer-to</i>) property:
+	<p>
+	<pre>
+	<b>field separator: ";"
+	row separator: "\n\t"</b>
+
+	<b>fields:                   type</b>
+	final recipient           string
+	flags                     number
+	DSN Count                 number
+	DSN                       string
+	DSN message-Id            string
+	MDN Count                 number
+	MDN                       string
+	MDN message-Id            string
+
+	final recipient;flags;DSN Count[;DSN;DSN message-Id]*;MDN Count[;MDN;MDN message-Id]*
+	</pre>
+	example:
+	<pre>
+	daniel&#64;vraimentbidon.org;0;1;delivered;&#60;123456&#64;vraimentbidon.org&#62;;1;displayed;&#60;AZERG&#64;vraimentbidon.org&#62;\n\t
+	sersim&#64;vraimentbidon.org;1;1;delivered;&#60;543211&#64;vraimentbidon.org&#62;;2;displayed;&#60;GBI4E&#64;vraimentbidon.org&#62;;deleted;&#60;AZT564&#64;vraimentbidon.org&#62;
+	</pre>
+	<p>
+	format for flagsProperty (<i>x-nviewer-flags</i>) property:
+	<p>
+	<b>NOT FROZEN</b>
+	<pre>
+	b ...x  time out (global)
+	b xxx.  customProperties version
+	</pre>
 	@class manage custom properties
 	@constructor
-	@version 0.9.2
+	@version 0.9.3
 	@author Daniel Rocher / Etat francais Ministere de la Defense
-	@param {string} deliveredToProperty x-nviewer-dsn-to property
-	@param {string} statusProperty x-nviewer-dsn-status property ("good","middle", "bad")
-	@param {string} summaryProperty x-nviewer-dsn-summary property (number/total)
-	@param {string} flagsProperty x-nviewer-dsn-flags property
+	@param {string} deliveredToProperty x-nviewer-to property
+	@param {string} statusProperty x-nviewer-status property ("good","middle", "bad")
+	@param {string} summaryProperty x-nviewer-summary property (number/total)
+	@param {string} flagsProperty x-nviewer-flags property	
 */
 function customProperties(deliveredToProperty,statusProperty,summaryProperty,flagsProperty) {
 
 	/**
-		x-nviewer-dsn-to property
+		x-nviewer-to property
 		<p>
 		Access functions:
 		<ul>
@@ -89,7 +149,7 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	this.deliveredToProperty=deliveredToProperty;
 
 	/**
-		x-nviewer-dsn-status property ("good","middle", "bad")
+		x-nviewer-status property ("good","middle", "bad")
 		<p>
 		Access functions:
 		<ul>
@@ -100,7 +160,7 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	this.statusProperty=statusProperty;
 
 	/**
-		x-nviewer-dsn-summary property (number/total)
+		x-nviewer-summary property (number/total)
 		<p>
 		Access functions:
 		<ul>
@@ -116,11 +176,12 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	*/
 	this.deliveredToArray=new Array();
 
+
 	flagsProperty=parseInt(flagsProperty);
 	if (isNaN(flagsProperty))
 		flagsProperty=0;
 	/**
-		x-nviewer-dsn-flags property
+		x-nviewer-flags property
 		@type number
 	*/
 	this.flagsProperty=flagsProperty;
@@ -129,34 +190,92 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	this.FLAG_TIMEOUT= 0x1;
 
 	/**
+		customProperties Version
+		<pre>b 001. version 1
+		@type number
+	*/
+	this.FLAG_VERSION=0x2;
+
+	/**
 		All DSN were received
 		@type boolean
 	*/
 	this.allDsnReceived=false;
 
 	if (deliveredToProperty.length!=0) {
-		var tmpArray = deliveredToProperty.split("\n\t");
+		var tmpArray = deliveredToProperty.split("\n\t"); // get rows
 		for (var i =0 ; i < tmpArray.length ; i++ ) {
 			var finalRecipient="";
-			var actionValue="";
-			var messageId="";
+			var dsnCount=0;
+			var mdnCount=0;
 			var flags=0;
-			var Values = tmpArray[i].split(";");
+			var currentIndex=0;
+			var Values = tmpArray[i].split(";"); // get fields
 
 			if (Values.length>0)
 				finalRecipient=Values[0];
 	
 			if (Values.length>1)
-				actionValue=Values[1];
+				flags=Values[1];
+
+			if (this.regExpCache.validAddr.test(finalRecipient)) {
+				// create a new object for this recipient
+				var newDeliveredTo=this.addDeliveredTo(finalRecipient,flags);
 	
-			if (Values.length>2)
-				messageId=Values[2];
+				if (newDeliveredTo) { // if object's valid
+					// now, get DSN
+					currentIndex=2;
+					if (Values.length>currentIndex)
+						dsnCount=Values[currentIndex];
 
-			if (Values.length>3)
-				flags=Values[3];
+					dsnCount=parseInt(dsnCount);
+					if (isNaN(dsnCount) || dsnCount<=0)
+						dsnCount=0;
 
-			this.addDeliveredTo(finalRecipient,actionValue,messageId,flags);
+					for (var j=0; j < dsnCount ; j++ ) {
+						currentIndex++;
+						var actionValue="";
+						var messageId="";
+	
+						if (Values.length>currentIndex)
+							actionValue=Values[currentIndex];
+
+						currentIndex++;
+						if (Values.length>currentIndex)
+							messageId=Values[currentIndex];
+
+						if (this.regExpCache.validAddr.test(messageId) && this.regExpCache.validDsnReport.test(actionValue))
+							newDeliveredTo.dsnList.push(new dsnProperty (actionValue,messageId));
+					}
+					// now, get mdn
+					currentIndex++;
+					if (Values.length>currentIndex)
+						mdnCount=Values[currentIndex];
+		
+					mdnCount=parseInt(mdnCount);
+					if (isNaN(mdnCount) || mdnCount<=0)
+						mdnCount=0;
+
+					for (var j=0; j < mdnCount ; j++ ) {
+						currentIndex++;
+						var dispositionType="";
+						var messageId="";
+	
+						if (Values.length>currentIndex)
+							dispositionType=Values[currentIndex];
+	
+						currentIndex++;
+						if (Values.length>currentIndex)
+							messageId=Values[currentIndex];
+
+						if (this.regExpCache.validAddr.test(messageId) && this.regExpCache.validMdnReport.test(dispositionType))
+							newDeliveredTo.mdnList.push(new mdnProperty (dispositionType,messageId));
+					}
+				}
+			}
 		}
+		// refresh data
+		this.calculateAllProperties();
 	}
 }
 
@@ -168,54 +287,38 @@ customProperties.prototype = {
 	*/
 	regExpCache : {
 		validAddr: new RegExp("^(<|).+@.+(>|)$","i"),
-		validReport: new RegExp("delivered|delayed|relayed|failed|expanded","i"),
+		validDsnReport: new RegExp("delivered|delayed|relayed|failed|expanded","i"),
+		validMdnReport: new RegExp("displayed|deleted|dispatched|processed|denied|failed","i"),
 		trim: new RegExp("(?:^\\s*)|(?:\\s*$)","g")
 	},
 
 	/**
 		create a {@link DeliveredTo} object if finalRecipient doesn't exist, otherwise update data
 		@param {string} finalRecipient final recipient
-		@param {string} actionValue ("failed" / "delayed" / "delivered" / "relayed" / "expanded")
-		@param {string} messageId message-id of notification
 		@param {number} flags ( see {@link DeliveredTo})
-		@return {boolean} <b>false</b> if an error occured
+		@return {DeliveredTo} a {@link DeliveredTo} object
 	*/
-	addDeliveredTo: function(finalRecipient,actionValue,messageId,flags) {
+	addDeliveredTo: function(finalRecipient,flags) {
 
 
-		// test if addresses and report are correct
+		// test if address is correct
 		if (! this.regExpCache.validAddr.test(finalRecipient)) return false;
-		if (! this.regExpCache.validReport.test(actionValue)) actionValue="";
-		if (! this.regExpCache.validAddr.test(messageId)) messageId="";
 
-		var changed=false;
 		// test if finalRecipient exist
-		var exist=false
 		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
 			if (this.deliveredToArray[i].finalRecipient==finalRecipient) {
 				// exist
-				this.deliveredToArray[i].actionValue=actionValue;
-				this.deliveredToArray[i].messageId=messageId;
 				// set only if flags changed
 				if (flags!=0x0)
 					this.deliveredToArray[i].flags=flags;
-				exist=true;
-				changed=true;
-				break;
+				return this.deliveredToArray[i];
 			}
 		}
 
-		if (!exist) {
-			// create new object
-			this.deliveredToArray.push(new DeliveredTo(finalRecipient,actionValue,messageId,flags));
-			changed=true;
-		}
-
-		// refresh data
-		if (changed)
-			this.calculateAllProperties();
-
-		return true;
+		
+		// create new object
+		this.deliveredToArray.push(new DeliveredTo(finalRecipient,flags));
+		return this.getReportOf(finalRecipient);
 	},
 
 
@@ -233,6 +336,10 @@ customProperties.prototype = {
 		var finalRecipient=dveryReport.finalRecipient;
 		var actionValue=dveryReport.actionValue;
 
+		if (! this.regExpCache.validAddr.test(messageId)) return false;
+		if (! this.regExpCache.validDsnReport.test(actionValue)) return false;
+		if (! this.regExpCache.validAddr.test(finalRecipient)) return false;
+
 		// get address from final-recipient fields (see RFC3464)
 		// final-recipient-field = 
 		//        address-type ";" generic-address
@@ -242,9 +349,18 @@ customProperties.prototype = {
 		if (finalRecipientArray.length >1)
 			finalRecipient=finalRecipientArray[1].replace(this.regExpCache.trim, "");
 
-		if (! this.addDeliveredTo(finalRecipient,actionValue,messageId,0)) return false; // false if report is invalid
+		var newDeliveredTo=this.addDeliveredTo(finalRecipient,0);
 
-		return true;
+		var result=false;
+		if (newDeliveredTo) {
+			newDeliveredTo.dsnList.push(new dsnProperty (actionValue,messageId));
+			result=true;
+		}
+
+		// refresh data
+		this.calculateAllProperties();
+
+		return result;
 	},
 
 	/**
@@ -259,7 +375,10 @@ customProperties.prototype = {
 		if (!report instanceof mdnReport) return false;
 
 		var finalRecipient=report.finalRecipient;
-		// TODO
+		var dispositionType=report.dispositionType;
+
+		if (! this.regExpCache.validAddr.test(messageId)) return false;
+		if (! this.regExpCache.validMdnReport.test(dispositionType)) return false;
 
 		// get address from final-recipient fields (see RFC3464)
 		// final-recipient-field = 
@@ -270,15 +389,25 @@ customProperties.prototype = {
 		if (finalRecipientArray.length >1)
 			finalRecipient=finalRecipientArray[1].replace(this.regExpCache.trim, "");
 
-		// TODO
+		var newDeliveredTo=this.addDeliveredTo(finalRecipient,0);
 
-		return true;
+		var result=false;
+		if (newDeliveredTo) {
+			newDeliveredTo.mdnList.push(new mdnProperty (dispositionType,messageId));
+			result=true;
+		}
+
+		// refresh data
+		this.calculateAllProperties();
+
+		return result;
 	},
 
 
 
 	/**
 		define all properties
+		@private
 	*/
 		
 	calculateAllProperties: function() {
@@ -296,37 +425,44 @@ customProperties.prototype = {
 			if (this.deliveredToArray[i].flags & this.deliveredToArray[i].FLAG_TIMEOUT)
 				numTimeOut+=1;
 
-			// summary
-			var actionValue=this.deliveredToArray[i].actionValue;
-			if ( (actionValue == "delivered") || (actionValue=="expanded")) number+=1;
+			var waitingOtherDSN=true; // if waiting other DSN for this recipient
 
-			// status
-			switch(this.deliveredToArray[i].actionValue) {
-				case "failed":
-					numFinalDsn+=1;
-					numFailed+=1;
-					break;
-				case "relayed":
-					numFinalDsn+=1;
-					numRelayed+=1;
-					break;
-				case "delivered":
-					numFinalDsn+=1;
-					numDelivered+=1;
-					break;
-				case "expanded":
-					numFinalDsn+=1;
-					numDelivered+=1;
-					break;
-				case "delayed":
-					// ignore
-					break;
+			for (var j=0; j < this.deliveredToArray[i].dsnList.length ; j++) {
+				// summary
+				var actionValue=this.deliveredToArray[i].dsnList[j].actionValue;
+				if ( (actionValue == "delivered") || (actionValue=="expanded")) number+=1;
+
+				if ((/delivered|relayed|failed|expanded/i).test(actionValue))
+					waitingOtherDSN=false;
+
+				// status
+				switch(actionValue) {
+					case "failed":
+						numFailed+=1;
+						break;
+					case "relayed":
+						numRelayed+=1;
+						break;
+					case "delivered":
+						numDelivered+=1;
+						break;
+					case "expanded":
+						numDelivered+=1;
+						break;
+					case "delayed":
+						// ignore
+						break;
+				}
 			}
-		}
 
+			if (! waitingOtherDSN)
+				numFinalDsn+=1;
+		}
 		// define flags
 		if (numTimeOut!=0)
-			this.flagsProperty=this.FLAG_TIMEOUT; //UNDO not possible
+			this.flagsProperty=(this.flagsProperty & 0xE)+this.FLAG_TIMEOUT; //UNDO not possible
+
+		this.flagsProperty=(this.flagsProperty & 0x1)+this.FLAG_VERSION; // current version
 
 		// define status
 		if (numFailed!=0)
@@ -353,23 +489,12 @@ customProperties.prototype = {
 	setMsgAsExpired: function() {
 		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
 			var expire=true;
-			// expired if <> failed, relayed, delivered, or expanded
-			switch(this.deliveredToArray[i].actionValue) {
-				case "failed":
+			for (var j=0; j < this.deliveredToArray[i].dsnList.length ; j++) {
+				// expired if <> failed, relayed, delivered, or expanded
+				if ((/delivered|relayed|failed|expanded/i).test(this.deliveredToArray[i].dsnList[j].actionValue)) {
 					expire=false;
 					break;
-				case "relayed":
-					expire=false;
-					break;
-				case "delivered":
-					expire=false;
-					break;
-				case "expanded":
-					expire=false;
-					break;
-				case "delayed":
-					expire=true;
-					break;
+				}
 			}
 			if (expire)
 				this.deliveredToArray[i].flags=this.deliveredToArray[i].FLAG_TIMEOUT;
@@ -393,38 +518,83 @@ customProperties.prototype = {
 
 
 	/**
-		@return {string} Return x-nviewer-dsn-to property
+		@return {string} Return x-nviewer-to property
 	*/
 	getDeliveredToProperty: function() {
 		var Values="";
-		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
+		for (var i=0 ; i < this.deliveredToArray.length ; i++ ) {
 			var myDeliveryTo=this.deliveredToArray[i];
 			if (i>0) Values+="\n\t";
-			Values+=myDeliveryTo.finalRecipient+";"+myDeliveryTo.actionValue+";"+myDeliveryTo.messageId+";"+myDeliveryTo.flags;
+			Values+=myDeliveryTo.finalRecipient+";"+myDeliveryTo.flags;
+
+			// DSN count
+			Values+=";"+myDeliveryTo.dsnList.length;
+
+			// now, add DSNs
+			for (var j=0; j < myDeliveryTo.dsnList.length ; j++) {
+				Values+=";"+myDeliveryTo.dsnList[j].actionValue+";"+myDeliveryTo.dsnList[j].messageId;
+			}
+
+			// MDN count
+			Values+=";"+myDeliveryTo.mdnList.length;
+
+			// now, add MDNs
+			for (var j=0; j < myDeliveryTo.mdnList.length ; j++) {
+				Values+=";"+myDeliveryTo.mdnList[j].dispositionType+";"+myDeliveryTo.mdnList[j].messageId;
+			}
 		}
 		this.deliveredToProperty=Values;
 		return this.deliveredToProperty;
 	},
 
 	/**
-		@return {string} Return x-nviewer-dsn-status property ("good" ,"bad" , "middle" or "")
+		@return {string} Return x-nviewer-status property ("good" ,"bad" , "middle" or "")
 	*/
 	getStatusProperty: function() {
 		return this.statusProperty;
 	},
 
 	/**
-		@return {string} Return x-nviewer-dsn-summary property (number/total)
+		@return {string} Return x-nviewer-summary property (number/total)
 	*/
 	getSummaryProperty: function() {
 		return this.summaryProperty;
 	},
 
 	/**
-		@return {string} Return x-nviewer-dsn-flags property
+		@return {string} Return x-nviewer-flags property
 	*/
 	getFlagsProperty: function() {
 		return (this.flagsProperty).toString();
+	},
+
+	/**
+		get custom Properties (for debug)
+		@private
+		@return {string}
+	*/
+	getTxtProperties: function() {
+		var txt="\n\n";
+		txt+="Status:  "+this.statusProperty+"\n";
+		txt+="Flags:   "+this.flagsProperty+"\n";
+		txt+="Summary: "+this.summaryProperty+"\n";
+		for (var i=0 ; i < this.deliveredToArray.length ; i++ ) {
+			txt+="\n";
+			txt+="   finalRecipient: "+this.deliveredToArray[i].finalRecipient+"\n";
+			txt+="   flags:          "+this.deliveredToArray[i].flags+"\n";
+			txt+="   DSN Count:      "+this.deliveredToArray[i].dsnList.length+"\n";
+			for (var j=0; j < this.deliveredToArray[i].dsnList.length ; j++) {
+				txt+="       actionValue:     "+this.deliveredToArray[i].dsnList[j].actionValue+"\n";
+				txt+="       messageId:       "+this.deliveredToArray[i].dsnList[j].messageId+"\n";
+			}
+			txt+="   MDN Count:      "+this.deliveredToArray[i].mdnList.length+"\n";
+			for (var j=0; j < this.deliveredToArray[i].mdnList.length ; j++) {
+				txt+="       dispositionType: "+this.deliveredToArray[i].mdnList[j].dispositionType+"\n";
+				txt+="       messageId:       "+this.deliveredToArray[i].mdnList[j].messageId+"\n";
+			}
+		}
+		txt+="\n\n";
+		return txt;
 	}
 }
 
