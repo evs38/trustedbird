@@ -39,10 +39,12 @@ package org.milimail.messageRemoteServiceAPI.compose;
 import junit.framework.TestCase;
 
 import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
+import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
 import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.stubs.Account;
+import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 
 public class MessageServiceTestWithError extends TestCase {
@@ -74,8 +76,15 @@ public class MessageServiceTestWithError extends TestCase {
 
 	//Currently fail and block (max usage of thunderbird), need to control validity server side
 	//UI dont know about our listener
-	public void testSendMessageWithoutTo() throws Exception {
-		Account[] accounts = accountService.GetAllAccounts();
+	public void testSendMessageWithoutTo()  {
+		Account[] accounts = null;
+		try {
+			accounts = accountService.GetAllAccounts();
+		} catch (InternalServerException e1) {
+			fail();
+		} catch (CommunicationException e1) {
+			fail();
+		}
 
 		Account account = accounts[1];
 		assertNotNull(account);
@@ -83,7 +92,16 @@ public class MessageServiceTestWithError extends TestCase {
 		Message message = new Message();
 		message.setSubject("Subject from API");
 		message.setBody("body from API");
-		composeService.sendMessage(account, message, messageListener);
+		boolean exceptionThrown = false;
+		
+		try {
+			composeService.sendMessage(account, message, messageListener);
+		} catch (InternalServerException e) {
+			System.out.println(e.cause);
+			exceptionThrown=true;
+		}
+		
+		assertTrue(exceptionThrown);
 	}
 	
 	//Same as previous
