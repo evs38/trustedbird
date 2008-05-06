@@ -82,6 +82,8 @@ void MessageComposeService_i::FillMsgComposeParams(
   Addresses recipients = p_message.recipients_to;
   nsAutoString toRecipients;
 
+  this->ControlFormat(recipients);
+  
   for (int i = 0; i < recipients.length(); ++i) {
     cout << "Recipient : " << recipients[i] << endl;
 
@@ -145,20 +147,22 @@ void MessageComposeService_i::SendMessage(const Account& p_account,
   cout << "INFO : MessageComposeService_i::SendMessage ENTER" << endl;
 
   nsresult rv;
+  
   //Fill MsgComposeParams From CMessage
   nsCOMPtr<nsIMsgComposeParams> pMsgComposeParams(do_CreateInstance(
       NS_MSGCOMPOSEPARAMS_CONTRACTID, &rv));
   ENSURE_SUCCESS(rv, "Cannot create nsIMsgComposeParams");
-
   this->FillMsgComposeParams(p_message,pMsgComposeParams);
 
   //Get account
   nsCOMPtr<nsIMsgIdentity> pDefaultIdentity;
   this->GetMsgAccount(getter_AddRefs(pDefaultIdentity), p_account);
   
+  //create Listener to inform client of the process (Observer Pattern)
   nsCOMPtr <nsIMsgSendListener> sendListener = new MessageRemoteSendListener(p_listener, p_message);
   pMsgComposeParams->SetSendListener(sendListener);
 
+  //create Message Service Compose Service
   nsCOMPtr<nsIMsgComposeService> pMsgComposeService;
   rv = svcMgr->GetServiceByContractID("@mozilla.org/messengercompose;1",
       NS_GET_IID(nsIMsgComposeService), getter_AddRefs(pMsgComposeService));
@@ -191,20 +195,22 @@ void MessageComposeService_i::SendMessage(const Account& p_account,
    
    pMsgComposeServiceProxy->OpenComposeWindowWithParams(nsnull, pMsgComposeParams) ;
    */
-
+  
+  //Proxy to call method inside the UI Thread, async call
   nsCOMPtr<nsIMsgCompose> pMsgComposeProxy;
-
   ENSURE_SUCCESS(rv,"Cannot get GetProxyForObject nsIProxyObjectManager");
   rv = proxyObjMgr->GetProxyForObject(NS_UI_THREAD_EVENTQ,
       NS_GET_IID(nsIMsgCompose), pMsgCompose, PROXY_ASYNC|PROXY_ALWAYS,
       getter_AddRefs(pMsgComposeProxy));
 
+  //Send message
   cout << "INFO : MessageComposeService_i::SendMessage SendMsg : " << rv
       << endl;
   rv = pMsgComposeProxy->SendMsg(nsIMsgCompDeliverMode::Now, pDefaultIdentity,
       nsnull, nsnull, nsnull) ;
   ENSURE_SUCCESS(rv,"Cannot SendMsg nsIMsgCompose Proxy");
-
+  
+  //Loop until the message has been delivered to MTA
   nsCOMPtr<nsIEventQueueService> pEventQService = do_GetService(
       NS_EVENTQUEUESERVICE_CONTRACTID, &rv);
 
@@ -226,4 +232,11 @@ void MessageComposeService_i::SendMessage(const Account& p_account,
 
   cout << "INFO : MessageComposeService_i::SendMessage EXIT" << endl;
 
+}
+
+void MessageComposeService_i::ControlFormat(const Addresses& recipients){
+  //Check if there is at least one recepient
+  if (recipients.length() == 0)
+    throw InternalServerException("There is no recipient");
+  
 }

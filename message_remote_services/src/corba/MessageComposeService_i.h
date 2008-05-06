@@ -68,6 +68,12 @@ private:
   void FillMsgComposeParams(const CMessage& p_message,
                             nsIMsgComposeParams * pMsgComposeParams);
   void GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const Account& p_account);
+  
+  /*!
+   * Helper method used to control Format of the recipients addresse
+   */
+  void ControlFormat(const Addresses& recipients);
+  
   nsCOMPtr<nsIServiceManager> svcMgr;
 
 };
