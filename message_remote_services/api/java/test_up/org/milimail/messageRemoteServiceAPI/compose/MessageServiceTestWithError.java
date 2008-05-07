@@ -105,8 +105,15 @@ public class MessageServiceTestWithError extends TestCase {
 	}
 	
 	//Same as previous
-	public void testSendMessageMalformedTo() throws Exception {
-		Account[] accounts = accountService.GetAllAccounts();
+	public void testSendMessageMalformedTo()  {
+		Account[] accounts = null;
+		try {
+			accounts = accountService.GetAllAccounts();
+		} catch (InternalServerException e) {
+			fail();
+		} catch (CommunicationException e) {
+			fail();
+		}
 
 		Account account = accounts[1];
 		assertNotNull(account);
@@ -116,10 +123,16 @@ public class MessageServiceTestWithError extends TestCase {
 
 		message.setBody("body from API");
 
-		String[] to = { "user2test.milimail.org" };
+		String[] to = { "user1@test.milimail.org","user2test.milimail.org" };
 		message.setTo(to);
-		composeService.sendMessage(account, message, messageListener);
-
+		boolean exceptionThrown = false;
+		try {
+			composeService.sendMessage(account, message, messageListener);
+		} catch (InternalServerException e) {
+			exceptionThrown=true;
+		}
+		
+		assertTrue(exceptionThrown);
 	}
 
 }
