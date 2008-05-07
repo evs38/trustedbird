@@ -39,7 +39,7 @@
 <!ENTITY colMDNDisplayedTooltip "Click to sort by notifications (displayed)">
 <!ENTITY colMDNDeleted "Deleted">
 <!ENTITY colMDNDeletedTooltip "Click to sort by notifications (deleted)">
-<!ENTITY headerView.labelDSN "Delivery notifications">
+<!ENTITY headerView.labelDSN "Delivered">
 <!ENTITY headerView.labelMDNDisplayed "Displayed">
 <!ENTITY headerView.labelMDNDeleted "Deleted">
 <!ENTITY PrefsDialog.generalities "Generalities">

@@ -193,7 +193,7 @@ var msgHdrViewOverlay = {
 						if (notificationsDisplayTextAndIcons & 0x2) { // if user want icon
 							// create image
 							var imageTimeOut = document.createElement("image");
-							imageTimeOut.setAttribute("class",class_timeout+"_img");
+							imageTimeOut.setAttribute("class",class_timeout+"_img notifications_icones");
 							imageTimeOut.setAttribute("tooltiptext",i18n_timeout);
 							DsnHbox.appendChild(imageTimeOut);
 						}
@@ -201,7 +201,7 @@ var msgHdrViewOverlay = {
 						if (notificationsDisplayTextAndIcons & 0x1) { // if user want text
 							var labelTimeOut = document.createElement("label");
 							labelTimeOut.setAttribute("value",i18n_timeout);
-							labelTimeOut.setAttribute("class",class_timeout);
+							labelTimeOut.setAttribute("class",class_timeout+" notifications_txt");
 							DsnHbox.appendChild(labelTimeOut);
 						}
 					}
@@ -224,7 +224,7 @@ var msgHdrViewOverlay = {
 					if (notificationsDisplayTextAndIcons & 0x2) { // if user want icon
 						// create image
 						var imageStatus = document.createElement("image");
-						imageStatus.setAttribute("class",classRecipient+"_img");
+						imageStatus.setAttribute("class",classRecipient+"_img notifications_icones");
 						imageStatus.setAttribute("tooltiptext",i18n_actionValue);
 						if (messageId.length>0)
 							imageStatus.setAttribute("onclick",onClickCommand);
@@ -236,7 +236,7 @@ var msgHdrViewOverlay = {
 						labelStatus.setAttribute("value",i18n_actionValue);
 						if (messageId.length>0)
 							labelStatus.setAttribute("onclick",onClickCommand);
-						labelStatus.setAttribute("class",classRecipient);
+						labelStatus.setAttribute("class",classRecipient+" notifications_txt");
 						DsnHbox.appendChild(labelStatus);
 					}
 				}
@@ -257,7 +257,7 @@ var msgHdrViewOverlay = {
 					if (notificationsDisplayTextAndIcons & 0x2) { // if user want icon
 						// create image
 						var imageStatus = document.createElement("image");
-						imageStatus.setAttribute("class",classRecipient+"_img");
+						imageStatus.setAttribute("class",classRecipient+"_img notifications_icones");
 						imageStatus.setAttribute("tooltiptext",i18n_dispositionType);
 						if (messageId.length>0)
 							imageStatus.setAttribute("onclick",onClickCommand);
@@ -269,7 +269,7 @@ var msgHdrViewOverlay = {
 						labelStatus.setAttribute("value",i18n_dispositionType);
 						if (messageId.length>0)
 							labelStatus.setAttribute("onclick",onClickCommand);
-						labelStatus.setAttribute("class",classRecipient);
+						labelStatus.setAttribute("class",classRecipient+" notifications_txt");
 						MdnHbox.appendChild(labelStatus);
 					}
 				}
@@ -282,7 +282,7 @@ var msgHdrViewOverlay = {
 				if (parseInt(this.cacheFlags) & this.cacheCustomProperties.FLAG_TIMEOUT) //timeout
 					classT="timeout";
 			}
-			document.getElementById("dsn-summary").setAttribute("class",classT);
+			document.getElementById("dsn-summary").setAttribute("class",classT+" collapsedHeaderValue plain");
 		}
 	},
 

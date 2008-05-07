@@ -58,18 +58,14 @@
 					<vbox>
 						<hbox>
 							<label id="dsnHeader" class="headerName" value="&headerView.labelDSN;:"/>
-							<label id="dsn-summary"/>
-							<label id="dsnHeader" class="headerName" value="&headerView.labelMDNDisplayed;:"/>
-							<label id="mdn-displayed-summary"/>
-							<label id="dsnHeader" class="headerName" value="&headerView.labelMDNDeleted;:"/>
-							<label id="mdn-deleted-summary"/>
+							<label class="collapsedHeaderValue plain" id="dsn-summary"/>
+							<label id="mdnDisplayedHeader" class="headerName" value="  &headerView.labelMDNDisplayed;:"/>
+							<label class="collapsedHeaderValue plain" id="mdn-displayed-summary"/>
+							<label id="mdnDeletedHeader" class="headerName" value="  &headerView.labelMDNDeleted;:"/>
+							<label class="collapsedHeaderValue plain" id="mdn-deleted-summary"/>
 						</hbox>
 						<grid id="detailDSN" collapsed="true" flex="1">
 							<columns>
-								<column/>
-								<column/>
-								<column/>
-								<column/>
 							</columns>
 							<!-- here, rows when DSN header exist -->
 						</grid>

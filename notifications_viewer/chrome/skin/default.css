@@ -104,105 +104,90 @@ treechildren::-moz-tree-row(good) {}
 }
 
 
+/* generic */
+.notifications_txt{
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.notifications_icones{
+	margin: 2px 3px 5px 7px ;
+	cursor: pointer;
+}
+
+
 /* final recipients and delivery reports */
 
 .dsn_failed {
-	cursor: pointer;
 	color: red;
-	text-decoration: underline;
 }
 
 .dsn_delivered,.dsn_expanded  {
-	cursor: pointer;
 	color: green;
-	text-decoration: underline;
 }
 
 .dsn_relayed {
-	cursor: pointer;
 	color: #ff6000;
-	text-decoration: underline;
 }
 
 .dsn_timeout {
-	cursor: pointer;
 	color: #a000aa;
-	text-decoration: underline;
 }
 
 .dsn_delayed {
-	cursor: pointer;
-	text-decoration: underline;
 }
 
 .dsn_failed_img {
 	list-style-image: url("chrome://notifications_viewer/skin/dsn_failed.png");
-	cursor: pointer;
 }
 
 .dsn_delivered_img,.dsn_expanded_img {
 	list-style-image: url("chrome://notifications_viewer/skin/dsn_delivered.png");
-	cursor: pointer;
 }
 
 .dsn_relayed_img {
 	list-style-image: url("chrome://notifications_viewer/skin/dsn_relayed.png");
-	cursor: pointer;
 }
 
 .dsn_timeout_img {
 	list-style-image: url("chrome://notifications_viewer/skin/dsn_timeout.png");
-	cursor: pointer;
 }
 
 .dsn_delayed_img {
 	list-style-image: url("chrome://notifications_viewer/skin/dsn_delayed.png");
-	cursor: pointer;
 }
 
 /** MDN  */
 
 .mdn_displayed  {
-	cursor: pointer;
 	color: green;
-	text-decoration: underline;
 }
 
 .mdn_deleted  {
-	cursor: pointer;
 	color: blue;
-	text-decoration: underline;
 }
 
 .mdn_failed,.mdn_denied  {
-	cursor: pointer;
 	color: red;
-	text-decoration: underline;
 }
 
 .mdn_dispatched,.mdn_processed {
-	cursor: pointer;
-	text-decoration: underline;
 }
 
 .mdn_displayed_img {
 	list-style-image: url("chrome://notifications_viewer/skin/mdn_displayed.png");
-	cursor: pointer;
 }
 
 .mdn_deleted_img {
 	list-style-image: url("chrome://notifications_viewer/skin/mdn_deleted.png");
-	cursor: pointer;
 }
 
 .mdn_dispatched_img,.mdn_processed_img {
 	list-style-image: url("chrome://notifications_viewer/skin/mdn_dispatched.png");
-	cursor: pointer;
 }
 
 .mdn_failed_img,.mdn_denied_img {
 	list-style-image: url("chrome://notifications_viewer/skin/mdn_failed.png");
-	cursor: pointer;
 }
 
 
