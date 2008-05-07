@@ -41,7 +41,7 @@
 	<tree id="threadTree">
 		<treecols id="threadCols">
 			<splitter class="tree-splitter" />
-			<treecol id="colMDNDisplayed" persist="hidden ordinal width" 
+			<treecol id="colMDNDisplayed" persist="hidden ordinal width sortActive sortDirection"
 				 currentView="unthreaded" flex="2"
 				 label="&colMDNDisplayed;" tooltiptext="&colMDNDisplayedTooltip;" />
 		</treecols>

@@ -102,7 +102,7 @@ Services.prototype = {
 	*/
 	currentDate: function ()
 	{
-		date=new Date();
+		var date=new Date();
 		return date.toGMTString();
 	}
 }
@@ -137,6 +137,7 @@ function escapeRegExp(str) {
 */
 var prefDialogBox = {
 	services : null,
+	windowParent : null,
 
 	/**
 		Init Preferences Dialog Box
@@ -144,12 +145,34 @@ var prefDialogBox = {
 	initPrefDialog : function () {
 		if (!this.services)
 			this.services= new Services();
+
+		// get window parent
+		this.windowParent=window.opener;
+		while (this.windowParent) {
+			var resu=this.windowParent.document.getElementById("colDSN");
+			if (resu)
+				break; // it's messengerWindow
+			this.windowParent=this.windowParent.opener;
+		}
+
 		document.getElementById("considerTimeout").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
 		document.getElementById("timeOut").value = this.services.preferences.getIntPref(this.services.extensionKey+".timeout");
 		this.enableTimeOut();
 		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
 		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
 		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
+
+		// columns
+		if (this.windowParent) {
+			document.getElementById("columnDelivered").checked = ! this.windowParent.document.getElementById("colDSN").hidden;
+			document.getElementById("columnDisplayed").checked = ! this.windowParent.document.getElementById("colMDNDisplayed").hidden;
+			document.getElementById("columnDeleted").checked = ! this.windowParent.document.getElementById("colMDNDeleted").hidden;
+		} else {
+			document.getElementById("columnDelivered").disabled=true;
+			document.getElementById("columnDisplayed").disabled=true;
+			document.getElementById("columnDeleted").disabled=true;
+			this.services.warningSrv("prefDialogBox.initPrefDialog - Impossible to hide/show columns with this window preferences");
+		}
 	},
 
 	/**
@@ -174,6 +197,13 @@ var prefDialogBox = {
 		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_notifications_as_read",document.getElementById("markRead").checked);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".thread_on_original_message",document.getElementById("moveNotification").checked);
 		this.services.preferences.setIntPref(this.services.extensionKey+".display_text_and_icons",(document.getElementById("notificationsDisplayTextAndIcons").selectedIndex)+1);
+
+		// columns
+		if (this.windowParent) {
+			this.windowParent.document.getElementById("colDSN").hidden = ! document.getElementById("columnDelivered").checked;
+			this.windowParent.document.getElementById("colMDNDisplayed").hidden = ! document.getElementById("columnDisplayed").checked;
+			this.windowParent.document.getElementById("colMDNDeleted").hidden = ! document.getElementById("columnDeleted").checked;
+		}
 		return true;
 	},
 

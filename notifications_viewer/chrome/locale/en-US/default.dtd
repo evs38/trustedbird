@@ -55,6 +55,10 @@
 <!ENTITY PrefsDialog.groupBoxHdrView.textOnly "Text only">
 <!ENTITY PrefsDialog.groupBoxHdrView.iconOnly "Icons only">
 <!ENTITY PrefsDialog.groupBoxHdrView.textAndIcon "Text and icons">
+<!ENTITY PrefsDialog.groupBoxHdrView.displayColumns "Columns displayed">
+<!ENTITY PrefsDialog.groupBoxHdrView.columnDelivered "Delivered messages">
+<!ENTITY PrefsDialog.groupBoxHdrView.columnDisplayed "Displayed messages">
+<!ENTITY PrefsDialog.groupBoxHdrView.columnDeleted "Deleted messages">
 
 
 

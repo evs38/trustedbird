@@ -39,7 +39,7 @@
 <!ENTITY colMDNDisplayedTooltip "Cliquez pour trier par notifications (affiché)">
 <!ENTITY colMDNDeleted "Effacé">
 <!ENTITY colMDNDeletedTooltip "Cliquez pour trier par notifications (effacé)">
-<!ENTITY headerView.labelDSN "Livré">
+<!ENTITY headerView.labelDSN "Délivré">
 <!ENTITY headerView.labelMDNDisplayed "Affiché">
 <!ENTITY headerView.labelMDNDeleted "Effacé">
 <!ENTITY PrefsDialog.generalities "Généralités">
@@ -55,5 +55,10 @@
 <!ENTITY PrefsDialog.groupBoxHdrView.textOnly "Texte seulement">
 <!ENTITY PrefsDialog.groupBoxHdrView.iconOnly "Icones seulement">
 <!ENTITY PrefsDialog.groupBoxHdrView.textAndIcon "Texte et icones">
+<!ENTITY PrefsDialog.groupBoxHdrView.displayColumns "Affichage des colonnes">
+<!ENTITY PrefsDialog.groupBoxHdrView.columnDelivered "Messages délivrés">
+<!ENTITY PrefsDialog.groupBoxHdrView.columnDisplayed "Messages affichés">
+<!ENTITY PrefsDialog.groupBoxHdrView.columnDeleted "Messages effacés">
+
 
 

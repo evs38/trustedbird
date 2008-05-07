@@ -52,7 +52,7 @@
 	<tree id="threadTree">
 		<treecols id="threadCols">
 			<splitter class="tree-splitter" />
-			<treecol id="colDSN" persist="hidden ordinal width" 
+			<treecol id="colDSN" persist="hidden ordinal width sortActive sortDirection"
 				 currentView="unthreaded" flex="2"
 				 label="&colDSN;" tooltiptext="&colDSNTooltip;" />
 		</treecols>

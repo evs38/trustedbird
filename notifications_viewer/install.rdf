@@ -44,7 +44,7 @@
 	<RDF:Description RDF:about="urn:mozilla:install-manifest"
 			 em:id="notificationsviewer@milimail.org"
 			 em:description="Notifications Viewer"
-			 em:version="0.6.0.2-alpha"
+			 em:version="0.6.0.3-alpha"
 			 em:type="2"
 			 em:name="Notifications Viewer"
 			 em:creator="DIRSIM - Marine Nationale"

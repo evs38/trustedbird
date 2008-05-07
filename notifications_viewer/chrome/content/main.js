@@ -98,6 +98,12 @@ function pluginUpdated(oldVersionNumber,currentVersionNumber) {
 	if (currentVersionNumber && currentVersionNumber.length>1)
 		currentVersion=parseFloat(currentVersionNumber[1]);
 
+	// first time
+	if (oldVersion==0) {
+		// hide 'MDN deleted' column
+		document.getElementById("colMDNDeleted").hidden = true;
+	}
+
 	if (currentVersion!=oldVersion) {
 		// version number changed, open window preferences
 		window.openDialog("chrome://notifications_viewer/content/preferences.xul","notifications_viewerPrefsDialog","chrome,modal");
