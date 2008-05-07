@@ -72,8 +72,12 @@ private:
   /*!
    * Helper method used to control Format of the recipients addresse
    */
-  void ControlFormat(const Addresses& recipients);
+  bool ControlFormat(const Addresses& recipients);
   
+  /*!
+   * Helper method used to show Composition Window filled by message attributes
+   */
+  void ShowMessageCompositionWindow(nsIMsgComposeParams * pMsgComposeParams);
   nsCOMPtr<nsIServiceManager> svcMgr;
 
 };

@@ -51,6 +51,7 @@
 #include "nsMsgSMIMECID.h"
 #include <iostream>
 
+#define CHAR_NOT_FOUND -1
 using namespace std;
 
 MessageComposeService_i::MessageComposeService_i() {
@@ -82,20 +83,6 @@ void MessageComposeService_i::FillMsgComposeParams(
   Addresses recipients = p_message.recipients_to;
   nsAutoString toRecipients;
 
-  this->ControlFormat(recipients);
-  
-  for (int i = 0; i < recipients.length(); ++i) {
-    cout << "Recipient : " << recipients[i] << endl;
-
-    if (i>0)
-      toRecipients += NS_LITERAL_STRING(";");
-
-    toRecipients += NS_ConvertASCIItoUTF16(recipients[i]);
-  }
-
-  rv = pMsgCompFields->SetTo(toRecipients);
-  ENSURE_SUCCESS(rv,"Cannot SetTo");
-
   nsAutoString body = NS_ConvertASCIItoUTF16(p_message.body)
       + NS_ConvertASCIItoUTF16("\r\n");
   pMsgCompFields->SetBody(body);
@@ -115,6 +102,18 @@ void MessageComposeService_i::FillMsgComposeParams(
 
   rv = pMsgComposeParams->SetComposeFields(pMsgCompFields);
   ENSURE_SUCCESS(rv,"Cannot SetComposeFields");
+  
+  for (int i = 0; i < recipients.length(); ++i) {
+    cout << "Recipient : " << recipients[i] << endl;
+
+    if (i>0)
+      toRecipients += NS_LITERAL_STRING(",");
+
+    toRecipients += NS_ConvertASCIItoUTF16(recipients[i]);
+  }
+
+  rv = pMsgCompFields->SetTo(toRecipients);
+  ENSURE_SUCCESS(rv,"Cannot SetTo");
 
 }
 
@@ -152,8 +151,15 @@ void MessageComposeService_i::SendMessage(const Account& p_account,
   nsCOMPtr<nsIMsgComposeParams> pMsgComposeParams(do_CreateInstance(
       NS_MSGCOMPOSEPARAMS_CONTRACTID, &rv));
   ENSURE_SUCCESS(rv, "Cannot create nsIMsgComposeParams");
+  
   this->FillMsgComposeParams(p_message,pMsgComposeParams);
 
+  //Control Format
+  if (!this->ControlFormat(p_message.recipients_to)) {
+    ShowMessageCompositionWindow(pMsgComposeParams);
+    throw InternalServerException("Bad Format in 'to' field");
+  }
+  
   //Get account
   nsCOMPtr<nsIMsgIdentity> pDefaultIdentity;
   this->GetMsgAccount(getter_AddRefs(pDefaultIdentity), p_account);
@@ -185,16 +191,6 @@ void MessageComposeService_i::SendMessage(const Account& p_account,
   rv = pMsgComposeService->InitCompose((nsIDOMWindowInternal *)hiddenWindow,
       (nsIMsgComposeParams *)pMsgComposeParams, getter_AddRefs(pMsgCompose));
   ENSURE_SUCCESS(rv,"Cannot InitCompose");
-
-  /*nsCOMPtr<nsIMsgComposeService> pMsgComposeServiceProxy;
-   rv = proxyObjMgr->GetProxyForObject( NS_UI_THREAD_EVENTQ, 
-   NS_GET_IID(nsIMsgComposeService),
-   pMsgComposeService, 
-   PROXY_ASYNC|PROXY_ALWAYS,
-   getter_AddRefs(pMsgComposeServiceProxy));
-   
-   pMsgComposeServiceProxy->OpenComposeWindowWithParams(nsnull, pMsgComposeParams) ;
-   */
   
   //Proxy to call method inside the UI Thread, async call
   nsCOMPtr<nsIMsgCompose> pMsgComposeProxy;
@@ -234,9 +230,36 @@ void MessageComposeService_i::SendMessage(const Account& p_account,
 
 }
 
-void MessageComposeService_i::ControlFormat(const Addresses& recipients){
+bool MessageComposeService_i::ControlFormat(const Addresses& recipients){
   //Check if there is at least one recepient
   if (recipients.length() == 0)
-    throw InternalServerException("There is no recipient");
+    return false;
   
+  nsAutoString recipient;
+  for (int i = 0; i < recipients.length(); ++i) {
+    recipient = NS_ConvertASCIItoUTF16(recipients[i]);
+    if (recipient.FindChar('@') == CHAR_NOT_FOUND)
+      return false;
+  }
+}
+
+void MessageComposeService_i::ShowMessageCompositionWindow(nsIMsgComposeParams * pMsgComposeParams) {
+  nsresult rv;
+  nsCOMPtr<nsIProxyObjectManager> proxyObjMgr = do_GetService(
+      "@mozilla.org/xpcomproxy;1", &rv);
+  ENSURE_SUCCESS(rv,"Cannot get nsIProxyObjectManager");
+
+  nsCOMPtr<nsIMsgComposeService> pMsgComposeService;
+  rv = svcMgr->GetServiceByContractID("@mozilla.org/messengercompose;1",
+      NS_GET_IID(nsIMsgComposeService), getter_AddRefs(pMsgComposeService));
+  ENSURE_SUCCESS(rv, "Cannot get nsIMsgComposeService");
+
+  nsCOMPtr<nsIMsgComposeService> pMsgComposeServiceProxy;
+  rv = proxyObjMgr->GetProxyForObject(NS_UI_THREAD_EVENTQ,
+      NS_GET_IID(nsIMsgComposeService), pMsgComposeService, PROXY_ASYNC
+          |PROXY_ALWAYS, getter_AddRefs(pMsgComposeServiceProxy));
+
+  pMsgComposeServiceProxy->OpenComposeWindowWithParams(nsnull,
+      pMsgComposeParams) ;
+
 }
