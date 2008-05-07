@@ -128,14 +128,16 @@ function mdnProperty (dispositionType,messageId) {
 	</pre>
 	@class manage custom properties
 	@constructor
-	@version 0.9.3
+	@version 0.9.4
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@param {string} deliveredToProperty x-nviewer-to property
 	@param {string} statusProperty x-nviewer-status property ("good","middle", "bad")
-	@param {string} summaryProperty x-nviewer-summary property (number/total)
+	@param {string} dsnSummaryProperty x-nviewer-dsn-summary property (number/total)
 	@param {string} flagsProperty x-nviewer-flags property	
+	@param {string} mdnDisplayedSummaryProperty x-nviewer-mdn-displayed-summary property (number/total)
+	@param {string} mdnDeletedSummaryProperty x-nviewer-mdn-deleted-summary property (number/total)
 */
-function customProperties(deliveredToProperty,statusProperty,summaryProperty,flagsProperty) {
+function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,flagsProperty,mdnDisplayedSummaryProperty,mdnDeletedSummaryProperty) {
 
 	/**
 		x-nviewer-to property
@@ -160,18 +162,40 @@ function customProperties(deliveredToProperty,statusProperty,summaryProperty,fla
 	this.statusProperty=statusProperty;
 
 	/**
-		x-nviewer-summary property (number/total)
+		x-nviewer-dsn-summary property (number/total)
 		<p>
 		Access functions:
 		<ul>
-			<li>{@link #getSummaryProperty}
+			<li>{@link #getDsnSummaryProperty}
 		</ul>
 		@type string
 	*/
-	this.summaryProperty=summaryProperty;
+	this.dsnSummaryProperty=dsnSummaryProperty;
 
 	/**
- 		List of {@link DeliveredTo} object
+		x-nviewer-mdn-displayed-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li>{@link #getMdnDisplayedSummaryProperty}
+		</ul>
+		@type string
+	*/
+	this.mdnDisplayedSummaryProperty=mdnDisplayedSummaryProperty;
+
+	/**
+		x-nviewer-mdn-deleted-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li>{@link #getMdnDeletedSummaryProperty}
+		</ul>
+		@type string
+	*/
+	this.mdnDeletedSummaryProperty=mdnDeletedSummaryProperty;
+
+	/**
+		List of {@link DeliveredTo} object
 		@type Array
 	*/
 	this.deliveredToArray=new Array();
@@ -414,10 +438,12 @@ customProperties.prototype = {
 		var numFailed=0;
 		var numRelayed=0;
 		var numDelivered=0;
+		var numDisplayed=0;
+		var numDeleted=0;
 		var numTimeOut=0;
-		var number=0;
 		var total=this.deliveredToArray.length;
 		var numFinalDsn=0;
+		var dsnPresent=false;
 
 		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
 
@@ -425,39 +451,38 @@ customProperties.prototype = {
 			if (this.deliveredToArray[i].flags & this.deliveredToArray[i].FLAG_TIMEOUT)
 				numTimeOut+=1;
 
-			var waitingOtherDSN=true; // if waiting other DSN for this recipient
-
+			// DSN
+			var isFailed=false;
+			var isRelayed=false;
+			var isDelivered=false;
+			var isDelayed=false;
 			for (var j=0; j < this.deliveredToArray[i].dsnList.length ; j++) {
 				// summary
 				var actionValue=this.deliveredToArray[i].dsnList[j].actionValue;
-				if ( (actionValue == "delivered") || (actionValue=="expanded")) number+=1;
-
-				if ((/delivered|relayed|failed|expanded/i).test(actionValue))
-					waitingOtherDSN=false;
-
-				// status
-				switch(actionValue) {
-					case "failed":
-						numFailed+=1;
-						break;
-					case "relayed":
-						numRelayed+=1;
-						break;
-					case "delivered":
-						numDelivered+=1;
-						break;
-					case "expanded":
-						numDelivered+=1;
-						break;
-					case "delayed":
-						// ignore
-						break;
-				}
+				if ( (actionValue == "delivered") || (actionValue=="expanded")) isDelivered=true;
+				else if (actionValue == "failed") isFailed=true;
+				else if (actionValue == "relayed") isRelayed=true;
+				else if (actionValue == "delayed") isDelayed=true;
 			}
 
-			if (! waitingOtherDSN)
-				numFinalDsn+=1;
+			if (isFailed || isRelayed || isDelivered) numFinalDsn+=1; // all DSN received for this recipient
+			if (isFailed || isRelayed || isDelivered || isDelayed) dsnPresent=true;
+			if (isFailed) numFailed+=1;
+			if (isRelayed) numRelayed+=1;
+			if (isDelivered) numDelivered+=1;
+
+			// MDN
+			var isDisplayed=false;
+			var isDeleted=false;
+			for (var j=0; j < this.deliveredToArray[i].mdnList.length ; j++) {
+				var dispositionType=this.deliveredToArray[i].mdnList[j].dispositionType;
+				if (dispositionType == "displayed") isDisplayed=true;
+				else if (dispositionType == "deleted") isDeleted=true;
+			}
+			if (isDisplayed) numDisplayed+=1;
+			if (isDeleted) numDeleted+=1;
 		}
+
 		// define flags
 		if (numTimeOut!=0)
 			this.flagsProperty=(this.flagsProperty & 0xE)+this.FLAG_TIMEOUT; //UNDO not possible
@@ -474,7 +499,9 @@ customProperties.prototype = {
 		else this.statusProperty="";
 
 		// define summary
-		this.summaryProperty= number+"/"+total;
+		if (dsnPresent) this.dsnSummaryProperty= numDelivered+"/"+total;
+		if (numDisplayed!=0) this.mdnDisplayedSummaryProperty= numDisplayed+"/"+total;
+		if (numDeleted!=0) this.mdnDeletedSummaryProperty= numDeleted+"/"+total;
 
 		if (numFinalDsn==total)
 			this.allDsnReceived=true; // All DSN were received
@@ -555,10 +582,10 @@ customProperties.prototype = {
 	},
 
 	/**
-		@return {string} Return x-nviewer-summary property (number/total)
+		@return {string} Return x-nviewer-dsn-summary property (number/total)
 	*/
-	getSummaryProperty: function() {
-		return this.summaryProperty;
+	getDsnSummaryProperty: function() {
+		return this.dsnSummaryProperty;
 	},
 
 	/**
@@ -569,15 +596,29 @@ customProperties.prototype = {
 	},
 
 	/**
+		@return {string} Return x-nviewer-mdn-displayed-summary property
+	*/
+	getMdnDisplayedSummaryProperty: function() {
+		return this.mdnDisplayedSummaryProperty;
+	},
+
+	/**
+		@return {string} Return x-nviewer-mdn-deleted-summary property
+	*/
+	getMdnDeletedSummaryProperty: function() {
+		return this.mdnDeletedSummaryProperty;
+	},
+
+	/**
 		get custom Properties (for debug)
 		@private
 		@return {string}
 	*/
 	getTxtProperties: function() {
 		var txt="\n\n";
-		txt+="Status:  "+this.statusProperty+"\n";
-		txt+="Flags:   "+this.flagsProperty+"\n";
-		txt+="Summary: "+this.summaryProperty+"\n";
+		txt+="Status:      "+this.statusProperty+"\n";
+		txt+="Flags:       "+this.flagsProperty+"\n";
+		txt+="DSN Summary: "+this.dsnSummaryProperty+"\n";
 		for (var i=0 ; i < this.deliveredToArray.length ; i++ ) {
 			txt+="\n";
 			txt+="   finalRecipient: "+this.deliveredToArray[i].finalRecipient+"\n";
@@ -593,6 +634,9 @@ customProperties.prototype = {
 				txt+="       messageId:       "+this.deliveredToArray[i].mdnList[j].messageId+"\n";
 			}
 		}
+		txt+="\n";
+		txt+="MDN displayed Summary: "+this.mdnDisplayedSummaryProperty+"\n";
+		txt+="MDN deleted Summary:   "+this.mdnDeletedSummaryProperty+"\n";
 		txt+="\n\n";
 		return txt;
 	}

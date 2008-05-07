@@ -45,7 +45,7 @@
 /**
 	@class Manage a list of messages that are associated with one or more DSN.
 	Check if messages were expired.
-	@version 0.9.0
+	@version 0.9.1
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@constructor
 */
@@ -207,19 +207,21 @@ ManageMsgAsDN.prototype = {
 				// get properties from message
 				var deliveredToP=messageHdr.getStringProperty("x-nviewer-to");
 				var statusP=messageHdr.getStringProperty("x-nviewer-status");
-				var summaryP=messageHdr.getStringProperty("x-nviewer-summary");
+				var dsnSummaryP=messageHdr.getStringProperty("x-nviewer-dsn-summary");
 				var flagsP=messageHdr.getStringProperty("x-nviewer-flags");
+				var mdnDisplayedSummaryP=messageHdr.getStringProperty("x-nviewer-mdn-displayed-summary");
+				var mdnDeletedSummaryP=messageHdr.getStringProperty("x-nviewer-mdn-deleted-summary");
 
-				srv.logSrv("ManageMsgAsDN - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv("ManageMsgAsDN - current notifications_viewer properties - "+statusP+" "+dsnSummaryP+" "+flagsP+"\n\t"+deliveredToP);
 
-				if (deliveredToP=="" && summaryP=="") {
+				if (deliveredToP=="" && dsnSummaryP=="") {
 					 // No DSNViewer properties present
 					srv.logSrv("ManageMsgAsDN - No notifications_viewer properties present, remove from the list");
 					this.removeElement(cloneMsgList[i]);
 					continue;
 				}
 
-				var customProp=new customProperties(deliveredToP,statusP,summaryP,flagsP);
+				var customProp=new customProperties(deliveredToP,statusP,dsnSummaryP,flagsP,mdnDisplayedSummaryP,mdnDeletedSummaryP);
 
 				if (customProp.allDsnReceived) {
 					srv.logSrv("ManageMsgAsDN - all DSN were received, remove from the list");
@@ -237,16 +239,20 @@ ManageMsgAsDN.prototype = {
 					customProp.setMsgAsExpired(); // set as expired
 					deliveredToP=customProp.getDeliveredToProperty();
 					statusP=customProp.getStatusProperty();
-					summaryP=customProp.getSummaryProperty();
+					dsnSummaryP=customProp.getDsnSummaryProperty();
 					flagsP=customProp.getFlagsProperty();
+					mdnDisplayedSummaryP=customProp.getMdnDisplayedSummaryProperty();
+					mdnDeletedSummaryP=customProp.getMdnDeletedSummaryProperty();
 
-					srv.logSrv("ManageMsgAsDN - new notifications_viewer properties - "+deliveredToP+" "+statusP+" "+summaryP+" "+flagsP);
+					srv.logSrv("ManageMsgAsDN - new notifications_viewer properties - "+statusP+" "+dsnSummaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 					// save properties
 					messageHdr.setStringProperty("x-nviewer-to",deliveredToP);
 					messageHdr.setStringProperty("x-nviewer-status",statusP);
-					messageHdr.setStringProperty("x-nviewer-summary",summaryP);
+					messageHdr.setStringProperty("x-nviewer-dsn-summary",dsnSummaryP);
 					messageHdr.setStringProperty("x-nviewer-flags",flagsP);
+					messageHdr.setStringProperty("x-nviewer-mdn-displayed-summary",mdnDisplayedSummaryP);
+					messageHdr.setStringProperty("x-nviewer-mdn-deleted-summary",mdnDeletedSummaryP);
 
 					srv.logSrv("ManageMsgAsDN - this message expired, remove from the list");
 					// remove from the list

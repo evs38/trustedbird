@@ -57,8 +57,12 @@
 					</hbox>
 					<vbox>
 						<hbox>
-							<label id="dsnHeader" class="headerName" value="&headerView.label;:"/>
-							<label class="emailDisplayButton plain" id="dsn-summary"/>
+							<label id="dsnHeader" class="headerName" value="&headerView.labelDSN;:"/>
+							<label id="dsn-summary"/>
+							<label id="dsnHeader" class="headerName" value="&headerView.labelMDNDisplayed;:"/>
+							<label id="mdn-displayed-summary"/>
+							<label id="dsnHeader" class="headerName" value="&headerView.labelMDNDeleted;:"/>
+							<label id="mdn-deleted-summary"/>
 						</hbox>
 						<grid id="detailDSN" collapsed="true" flex="1">
 							<columns>

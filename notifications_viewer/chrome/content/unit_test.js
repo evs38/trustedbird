@@ -68,6 +68,7 @@ var tc_custom_properties_MDN= new TestCase('customProperties MDN');
 	Compare two arrays
 	@param {array} array1
 	@param {array} array2
+	@private
 	@return {boolean} true if arrays are egals
 */
 function compareArrays(array1,array2) {
@@ -88,6 +89,7 @@ function compareArrays(array1,array2) {
 	check if reports are equals
 	@param {deliveryReport} delivery1
 	@param {deliveryReport} delivery2
+	@private
 	@return {boolean} true if reports are equals
 */
 function isDeliveryReportsEquals(delivery1,delivery2)
@@ -111,6 +113,7 @@ function isDeliveryReportsEquals(delivery1,delivery2)
 	check if dsnProperty objects are equals
 	@param {dsnProperty} dsnProperty1
 	@param {dsnProperty} dsnProperty2
+	@private
 	@return {boolean} true if dsnProperty objects are equals
 */
 function isDsnPropertyEquals(dsnProperty1,dsnProperty2) {
@@ -128,6 +131,7 @@ function isDsnPropertyEquals(dsnProperty1,dsnProperty2) {
 	check if mdnProperty objects are equals
 	@param {mdnProperty} mdnProperty1
 	@param {mdnProperty} mdnProperty2
+	@private
 	@return {boolean} true if mdnProperty objects are equals
 */
 function isMdnPropertyEquals(mdnProperty1,mdnProperty2) {
@@ -146,6 +150,7 @@ function isMdnPropertyEquals(mdnProperty1,mdnProperty2) {
 	check if deliveredTo objects are equals
 	@param {DeliveredTo} deliveredTo1
 	@param {DeliveredTo} deliveredTo2
+	@private
 	@return {boolean} true if deliveredTo objects are equals
 */
 function isDeliveredToEquals(deliveredTo1,deliveredTo2)
@@ -179,6 +184,7 @@ function isDeliveredToEquals(deliveredTo1,deliveredTo2)
 	check if mdnReport objects are equals
 	@param {mdnReport} mdnReport1
 	@param {mdnReport} mdnReport2
+	@private
 	@return {boolean} true if mdnReport objects are equals
 */
 function isMdnReportEquals(mdnReport1,mdnReport2)
@@ -217,22 +223,22 @@ var objMdnParser3= new mdnParser(msgDSN.join("")); // a DSN !
 */
 tc_mailparser.tests = {
 	'getHeaders' : function() {
-		assert.isTrue(objParser.getHeaders()==msgDSN[0]); //true
-		assert.isTrue(objParser2.getHeaders()==msgDSN2[0]); //true
-		assert.isTrue(objParserKo.getHeaders()==msgNoDSN[0]); //true
-		assert.isTrue(objParserKo2.getHeaders()==msgBadDSN[0]); //true
+		assert.equals(objParser.getHeaders(),msgDSN[0]); //true
+		assert.equals(objParser2.getHeaders(),msgDSN2[0]); //true
+		assert.equals(objParserKo.getHeaders(),msgNoDSN[0]); //true
+		assert.equals(objParserKo2.getHeaders(),msgBadDSN[0]); //true
 	},
 	'getBody' : function() {
-		assert.isTrue(objParser.getBody()==msgDSN.slice(2).join("")); //true
-		assert.isTrue(objParser2.getBody()==msgDSN2.slice(2).join("")); //true
-		assert.isTrue(objParserKo.getBody()==msgNoDSN.slice(2).join("")); //true
-		assert.isTrue(objParserKo2.getBody()==msgBadDSN.slice(2).join("")); //true
+		assert.equals(objParser.getBody(),msgDSN.slice(2).join("")); //true
+		assert.equals(objParser2.getBody(),msgDSN2.slice(2).join("")); //true
+		assert.equals(objParserKo.getBody(),msgNoDSN.slice(2).join("")); //true
+		assert.equals(objParserKo2.getBody(),msgBadDSN.slice(2).join("")); //true
 	},
 	'getMsgId' : function() {
-		assert.isTrue(objParser.getMsgId()=="<20080213131118.4DD991FF88@mydesktop.vraimentbidon.org>"); // true
-		assert.isTrue(objParser2.getMsgId()=="<20080213135516.54E3C1FF8B@mydesktop.vraimentbidon.org>"); // true
-		assert.isTrue(objParserKo.getMsgId()=="<47C2C52F.2080503@vraimentbidon.org>"); // true
-		assert.isTrue(objParserKo2.getMsgId()=="<20080213131118.4DD991FF88@mydesktop.vraimentbidon.org>"); // true
+		assert.equals(objParser.getMsgId(),"<20080213131118.4DD991FF88@mydesktop.vraimentbidon.org>"); // true
+		assert.equals(objParser2.getMsgId(),"<20080213135516.54E3C1FF8B@mydesktop.vraimentbidon.org>"); // true
+		assert.equals(objParserKo.getMsgId(),"<47C2C52F.2080503@vraimentbidon.org>"); // true
+		assert.equals(objParserKo2.getMsgId(),"<20080213131118.4DD991FF88@mydesktop.vraimentbidon.org>"); // true
 	},
 	'getParts': function() {
 		assert.isTrue(compareArrays(objParser.getParts(),[msgDSN[4],msgDSN[6],msgDSN[8]])); //true
@@ -252,13 +258,13 @@ tc_mailparser.tests = {
 			 "	4.0.0\n"+
 			"Diagnostic-Code: smtp; 426 connection timed out\n";
 
-		assert.isTrue(objParser.getValueFromField("Final-Recipient",myData)=="rfc822;louisl@larry.slip.umd.edu");
-		assert.isTrue(objParser.getValueFromField("Status",myData)=="4.0.0");
-		assert.isTrue(objParser.getValueFromField("Diagnostic-Code",myData)=="smtp; 426 connection timed out");
-		assert.isTrue(objParser.getValueFromField("Action",myData)=="failed");
-		assert.isTrue(objParser.getValueFromField("Diagnostic",myData)=="je suis\n sur plusieurs\n lignes");
-		assert.isTrue(objParser.getValueFromField("MIME-Version",myData)=="1.0");
-		assert.isTrue(objParser.getValueFromField("In-Reply-To",myData)=="<14584@vraimentbidon.org>");
+		assert.equals(objParser.getValueFromField("Final-Recipient",myData),"rfc822;louisl@larry.slip.umd.edu");
+		assert.equals(objParser.getValueFromField("Status",myData),"4.0.0");
+		assert.equals(objParser.getValueFromField("Diagnostic-Code",myData),"smtp; 426 connection timed out");
+		assert.equals(objParser.getValueFromField("Action",myData),"failed");
+		assert.equals(objParser.getValueFromField("Diagnostic",myData),"je suis\n sur plusieurs\n lignes");
+		assert.equals(objParser.getValueFromField("MIME-Version",myData),"1.0");
+		assert.equals(objParser.getValueFromField("In-Reply-To",myData),"<14584@vraimentbidon.org>");
 	}
 }
 
@@ -302,7 +308,7 @@ tc_dsnparser.tests = {
 
 		// test if no report
 		report=objParser.getReportFromFields("a bad report \nAction: value");
-		assert.isTrue(report==null);
+		assert.equals(report,null);
 
 		// an other delivery
 		myDeliveryReport.actionValue="failed";
@@ -321,26 +327,26 @@ tc_dsnparser.tests = {
 	},
 
 	'getOriginalMsgId': function() {
-		assert.isTrue(objParser.getOriginalMsgId()=="<20080213130850.E9AED1FF86@mydesktop.vraimentbidon.org>"); // true
-		assert.isTrue(objParser2.getOriginalMsgId()=="<20080213135515.B3C761FF89@mydesktop.vraimentbidon.org>"); // true
-		assert.isTrue(objParserKo.getOriginalMsgId()==null); // true
-		assert.isTrue(objParserKo2.getOriginalMsgId()=="<20080213130850.E9AED1FF86@mydesktop.vraimentbidon.org>"); // true
+		assert.equals(objParser.getOriginalMsgId(),"<20080213130850.E9AED1FF86@mydesktop.vraimentbidon.org>"); // true
+		assert.equals(objParser2.getOriginalMsgId(),"<20080213135515.B3C761FF89@mydesktop.vraimentbidon.org>"); // true
+		assert.equals(objParserKo.getOriginalMsgId(),null); // true
+		assert.equals(objParserKo2.getOriginalMsgId(),"<20080213130850.E9AED1FF86@mydesktop.vraimentbidon.org>"); // true
 	},
 
 	'getDeliveryReports': function() {
 		var resu=objParser.getDeliveryReports();
-		assert.isTrue(typeof(resu)=="object");
+		assert.equals(typeof(resu),"object");
 		assert.isTrue(resu instanceof Array);
 		// 2 reports in this message
-		assert.isTrue(resu.length==2);
-		assert.isTrue(resu[0].actionValue=="delivered");
-		assert.isTrue(resu[1].actionValue=="delivered");
-		assert.isTrue(resu[0].originalRecipient=="rfc822;sertim@vraimentbidon.ORG");
-		assert.isTrue(resu[1].originalRecipient=="rfc822;daniel@vraimentbidon.ORG");
+		assert.equals(resu.length,2);
+		assert.equals(resu[0].actionValue,"delivered");
+		assert.equals(resu[1].actionValue,"delivered");
+		assert.equals(resu[0].originalRecipient,"rfc822;sertim@vraimentbidon.ORG");
+		assert.equals(resu[1].originalRecipient,"rfc822;daniel@vraimentbidon.ORG");
 		resu=objParserKo.getDeliveryReports();
-		assert.isTrue(resu==null);
+		assert.equals(resu,null);
 		resu=objParserKo2.getDeliveryReports();
-		assert.isTrue(resu.length==0);
+		assert.equals(resu.length,0);
 	}
 }
 
@@ -365,7 +371,7 @@ tc_mdnparser.tests = {
 	},
 	'getMdnReport': function() {
 		var resu=objMdnParser.getMdnReport();
-		assert.isTrue(typeof(resu)=="object");
+		assert.equals(typeof(resu),"object");
 		assert.isTrue(resu instanceof mdnReport);
 		myMdnReport=new mdnReport();
 		myMdnReport.reportingUA="villou-gutsy; KMime 0.1.0";
@@ -378,7 +384,7 @@ tc_mdnparser.tests = {
 		assert.isTrue(isMdnReportEquals(resu,myMdnReport));
 
 		resu=objMdnParser2.getMdnReport();
-		assert.isTrue(typeof(resu)=="object");
+		assert.equals(typeof(resu),"object");
 		assert.isTrue(resu instanceof mdnReport);
 		myMdnReport.originalMessageId="<200804242037.37481.daniel@vraimentbidon.org>";
 		myMdnReport.dispositionType="denied";
@@ -387,7 +393,7 @@ tc_mdnparser.tests = {
 		assert.isTrue(isMdnReportEquals(resu,myMdnReport));
 
 		resu=objMdnParser3.getMdnReport(); //not a MDN
-		assert.isTrue(resu==null);
+		assert.equals(resu,null);
 	},
 	'getReportFromFields': function() {
 		myMdnReport=new mdnReport();
@@ -515,7 +521,7 @@ tc_Preferences.tests = {
 
 
 // create a customProperties object
-customprop= new customProperties("daniel@vraimentbidon.org;0\n\traymond@vraimentbidon.org;0\n\tpatrick@vraimentbidon.org;0\n\tpierre@vraimentbidon.org;0","","","2");
+customprop= new customProperties("daniel@vraimentbidon.org;0\n\traymond@vraimentbidon.org;0\n\tpatrick@vraimentbidon.org;0\n\tpierre@vraimentbidon.org;0","","","2","","");
 var tmpDeliveredTo1=new DeliveredTo("daniel@vraimentbidon.org",0);
 var tmpDeliveredTo2=new DeliveredTo("raymond@vraimentbidon.org",0);
 var tmpDeliveredTo3=new DeliveredTo("patrick@vraimentbidon.org",0);
@@ -530,9 +536,11 @@ var tmpDeliveredTo5=new DeliveredTo("admin@vraimentbidon.org",0);
 tc_custom_properties_DSN.tests = {
 	'checkInitialValues' : function() {
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;0;0\n\traymond@vraimentbidon.org;0;0;0\n\tpatrick@vraimentbidon.org;0;0;0\n\tpierre@vraimentbidon.org;0;0;0");
-		assert.equals(customprop.summaryProperty,"0/4");
+		assert.equals(customprop.dsnSummaryProperty,"");
 		assert.equals(customprop.statusProperty,"");
 		assert.equals(customprop.flagsProperty,"2");
+		assert.equals(customprop.mdnDisplayedSummaryProperty,"");
+		assert.equals(customprop.mdnDeletedSummaryProperty,"");
 		assert.isFalse(customprop.allDsnReceived);
 	},
 	'getReportOf' : function() {
@@ -554,9 +562,11 @@ tc_custom_properties_DSN.tests = {
 		assert.isTrue(customprop.addDsnReport(report,"<123456@vraimentbidon.org>"));
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;1;delayed;<123456@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;0;0\n\tpatrick@vraimentbidon.org;0;0;0\n\tpierre@vraimentbidon.org;0;0;0");
-		assert.equals(customprop.getSummaryProperty(),"0/4");
+		assert.equals(customprop.getDsnSummaryProperty(),"0/4");
 		assert.equals(customprop.getStatusProperty(),"");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -571,9 +581,11 @@ tc_custom_properties_DSN.tests = {
 		assert.isTrue(customprop.addDsnReport(report,"<654321@vraimentbidon.org>"));
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;0;0\n\tpatrick@vraimentbidon.org;0;0;0\n\tpierre@vraimentbidon.org;0;0;0");
-		assert.equals(customprop.getSummaryProperty(),"1/4");
+		assert.equals(customprop.getDsnSummaryProperty(),"1/4");
 		assert.equals(customprop.getStatusProperty(),"");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -588,9 +600,11 @@ tc_custom_properties_DSN.tests = {
 		assert.isTrue(customprop.addDsnReport(report,"<98765@vraimentbidon.org>"));
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;1;relayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;0;0\n\tpierre@vraimentbidon.org;0;0;0");
-		assert.equals(customprop.getSummaryProperty(),"1/4");
+		assert.equals(customprop.getDsnSummaryProperty(),"1/4");
 		assert.equals(customprop.getStatusProperty(),"middle");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -605,9 +619,11 @@ tc_custom_properties_DSN.tests = {
 		assert.isTrue(customprop.addDsnReport(report,"<741258@vraimentbidon.org>"));
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;1;relayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;0;0;0");
-		assert.equals(customprop.getSummaryProperty(),"2/4");
+		assert.equals(customprop.getDsnSummaryProperty(),"2/4");
 		assert.equals(customprop.getStatusProperty(),"middle");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -622,9 +638,11 @@ tc_custom_properties_DSN.tests = {
 		assert.isTrue(customprop.addDsnReport(report,"<963258@vraimentbidon.org>"));
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;1;relayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;0;1;failed;<963258@vraimentbidon.org>;0");
-		assert.equals(customprop.getSummaryProperty(),"2/4");
+		assert.equals(customprop.getDsnSummaryProperty(),"2/4");
 		assert.equals(customprop.getStatusProperty(),"bad");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -641,9 +659,11 @@ tc_custom_properties_DSN.tests = {
 		dump(customprop.getTxtProperties());
 		assert.isFalse(customprop.allDsnReceived);
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;1;relayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;0;1;failed;<963258@vraimentbidon.org>;0\n\tadmin@vraimentbidon.org;0;1;delayed;<7412369@vraimentbidon.org>;0");
-		assert.equals(customprop.getSummaryProperty(),"2/5");
+		assert.equals(customprop.getDsnSummaryProperty(),"2/5");
 		assert.equals(customprop.getStatusProperty(),"bad");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -658,9 +678,11 @@ tc_custom_properties_DSN.tests = {
 		dump(customprop.getTxtProperties());
 		assert.isTrue(customprop.allDsnReceived);
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;1;relayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;0;1;failed;<963258@vraimentbidon.org>;0\n\tadmin@vraimentbidon.org;0;2;delayed;<7412369@vraimentbidon.org>;delivered;<963248@vraimentbidon.org>;0");
-		assert.equals(customprop.getSummaryProperty(),"3/5");
+		assert.equals(customprop.getDsnSummaryProperty(),"3/5");
 		assert.equals(customprop.getStatusProperty(),"bad");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -676,9 +698,11 @@ tc_custom_properties_DSN.tests = {
 		customprop.calculateAllProperties(); // refresh
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;1;delivered;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;0;1;delivered;<963258@vraimentbidon.org>;0\n\tadmin@vraimentbidon.org;0;2;delayed;<7412369@vraimentbidon.org>;delivered;<963248@vraimentbidon.org>;0");
-		assert.equals(customprop.getSummaryProperty(),"5/5");
+		assert.equals(customprop.getDsnSummaryProperty(),"5/5");
 		assert.equals(customprop.getStatusProperty(),"good");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -698,17 +722,21 @@ tc_custom_properties_DSN.tests = {
 		dump(customprop.getTxtProperties());
 
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;0;1;delayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;0;0;0\n\tadmin@vraimentbidon.org;0;2;delayed;<7412369@vraimentbidon.org>;delivered;<963248@vraimentbidon.org>;0");
-		assert.equals(customprop.getSummaryProperty(),"3/5");
+		assert.equals(customprop.getDsnSummaryProperty(),"3/5");
 		assert.equals(customprop.getStatusProperty(),"");
 		assert.equals(customprop.getFlagsProperty(),"2");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		// set time out flag
 		customprop.setMsgAsExpired();
 
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;1;1;delayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;1;0;0\n\tadmin@vraimentbidon.org;0;2;delayed;<7412369@vraimentbidon.org>;delivered;<963248@vraimentbidon.org>;0");
-		assert.equals(customprop.getSummaryProperty(),"3/5");
+		assert.equals(customprop.getDsnSummaryProperty(),"3/5");
 		assert.equals(customprop.getStatusProperty(),"");
 		assert.equals(customprop.getFlagsProperty(),"3");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -732,6 +760,11 @@ tc_custom_properties_MDN.tests = {
 		assert.isTrue(customprop.addMdnReport(report,"<AQWXSZ@vraimentbidon.org>"));
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;0\n\traymond@vraimentbidon.org;1;1;delayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;1;0;1;displayed;<AQWXSZ@vraimentbidon.org>\n\tadmin@vraimentbidon.org;0;2;delayed;<7412369@vraimentbidon.org>;delivered;<963248@vraimentbidon.org>;0");
+		assert.equals(customprop.getDsnSummaryProperty(),"3/5");
+		assert.equals(customprop.getStatusProperty(),"");
+		assert.equals(customprop.getFlagsProperty(),"3");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"1/5");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -750,6 +783,11 @@ tc_custom_properties_MDN.tests = {
 		assert.isTrue(customprop.addMdnReport(report,"<EDCVFR@vraimentbidon.org>"));
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;1;deleted;<MLKJH@vraimentbidon.org>\n\traymond@vraimentbidon.org;1;1;delayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;1;0;2;displayed;<AQWXSZ@vraimentbidon.org>;deleted;<EDCVFR@vraimentbidon.org>\n\tadmin@vraimentbidon.org;0;2;delayed;<7412369@vraimentbidon.org>;delivered;<963248@vraimentbidon.org>;0");
+		assert.equals(customprop.getDsnSummaryProperty(),"3/5");
+		assert.equals(customprop.getStatusProperty(),"");
+		assert.equals(customprop.getFlagsProperty(),"3");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"1/5");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"2/5");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));
@@ -764,6 +802,11 @@ tc_custom_properties_MDN.tests = {
 		// properties unchanged
 		dump(customprop.getTxtProperties());
 		assert.equals(customprop.getDeliveredToProperty(),"daniel@vraimentbidon.org;0;2;delayed;<123456@vraimentbidon.org>;delivered;<654321@vraimentbidon.org>;1;deleted;<MLKJH@vraimentbidon.org>\n\traymond@vraimentbidon.org;1;1;delayed;<98765@vraimentbidon.org>;0\n\tpatrick@vraimentbidon.org;0;1;expanded;<741258@vraimentbidon.org>;0\n\tpierre@vraimentbidon.org;1;0;2;displayed;<AQWXSZ@vraimentbidon.org>;deleted;<EDCVFR@vraimentbidon.org>\n\tadmin@vraimentbidon.org;0;2;delayed;<7412369@vraimentbidon.org>;delivered;<963248@vraimentbidon.org>;0");
+		assert.equals(customprop.getDsnSummaryProperty(),"3/5");
+		assert.equals(customprop.getStatusProperty(),"");
+		assert.equals(customprop.getFlagsProperty(),"3");
+		assert.equals(customprop.getMdnDisplayedSummaryProperty(),"1/5");
+		assert.equals(customprop.getMdnDeletedSummaryProperty(),"2/5");
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("daniel@vraimentbidon.org"),tmpDeliveredTo1));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("raymond@vraimentbidon.org"),tmpDeliveredTo2));
 		assert.isTrue(isDeliveredToEquals(customprop.getReportOf("patrick@vraimentbidon.org"),tmpDeliveredTo3));

@@ -46,7 +46,7 @@
 	@param {string} flags (timeout, ...)
 	@return {number}
 */
-function sortColumn(Status,flags) {
+function sortDSNColumn(Status,flags) {
 	if (srv.preferences.getBoolPref(srv.extensionKey+".enabled_timeout"))
 		if (parseInt(flags) & 0x1) //timeout
 			return 5;
@@ -61,19 +61,19 @@ function sortColumn(Status,flags) {
 
 
 /**
-	Custom Column Handler
+	Custom DSN Column Handler
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */
 var columnHandlerDSN = {
 	getCellText: function(row, column) {
 		var key = gDBView.getKeyAt(row);
 		var hdr = gDBView.db.GetMsgHdrForKey(key);
-		return hdr.getStringProperty("x-nviewer-summary");
+		return hdr.getStringProperty("x-nviewer-dsn-summary");
 	},
 
 	getSortStringForRow: function(hdr) {
 		// Sort the messages from the property "x-nviewer-status" and "x-nviewer-flags"
-		return sortColumn(hdr.getStringProperty("x-nviewer-status"),hdr.getStringProperty("x-nviewer-flags"));
+		return sortDSNColumn(hdr.getStringProperty("x-nviewer-status"),hdr.getStringProperty("x-nviewer-flags"));
 	},
 	isString: function() {return true;},
 
@@ -101,7 +101,45 @@ var columnHandlerDSN = {
 	getSortLongForRow:   function(hdr) {return 0;}
 }
 
+/**
+	Custom MDN Displayed Column Handler
+	@author Daniel Rocher / Etat francais Ministere de la Defense
+*/
+var columnHandlerMDNDisplayed = {
+	getCellText: function(row, column) {
+		var key = gDBView.getKeyAt(row);
+		var hdr = gDBView.db.GetMsgHdrForKey(key);
+		return hdr.getStringProperty("x-nviewer-mdn-displayed-summary");
+	},
+	getSortStringForRow: function(hdr) {
+		return hdr.getStringProperty("x-nviewer-mdn-displayed-summary");
+	},
+	isString: function() {return true;},
+	getCellProperties: function(row, col, props){ },
+	getRowProperties:  function(row, props){ },
+	getImageSrc:         function(row, col) {return null;},
+	getSortLongForRow:   function(hdr) {return 0;}
+}
 
+/**
+	Custom MDN Deleted Column Handler
+	@author Daniel Rocher / Etat francais Ministere de la Defense
+*/
+var columnHandlerMDNDeleted = {
+	getCellText: function(row, column) {
+		var key = gDBView.getKeyAt(row);
+		var hdr = gDBView.db.GetMsgHdrForKey(key);
+		return hdr.getStringProperty("x-nviewer-mdn-deleted-summary");
+	},
+	getSortStringForRow: function(hdr) {
+		return hdr.getStringProperty("x-nviewer-mdn-deleted-summary");
+	},
+	isString: function() {return true;},
+	getCellProperties: function(row, col, props){ },
+	getRowProperties:  function(row, props){ },
+	getImageSrc:         function(row, col) {return null;},
+	getSortLongForRow:   function(hdr) {return 0;}
+}
 
 /**
 	Setting the Custom Column Handler
@@ -119,6 +157,8 @@ var createDbObserver = {
 	// Components.interfaces.nsIObserver
 	observe: function(aMsgFolder, aTopic, aData) {
 		gDBView.addColumnHandler("colDSN", columnHandlerDSN);
+		gDBView.addColumnHandler("colMDNDisplayed", columnHandlerMDNDisplayed);
+		gDBView.addColumnHandler("colMDNDeleted", columnHandlerMDNDeleted);
 	}
 }
 

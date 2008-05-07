@@ -292,10 +292,12 @@ var notifyListener = {
 				// get properties
 				var deliveredToP=msgDBHdrOrigin.getStringProperty("x-nviewer-to");
 				var statusP=msgDBHdrOrigin.getStringProperty("x-nviewer-status");
-				var summaryP=msgDBHdrOrigin.getStringProperty("x-nviewer-summary");
+				var dsnSummaryP=msgDBHdrOrigin.getStringProperty("x-nviewer-dsn-summary");
 				var flagsP=msgDBHdrOrigin.getStringProperty("x-nviewer-flags");
+				var mdnDisplayedSummaryP=msgDBHdrOrigin.getStringProperty("x-nviewer-mdn-displayed-summary");
+				var mdnDeletedSummaryP=msgDBHdrOrigin.getStringProperty("x-nviewer-mdn-deleted-summary");
 
-				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - current notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - current notifications_viewer properties - "+statusP+" "+dsnSummaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				// first delivery notification received for this message
 				if (deliveredToP=="") {
@@ -319,7 +321,7 @@ var notifyListener = {
 					}
 				}
 
-				var customProp=new customProperties(deliveredToP,statusP,summaryP,flagsP);
+				var customProp=new customProperties(deliveredToP,statusP,dsnSummaryP,flagsP,mdnDisplayedSummaryP,mdnDeletedSummaryP);
 
 
 				if (typeOfMsg==enumOfNotification.DSN && deliveryReports) {
@@ -341,16 +343,20 @@ var notifyListener = {
 
 				deliveredToP=customProp.getDeliveredToProperty();
 				statusP=customProp.getStatusProperty();
-				summaryP=customProp.getSummaryProperty();
+				dsnSummaryP=customProp.getDsnSummaryProperty();
 				flagsP=customProp.getFlagsProperty();
+				mdnDisplayedSummaryP=customProp.getMdnDisplayedSummaryProperty();
+				mdnDeletedSummaryP=customProp.getMdnDeletedSummaryProperty();
 
-				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - new notifications_viewer properties - "+statusP+" "+summaryP+" "+flagsP+"\n\t"+deliveredToP);
+				srv.logSrv(strTypeNotification+" (MsgKey="+header.messageKey+") - new notifications_viewer properties - "+statusP+" "+dsnSummaryP+" "+flagsP+"\n\t"+deliveredToP);
 
 				// save properties in the original message
 				msgDBHdrOrigin.setStringProperty("x-nviewer-to",deliveredToP);
 				msgDBHdrOrigin.setStringProperty("x-nviewer-status",statusP);
-				msgDBHdrOrigin.setStringProperty("x-nviewer-summary",summaryP);
+				msgDBHdrOrigin.setStringProperty("x-nviewer-dsn-summary",dsnSummaryP);
 				msgDBHdrOrigin.setStringProperty("x-nviewer-flags",flagsP);
+				msgDBHdrOrigin.setStringProperty("x-nviewer-mdn-displayed-summary",mdnDisplayedSummaryP);
+				msgDBHdrOrigin.setStringProperty("x-nviewer-mdn-deleted-summary",mdnDeletedSummaryP);
 
 				// If user want to create a thread on the original message, move Notification message
 				var threadPref=srv.preferences.getBoolPref(srv.extensionKey+".thread_on_original_message");

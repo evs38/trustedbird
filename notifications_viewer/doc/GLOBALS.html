@@ -156,23 +156,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!compareArrays">compareArrays</A></B>(&lt;array&gt; array1,&lt;array&gt; array2)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Compare two arrays
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
 	    <CODE>&lt;static&gt;&nbsp;string</CODE>
 	 </FONT>
       </TD>
@@ -184,91 +167,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	 place the metacharacter \ (backslash) in front of the metacharacter that we want to use as a literal
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!isDeliveredToEquals">isDeliveredToEquals</A></B>(&lt;<a href="DeliveredTo.html">DeliveredTo</a>&gt; deliveredTo1,&lt;<a href="DeliveredTo.html">DeliveredTo</a>&gt; deliveredTo2)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 check if deliveredTo objects are equals
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!isDeliveryReportsEquals">isDeliveryReportsEquals</A></B>(&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; delivery1,&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; delivery2)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 check if reports are equals
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!isDsnPropertyEquals">isDsnPropertyEquals</A></B>(&lt;<a href="dsnProperty.html">dsnProperty</a>&gt; dsnProperty1,&lt;<a href="dsnProperty.html">dsnProperty</a>&gt; dsnProperty2)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 check if dsnProperty objects are equals
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!isMdnPropertyEquals">isMdnPropertyEquals</A></B>(&lt;<a href="mdnProperty.html">mdnProperty</a>&gt; mdnProperty1,&lt;<a href="mdnProperty.html">mdnProperty</a>&gt; mdnProperty2)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 check if mdnProperty objects are equals
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!isMdnReportEquals">isMdnReportEquals</A></B>(&lt;<a href="mdnReport.html">mdnReport</a>&gt; mdnReport1,&lt;<a href="mdnReport.html">mdnReport</a>&gt; mdnReport2)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 check if mdnReport objects are equals
       </TD>
    </TR>
 
@@ -326,13 +224,30 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
+	    <CODE>&lt;static&gt;&nbsp;void</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#!s!pluginUpdated">pluginUpdated</A></B>(&lt;string&gt; oldVersionNumber,&lt;string&gt; currentVersionNumber)
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 to do when plugin has been updated
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
 	    <CODE>&lt;static&gt;&nbsp;number</CODE>
 	 </FONT>
       </TD>
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#!s!sortColumn">sortColumn</A></B>(&lt;string&gt; Status,&lt;string&gt; flags)
+	       <A HREF="#!s!sortDSNColumn">sortDSNColumn</A></B>(&lt;string&gt; Status,&lt;string&gt; flags)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -452,42 +367,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
-   <A NAME="!s!compareArrays"><!-- --></A>
-   <H3>compareArrays</H3>
-   <PRE>&lt;static&gt; boolean <B>compareArrays</B>(&lt;array&gt; array1,&lt;array&gt; array2)</PRE>
-   
-      <UL>Compare two arrays</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>array1</CODE> -  	
-      </UL> 
-   
-     <UL><CODE>array2</CODE> -  	
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         true if arrays are egals 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
    <A NAME="!s!escapeRegExp"><!-- --></A>
    <H3>escapeRegExp</H3>
    <PRE>&lt;static&gt; string <B>escapeRegExp</B>(&lt;string&gt; str)</PRE>
@@ -512,186 +391,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <B>Returns:</B>
         <UL>
          str with escape keys 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="!s!isDeliveredToEquals"><!-- --></A>
-   <H3>isDeliveredToEquals</H3>
-   <PRE>&lt;static&gt; boolean <B>isDeliveredToEquals</B>(&lt;<a href="DeliveredTo.html">DeliveredTo</a>&gt; deliveredTo1,&lt;<a href="DeliveredTo.html">DeliveredTo</a>&gt; deliveredTo2)</PRE>
-   
-      <UL>check if deliveredTo objects are equals</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>deliveredTo1</CODE> -  	
-      </UL> 
-   
-     <UL><CODE>deliveredTo2</CODE> -  	
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         true if deliveredTo objects are equals 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="!s!isDeliveryReportsEquals"><!-- --></A>
-   <H3>isDeliveryReportsEquals</H3>
-   <PRE>&lt;static&gt; boolean <B>isDeliveryReportsEquals</B>(&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; delivery1,&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; delivery2)</PRE>
-   
-      <UL>check if reports are equals</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>delivery1</CODE> -  	
-      </UL> 
-   
-     <UL><CODE>delivery2</CODE> -  	
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         true if reports are equals 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="!s!isDsnPropertyEquals"><!-- --></A>
-   <H3>isDsnPropertyEquals</H3>
-   <PRE>&lt;static&gt; boolean <B>isDsnPropertyEquals</B>(&lt;<a href="dsnProperty.html">dsnProperty</a>&gt; dsnProperty1,&lt;<a href="dsnProperty.html">dsnProperty</a>&gt; dsnProperty2)</PRE>
-   
-      <UL>check if dsnProperty objects are equals</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>dsnProperty1</CODE> -  	
-      </UL> 
-   
-     <UL><CODE>dsnProperty2</CODE> -  	
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         true if dsnProperty objects are equals 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="!s!isMdnPropertyEquals"><!-- --></A>
-   <H3>isMdnPropertyEquals</H3>
-   <PRE>&lt;static&gt; boolean <B>isMdnPropertyEquals</B>(&lt;<a href="mdnProperty.html">mdnProperty</a>&gt; mdnProperty1,&lt;<a href="mdnProperty.html">mdnProperty</a>&gt; mdnProperty2)</PRE>
-   
-      <UL>check if mdnProperty objects are equals</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>mdnProperty1</CODE> -  	
-      </UL> 
-   
-     <UL><CODE>mdnProperty2</CODE> -  	
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         true if mdnProperty objects are equals 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="!s!isMdnReportEquals"><!-- --></A>
-   <H3>isMdnReportEquals</H3>
-   <PRE>&lt;static&gt; boolean <B>isMdnReportEquals</B>(&lt;<a href="mdnReport.html">mdnReport</a>&gt; mdnReport1,&lt;<a href="mdnReport.html">mdnReport</a>&gt; mdnReport2)</PRE>
-   
-      <UL>check if mdnReport objects are equals</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>mdnReport1</CODE> -  	
-      </UL> 
-   
-     <UL><CODE>mdnReport2</CODE> -  	
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         true if mdnReport objects are equals 
         </UL>
    </UL>
    
@@ -773,9 +472,38 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
-   <A NAME="!s!sortColumn"><!-- --></A>
-   <H3>sortColumn</H3>
-   <PRE>&lt;static&gt; number <B>sortColumn</B>(&lt;string&gt; Status,&lt;string&gt; flags)</PRE>
+   <A NAME="!s!pluginUpdated"><!-- --></A>
+   <H3>pluginUpdated</H3>
+   <PRE>&lt;static&gt; void <B>pluginUpdated</B>(&lt;string&gt; oldVersionNumber,&lt;string&gt; currentVersionNumber)</PRE>
+   
+      <UL>to do when plugin has been updated</UL>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <UL>
+   <B>Parameters:</B>
+   
+     <UL><CODE>oldVersionNumber</CODE> -  	
+      </UL> 
+   
+     <UL><CODE>currentVersionNumber</CODE> -    
+      </UL> 
+   
+   </UL>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="!s!sortDSNColumn"><!-- --></A>
+   <H3>sortDSNColumn</H3>
+   <PRE>&lt;static&gt; number <B>sortDSNColumn</B>(&lt;string&gt; Status,&lt;string&gt; flags)</PRE>
    
       <UL>Sort the messages from the property "x-nviewer-status" and "x-nviewer-flags"</UL>
    
@@ -908,6 +636,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <FONT SIZE="-1">
 
 </FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Tue Apr 29 15:41:42 2008</div>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Wed May  7 09:56:58 2008</div>
 </BODY>
 </HTML>

@@ -53,7 +53,9 @@ var mMsgAsDsnReq=new ManageMsgAsDN();
 	Check Preferences
 */
 function checkPref() {
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-summary");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-summary");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-mdn-displayed-summary");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-mdn-deleted-summary");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-status");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-to");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-flags");
@@ -76,14 +78,42 @@ function updateMsgList() {
 
 
 /**
+	to do when plugin has been updated
+	@param {string} oldVersionNumber
+	@param {string} currentVersionNumber
+*/
+function pluginUpdated(oldVersionNumber,currentVersionNumber) {
+	srv.logSrv("pluginUpdated() - old version: "+oldVersionNumber+" - current version: "+currentVersionNumber);
+	var oldVersion=0;
+	var currentVersion=0;
+	var regexp=/([\d]+\.[\d]+)/gi;
+
+	// find major and minor number only (ignore revisions)
+	oldVersionNumber=(regexp).exec(oldVersionNumber);
+	if (oldVersionNumber && oldVersionNumber.length>1)
+		oldVersion=parseFloat(oldVersionNumber[1]);
+
+	regexp.lastIndex=0;
+	currentVersionNumber=(regexp).exec(currentVersionNumber);
+	if (currentVersionNumber && currentVersionNumber.length>1)
+		currentVersion=parseFloat(currentVersionNumber[1]);
+
+	if (currentVersion!=oldVersion) {
+		// version number changed, open window preferences
+		window.openDialog("chrome://notifications_viewer/content/preferences.xul","notifications_viewerPrefsDialog","chrome,modal");
+	}
+}
+
+
+/**
  	Program entry (first time)
 */
 function main() {
 	srv.logSrv("Current version: "+srv.extensionVersion);
 
-	// first time, open window preferences
-	if (srv.preferences.getCharPref(srv.extensionKey+".version")=="")
-		window.openDialog("chrome://notifications_viewer/content/preferences.xul","notifications_viewerPrefsDialog","chrome,modal");
+	// check if plugin has been updated
+	if (srv.preferences.getCharPref(srv.extensionKey+".version")!=srv.extensionVersion)
+		pluginUpdated(srv.preferences.getCharPref(srv.extensionKey+".version"),srv.extensionVersion);
 
 	// check pref
 	checkPref();

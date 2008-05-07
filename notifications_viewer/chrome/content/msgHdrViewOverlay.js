@@ -64,8 +64,10 @@ var msgHdrViewOverlay = {
 	cacheCustomProperties : null,
 	cacheDeliveredTo : "",
 	cacheStatus : "",
-	cacheSummary : "",
+	cacheDsnSummary : "",
 	cacheFlags : "",
+	cacheMdnDisplayedSummary : "",
+	cacheMdnDeletedSummary : "",
 	strBundleService: null,
 	strbundle : null,
 	services : null,
@@ -94,8 +96,10 @@ var msgHdrViewOverlay = {
 		this.cacheCustomProperties=null;
 		this.cacheDeliveredTo="";
 		this.cacheStatus="";
-		this.cacheSummary="";
+		this.cacheDsnSummary="";
 		this.cacheFlags="";
+		this.cacheMdnDisplayedSummary="";
+		this.cacheMdnDeletedSummary="";
 
 		var msgViewIndex=gDBView.currentlyDisplayedMessage;
 		var msgKey=gDBView.getKeyAt (msgViewIndex );
@@ -107,10 +111,11 @@ var msgHdrViewOverlay = {
 			return; // custom properties not present
 
 		this.cacheStatus=msgDBHdr.getStringProperty("x-nviewer-status");
-		this.cacheSummary=msgDBHdr.getStringProperty("x-nviewer-summary");
+		this.cacheDsnSummary=msgDBHdr.getStringProperty("x-nviewer-dsn-summary");
 		this.cacheFlags=msgDBHdr.getStringProperty("x-nviewer-flags");
-
-		this.cacheCustomProperties=new customProperties(this.cacheDeliveredTo ,this.cacheStatus, this.cacheSummary, this.cacheFlags );
+		this.cacheMdnDisplayedSummary=msgDBHdr.getStringProperty("x-nviewer-mdn-displayed-summary");
+		this.cacheMdnDeletedSummary=msgDBHdr.getStringProperty("x-nviewer-mdn-deleted-summary");
+		this.cacheCustomProperties=new customProperties(this.cacheDeliveredTo ,this.cacheStatus, this.cacheDsnSummary, this.cacheFlags,this.cacheMdnDisplayedSummary,this.cacheMdnDeletedSummary);
 	},
 
 	/**
@@ -128,15 +133,18 @@ var msgHdrViewOverlay = {
 		var notificationsDisplayTextAndIcons=services.preferences.getIntPref(services.extensionKey+".display_text_and_icons");
 
 		// Summary
-		if (! this.cacheSummary) {
+		if (this.cacheDsnSummary || this.cacheMdnDisplayedSummary || this.cacheMdnDeletedSummary) {
+			msgHdrViewOverlay.DSNBox.collapsed = false;
+			document.getElementById("dsn-summary").value=this.cacheDsnSummary;
+			document.getElementById("mdn-displayed-summary").value=this.cacheMdnDisplayedSummary;
+			document.getElementById("mdn-deleted-summary").value=this.cacheMdnDeletedSummary;
+		} else {
 			msgHdrViewOverlay.DSNBox.collapsed = true;
 			document.getElementById("dsn-summary").value="";
+			document.getElementById("mdn-displayed-summary").value="";
+			document.getElementById("mdn-deleted-summary").value="";
 		}
-		else {
-			msgHdrViewOverlay.DSNBox.collapsed = false;
-			document.getElementById("dsn-summary").value=this.cacheSummary;
-		}
-	
+
 		// Recipients (To)
 
 		var aGrid = document.getElementById("detailDSN");

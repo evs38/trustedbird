@@ -203,12 +203,6 @@ Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
 </DL>
 
 <DL>
-<DT><A HREF="GLOBALS.html#compareArrays"><B>compareArrays(array1,array2)</B></A> - 
-Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
 <DT><A HREF="Services.html#consoleService"><B>consoleService</B></A> - 
 Instance field in  class <A HREF="Services.html">Services</A>
 <DD>&nbsp;
@@ -233,7 +227,7 @@ Instance method in  class <A HREF="Services.html">Services</A>
 </DL>
 
 <DL>
-<DT><A HREF="customProperties.html#constructor_detail"><B>customProperties(deliveredToProperty,statusProperty,summaryProperty,flagsProperty)</B></A> - 
+<DT><A HREF="customProperties.html#constructor_detail"><B>customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,flagsProperty,mdnDisplayedSummaryProperty,mdnDeletedSummaryProperty)</B></A> - 
 Constructor in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
 </DL>
@@ -342,6 +336,12 @@ Constructor in  class <A HREF="dsnProperty.html">dsnProperty</A>
 <DL>
 <DT><A HREF="dsnParser.html#dsnRegExpCache"><B>dsnRegExpCache</B></A> - 
 Instance field in  class <A HREF="dsnParser.html">dsnParser</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="customProperties.html#dsnSummaryProperty"><B>dsnSummaryProperty</B></A> - 
+Instance field in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
 </DL>
 
@@ -535,6 +535,12 @@ Instance method in  class <A HREF="dsnParser.html">dsnParser</A>
 </DL>
 
 <DL>
+<DT><A HREF="customProperties.html#getDsnSummaryProperty"><B>getDsnSummaryProperty()</B></A> - 
+Instance method in  class <A HREF="customProperties.html">customProperties</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
 <DT><A HREF="customProperties.html#getFlagsProperty"><B>getFlagsProperty()</B></A> - 
 Instance method in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
@@ -553,14 +559,20 @@ Instance method in  class <A HREF="Preferences.html">Preferences</A>
 </DL>
 
 <DL>
-<DT><A HREF="mdnParser.html#getMdnReport"><B>getMdnReport()</B></A> - 
-Instance method in  class <A HREF="mdnParser.html">mdnParser</A>
+<DT><A HREF="customProperties.html#getMdnDeletedSummaryProperty"><B>getMdnDeletedSummaryProperty()</B></A> - 
+Instance method in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
 </DL>
 
 <DL>
-<DT><A HREF="findMsgDb.html#getMsgDBHdr"><B>getMsgDBHdr()</B></A> - 
-Instance method in  class <A HREF="findMsgDb.html">findMsgDb</A>
+<DT><A HREF="customProperties.html#getMdnDisplayedSummaryProperty"><B>getMdnDisplayedSummaryProperty()</B></A> - 
+Instance method in  class <A HREF="customProperties.html">customProperties</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="mdnParser.html#getMdnReport"><B>getMdnReport()</B></A> - 
+Instance method in  class <A HREF="mdnParser.html">mdnParser</A>
 <DD>&nbsp;
 </DL>
 
@@ -607,12 +619,6 @@ Instance method in  class <A HREF="customProperties.html">customProperties</A>
 </DL>
 
 <DL>
-<DT><A HREF="customProperties.html#getSummaryProperty"><B>getSummaryProperty()</B></A> - 
-Instance method in  class <A HREF="customProperties.html">customProperties</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
 <DT><A HREF="mailParser.html#getValueFromField"><B>getValueFromField(tField,tData)</B></A> - 
 Instance method in  class <A HREF="mailParser.html">mailParser</A>
 <DD>&nbsp;
@@ -654,38 +660,8 @@ Instance method in  class <A HREF="Preferences.html">Preferences</A>
 </DL>
 
 <DL>
-<DT><A HREF="GLOBALS.html#isDeliveredToEquals"><B>isDeliveredToEquals(deliveredTo1,deliveredTo2)</B></A> - 
-Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
-<DT><A HREF="GLOBALS.html#isDeliveryReportsEquals"><B>isDeliveryReportsEquals(delivery1,delivery2)</B></A> - 
-Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
 <DT><A HREF="dsnParser.html#isDeliveryStatus"><B>isDeliveryStatus()</B></A> - 
 Instance method in  class <A HREF="dsnParser.html">dsnParser</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
-<DT><A HREF="GLOBALS.html#isDsnPropertyEquals"><B>isDsnPropertyEquals(dsnProperty1,dsnProperty2)</B></A> - 
-Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
-<DT><A HREF="GLOBALS.html#isMdnPropertyEquals"><B>isMdnPropertyEquals(mdnProperty1,mdnProperty2)</B></A> - 
-Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
-<DT><A HREF="GLOBALS.html#isMdnReportEquals"><B>isMdnReportEquals(mdnReport1,mdnReport2)</B></A> - 
-Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
 <DD>&nbsp;
 </DL>
 
@@ -768,6 +744,18 @@ Constructor in  class <A HREF="ManageMsgAsDN.html">ManageMsgAsDN</A>
 <DL>
 <DT><A HREF="mdnParser.html#mdnAvailable"><B>mdnAvailable</B></A> - 
 Instance field in  class <A HREF="mdnParser.html">mdnParser</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="customProperties.html#mdnDeletedSummaryProperty"><B>mdnDeletedSummaryProperty</B></A> - 
+Instance field in  class <A HREF="customProperties.html">customProperties</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
+<DT><A HREF="customProperties.html#mdnDisplayedSummaryProperty"><B>mdnDisplayedSummaryProperty</B></A> - 
+Instance field in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
 </DL>
 
@@ -931,6 +919,12 @@ Instance field in  class <A HREF="ManageMsgAsDN.html">ManageMsgAsDN</A>
 <B>P</B></H2>
 
 <DL>
+<DT><A HREF="GLOBALS.html#pluginUpdated"><B>pluginUpdated(oldVersionNumber,currentVersionNumber)</B></A> - 
+Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
+<DD>&nbsp;
+</DL>
+
+<DL>
 <DT><A HREF="Preferences.html#pref"><B>pref</B></A> - 
 Instance field in  class <A HREF="Preferences.html">Preferences</A>
 <DD>&nbsp;
@@ -1049,12 +1043,6 @@ Instance method in  class <A HREF="findMsgDb.html">findMsgDb</A>
 </DL>
 
 <DL>
-<DT><A HREF="findMsgDb.html#searchInFolder"><B>searchInFolder(folder)</B></A> - 
-Instance method in  class <A HREF="findMsgDb.html">findMsgDb</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
 <DT><A HREF="findMsgDb.html#services"><B>services</B></A> - 
 Instance field in  class <A HREF="findMsgDb.html">findMsgDb</A>
 <DD>&nbsp;
@@ -1097,7 +1085,7 @@ Instance method in  class <A HREF="customProperties.html">customProperties</A>
 </DL>
 
 <DL>
-<DT><A HREF="GLOBALS.html#sortColumn"><B>sortColumn(Status,flags)</B></A> - 
+<DT><A HREF="GLOBALS.html#sortDSNColumn"><B>sortDSNColumn(Status,flags)</B></A> - 
 Class method in  class <A HREF="GLOBALS.html">GLOBALS</A>
 <DD>&nbsp;
 </DL>
@@ -1117,12 +1105,6 @@ Instance field in  class <A HREF="customProperties.html">customProperties</A>
 <DL>
 <DT><A HREF="deliveryReport.html#statusValue"><B>statusValue</B></A> - 
 Instance field in  class <A HREF="deliveryReport.html">deliveryReport</A>
-<DD>&nbsp;
-</DL>
-
-<DL>
-<DT><A HREF="customProperties.html#summaryProperty"><B>summaryProperty</B></A> - 
-Instance field in  class <A HREF="customProperties.html">customProperties</A>
 <DD>&nbsp;
 </DL>
 
@@ -1230,6 +1212,6 @@ Instance method in  class <A HREF="Preferences.html">Preferences</A>
 <FONT SIZE="-1">
 
 </FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/">JSDoc</a> on Tue Apr 29 15:41:42 2008</div>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/">JSDoc</a> on Wed May  7 09:56:58 2008</div>
 </BODY>
 </HTML>

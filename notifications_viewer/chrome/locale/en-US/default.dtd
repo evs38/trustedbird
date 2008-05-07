@@ -35,7 +35,13 @@
 
 <!ENTITY colDSN "Delivered">
 <!ENTITY colDSNTooltip "Click to sort by delivery notifications">
-<!ENTITY headerView.label "Delivery notifications">
+<!ENTITY colMDNDisplayed "Displayed">
+<!ENTITY colMDNDisplayedTooltip "Click to sort by notifications (displayed)">
+<!ENTITY colMDNDeleted "Deleted">
+<!ENTITY colMDNDeletedTooltip "Click to sort by notifications (deleted)">
+<!ENTITY headerView.labelDSN "Delivery notifications">
+<!ENTITY headerView.labelMDNDisplayed "Displayed">
+<!ENTITY headerView.labelMDNDeleted "Deleted">
 <!ENTITY PrefsDialog.generalities "Generalities">
 <!ENTITY PrefsDialog.groupBoxtimeOut "Delivery deadlines">
 <!ENTITY PrefsDialog.labelconsiderTimeout "Consider the delivery deadlines">

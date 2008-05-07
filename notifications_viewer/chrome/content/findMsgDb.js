@@ -43,15 +43,24 @@
 
 /**
 	@class This Class extract a message from a message-id or a message-key.<br>
-	Enter a message-id and get a <b>nsIMsgDBHdr</b> object.
+	Enter a message-id or a message-key and get a <b>nsIMsgDBHdr</b> object.
 	<p>
-	Example:
+	Example 1:
 	<pre>
-	var findmessage=new findMsgDb(GetFirstSelectedMsgFolder());
+	var findmessage=new findMsgDb(null);
 	findmessage.includeSubFolders(true);
 	findmessage.includeAllAccounts(true);
 	var message=findmessage.searchByMsgKey(2070);
-	if (message!=null) alert("found : "+message.messageId+" "+message.subject);
+	if (message) alert("found : "+message.messageId+" "+message.subject);
+	</pre>
+	<p>
+	Example 2:
+	<pre>
+	var findmessage=new findMsgDb(GetFirstSelectedMsgFolder());
+	findmessage.includeSubFolders(true);
+	findmessage.includeAllAccounts(false);
+	var message=findmessage.searchByMsgId("20080213131118.4DD991FF88&#64;mydomain.org");
+	if (message) alert("found : "+message.messageId+" "+message.subject);
 	</pre>
 	@version 0.9.1
 	@author Daniel Rocher / Etat francais Ministere de la Defense
@@ -291,6 +300,7 @@ findMsgDb.prototype = {
 		Search a message in folder
 		@param {nsIMsgFolder} folder search in this folder
 		@return {nsIMsgDBHdr} nsIMsgDBHdr object or <b>null</b> if doesn't found
+		@private
 		@see #searchByMsgId
 		@see #searchByMsgKey
 	*/
@@ -376,6 +386,7 @@ findMsgDb.prototype = {
 	/**
 		search a message from key or msg-id and return a nsIMsgDBHdr object
 		@return {nsIMsgDBHdr} nsIMsgDBHdr object or <b>null</b> if doesn't found
+		@private
 		@see #searchByMsgId
 		@see #searchByMsgKey
 	*/

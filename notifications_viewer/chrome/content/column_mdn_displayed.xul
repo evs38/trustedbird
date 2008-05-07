@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
      -  Version: MPL 1.1/GPL 2.0/LGPL 2.1
      - 
@@ -33,27 +34,17 @@
      - 
      -  ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY colDSN "Délivré">
-<!ENTITY colDSNTooltip "Cliquez pour trier par notifications de livraison">
-<!ENTITY colMDNDisplayed "Affiché">
-<!ENTITY colMDNDisplayedTooltip "Cliquez pour trier par notifications (affiché)">
-<!ENTITY colMDNDeleted "Effacé">
-<!ENTITY colMDNDeletedTooltip "Cliquez pour trier par notifications (effacé)">
-<!ENTITY headerView.labelDSN "Notifications de livraison">
-<!ENTITY headerView.labelMDNDisplayed "Affiché">
-<!ENTITY headerView.labelMDNDeleted "Effacé">
-<!ENTITY PrefsDialog.generalities "Généralités">
-<!ENTITY PrefsDialog.groupBoxtimeOut "Délais de livraison">
-<!ENTITY PrefsDialog.labelconsiderTimeout "Prendre en considération le délais de livraison">
-<!ENTITY PrefsDialog.timeOut "Délais (en heures)">
-<!ENTITY PrefsDialog.groupBoxDeliveryNotification "Messages de notification">
-<!ENTITY PrefsDialog.markRead "Marquer comme lu">
-<!ENTITY PrefsDialog.moveNotification "Ajouter la notification dans le fil du message d'origine">
-<!ENTITY PrefsDialog.display "Affichage">
-<!ENTITY PrefsDialog.groupBoxHdrView "En-têtes">
-<!ENTITY PrefsDialog.groupBoxHdrView.notificationsDisplayTextAndIcons "Afficher les notifications avec">
-<!ENTITY PrefsDialog.groupBoxHdrView.textOnly "Texte seulement">
-<!ENTITY PrefsDialog.groupBoxHdrView.iconOnly "Icones seulement">
-<!ENTITY PrefsDialog.groupBoxHdrView.textAndIcon "Texte et icones">
+<!DOCTYPE overlay SYSTEM "chrome://notifications_viewer/locale/default.dtd">
+<?xml-stylesheet href="chrome://notifications_viewer/skin/default.css" type="text/css"?>
 
+<overlay id="TestTreeColOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<tree id="threadTree">
+		<treecols id="threadCols">
+			<splitter class="tree-splitter" />
+			<treecol id="colMDNDisplayed" persist="hidden ordinal width" 
+				 currentView="unthreaded" flex="2"
+				 label="&colMDNDisplayed;" tooltiptext="&colMDNDisplayedTooltip;" />
+		</treecols>
+	</tree>
+</overlay>
 

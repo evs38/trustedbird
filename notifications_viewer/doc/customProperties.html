@@ -90,7 +90,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
    <P>
    <BR/>manage custom properties
-	<BR/><B>Version: </B>0.9.3 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/><I>Defined in <a href='overview-summary-customProperties.js.html'>customProperties.js</a></I><BR/><BR/>
+	<BR/><B>Version: </B>0.9.4 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/><I>Defined in <a href='overview-summary-customProperties.js.html'>customProperties.js</a></I><BR/><BR/>
    </P>
    
    <HR>
@@ -142,6 +142,19 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&nbsp;string</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#dsnSummaryProperty">dsnSummaryProperty</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-dsn-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li><a href="#getDsnSummaryProperty">getDsnSummaryProperty()</a>
+		</ul></TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;number</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#FLAG_TIMEOUT">FLAG_TIMEOUT</A></B></CODE>
    <BR>
@@ -167,6 +180,32 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&nbsp;string</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#mdnDeletedSummaryProperty">mdnDeletedSummaryProperty</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-mdn-deleted-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li><a href="#getMdnDeletedSummaryProperty">getMdnDeletedSummaryProperty()</a>
+		</ul></TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&nbsp;string</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#mdnDisplayedSummaryProperty">mdnDisplayedSummaryProperty</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-mdn-displayed-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li><a href="#getMdnDisplayedSummaryProperty">getMdnDisplayedSummaryProperty()</a>
+		</ul></TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;Object</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#regExpCache">regExpCache</A></B></CODE>
    <BR>
@@ -183,19 +222,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 		Access functions:
 		<ul>
 			<li><a href="#getStatusProperty">getStatusProperty()</a>
-		</ul></TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;string</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#summaryProperty">summaryProperty</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-summary property (number/total)
-		<p>
-		Access functions:
-		<ul>
-			<li><a href="#getSummaryProperty">getSummaryProperty()</a>
 		</ul></TD>
    </TR>
    
@@ -221,7 +247,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TD>
       <CODE>
 	 <B>
-	    <A HREF="#customProperties()">customProperties</A></B>(&lt;string&gt; deliveredToProperty,&lt;string&gt; statusProperty,&lt;string&gt; summaryProperty,&lt;string&gt; flagsProperty)
+	    <A HREF="#customProperties()">customProperties</A></B>(&lt;string&gt; deliveredToProperty,&lt;string&gt; statusProperty,&lt;string&gt; dsnSummaryProperty,&lt;string&gt; flagsProperty,&lt;string&gt; mdnDisplayedSummaryProperty,&lt;string&gt; mdnDeletedSummaryProperty)
       </CODE>
       <BR>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -327,7 +353,58 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
+	       <A HREF="#getDsnSummaryProperty">getDsnSummaryProperty</A></B>()
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&nbsp;string</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
 	       <A HREF="#getFlagsProperty">getFlagsProperty</A></B>()
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&nbsp;string</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#getMdnDeletedSummaryProperty">getMdnDeletedSummaryProperty</A></B>()
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&nbsp;string</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#getMdnDisplayedSummaryProperty">getMdnDisplayedSummaryProperty</A></B>()
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -362,23 +439,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	 <CODE>
 	    <B>
 	       <A HREF="#getStatusProperty">getStatusProperty</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;string</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getSummaryProperty">getSummaryProperty</A></B>()
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -454,6 +514,20 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </UL>
    <HR>
    
+   <A NAME="dsnSummaryProperty"><!-- --></A>
+   <H3>dsnSummaryProperty</H3>
+   <PRE>string&nbsp;<B>dsnSummaryProperty</B></PRE>
+   <UL>
+   x-nviewer-dsn-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li><a href="#getDsnSummaryProperty">getDsnSummaryProperty()</a>
+		</ul>
+   
+   </UL>
+   <HR>
+   
    <A NAME="FLAG_TIMEOUT"><!-- --></A>
    <H3>FLAG_TIMEOUT</H3>
    <PRE>number&nbsp;<B>FLAG_TIMEOUT</B></PRE>
@@ -482,6 +556,34 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </UL>
    <HR>
    
+   <A NAME="mdnDeletedSummaryProperty"><!-- --></A>
+   <H3>mdnDeletedSummaryProperty</H3>
+   <PRE>string&nbsp;<B>mdnDeletedSummaryProperty</B></PRE>
+   <UL>
+   x-nviewer-mdn-deleted-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li><a href="#getMdnDeletedSummaryProperty">getMdnDeletedSummaryProperty()</a>
+		</ul>
+   
+   </UL>
+   <HR>
+   
+   <A NAME="mdnDisplayedSummaryProperty"><!-- --></A>
+   <H3>mdnDisplayedSummaryProperty</H3>
+   <PRE>string&nbsp;<B>mdnDisplayedSummaryProperty</B></PRE>
+   <UL>
+   x-nviewer-mdn-displayed-summary property (number/total)
+		<p>
+		Access functions:
+		<ul>
+			<li><a href="#getMdnDisplayedSummaryProperty">getMdnDisplayedSummaryProperty()</a>
+		</ul>
+   
+   </UL>
+   <HR>
+   
    <A NAME="regExpCache"><!-- --></A>
    <H3>regExpCache</H3>
    <PRE>Object&nbsp;<B>regExpCache</B></PRE>
@@ -505,20 +607,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </UL>
    <HR>
    
-   <A NAME="summaryProperty"><!-- --></A>
-   <H3>summaryProperty</H3>
-   <PRE>string&nbsp;<B>summaryProperty</B></PRE>
-   <UL>
-   x-nviewer-summary property (number/total)
-		<p>
-		Access functions:
-		<ul>
-			<li><a href="#getSummaryProperty">getSummaryProperty()</a>
-		</ul>
-   
-   </UL>
-   <HR>
-   
 
 
 <!-- ============ FIELD DETAIL END =========== -->
@@ -536,7 +624,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 
 <A NAME="customProperties()"><!-- --></A><H3>
 customProperties</H3>
-<PRE><B>customProperties</B>(&lt;string&gt; deliveredToProperty,&lt;string&gt; statusProperty,&lt;string&gt; summaryProperty,&lt;string&gt; flagsProperty)</PRE>
+<PRE><B>customProperties</B>(&lt;string&gt; deliveredToProperty,&lt;string&gt; statusProperty,&lt;string&gt; dsnSummaryProperty,&lt;string&gt; flagsProperty,&lt;string&gt; mdnDisplayedSummaryProperty,&lt;string&gt; mdnDeletedSummaryProperty)</PRE>
 
 
 <UL>
@@ -584,10 +672,16 @@ customProperties</H3>
      <UL><CODE>statusProperty</CODE> -  x-nviewer-status property ("good","middle", "bad") 	
      </UL>
    
-     <UL><CODE>summaryProperty</CODE> -  x-nviewer-summary property (number/total) 	
+     <UL><CODE>dsnSummaryProperty</CODE> -  x-nviewer-dsn-summary property (number/total) 	
      </UL>
    
-     <UL><CODE>flagsProperty</CODE> -  x-nviewer-flags property
+     <UL><CODE>flagsProperty</CODE> -  x-nviewer-flags property	 	
+     </UL>
+   
+     <UL><CODE>mdnDisplayedSummaryProperty</CODE> -  x-nviewer-mdn-displayed-summary property (number/total) 	
+     </UL>
+   
+     <UL><CODE>mdnDeletedSummaryProperty</CODE> -  x-nviewer-mdn-deleted-summary property (number/total)
      </UL>
    
    
@@ -601,7 +695,7 @@ customProperties</H3>
 <!-- ADDITIONAL ATTRIBUTES -->
 
 <UL>   
-<B>Version: </B>0.9.3 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/>
+<B>Version: </B>0.9.4 	<BR/><BR/><B>Author:</B> Daniel Rocher / Etat francais Ministere de la Defense 	<BR/>
 </UL>
 
 <HR/>
@@ -754,6 +848,29 @@ customProperties</H3>
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
+   <A NAME="getDsnSummaryProperty"><!-- --></A>
+   <H3>getDsnSummaryProperty</H3>
+   <PRE>string <B>getDsnSummaryProperty</B>()</PRE>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+   <UL>
+   <B>Returns:</B>
+        <UL>
+         Return x-nviewer-dsn-summary property (number/total) 
+        </UL>
+   </UL>
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
    <A NAME="getFlagsProperty"><!-- --></A>
    <H3>getFlagsProperty</H3>
    <PRE>string <B>getFlagsProperty</B>()</PRE>
@@ -768,6 +885,52 @@ customProperties</H3>
    <B>Returns:</B>
         <UL>
          Return x-nviewer-flags property 
+        </UL>
+   </UL>
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="getMdnDeletedSummaryProperty"><!-- --></A>
+   <H3>getMdnDeletedSummaryProperty</H3>
+   <PRE>string <B>getMdnDeletedSummaryProperty</B>()</PRE>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+   <UL>
+   <B>Returns:</B>
+        <UL>
+         Return x-nviewer-mdn-deleted-summary property 
+        </UL>
+   </UL>
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="getMdnDisplayedSummaryProperty"><!-- --></A>
+   <H3>getMdnDisplayedSummaryProperty</H3>
+   <PRE>string <B>getMdnDisplayedSummaryProperty</B>()</PRE>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+   <UL>
+   <B>Returns:</B>
+        <UL>
+         Return x-nviewer-mdn-displayed-summary property 
         </UL>
    </UL>
    
@@ -822,29 +985,6 @@ customProperties</H3>
    <B>Returns:</B>
         <UL>
          Return x-nviewer-status property ("good" ,"bad" , "middle" or "") 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getSummaryProperty"><!-- --></A>
-   <H3>getSummaryProperty</H3>
-   <PRE>string <B>getSummaryProperty</B>()</PRE>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         Return x-nviewer-summary property (number/total) 
         </UL>
    </UL>
    
@@ -938,6 +1078,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <FONT SIZE="-1">
 
 </FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Tue Apr 29 15:41:42 2008</div>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Wed May  7 09:56:58 2008</div>
 </BODY>
 </HTML>
