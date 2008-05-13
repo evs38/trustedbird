@@ -83,7 +83,7 @@
                 <em:minVersion>2.0</em:minVersion>
                 <em:maxVersion>2.0.0.*</em:maxVersion>
 				<!-- Link to the extension for the update -->
-				<em:updateLink>http://admisource.gouv.fr/frs/download.php/508/mdn_extended-0.1.3.0.xpi</em:updateLink>
+				<em:updateLink>http://admisource.gouv.fr/frs/download.php/537/mdn_extended-0.1.3.0.xpi</em:updateLink>
  			</rdf:Description>
         </em:targetApplication>
 	</rdf:Description>
