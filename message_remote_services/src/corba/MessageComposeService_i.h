@@ -56,7 +56,8 @@ public:
    *  \param p_listener is the listener, which receives the sending process events
    */
   virtual void SendMessage(const Account& p_account, const CMessage& p_message,
-                           MessageSendListener_ptr p_listener);
+                           MessageSendListener_ptr p_listener,
+                           ::CORBA::Boolean openComposeWindowOnBadFormat);
 
   MessageComposeService_i();
   virtual ~MessageComposeService_i();

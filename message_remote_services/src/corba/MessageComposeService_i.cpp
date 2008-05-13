@@ -142,7 +142,8 @@ void MessageComposeService_i::GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, con
 
 void MessageComposeService_i::SendMessage(const Account& p_account,
                                           const CMessage& p_message,
-                                          MessageSendListener_ptr p_listener) {
+                                          MessageSendListener_ptr p_listener,
+                                          ::CORBA::Boolean openComposeWindowOnBadFormat) {
   cout << "INFO : MessageComposeService_i::SendMessage ENTER" << endl;
 
   nsresult rv;
@@ -156,7 +157,8 @@ void MessageComposeService_i::SendMessage(const Account& p_account,
 
   //Control Format
   if (!this->ControlFormat(p_message.recipients_to)) {
-    ShowMessageCompositionWindow(pMsgComposeParams);
+    if (openComposeWindowOnBadFormat == true)
+      ShowMessageCompositionWindow(pMsgComposeParams);
     throw InternalServerException("Bad Format in 'to' field");
   }
   
