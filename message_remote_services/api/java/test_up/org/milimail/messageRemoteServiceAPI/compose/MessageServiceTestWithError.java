@@ -130,6 +130,7 @@ public class MessageServiceTestWithError extends TestCase {
 			composeService.sendMessage(account, message, messageListener);
 		} catch (InternalServerException e) {
 			exceptionThrown=true;
+			System.out.println(e.cause);
 		}
 		
 		assertTrue(exceptionThrown);
