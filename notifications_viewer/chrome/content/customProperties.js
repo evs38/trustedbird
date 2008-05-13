@@ -44,7 +44,7 @@
 /**
 	@class A delivered-to property object
 	@constructor
-	@version 0.9.1
+	@version 0.9.2
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@param {string} finalRecipient final recipient
 	@param {number} flags flags for this object - <b>NOT FROZEN</b>
@@ -324,9 +324,9 @@ customProperties.prototype = {
 	*/
 	addDeliveredTo: function(finalRecipient,flags) {
 
-
 		// test if address is correct
-		if (! this.regExpCache.validAddr.test(finalRecipient)) return false;
+		finalRecipient=getValidAddress(finalRecipient);
+		if (! finalRecipient) return false;
 
 		// test if finalRecipient exist
 		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {

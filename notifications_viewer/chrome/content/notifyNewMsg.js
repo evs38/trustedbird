@@ -308,15 +308,14 @@ var notifyListener = {
 					recipientsArray=recipientsArray.concat(CCArray); //concat
 					
 					// get recipients
-					var regExp=new RegExp("([^,<> ]+@[^,<> ]+)","ig");
 					for (var i=0 ; i < recipientsArray.length ; i++) {
-						regExp.lastIndex=0;
-						var oneRecipient=regExp.exec(recipientsArray[i]);
-						if (oneRecipient && oneRecipient.length>1) {
+						// test if address is correct
+						var oneRecipient=getValidAddress(recipientsArray[i]);
+						if (oneRecipient) {
 							// a valid address
 							// add to x-nviewer-to string property
 							if (i>0) deliveredToP+="\n\t";
-							deliveredToP+=oneRecipient[1]+";0";
+							deliveredToP+=oneRecipient+";0";
 						}
 					}
 				}

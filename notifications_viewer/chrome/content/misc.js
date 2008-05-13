@@ -256,6 +256,23 @@ function moveMessage (msgHdr, dstFolder) {
 	return true;
 }
 
+/**
+	return a valid address mail
+	<p>
+	Example: <Pre>getValidAddress("My Name&#60;my.name&#64;mydomain.org&#62;") // return my.name&#64;mydomain.org</pre>
+	@param {string} address address to check
+	@return {string} return a valid address mail or <b>null</b>
+*/
+function getValidAddress(address) {
+	var regExp=new RegExp("([^,<> ]+@[^,<> ]+)","ig");
+	regExp.lastIndex=0;
+	address=regExp.exec(address);
+	if (address && address.length>1) {
+		// a valid address
+		return address[1];
+	}
+	return null;
+}
 
 
 
