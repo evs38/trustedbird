@@ -41,9 +41,7 @@ public class IORFinderTester extends TestCase {
 
 	public void GetIOR(String service) throws Exception {
 		
-		IORFinder finder = new IORFinder();
-		
-		String s = finder.getIOR(service);
+		String s = IORFinder.getIOR(service);
 	
 		assertNotNull(s);
 		assertTrue(s.contains("IOR"));
