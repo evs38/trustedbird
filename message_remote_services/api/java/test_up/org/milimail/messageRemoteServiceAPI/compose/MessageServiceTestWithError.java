@@ -74,8 +74,6 @@ public class MessageServiceTestWithError extends TestCase {
 		composeService.sendMessage(account, message, messageListener);
 	}
 
-	//Currently fail and block (max usage of thunderbird), need to control validity server side
-	//UI dont know about our listener
 	public void testSendMessageWithoutTo()  {
 		Account[] accounts = null;
 		try {
@@ -104,8 +102,24 @@ public class MessageServiceTestWithError extends TestCase {
 		assertTrue(exceptionThrown);
 	}
 	
-	//Same as previous
+
 	public void testSendMessageMalformedTo()  {
+		boolean openComposeWindowOnError = false;
+		sendMessageOnError(openComposeWindowOnError);
+	}
+
+	
+	public void testSendMessageMalformedToAndOpenComposeWindow()  {
+		boolean openComposeWindowOnError = true;
+		sendMessageOnError(openComposeWindowOnError);
+	}
+
+
+
+	/**
+	 * @param openComposeWindowOnError
+	 */
+	private void sendMessageOnError(boolean openComposeWindowOnError) {
 		Account[] accounts = null;
 		try {
 			accounts = accountService.GetAllAccounts();
@@ -127,7 +141,7 @@ public class MessageServiceTestWithError extends TestCase {
 		message.setTo(to);
 		boolean exceptionThrown = false;
 		try {
-			composeService.sendMessage(account, message, messageListener);
+			composeService.sendMessage(account, message, messageListener, openComposeWindowOnError);
 		} catch (InternalServerException e) {
 			exceptionThrown=true;
 			System.out.println(e.cause);
@@ -135,5 +149,4 @@ public class MessageServiceTestWithError extends TestCase {
 		
 		assertTrue(exceptionThrown);
 	}
-
 }

@@ -52,8 +52,11 @@ public class MessageComposeServiceProxy {
 
 	public void sendMessage(Account p_account, Message p_message, MessageSendListener p_listener) throws InternalServerException {
 		
-		service.SendMessage(p_account, p_message.getCorbaMessage(), p_listener);
+		service.SendMessage(p_account, p_message.getCorbaMessage(), p_listener, false);
 	}
 	
-	
+public void sendMessage(Account p_account, Message p_message, MessageSendListener p_listener, boolean openComposeWindowOnBadFormat) throws InternalServerException {
+		
+		service.SendMessage(p_account, p_message.getCorbaMessage(), p_listener, openComposeWindowOnBadFormat);
+	}
 }
