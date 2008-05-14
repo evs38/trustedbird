@@ -39,6 +39,7 @@
 <!ENTITY colMDNDisplayedTooltip "Cliquez pour trier par notifications (affiché)">
 <!ENTITY colMDNDeleted "Effacé">
 <!ENTITY colMDNDeletedTooltip "Cliquez pour trier par notifications (effacé)">
+<!ENTITY contextMenuLabel "Visualiser les notifications">
 <!ENTITY headerView.labelDSN "Délivré">
 <!ENTITY headerView.labelMDNDisplayed "Affiché">
 <!ENTITY headerView.labelMDNDeleted "Effacé">

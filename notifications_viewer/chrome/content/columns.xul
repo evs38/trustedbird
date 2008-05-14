@@ -37,9 +37,9 @@
 <!DOCTYPE overlay SYSTEM "chrome://notifications_viewer/locale/default.dtd">
 <?xml-stylesheet href="chrome://notifications_viewer/skin/default.css" type="text/css"?>
 
-<overlay id="TestTreeColOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay id="NotificationsTreeColOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/misc.js" />
-	<script type="application/x-javascript" src="chrome://notifications_viewer/content/column.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/columns.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/findMsgDb.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/mailParser.js" />
@@ -52,10 +52,34 @@
 	<tree id="threadTree">
 		<treecols id="threadCols">
 			<splitter class="tree-splitter" />
+			<!-- DSN Column -->
 			<treecol id="colDSN" persist="hidden ordinal width sortActive sortDirection"
 				 currentView="unthreaded" flex="2"
 				 label="&colDSN;" tooltiptext="&colDSNTooltip;" />
+			
+			<splitter class="tree-splitter" />
+			
+			<!-- MDN Columns -->
+			<treecol id="colMDNDisplayed" persist="hidden ordinal width sortActive sortDirection"
+				 currentView="unthreaded" flex="2"
+				 label="&colMDNDisplayed;" tooltiptext="&colMDNDisplayedTooltip;" />
+			
+			<splitter class="tree-splitter" />
+			<treecol id="colMDNDeleted" persist="hidden ordinal width sortActive sortDirection"
+				 currentView="unthreaded" flex="2"
+				 label="&colMDNDeleted;" tooltiptext="&colMDNDeletedTooltip;" />
 		</treecols>
 	</tree>
+
+	<!-- Context menu -->
+	<menupopup id="threadPaneContext">
+		<menuitem id="notificationsContextMenu" label="&contextMenuLabel;" hidden="false" disabled="false" oncommand="srv.warningSrv('Menu popup - Not Implemented (TODO)');" />
+	</menupopup>
+	
+	<!-- Message menu -->
+	<menupopup id="messageMenuPopup">
+		<menuitem id="notificationsMenu" label="&contextMenuLabel;" hidden="false" disabled="false" oncommand="srv.warningSrv('Menu popup - Not Implemented (TODO)');" />
+	</menupopup>
 </overlay>
+
 

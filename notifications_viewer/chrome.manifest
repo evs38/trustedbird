@@ -36,9 +36,7 @@
 
 content     notifications_viewer    chrome/content/
 
-overlay     chrome://messenger/content/messenger.xul           chrome://notifications_viewer/content/column_dsn.xul
-overlay     chrome://messenger/content/messenger.xul           chrome://notifications_viewer/content/column_mdn_displayed.xul
-overlay     chrome://messenger/content/messenger.xul           chrome://notifications_viewer/content/column_mdn_deleted.xul
+overlay     chrome://messenger/content/messenger.xul           chrome://notifications_viewer/content/columns.xul
 overlay     chrome://messenger/content/msgHdrViewOverlay.xul   chrome://notifications_viewer/content/msgHdrViewOverlay.xul
 
 skin        notifications_viewer    classic/1.0    chrome/skin/

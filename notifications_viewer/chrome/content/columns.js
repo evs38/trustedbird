@@ -142,12 +142,36 @@ var columnHandlerMDNDeleted = {
 }
 
 /**
-	Setting the Custom Column Handler
+	Setting the Custom Column Handler.
+	add a popupshowing event listener for the menu.
 */
 function columnInit() {
 	srv.logSrv("columnInit()");
 	var ObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
 	ObserverService.addObserver(createDbObserver, "MsgCreateDBView", false);
+
+	// add a popupshowing event listener for menus
+	document.getElementById("threadPaneContext").addEventListener("popupshowing", contextPopupShowing, false); // context menu
+	document.getElementById("messageMenuPopup").addEventListener("popupshowing", contextPopupShowing, false); // message menu
+}
+
+/**
+	every time the popup menu is about to show
+*/
+function contextPopupShowing() {
+	try {
+		var header=gDBView.hdrForFirstSelectedMessage;
+		if (header) {
+			var xNviewer=header.getStringProperty("x-nviewer-to");
+			if (xNviewer.length>0) {
+				document.getElementById("notificationsContextMenu").removeAttribute("hidden");
+				document.getElementById("notificationsMenu").removeAttribute("hidden");
+				return;
+			}
+		}
+	} catch(e) {}
+	document.getElementById("notificationsContextMenu").setAttribute("hidden","true");
+	document.getElementById("notificationsMenu").setAttribute("hidden","true");
 }
 
 /**
