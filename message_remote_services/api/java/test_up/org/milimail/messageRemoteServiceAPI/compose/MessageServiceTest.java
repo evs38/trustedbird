@@ -43,6 +43,7 @@ import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
 import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.stubs.Account;
+import org.milimail.messageRemoteServiceAPI.stubs.Header;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 
 public class MessageServiceTest extends TestCase {
@@ -73,8 +74,27 @@ public class MessageServiceTest extends TestCase {
 		message.setTo(to);
 
 		
-		composeService.sendMessage(account, message, messageListener);
+		composeService.sendMessage(account, message, messageListener);	
+
+	}
+	
+	public void testSendMessageWithSpecialCharacters() throws Exception{
+		Account[] accounts = null;
 		
+		accounts = accountService.GetAllAccounts();
+		
+		Account account = accounts[1];
+		assertNotNull(account);
+
+		Message message = new Message();
+		message.setSubject("Subject from API + é");
+		message.setBody("body from API + é");
+
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+
+		
+		composeService.sendMessage(account, message, messageListener);	
 
 	}
 	
@@ -157,5 +177,31 @@ public class MessageServiceTest extends TestCase {
 
 	}
 	
-	
+	public void testSendMessageWithHeaders() throws Exception{
+		Header[] headers = new Header[2];
+		headers[0] = new Header();
+		headers[0].key = "X-MRS-TEST-1";
+		headers[0].value = "X-MRS-VALUE-1";
+		headers[1] = new Header();
+		headers[1].key = "X-MRS-TEST-2";
+		headers[1].value = "X-MRS-VALUE-2";
+		
+		Account[] accounts = accountService.GetAllAccounts();
+		
+		Account account = accounts[1];
+		assertNotNull(account);
+
+		Message message = new Message();
+		message.setSubject("Subject from API");
+		message.setBody("body from API");
+		message.setHeaders(headers);
+		
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+
+		
+		composeService.sendMessage(account, message, messageListener);
+		
+
+	}
 }

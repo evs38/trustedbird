@@ -37,9 +37,9 @@
 package org.milimail.messageRemoteServiceAPI.compose;
 
 import java.util.UUID;
-
 import org.milimail.messageRemoteServiceAPI.stubs.CMessage;
 import org.milimail.messageRemoteServiceAPI.stubs.CSecurity;
+import org.milimail.messageRemoteServiceAPI.stubs.Header;
 
 public class Message {
 	private CMessage message;
@@ -55,43 +55,53 @@ public class Message {
 		message.security = new CSecurity();
 		message.security.isCrypted = false;
 		message.security.isSigned = false;
+		message.p_headers = new Header[0];
 	}
 	
 	public String[] getTo() {
 		return message.recipients_to;
 	}
+	
 	public void setTo(String[] to) {
 		if (to == null)
 			return;
 		message.recipients_to = to;
 	}
+	
 	public String[] getCc() {
 		return message.recipients_cc;
 	}
+	
 	public void setCc(String[] cc) {
 		if (cc == null)
 			return;
 		message.recipients_cc = cc;
 	}
+	
 	public String[] getBcc() {
 		return message.recipients_bcc;
 	}
+	
 	public void setBcc(String[] bcc) {
 		if (bcc == null)
 			return;
 		message.recipients_bcc = bcc;
 	}
+	
 	public String getSubject() {
 		return message.subject;
 	}
+	
 	public void setSubject(String subject) {
 		if (subject == null)
 			return;
 		message.subject = subject;
 	}
+	
 	public String getBody() {
 		return message.body;
 	}
+	
 	public void setBody(String body) {
 		if (body == null)
 			return;
@@ -109,5 +119,15 @@ public class Message {
 	public void setSecurity(Security security){
 		message.security.isCrypted = security.isCrypted;
 		message.security.isSigned = security.isSigned;
+	}
+	
+	public void setHeaders(Header[] headers){
+		if (headers == null) 
+			return;
+		message.p_headers = headers;
+	}
+	
+	public Header[] getHeaders(){
+		return message.p_headers;
 	}
 }
