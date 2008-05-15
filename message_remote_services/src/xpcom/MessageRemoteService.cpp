@@ -69,7 +69,7 @@ MessageRemoteService::~MessageRemoteService() {
 /* void Start (); */
 NS_IMETHODIMP MessageRemoteService::Start() {
   const char* options[][2] = { { "traceLevel", "50" }, { "endPoint",
-      "giop:tcp:localhost:1449" }, { 0, 0 } };
+      "giop:tcp:localhost:1449" },{"nativeCharCodeSet","UTF-8"}, { 0, 0 } };
 
   char ** c= NULL;
   int a = 0;
