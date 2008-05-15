@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 /*
 *
-* AccountService Corba IDL
+* Server Services Corba IDL
 *
 */
 
@@ -58,6 +58,13 @@ interface AccountService {
 	
 };
 
+struct Header {
+	string key;
+	string value;
+};
+
+typedef sequence<Header> Headers;
+
 typedef sequence<string> Addresses;
 struct CSecurity {
 	boolean isSigned;
@@ -72,6 +79,7 @@ struct CMessage {
 	string body;
 	string uuid;
 	CSecurity security;
+	Headers p_headers;
 };
 
 interface MessageSendListener {

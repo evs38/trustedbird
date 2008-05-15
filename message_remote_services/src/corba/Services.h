@@ -327,6 +327,133 @@ private:
 };
 
 
+struct Header {
+  typedef _CORBA_ConstrType_Variable_Var<Header> _var_type;
+
+  
+  ::CORBA::String_member key;
+
+  ::CORBA::String_member value;
+
+
+
+  void operator>>= (cdrStream &) const;
+  void operator<<= (cdrStream &);
+};
+
+typedef Header::_var_type Header_var;
+
+typedef _CORBA_ConstrType_Variable_OUT_arg< Header,Header_var > Header_out;
+
+class Headers_var;
+
+class Headers : public _CORBA_Unbounded_Sequence< Header >  {
+public:
+  typedef Headers_var _var_type;
+  inline Headers() {}
+  inline Headers(const Headers& _s)
+    : _CORBA_Unbounded_Sequence< Header > (_s) {}
+
+  inline Headers(_CORBA_ULong _max)
+    : _CORBA_Unbounded_Sequence< Header > (_max) {}
+  inline Headers(_CORBA_ULong _max, _CORBA_ULong _len, Header* _val, _CORBA_Boolean _rel=0)
+    : _CORBA_Unbounded_Sequence< Header > (_max, _len, _val, _rel) {}
+
+
+
+  inline Headers& operator = (const Headers& _s) {
+    _CORBA_Unbounded_Sequence< Header > ::operator=(_s);
+    return *this;
+  }
+};
+
+class Headers_out;
+
+class Headers_var {
+public:
+  inline Headers_var() : _pd_seq(0) {}
+  inline Headers_var(Headers* _s) : _pd_seq(_s) {}
+  inline Headers_var(const Headers_var& _s) {
+    if( _s._pd_seq )  _pd_seq = new Headers(*_s._pd_seq);
+    else              _pd_seq = 0;
+  }
+  inline ~Headers_var() { if( _pd_seq )  delete _pd_seq; }
+    
+  inline Headers_var& operator = (Headers* _s) {
+    if( _pd_seq )  delete _pd_seq;
+    _pd_seq = _s;
+    return *this;
+  }
+  inline Headers_var& operator = (const Headers_var& _s) {
+    if( _s._pd_seq ) {
+      if( !_pd_seq )  _pd_seq = new Headers;
+      *_pd_seq = *_s._pd_seq;
+    } else if( _pd_seq ) {
+      delete _pd_seq;
+      _pd_seq = 0;
+    }
+    return *this;
+  }
+  inline Header& operator [] (_CORBA_ULong _s) {
+    return (*_pd_seq)[_s];
+  }
+
+
+
+  inline Headers* operator -> () { return _pd_seq; }
+  inline const Headers* operator -> () const { return _pd_seq; }
+#if defined(__GNUG__)
+  inline operator Headers& () const { return *_pd_seq; }
+#else
+  inline operator const Headers& () const { return *_pd_seq; }
+  inline operator Headers& () { return *_pd_seq; }
+#endif
+    
+  inline const Headers& in() const { return *_pd_seq; }
+  inline Headers&       inout()    { return *_pd_seq; }
+  inline Headers*&      out() {
+    if( _pd_seq ) { delete _pd_seq; _pd_seq = 0; }
+    return _pd_seq;
+  }
+  inline Headers* _retn() { Headers* tmp = _pd_seq; _pd_seq = 0; return tmp; }
+    
+  friend class Headers_out;
+  
+private:
+  Headers* _pd_seq;
+};
+
+class Headers_out {
+public:
+  inline Headers_out(Headers*& _s) : _data(_s) { _data = 0; }
+  inline Headers_out(Headers_var& _s)
+    : _data(_s._pd_seq) { _s = (Headers*) 0; }
+  inline Headers_out(const Headers_out& _s) : _data(_s._data) {}
+  inline Headers_out& operator = (const Headers_out& _s) {
+    _data = _s._data;
+    return *this;
+  }
+  inline Headers_out& operator = (Headers* _s) {
+    _data = _s;
+    return *this;
+  }
+  inline operator Headers*&()  { return _data; }
+  inline Headers*& ptr()       { return _data; }
+  inline Headers* operator->() { return _data; }
+
+  inline Header& operator [] (_CORBA_ULong _i) {
+    return (*_data)[_i];
+  }
+
+
+
+  Headers*& _data;
+
+private:
+  Headers_out();
+  Headers_out& operator=(const Headers_var&);
+};
+
 class Addresses_var;
 
 class Addresses : public _CORBA_Unbounded_Sequence_String {
@@ -471,6 +598,8 @@ struct CMessage {
   ::CORBA::String_member uuid;
 
   CSecurity security;
+
+  Headers p_headers;
 
 
 

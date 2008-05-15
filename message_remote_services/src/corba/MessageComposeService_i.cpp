@@ -76,18 +76,33 @@ void MessageComposeService_i::FillMsgComposeParams(
   rv = pMsgComposeParams->SetType(nsIMsgCompType::New);
   ENSURE_SUCCESS(rv,"Cannot SetType");
 
-  rv = pMsgCompFields->SetSubject(NS_ConvertASCIItoUTF16(p_message.subject));
+  rv = pMsgCompFields->SetSubject(NS_ConvertUTF8toUTF16(p_message.subject));
   ENSURE_SUCCESS(rv,"Cannot SetSubject");
 
   cout << "INFO : MessageComposeService_i::SendMessage Addresses To" << endl;
   Addresses recipients = p_message.recipients_to;
   nsAutoString toRecipients;
 
-  nsAutoString body = NS_ConvertASCIItoUTF16(p_message.body)
-      + NS_ConvertASCIItoUTF16("\r\n");
+  for (int i = 0; i < recipients.length(); ++i) {
+    cout << "Recipient : " << recipients[i] << endl;
+
+    if (i>0)
+      toRecipients += NS_LITERAL_STRING(",");
+
+    toRecipients += NS_ConvertUTF8toUTF16(recipients[i]);
+  }
+
+  rv = pMsgCompFields->SetTo(toRecipients);
+  ENSURE_SUCCESS(rv, "Cannot SetTo");
+
+  nsAutoString body = NS_ConvertUTF8toUTF16(p_message.body)
+      + NS_ConvertUTF8toUTF16("\r\n");
   pMsgCompFields->SetBody(body);
   ENSURE_SUCCESS(rv,"Cannot SetBody");
 
+  //Add headers
+  this->AddCustomHeaders(pMsgCompFields, p_message.p_headers);
+  
   nsCOMPtr<nsIMsgSMIMECompFields> mSMIMECompFields = do_CreateInstance(
       NS_MSGSMIMECOMPFIELDS_CONTRACTID, &rv);
 
@@ -103,18 +118,6 @@ void MessageComposeService_i::FillMsgComposeParams(
   rv = pMsgComposeParams->SetComposeFields(pMsgCompFields);
   ENSURE_SUCCESS(rv,"Cannot SetComposeFields");
   
-  for (int i = 0; i < recipients.length(); ++i) {
-    cout << "Recipient : " << recipients[i] << endl;
-
-    if (i>0)
-      toRecipients += NS_LITERAL_STRING(",");
-
-    toRecipients += NS_ConvertASCIItoUTF16(recipients[i]);
-  }
-
-  rv = pMsgCompFields->SetTo(toRecipients);
-  ENSURE_SUCCESS(rv,"Cannot SetTo");
-
 }
 
 void MessageComposeService_i::GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const Account& p_account) {
@@ -239,7 +242,7 @@ bool MessageComposeService_i::ControlFormat(const Addresses& recipients){
   
   nsAutoString recipient;
   for (int i = 0; i < recipients.length(); ++i) {
-    recipient = NS_ConvertASCIItoUTF16(recipients[i]);
+    recipient = NS_ConvertUTF8toUTF16(recipients[i]);
     if (recipient.FindChar('@') == CHAR_NOT_FOUND)
       return false;
   }
@@ -265,3 +268,27 @@ void MessageComposeService_i::ShowMessageCompositionWindow(nsIMsgComposeParams *
       pMsgComposeParams) ;
 
 }
+
+void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const Headers& headers){
+  nsresult rv;
+  if (headers.length() == 0)
+    return;
+
+  nsAutoString headers_inline;
+  cout << "Custom Headers NB : " << headers.length() << endl;
+
+  for (int i = 0; i < headers.length(); ++i) {
+    cout << "Custom Headers  " << i << " : " << headers[i].key << " , "
+        << headers[i].value << endl;
+    headers_inline.Append(NS_ConvertUTF8toUTF16(headers[i].key));
+    headers_inline.Append(NS_ConvertUTF8toUTF16(": "));
+    headers_inline.Append(NS_ConvertUTF8toUTF16(headers[i].value));
+    headers_inline.Append(NS_ConvertUTF8toUTF16("\r\n"));
+  }
+
+  rv = pMsgCompFields->SetOtherRandomHeaders(headers_inline);
+  cout << "Custom Headers : " << NS_LossyConvertUTF16toASCII(headers_inline).get() << endl;
+  ENSURE_SUCCESS(rv, "Cannot set nsIMsgCompFields Other Random Headers");
+  
+}
+

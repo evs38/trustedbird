@@ -363,6 +363,22 @@ _impl_AccountService::_mostDerivedRepoId()
 }
 
 void
+Header::operator>>= (cdrStream &_n) const
+{
+  _n.marshalString(key,0);
+  _n.marshalString(value,0);
+
+}
+
+void
+Header::operator<<= (cdrStream &_n)
+{
+  key = _n.unmarshalString(0);
+  value = _n.unmarshalString(0);
+
+}
+
+void
 CSecurity::operator>>= (cdrStream &_n) const
 {
   _n.marshalBoolean(isSigned);
@@ -388,6 +404,7 @@ CMessage::operator>>= (cdrStream &_n) const
   _n.marshalString(body,0);
   _n.marshalString(uuid,0);
   (const CSecurity&) security >>= _n;
+  (const Headers&) p_headers >>= _n;
 
 }
 
@@ -401,6 +418,7 @@ CMessage::operator<<= (cdrStream &_n)
   body = _n.unmarshalString(0);
   uuid = _n.unmarshalString(0);
   (CSecurity&)security <<= _n;
+  (Headers&)p_headers <<= _n;
 
 }
 

@@ -79,8 +79,15 @@ private:
    * Helper method used to show Composition Window filled by message attributes
    */
   void ShowMessageCompositionWindow(nsIMsgComposeParams * pMsgComposeParams);
+  
+  /*!
+     * Helper method used add custom headers to message
+     */
+  void AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const Headers& headers);
+  
   nsCOMPtr<nsIServiceManager> svcMgr;
 
+ 
 };
 
 #endif /*MESSAGECOMPOSESERVICE_I_H_*/
