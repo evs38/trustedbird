@@ -84,28 +84,26 @@
 			<tabpanel id="settingsDisplay">
 				<vbox flex="1">
 					<groupbox flex="1">
-						<caption label="&PrefsDialog.groupBoxHdrView;" />
-						<groupbox flex="1">
-							<caption label="&PrefsDialog.groupBoxHdrView.displayColumns;"/>
-							<hbox flex="1">
-								<checkbox id="columnDelivered" label="&PrefsDialog.groupBoxHdrView.columnDelivered;" flex="1" />
-							</hbox>
-							<hbox flex="1">
-								<checkbox id="columnDisplayed" label="&PrefsDialog.groupBoxHdrView.columnDisplayed;" flex="1" />
-							</hbox>
-							<hbox flex="1">
-								<checkbox id="columnDeleted" label="&PrefsDialog.groupBoxHdrView.columnDeleted;" flex="1" />
-							</hbox>
-						</groupbox>
-						<groupbox  flex="1">
-							<caption label="&PrefsDialog.groupBoxHdrView.notificationsDisplayTextAndIcons;"/>
-							<radiogroup id="notificationsDisplayTextAndIcons">
-								<radio id="textOnly" value="1" label="&PrefsDialog.groupBoxHdrView.textOnly;"/>
-								<radio id="iconOnly" value="2" label="&PrefsDialog.groupBoxHdrView.iconOnly;"/>
-								<radio id="textAndIcon" value="3" label="&PrefsDialog.groupBoxHdrView.textAndIcon;"/>
-							</radiogroup>
-						</groupbox>
+						<caption label="&PrefsDialog.display.displayColumns;"/>
+						<hbox flex="1">
+							<checkbox id="columnDelivered" label="&PrefsDialog.display.columnDelivered;" flex="1" />
+						</hbox>
+						<hbox flex="1">
+							<checkbox id="columnDisplayed" label="&PrefsDialog.display.columnDisplayed;" flex="1" />
+						</hbox>
+						<hbox flex="1">
+							<checkbox id="columnDeleted" label="&PrefsDialog.display.columnDeleted;" flex="1" />
+						</hbox>
 					</groupbox>
+					<groupbox  flex="1">
+						<caption label="&PrefsDialog.display.notificationsDisplayTextAndIcons;"/>
+						<radiogroup id="notificationsDisplayTextAndIcons">
+							<radio id="textOnly" value="1" label="&PrefsDialog.display.textOnly;"/>
+							<radio id="iconOnly" value="2" label="&PrefsDialog.display.iconOnly;"/>
+							<radio id="textAndIcon" value="3" label="&PrefsDialog.display.textAndIcon;"/>
+						</radiogroup>
+					</groupbox>
+					<checkbox id="showOnHeaderView" label="&PrefsDialog.display.showOnHeaderView;" flex="1" />
 					<spacer flex="2" />
 				</vbox>
 			</tabpanel>

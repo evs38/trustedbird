@@ -52,7 +52,7 @@ function Services() {
 	/** @type string */
 	this.extensionKey="extensions."+this.extensionName;
 	/** define current version for this extension @type string */
-	this.extensionVersion="0.6.0";
+	this.extensionVersion="0.6.1";
 	/** preferences @type Preferences */
 	this.preferences=new Preferences();
 	/** set debug mode @type boolean */
@@ -161,6 +161,7 @@ var prefDialogBox = {
 		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
 		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
 		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
+		document.getElementById("showOnHeaderView").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".display_headerview");
 
 		// columns
 		if (this.windowParent) {
@@ -197,6 +198,7 @@ var prefDialogBox = {
 		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_notifications_as_read",document.getElementById("markRead").checked);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".thread_on_original_message",document.getElementById("moveNotification").checked);
 		this.services.preferences.setIntPref(this.services.extensionKey+".display_text_and_icons",(document.getElementById("notificationsDisplayTextAndIcons").selectedIndex)+1);
+		this.services.preferences.setBoolPref(this.services.extensionKey+".display_headerview",document.getElementById("showOnHeaderView").checked);
 
 		// columns
 		if (this.windowParent) {

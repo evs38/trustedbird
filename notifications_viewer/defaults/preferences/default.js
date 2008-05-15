@@ -77,4 +77,7 @@ pref("extensions.notifications_viewer.parse_dsn",true);
 pref("extensions.notifications_viewer.parse_mdn",true);
 
 
+// show/hide notifications on headerView
+pref("extensions.notifications_viewer.display_headerview",true);
+
 

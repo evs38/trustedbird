@@ -42,6 +42,7 @@
 	 xmlns:html="http://www.w3.org/1999/xhtml">
 	
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/customProperties.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/windowDetailNotifications.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/misc.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/findMsgDb.js" />
@@ -56,18 +57,13 @@
 						<image id="toggleDSNHeaderViewOpened" class="expandDSNHeaderViewButton" onclick="ToggleDSNHeaderView();" collapsed="true"/>
 					</hbox>
 					<vbox>
-						<hbox>
-							<label id="dsnHeader" class="headerName" value="&headerView.labelDSN;:"/>
-							<label class="collapsedHeaderValue plain" id="dsn-summary"/>
-							<label id="mdnDisplayedHeader" class="headerName" value="  &headerView.labelMDNDisplayed;:"/>
-							<label class="collapsedHeaderValue plain" id="mdn-displayed-summary"/>
-							<label id="mdnDeletedHeader" class="headerName" value="  &headerView.labelMDNDeleted;:"/>
-							<label class="collapsedHeaderValue plain" id="mdn-deleted-summary"/>
+						<hbox id="SummaryNotifications">
+							<!-- here, DSN and MDN summaries -->
 						</hbox>
-						<grid id="detailDSN" collapsed="true" flex="1">
+						<grid id="detailNotifications" collapsed="true" flex="1">
 							<columns>
 							</columns>
-							<!-- here, rows when DSN header exist -->
+							<!-- here, rows when DSN and MDN are present -->
 						</grid>
 					</vbox>
 				</hbox>

@@ -47,7 +47,7 @@
 function ToggleDSNHeaderView() {
 	var toggleDSNHeaderViewClosed=document.getElementById("toggleDSNHeaderViewClosed");
 	var toggleDSNHeaderViewOpened=document.getElementById("toggleDSNHeaderViewOpened");
-	var detailDSN=document.getElementById("detailDSN");
+	var detailDSN=document.getElementById("detailNotifications");
 	detailDSN.collapsed=toggleDSNHeaderViewClosed.collapsed;
 	toggleDSNHeaderViewOpened.collapsed=toggleDSNHeaderViewClosed.collapsed;
 	toggleDSNHeaderViewClosed.collapsed=!toggleDSNHeaderViewClosed.collapsed;
@@ -60,17 +60,9 @@ function ToggleDSNHeaderView() {
 var msgHdrViewOverlay = {
 
 	DSNBox: null, // the BoxObject in message headers where all rendering is done
-
-	cacheCustomProperties : null,
-	cacheDeliveredTo : "",
-	cacheStatus : "",
-	cacheDsnSummary : "",
-	cacheFlags : "",
-	cacheMdnDisplayedSummary : "",
-	cacheMdnDeletedSummary : "",
-	strBundleService: null,
-	strbundle : null,
-	services : null,
+	isNotifications : false,
+	displayHeadersView: null,
+	services: null,
 
 	/**
 		registers msgHdrViewOverlay components
@@ -79,43 +71,29 @@ var msgHdrViewOverlay = {
 
 		gMessageListeners.push(msgHdrViewOverlay);
 		msgHdrViewOverlay.DSNBox = document.getElementById("dsnBox");
-
-		services=new Services();
-
-		// Internationalization
-		strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService().QueryInterface(Components.interfaces.nsIStringBundleService);
-		if (strBundleService)
-			strbundle=strBundleService.createBundle("chrome://notifications_viewer/locale/default.properties");
 	},
 
 	onStartHeaders: function() {
+		this.isNotifications=false;
+
 		if (gDBView.msgFolder == null) // true, if this is an opened .eml file
 			return;
 
-		// init values
-		this.cacheCustomProperties=null;
-		this.cacheDeliveredTo="";
-		this.cacheStatus="";
-		this.cacheDsnSummary="";
-		this.cacheFlags="";
-		this.cacheMdnDisplayedSummary="";
-		this.cacheMdnDeletedSummary="";
+		if (!this.services)
+			this.services= new Services();
+
+		// read user preferences
+		this.displayHeadersView=this.services.preferences.getBoolPref(this.services.extensionKey+".display_headerview");
+
+		if (! this.displayHeadersView)
+			return;
 
 		var msgViewIndex=gDBView.currentlyDisplayedMessage;
 		var msgKey=gDBView.getKeyAt (msgViewIndex );
 		var msgDBHdr=gDBView.msgFolder.GetMessageHeader ( msgKey );
 
-		this.cacheDeliveredTo=msgDBHdr.getStringProperty("x-nviewer-to");
-
-		if (this.cacheDeliveredTo=="")
-			return; // custom properties not present
-
-		this.cacheStatus=msgDBHdr.getStringProperty("x-nviewer-status");
-		this.cacheDsnSummary=msgDBHdr.getStringProperty("x-nviewer-dsn-summary");
-		this.cacheFlags=msgDBHdr.getStringProperty("x-nviewer-flags");
-		this.cacheMdnDisplayedSummary=msgDBHdr.getStringProperty("x-nviewer-mdn-displayed-summary");
-		this.cacheMdnDeletedSummary=msgDBHdr.getStringProperty("x-nviewer-mdn-deleted-summary");
-		this.cacheCustomProperties=new customProperties(this.cacheDeliveredTo ,this.cacheStatus, this.cacheDsnSummary, this.cacheFlags,this.cacheMdnDisplayedSummary,this.cacheMdnDeletedSummary);
+		if (msgDBHdr)
+			this.isNotifications = notificationsWidgets.init(msgDBHdr,false);
 	},
 
 	/**
@@ -124,196 +102,17 @@ var msgHdrViewOverlay = {
 	onEndHeaders: function() {
 		if (gDBView.msgFolder == null)
 			return;
-		this.buildView();
-		},
 
-	
-	buildView:   function() {
-		var enabledTimeout=services.preferences.getBoolPref(services.extensionKey+".enabled_timeout");
-		var notificationsDisplayTextAndIcons=services.preferences.getIntPref(services.extensionKey+".display_text_and_icons");
-
-		// Summary
-		if (this.cacheDsnSummary || this.cacheMdnDisplayedSummary || this.cacheMdnDeletedSummary) {
+		if (this.isNotifications && this.displayHeadersView) {
 			msgHdrViewOverlay.DSNBox.collapsed = false;
-			document.getElementById("dsn-summary").value=this.cacheDsnSummary;
-			document.getElementById("mdn-displayed-summary").value=this.cacheMdnDisplayedSummary;
-			document.getElementById("mdn-deleted-summary").value=this.cacheMdnDeletedSummary;
+			// Summary
+			notificationsWidgets.createNotificationsWidgetsSummaries(document.getElementById("SummaryNotifications"));
+			// details
+			notificationsWidgets.createNotificationsWidgetsDetails(document.getElementById("detailNotifications"));
 		} else {
 			msgHdrViewOverlay.DSNBox.collapsed = true;
-			document.getElementById("dsn-summary").value="";
-			document.getElementById("mdn-displayed-summary").value="";
-			document.getElementById("mdn-deleted-summary").value="";
-		}
-
-		// Recipients (To)
-
-		var aGrid = document.getElementById("detailDSN");
-		var aRows = document.getElementById("rowsDSN");
-		if (aRows != null) {
-			// remove old Rows
-			while (aRows.firstChild)
-				aRows.removeChild(aRows.firstChild);
-			aGrid.removeChild(aRows);
-		}
-	
-		if (this.cacheDeliveredTo.length>0 && this.cacheCustomProperties) {
-			// create rows
-			aRows = document.createElement("rows");
-			aRows.setAttribute("id","rowsDSN");
-			aGrid.appendChild(aRows);
-			var dlveryArray=this.cacheCustomProperties.deliveredToArray;
-
-			for (var i =0 ; i < dlveryArray.length ; i++ ) {
-				// create row
-				var aRow = document.createElement("row");
-				aRows.appendChild(aRow);
-
-				var finalRecipient=dlveryArray[i].finalRecipient;
-				var flags=dlveryArray[i].flags;
-
-				// create labels
-				var labelAddress = document.createElement("label");
-				labelAddress.setAttribute("value",finalRecipient);
-				aRow.appendChild(labelAddress);
-
-				// create DSN hbox
-				var DsnHbox=document.createElement("hbox");
-				aRow.appendChild(DsnHbox);
-
-				// create MDN hbox
-				var MdnHbox=document.createElement("hbox");
-				aRow.appendChild(MdnHbox);
-
-				if (enabledTimeout) {
-					// if user want to consider timeout
-					var class_timeout="dsn_timeout";
-					if (flags & dlveryArray[i].FLAG_TIMEOUT) { //timeout 
-						try {       var i18n_timeout=strbundle.GetStringFromName("dsn_timeout"); }
-						catch (e) { var i18n_timeout="time out" }
-						if (notificationsDisplayTextAndIcons & 0x2) { // if user want icon
-							// create image
-							var imageTimeOut = document.createElement("image");
-							imageTimeOut.setAttribute("class",class_timeout+"_img notifications_icones");
-							imageTimeOut.setAttribute("tooltiptext",i18n_timeout);
-							DsnHbox.appendChild(imageTimeOut);
-						}
-		
-						if (notificationsDisplayTextAndIcons & 0x1) { // if user want text
-							var labelTimeOut = document.createElement("label");
-							labelTimeOut.setAttribute("value",i18n_timeout);
-							labelTimeOut.setAttribute("class",class_timeout+" notifications_txt");
-							DsnHbox.appendChild(labelTimeOut);
-						}
-					}
-				}
-
-				// DSN
-				for (j=0 ; j < dlveryArray[i].dsnList.length ; j++) {
-					var actionValue=dlveryArray[i].dsnList[j].actionValue;
-					var messageId=dlveryArray[i].dsnList[j].messageId;
-
-					// Internationalization
-					try {       var i18n_actionValue=(strbundle).GetStringFromName("dsn_"+actionValue); }
-					catch (e) { var i18n_actionValue=actionValue; }
-
-					// command to display DSN message
-					var onClickCommand="msgHdrViewOverlay.openMessage('"+messageId+"');";
-
-					var classRecipient="dsn_"+actionValue;
-
-					if (notificationsDisplayTextAndIcons & 0x2) { // if user want icon
-						// create image
-						var imageStatus = document.createElement("image");
-						imageStatus.setAttribute("class",classRecipient+"_img notifications_icones");
-						imageStatus.setAttribute("tooltiptext",i18n_actionValue);
-						if (messageId.length>0)
-							imageStatus.setAttribute("onclick",onClickCommand);
-						DsnHbox.appendChild(imageStatus);
-					}
-	
-					if (notificationsDisplayTextAndIcons & 0x1) { // if user want text
-						var labelStatus = document.createElement("label");
-						labelStatus.setAttribute("value",i18n_actionValue);
-						if (messageId.length>0)
-							labelStatus.setAttribute("onclick",onClickCommand);
-						labelStatus.setAttribute("class",classRecipient+" notifications_txt");
-						DsnHbox.appendChild(labelStatus);
-					}
-				}
-				// MDN
-				for (j=0 ; j < dlveryArray[i].mdnList.length ; j++) {
-					var dispositionType=dlveryArray[i].mdnList[j].dispositionType;
-					var messageId=dlveryArray[i].mdnList[j].messageId;
-
-					// Internationalization
-					try {       var i18n_dispositionType=(strbundle).GetStringFromName("mdn_"+dispositionType); }
-					catch (e) { var i18n_dispositionType=dispositionType; }
-
-					// command to display MDN message
-					var onClickCommand="msgHdrViewOverlay.openMessage('"+messageId+"');";
-
-					var classRecipient="mdn_"+dispositionType;
-
-					if (notificationsDisplayTextAndIcons & 0x2) { // if user want icon
-						// create image
-						var imageStatus = document.createElement("image");
-						imageStatus.setAttribute("class",classRecipient+"_img notifications_icones");
-						imageStatus.setAttribute("tooltiptext",i18n_dispositionType);
-						if (messageId.length>0)
-							imageStatus.setAttribute("onclick",onClickCommand);
-						MdnHbox.appendChild(imageStatus);
-					}
-	
-					if (notificationsDisplayTextAndIcons & 0x1) { // if user want text
-						var labelStatus = document.createElement("label");
-						labelStatus.setAttribute("value",i18n_dispositionType);
-						if (messageId.length>0)
-							labelStatus.setAttribute("onclick",onClickCommand);
-						labelStatus.setAttribute("class",classRecipient+" notifications_txt");
-						MdnHbox.appendChild(labelStatus);
-					}
-				}
-			}
-
-			// change color for Summary
-			var classT= this.cacheStatus;
-			if (enabledTimeout) {
-				// if user want to consider timeout
-				if (parseInt(this.cacheFlags) & this.cacheCustomProperties.FLAG_TIMEOUT) //timeout
-					classT="timeout";
-			}
-			document.getElementById("dsn-summary").setAttribute("class",classT+" collapsedHeaderValue plain");
-		}
-	},
-
-	/**
-		Open a window to display a message
-		@param {string} messageId message to display
-	*/
-	openMessage: function (messageId) {
-		SetBusyCursor(window, true);
-		// read user preferences
-		var includeAllAccounts=services.preferences.getBoolPref(services.extensionKey+".search_original_msgid.include_all_accounts");
-		var includeTrashFolders=services.preferences.getBoolPref(services.extensionKey+".search_original_msgid.include_trash_folders");
-	
-		var findMsg = new findMsgDb(GetFirstSelectedMsgFolder().rootFolder);
-		findMsg.includeSubFolders(true);
-		findMsg.includeAllAccounts(includeAllAccounts);
-		findMsg.includeTrashFolders(includeTrashFolders);
-		var msgDBHdrFound=findMsg.searchByMsgId(messageId);
-	
-		if (msgDBHdrFound) {
-			// message found
-			var folderUri = msgDBHdrFound.folder.URI;
-			var messageUri = msgDBHdrFound.folder.getUriForMsg(msgDBHdrFound);
-			window.openDialog("chrome://messenger/content/messageWindow.xul", "_blank","all,chrome,dialog=no,status,toolbar", messageUri, folderUri, null);
-			SetBusyCursor(window, false);
-		}
-		else {
-			try {       var i18n_error=strbundle.GetStringFromName("message_not_found"); }
-			catch (e) { var i18n_error="" }
-			SetBusyCursor(window, false);
-			alert(i18n_error);
+			notificationsWidgets.removeChilds(document.getElementById("SummaryNotifications"));
+			notificationsWidgets.removeChilds(document.getElementById("detailNotifications"));
 		}
 	}
 }

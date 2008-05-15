@@ -40,9 +40,6 @@
 <!ENTITY colMDNDeleted "Effacé">
 <!ENTITY colMDNDeletedTooltip "Cliquez pour trier par notifications (effacé)">
 <!ENTITY contextMenuLabel "Visualiser les notifications">
-<!ENTITY headerView.labelDSN "Délivré">
-<!ENTITY headerView.labelMDNDisplayed "Affiché">
-<!ENTITY headerView.labelMDNDeleted "Effacé">
 <!ENTITY PrefsDialog.generalities "Généralités">
 <!ENTITY PrefsDialog.groupBoxtimeOut "Délais de livraison">
 <!ENTITY PrefsDialog.labelconsiderTimeout "Prendre en considération le délais de livraison">
@@ -51,15 +48,15 @@
 <!ENTITY PrefsDialog.markRead "Marquer comme lu">
 <!ENTITY PrefsDialog.moveNotification "Ajouter la notification dans le fil du message d'origine">
 <!ENTITY PrefsDialog.display "Affichage">
-<!ENTITY PrefsDialog.groupBoxHdrView "En-têtes">
-<!ENTITY PrefsDialog.groupBoxHdrView.notificationsDisplayTextAndIcons "Afficher les notifications avec">
-<!ENTITY PrefsDialog.groupBoxHdrView.textOnly "Texte seulement">
-<!ENTITY PrefsDialog.groupBoxHdrView.iconOnly "Icones seulement">
-<!ENTITY PrefsDialog.groupBoxHdrView.textAndIcon "Texte et icones">
-<!ENTITY PrefsDialog.groupBoxHdrView.displayColumns "Affichage des colonnes">
-<!ENTITY PrefsDialog.groupBoxHdrView.columnDelivered "Messages délivrés">
-<!ENTITY PrefsDialog.groupBoxHdrView.columnDisplayed "Messages affichés">
-<!ENTITY PrefsDialog.groupBoxHdrView.columnDeleted "Messages effacés">
-
+<!ENTITY PrefsDialog.display.notificationsDisplayTextAndIcons "Afficher les notifications avec">
+<!ENTITY PrefsDialog.display.textOnly "Texte seulement">
+<!ENTITY PrefsDialog.display.iconOnly "Icones seulement">
+<!ENTITY PrefsDialog.display.textAndIcon "Texte et icones">
+<!ENTITY PrefsDialog.display.displayColumns "Affichage des colonnes">
+<!ENTITY PrefsDialog.display.columnDelivered "Messages délivrés">
+<!ENTITY PrefsDialog.display.columnDisplayed "Messages affichés">
+<!ENTITY PrefsDialog.display.columnDeleted "Messages effacés">
+<!ENTITY PrefsDialog.display.showOnHeaderView "Affichage des notifications avec les en-têtes des messages">
+<!ENTITY windowDetailNotifications.title "Notifications">
 
 

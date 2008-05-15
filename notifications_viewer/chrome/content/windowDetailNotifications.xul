@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
      -  Version: MPL 1.1/GPL 2.0/LGPL 2.1
      - 
@@ -33,31 +34,29 @@
      - 
      -  ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY colDSN "Delivered">
-<!ENTITY colDSNTooltip "Click to sort by delivery notifications">
-<!ENTITY colMDNDisplayed "Displayed">
-<!ENTITY colMDNDisplayedTooltip "Click to sort by notifications (displayed)">
-<!ENTITY colMDNDeleted "Deleted">
-<!ENTITY colMDNDeletedTooltip "Click to sort by notifications (deleted)">
-<!ENTITY contextMenuLabel "View notifications">
-<!ENTITY PrefsDialog.generalities "Generalities">
-<!ENTITY PrefsDialog.groupBoxtimeOut "Delivery deadlines">
-<!ENTITY PrefsDialog.labelconsiderTimeout "Consider the delivery deadlines">
-<!ENTITY PrefsDialog.timeOut "Time (hours)">
-<!ENTITY PrefsDialog.groupBoxDeliveryNotification "Notification Messages">
-<!ENTITY PrefsDialog.markRead "Mark read">
-<!ENTITY PrefsDialog.moveNotification "Add the notification in the thread of the original message">
-<!ENTITY PrefsDialog.display "Display">
-<!ENTITY PrefsDialog.display.notificationsDisplayTextAndIcons "Display notifications with">
-<!ENTITY PrefsDialog.display.textOnly "Text only">
-<!ENTITY PrefsDialog.display.iconOnly "Icons only">
-<!ENTITY PrefsDialog.display.textAndIcon "Text and icons">
-<!ENTITY PrefsDialog.display.displayColumns "Columns displayed">
-<!ENTITY PrefsDialog.display.columnDelivered "Delivered messages">
-<!ENTITY PrefsDialog.display.columnDisplayed "Displayed messages">
-<!ENTITY PrefsDialog.display.columnDeleted "Deleted messages">
-<!ENTITY PrefsDialog.display.showOnHeaderView "Display notifications in the extended header view">
-<!ENTITY windowDetailNotifications.title "Notifications">
+<!DOCTYPE overlay SYSTEM "chrome://notifications_viewer/locale/default.dtd" >
+<?xml-stylesheet href="chrome://notifications_viewer/skin/default.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 
+<window id="windowDetailNotifications"
+	title="&windowDetailNotifications.title;"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	persist="screenX screenY width height" onload="displayNotifications.onload();">
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/windowDetailNotifications.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/misc.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/findMsgDb.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/customProperties.js" />
+	<vbox flex="1">
+		<hbox id="SummaryNotifications">
+			<!-- here, DSN and MDN summaries -->
+		</hbox>
+		<grid id="detailNotifications" flex="1" class="nViewerOverflow" style="border: solid 1px;">
+			<columns>
+			</columns>
+			<!-- here, rows when DSN and MDN are present -->
+		</grid>
+	</vbox>
+</window>
 
 
