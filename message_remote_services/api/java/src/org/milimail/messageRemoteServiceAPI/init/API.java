@@ -43,7 +43,9 @@ public class API {
 
 	public static ServiceCreator init() {
 		String[] args = null;
-		ORB orb = ORB.init(args, null);
+		java.util.Properties p = new java.util.Properties();
+		p.setProperty("com.sun.CORBA.codeset.charsets", "0x05010001"); // UTF-8
+		ORB orb = ORB.init(args, p);
 		
 		return new ServiceCreator(orb);
 	}
