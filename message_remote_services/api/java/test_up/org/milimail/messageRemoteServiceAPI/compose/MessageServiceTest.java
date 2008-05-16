@@ -201,7 +201,44 @@ public class MessageServiceTest extends TestCase {
 
 		
 		composeService.sendMessage(account, message, messageListener);
-		
 
+	}
+	
+	public void testSendMessageWithMDNRequested() throws Exception {
+		Account[] accounts = accountService.GetAllAccounts();
+		
+		Account account = accounts[1];
+		assertNotNull(account);
+
+		Message message = new Message();
+		message.setSubject("Subject from API, With MDN Requested");
+		message.setBody("body from API");	
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setMDNReadRequested(true);
+		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	public void testSendMessageWithDSNRequested() throws Exception {
+		Account[] accounts = accountService.GetAllAccounts();
+		
+		Account account = accounts[1];
+		assertNotNull(account);
+
+		Message message = new Message();
+		message.setSubject("Subject from API, With MDN Requested");
+		message.setBody("body from API");	
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
 	}
 }

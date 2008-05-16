@@ -38,6 +38,7 @@ package org.milimail.messageRemoteServiceAPI.compose;
 
 import java.util.UUID;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessage;
+import org.milimail.messageRemoteServiceAPI.stubs.CNotification;
 import org.milimail.messageRemoteServiceAPI.stubs.CSecurity;
 import org.milimail.messageRemoteServiceAPI.stubs.Header;
 
@@ -53,6 +54,7 @@ public class Message {
 		message.recipients_bcc = new String[0];
 		message.uuid = UUID.randomUUID().toString();
 		message.security = new CSecurity();
+		message.notification = new CNotification();
 		message.security.isCrypted = false;
 		message.security.isSigned = false;
 		message.p_headers = new Header[0];
@@ -117,8 +119,12 @@ public class Message {
 	}
 	
 	public void setSecurity(Security security){
-		message.security.isCrypted = security.isCrypted;
-		message.security.isSigned = security.isSigned;
+		message.security.isCrypted = security.isCrypted();
+		message.security.isSigned = security.isSigned();
+	}
+	
+	public Security getSecurity(){
+		return new Security(message.security.isSigned, message.security.isCrypted);
 	}
 	
 	public void setHeaders(Header[] headers){
@@ -129,5 +135,14 @@ public class Message {
 	
 	public Header[] getHeaders(){
 		return message.p_headers;
+	}
+	
+	public void setNotification(Notification notification){
+		message.notification.isMDNReadRequested = notification.isMDNReadRequested();
+		message.notification.isDSNRequested = notification.isDSNRequested();
+	}
+	
+	public Notification getNotification(){
+		return new Notification(message.notification.isMDNReadRequested, message.notification.isMDNReadRequested);
 	}
 }

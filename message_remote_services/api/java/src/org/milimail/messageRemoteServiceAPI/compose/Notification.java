@@ -36,31 +36,31 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-public class Security {
-	private boolean isSigned;
-	private boolean isCrypted;
+public class Notification {
+	private boolean isMDNReadRequested;
+	private boolean isDSNRequested;
 	
-	public Security() {
-		isSigned = false;
-		isCrypted = false;
-	}
-	
-	public boolean isSigned() {
-		return isSigned;
-	}
-	public void setSigned(boolean isSigned) {
-		this.isSigned = isSigned;
-	}
-	public boolean isCrypted() {
-		return isCrypted;
-	}
-	public void setCrypted(boolean isCrypted) {
-		this.isCrypted = isCrypted;
-	}
-
-	public Security(boolean isSigned, boolean isCrypted) {
+	public Notification(boolean isMDNReadRequested, boolean isDSNRequested) {
 		super();
-		this.isSigned = isSigned;
-		this.isCrypted = isCrypted;
+		this.isMDNReadRequested = isMDNReadRequested;
+		this.isDSNRequested = isDSNRequested;
+	}
+	
+	public Notification(){
+		this.isDSNRequested = false;
+		this.isMDNReadRequested = false;
+	}
+	
+	public boolean isMDNReadRequested() {
+		return isMDNReadRequested;
+	}
+	public void setMDNReadRequested(boolean isMDNReadRequested) {
+		this.isMDNReadRequested = isMDNReadRequested;
+	}
+	public boolean isDSNRequested() {
+		return isDSNRequested;
+	}
+	public void setDSNRequested(boolean isDSNRequested) {
+		this.isDSNRequested = isDSNRequested;
 	}
 }
