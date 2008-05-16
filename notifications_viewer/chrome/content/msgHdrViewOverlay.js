@@ -47,8 +47,8 @@
 function ToggleDSNHeaderView() {
 	var toggleDSNHeaderViewClosed=document.getElementById("toggleDSNHeaderViewClosed");
 	var toggleDSNHeaderViewOpened=document.getElementById("toggleDSNHeaderViewOpened");
-	var detailDSN=document.getElementById("detailNotifications");
-	detailDSN.collapsed=toggleDSNHeaderViewClosed.collapsed;
+	var detailNotifications=document.getElementById("detailNotifications");
+	detailNotifications.collapsed=toggleDSNHeaderViewClosed.collapsed;
 	toggleDSNHeaderViewOpened.collapsed=toggleDSNHeaderViewClosed.collapsed;
 	toggleDSNHeaderViewClosed.collapsed=!toggleDSNHeaderViewClosed.collapsed;
 }

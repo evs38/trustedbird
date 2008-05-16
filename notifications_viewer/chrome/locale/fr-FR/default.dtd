@@ -56,7 +56,7 @@
 <!ENTITY PrefsDialog.display.columnDelivered "Messages délivrés">
 <!ENTITY PrefsDialog.display.columnDisplayed "Messages affichés">
 <!ENTITY PrefsDialog.display.columnDeleted "Messages effacés">
-<!ENTITY PrefsDialog.display.showOnHeaderView "Affichage des notifications avec les en-têtes des messages">
+<!ENTITY PrefsDialog.display.showOnHeaderView "Afficher les notifications avec les en-têtes du message">
 <!ENTITY windowDetailNotifications.title "Notifications">
 
 

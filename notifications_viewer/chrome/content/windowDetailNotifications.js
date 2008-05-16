@@ -222,7 +222,7 @@ var notificationsWidgets = {
 
 			if (this.viewBackgroundColor) {
 				// set background
-				if ((i)%2)
+				if (i%2)
 					var background="white";
 				else
 					var background="#D0D0D0";

@@ -111,15 +111,16 @@ treechildren::-moz-tree-row(good) {}
 }
 
 .notifications_icones{
-	margin: 2px 3px 5px 7px ;
+	margin: 2px 3px 2px 7px ;
 	cursor: pointer;
 }
 
 .notifications_icones_timeout{
-	margin: 2px 3px 5px 7px ;
+	margin: 2px 3px 2px 7px ;
 }
 
 .rowDetailNotifications{
+	height:20px;
 }
 
 /* final recipients and delivery reports */

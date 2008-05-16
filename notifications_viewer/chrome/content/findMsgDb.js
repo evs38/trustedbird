@@ -62,7 +62,7 @@
 	var message=findmessage.searchByMsgId("20080213131118.4DD991FF88&#64;mydomain.org");
 	if (message) alert("found : "+message.messageId+" "+message.subject);
 	</pre>
-	@version 0.9.1
+	@version 0.9.2
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@constructor
 	@param {nsIMsgFolder} startFolder start search in this folder
@@ -307,7 +307,9 @@ findMsgDb.prototype = {
 	searchInFolder: function (folder) {
 		// check type
 		if (typeof(folder)!="object") return null;
-		if (!folder instanceof nsIMsgFolder) return null;
+		try {
+			if (!folder instanceof nsIMsgFolder) return null; // FIXME fix when used in new window
+		} catch(e) {}
 
 		var msgHdr = null;
 		var msgDB = null;
@@ -346,41 +348,40 @@ findMsgDb.prototype = {
 			}
 		}
 
-
-
-	try {
-		msgDB = folder.getMsgDatabase(msgWindow);
-	} catch (ex) {
-		// update folder
 		try {
-			folder.updateFolder(msgWindow);
-			msgDB = folder.getMsgDatabase(msgWindow);
-		}
-		catch (ex) {
-			return null;
-		}
-	}
-
-	// search from message-id or message-key ?
-	switch (this.flags & this.FLAG_TYPE_SEARCH) {
-		case 0x0:
-			try { msgHdr = msgDB.getMsgHdrForMessageID(this.messageId); } catch(e) {}
-			break;
-		case 0x1:
-			try { msgHdr = msgDB.GetMsgHdrForKey(this.messageKey); } catch(e) {}
-			if (msgHdr) {
-				if (msgHdr.date==0 && msgHdr.messageSize==0) {
-					// this key exist in Database but this message is probably removed (or moved)
-					this.services.logSrv("findMsgDb - key exist in db but message probably removed - Key: "+this.messageKey);
-					return null;
-				}
+			msgDB = folder.getMsgDatabase(null);
+		} catch (ex) {
+			// update folder
+			try {
+				folder.startFolderLoading();
+				folder.updateFolder(null);
+				msgDB = folder.getMsgDatabase(null);
 			}
-			break;
-	}
-
-	if (msgHdr) return msgHdr;
-
-	return null;
+			catch (ex) {
+				return null;
+			}
+		}
+	
+		// search from message-id or message-key ?
+		switch (this.flags & this.FLAG_TYPE_SEARCH) {
+			case 0x0:
+				try { msgHdr = msgDB.getMsgHdrForMessageID(this.messageId); } catch(e) {}
+				break;
+			case 0x1:
+				try { msgHdr = msgDB.GetMsgHdrForKey(this.messageKey); } catch(e) {}
+				if (msgHdr) {
+					if (msgHdr.date==0 && msgHdr.messageSize==0) {
+						// this key exist in Database but this message is probably removed (or moved)
+						this.services.logSrv("findMsgDb - key exist in db but message probably removed - Key: "+this.messageKey);
+						return null;
+					}
+				}
+				break;
+		}
+	
+		if (msgHdr) return msgHdr;
+	
+		return null;
 	},
 
 	/**
