@@ -35,11 +35,12 @@ AC_ARG_WITH(mozilla-sdk,
     [  AC_MSG_ERROR([--with-mozilla-sdk=DIR is mandatory])])
 AC_SUBST(mozilla_sdk)
 
-CXXFLAGS="${CXXFLAGS=}"
 AC_MSG_CHECKING(whether to enable dsn)
 dsn_default="no"
-AC_ARG_ENABLE(dsn, [  --enable-dsn=[no/yes] turn on dsn
-                       [default=$dsn_default]],, enable_dsn=$dsn_default)
+AC_ARG_ENABLE(dsn, [  --enable-dsn		turn on dsn
+                       [default=$dsn_default]],
+                       [ case "$enableval" in yes|no) : ;; *) AC_MSG_ERROR(bad value for --enable-dsn must be yes or no or empty which means yes)                ;; esac ],
+                       enable_dsn=$dsn_default)
 
 if test "x$enable_dsn" = "xyes"; then
          CXXFLAGS="$CXXFLAGS -DDSN"
