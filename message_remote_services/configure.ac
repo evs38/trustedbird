@@ -35,5 +35,18 @@ AC_ARG_WITH(mozilla-sdk,
     [  AC_MSG_ERROR([--with-mozilla-sdk=DIR is mandatory])])
 AC_SUBST(mozilla_sdk)
 
+CXXFLAGS="${CXXFLAGS=}"
+AC_MSG_CHECKING(whether to enable dsn)
+dsn_default="no"
+AC_ARG_ENABLE(dsn, [  --enable-dsn=[no/yes] turn on dsn
+                       [default=$dsn_default]],, enable_dsn=$dsn_default)
+
+if test "x$enable_dsn" = "xyes"; then
+         CXXFLAGS="$CXXFLAGS -DDSN"
+AC_MSG_RESULT(yes)
+else
+AC_MSG_RESULT(no)
+fi
+
 AC_CONFIG_FILES([Makefile src/Makefile src/corba/Makefile src/xpcom/Makefile])
 AC_OUTPUT

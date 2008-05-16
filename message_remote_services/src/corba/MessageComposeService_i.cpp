@@ -106,18 +106,29 @@ void MessageComposeService_i::FillMsgComposeParams(
   nsCOMPtr<nsIMsgSMIMECompFields> mSMIMECompFields = do_CreateInstance(
       NS_MSGSMIMECOMPFIELDS_CONTRACTID, &rv);
 
-  // Sign message
+  //Sign message
   if (p_message.security.isSigned)
     mSMIMECompFields->SetSignMessage(PR_TRUE);
 
+  //Sign message
   if (p_message.security.isCrypted)
     mSMIMECompFields->SetRequireEncryptMessage(PR_TRUE);
 
   pMsgCompFields->SetSecurityInfo(mSMIMECompFields);
 
+  //MDN
+  if (p_message.notification.isMDNReadRequested)
+    pMsgCompFields->SetReturnReceipt(PR_TRUE);
+  
+#ifdef DSN
+  //DSN
+   if (p_message.notification.isDSNRequested)
+     pMsgCompFields->SetDSN(PR_TRUE);
+#endif
+   
   rv = pMsgComposeParams->SetComposeFields(pMsgCompFields);
   ENSURE_SUCCESS(rv,"Cannot SetComposeFields");
-  
+
 }
 
 void MessageComposeService_i::GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const Account& p_account) {

@@ -395,11 +395,28 @@ CSecurity::operator<<= (cdrStream &_n)
 }
 
 void
+CNotification::operator>>= (cdrStream &_n) const
+{
+  _n.marshalBoolean(isDSNRequested);
+  _n.marshalBoolean(isMDNReadRequested);
+
+}
+
+void
+CNotification::operator<<= (cdrStream &_n)
+{
+  isDSNRequested = _n.unmarshalBoolean();
+  isMDNReadRequested = _n.unmarshalBoolean();
+
+}
+
+void
 CMessage::operator>>= (cdrStream &_n) const
 {
   (const Addresses&) recipients_to >>= _n;
   (const Addresses&) recipients_cc >>= _n;
   (const Addresses&) recipients_bcc >>= _n;
+  (const CNotification&) notification >>= _n;
   _n.marshalString(subject,0);
   _n.marshalString(body,0);
   _n.marshalString(uuid,0);
@@ -414,6 +431,7 @@ CMessage::operator<<= (cdrStream &_n)
   (Addresses&)recipients_to <<= _n;
   (Addresses&)recipients_cc <<= _n;
   (Addresses&)recipients_bcc <<= _n;
+  (CNotification&)notification <<= _n;
   subject = _n.unmarshalString(0);
   body = _n.unmarshalString(0);
   uuid = _n.unmarshalString(0);

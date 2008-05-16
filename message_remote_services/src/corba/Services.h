@@ -581,6 +581,24 @@ typedef CSecurity::_var_type CSecurity_var;
 
 typedef CSecurity& CSecurity_out;
 
+struct CNotification {
+  typedef _CORBA_ConstrType_Fix_Var<CNotification> _var_type;
+
+  
+  ::CORBA::Boolean isDSNRequested;
+
+  ::CORBA::Boolean isMDNReadRequested;
+
+
+
+  void operator>>= (cdrStream &) const;
+  void operator<<= (cdrStream &);
+};
+
+typedef CNotification::_var_type CNotification_var;
+
+typedef CNotification& CNotification_out;
+
 struct CMessage {
   typedef _CORBA_ConstrType_Variable_Var<CMessage> _var_type;
 
@@ -590,6 +608,8 @@ struct CMessage {
   Addresses recipients_cc;
 
   Addresses recipients_bcc;
+
+  CNotification notification;
 
   ::CORBA::String_member subject;
 

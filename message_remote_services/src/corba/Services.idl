@@ -66,15 +66,22 @@ struct Header {
 typedef sequence<Header> Headers;
 
 typedef sequence<string> Addresses;
+
 struct CSecurity {
 	boolean isSigned;
 	boolean isCrypted;
+};
+
+struct CNotification {
+	boolean isDSNRequested;
+	boolean isMDNReadRequested;
 };
 
 struct CMessage {
 	Addresses recipients_to;
 	Addresses recipients_cc;
 	Addresses recipients_bcc;
+	CNotification notification;
 	string subject;
 	string body;
 	string uuid;
