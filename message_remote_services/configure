@@ -1475,7 +1475,7 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-dsn=no/yes turn on dsn
+  --enable-dsn		turn on dsn
                        default=$dsn_default
 
 Optional Packages:
@@ -19392,13 +19392,14 @@ fi
 
 
 
-CXXFLAGS="${CXXFLAGS=}"
 { echo "$as_me:$LINENO: checking whether to enable dsn" >&5
 echo $ECHO_N "checking whether to enable dsn... $ECHO_C" >&6; }
 dsn_default="no"
 # Check whether --enable-dsn was given.
 if test "${enable_dsn+set}" = set; then
-  enableval=$enable_dsn;
+  enableval=$enable_dsn;  case "$enableval" in yes|no) : ;; *) { { echo "$as_me:$LINENO: error: bad value for --enable-dsn must be yes or no or empty which means yes" >&5
+echo "$as_me: error: bad value for --enable-dsn must be yes or no or empty which means yes" >&2;}
+   { (exit 1); exit 1; }; }                ;; esac
 else
   enable_dsn=$dsn_default
 fi
