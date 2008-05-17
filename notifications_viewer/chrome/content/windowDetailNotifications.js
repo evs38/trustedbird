@@ -181,13 +181,12 @@ var notificationsWidgets = {
 			var headerView_labelMDNDeleted="Deleted";
 		}
 
-		// create labels
-		parentWidget.appendChild(this.createLabel("dsnHeader",headerView_labelDSN,"headerName"));
-		parentWidget.appendChild(this.createLabel("dsn-summary",this.cacheDsnSummary,"collapsedHeaderValue plain"));
-		parentWidget.appendChild(this.createLabel("mdnDisplayedHeader","  "+headerView_labelMDNDisplayed,"headerName"));
-		parentWidget.appendChild(this.createLabel("mdn-displayed-summary",this.cacheMdnDisplayedSummary,"collapsedHeaderValue plain"));
-		parentWidget.appendChild(this.createLabel("mdnDeletedHeader","  "+headerView_labelMDNDeleted,"headerName"));
-		parentWidget.appendChild(this.createLabel("mdn-deleted-summary",this.cacheMdnDeletedSummary,"collapsedHeaderValue plain"));
+		var dsnHbox=document.createElement("hbox");
+		parentWidget.appendChild(dsnHbox);
+		var mdnDisplayedHbox=document.createElement("hbox");
+		parentWidget.appendChild(mdnDisplayedHbox);
+		var mdnDeletedHbox=document.createElement("hbox");
+		parentWidget.appendChild(mdnDeletedHbox);
 
 		// change color for DSN Summary
 		var classT= this.cacheStatus;
@@ -196,7 +195,21 @@ var notificationsWidgets = {
 			if (parseInt(this.cacheFlags) & this.cacheCustomProperties.FLAG_TIMEOUT) //timeout
 				classT="timeout";
 		}
-		document.getElementById("dsn-summary").setAttribute("class",classT+" collapsedHeaderValue plain");
+
+		// create labels
+		if (this.cacheDsnSummary.length>0) {
+			dsnHbox.appendChild(this.createLabel("dsnHeader",headerView_labelDSN+":","nvHeaderName headerName"));
+			dsnHbox.appendChild(this.createLabel("dsn-summary",this.cacheDsnSummary,"nvHeaderValue headerValue"));
+			document.getElementById("dsn-summary").setAttribute("class",classT+" nvHeaderValue headerValue");
+		}
+		if (this.cacheMdnDisplayedSummary.length>0) {
+			mdnDisplayedHbox.appendChild(this.createLabel("mdnDisplayedHeader",headerView_labelMDNDisplayed+":","nvHeaderName headerName"));
+			mdnDisplayedHbox.appendChild(this.createLabel("mdn-displayed-summary",this.cacheMdnDisplayedSummary,"nvHeaderValue headerValue"));
+		}
+		if (this.cacheMdnDeletedSummary.length>0) {
+			mdnDeletedHbox.appendChild(this.createLabel("mdnDeletedHeader",headerView_labelMDNDeleted+":","nvHeaderName headerName"));
+			mdnDeletedHbox.appendChild(this.createLabel("mdn-deleted-summary",this.cacheMdnDeletedSummary,"nvHeaderValue headerValue"));
+		}
 	},
 
 	/**
