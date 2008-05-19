@@ -54,7 +54,7 @@ var displayNotifications = {
 		try {
 			var hdr=gDBView.hdrForFirstSelectedMessage;
 			if (hdr)
-				window.openDialog("chrome://notifications_viewer/content/windowDetailNotifications.xul","windowDetailNotifications","chrome,modal",hdr);
+				window.openDialog("chrome://notifications_viewer/content/windowDetailNotifications.xul","windowDetailNotifications","chrome,modal,resizable",hdr);
 		} catch(e) {}
 	},
 

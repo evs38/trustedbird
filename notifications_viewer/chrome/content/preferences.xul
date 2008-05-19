@@ -42,8 +42,7 @@
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	buttons="accept, cancel"
 	onload=" prefDialogBox.initPrefDialog();"
-	ondialogaccept="return prefDialogBox.savePrefs();"
-	width="500" height="350">
+	ondialogaccept="return prefDialogBox.savePrefs();">
 	
 	<stringbundleset id="strbundles">
 		<stringbundle id="prefStr" src="chrome://notifications_viewer/locale/default.properties"/>
