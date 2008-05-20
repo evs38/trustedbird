@@ -78,7 +78,7 @@ pref("extensions.notifications_viewer.parse_mdn",true);
 
 
 // show/hide notifications on headerView
-pref("extensions.notifications_viewer.display_headerview",true);
+pref("extensions.notifications_viewer.display_headerview",false);
 
 // Ask again
 pref("extensions.notifications_viewer.ask_again.mail_incorporate_return_receipt",true);

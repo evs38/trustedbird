@@ -59,6 +59,13 @@ function Services() {
 	this.modeDebug=this.preferences.getBoolPref(this.extensionKey+".debug");
 	/** @type nsIConsoleService */
 	this.consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+
+	/** Internationalization @type  nsIStringBundle */
+	this.strbundle=null;
+	/** Internationalization @type nsIStringBundleService */
+	this.strBundleService=Components.classes["@mozilla.org/intl/stringbundle;1"].getService().QueryInterface(Components.interfaces.nsIStringBundleService);
+	if (this.strBundleService)
+		this.strbundle=this.strBundleService.createBundle("chrome://notifications_viewer/locale/default.properties");
 }
 
 Services.prototype = {
@@ -104,13 +111,54 @@ Services.prototype = {
 	{
 		var date=new Date();
 		return date.toGMTString();
+	},
+
+	/**
+		Translate (language)
+		@param {string} str text to translate
+		@return {string}
+	*/
+	tr: function (str)
+	{
+		try {
+			return this.strbundle.GetStringFromName(str);
+		} catch(e) {
+			return "";
+		}
 	}
 }
 
 
+/**
+	@class The messageBox class provides a modal dialog with a short message
+	@author Daniel Rocher / Etat francais Ministere de la Defense
+*/
+var messageBox = {
+	/**
+		Opens a question message box with the title sTitle and the text sText
+		@param {string} sTitle title
+		@param {string} sText text
+		@param {string} checkboxLabel Checkbox label
+		@param {Object} check
+		@return {number} 0=yes, 1=No
+	*/
+	question: function (sTitle,sText,checkboxLabel,check) {
+		var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+		var flags = prompts.BUTTON_TITLE_YES      * prompts.BUTTON_POS_0 +
+			prompts.BUTTON_TITLE_NO           * prompts.BUTTON_POS_1;
+		return prompts.confirmEx(window,sTitle ,sText,flags,null,null,null,checkboxLabel, check);
+	},
 
-
-
+	/**
+		Opens a warning message box with the title sTitle and the text sText
+		@param {string} sTitle title
+		@param {string} sText text
+	*/
+	warning:  function (sTitle,sText) {
+		var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+		prompts.alert(window,sTitle,sText);
+	}
+}
 
 
 
@@ -189,7 +237,7 @@ var prefDialogBox = {
 		var timeOutValue=parseInt(document.getElementById("timeOut").value);
 
 		if (isNaN(timeOutValue) || timeOutValue<1 || timeOutValue>3600) {
-			alert(strbundle.getString("invalidTimeOutValue"));
+			messageBox.warning(this.services.extensionName,strbundle.getString("invalidTimeOutValue"));
 			return false;
 		}
 

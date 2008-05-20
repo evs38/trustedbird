@@ -86,8 +86,6 @@ var notificationsWidgets = {
 	header : null,
 	cacheCustomProperties : null,
 	services : null,
-	strBundleService : null,
-	strbundle : null,
 	cacheDeliveredTo : "",
 	cacheStatus : "",
 	cacheDsnSummary : "",
@@ -121,11 +119,6 @@ var notificationsWidgets = {
 		this.cacheMdnDisplayedSummary=header.getStringProperty("x-nviewer-mdn-displayed-summary");
 		this.cacheMdnDeletedSummary=header.getStringProperty("x-nviewer-mdn-deleted-summary");
 		this.cacheCustomProperties=new customProperties(this.cacheDeliveredTo ,this.cacheStatus, this.cacheDsnSummary, this.cacheFlags,this.cacheMdnDisplayedSummary,this.cacheMdnDeletedSummary);
-
-		// Internationalization
-		this.strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService().QueryInterface(Components.interfaces.nsIStringBundleService);
-		if (this.strBundleService)
-			this.strbundle=this.strBundleService.createBundle("chrome://notifications_viewer/locale/default.properties");
 
 		// read user preferences
 		this.enabledTimeout=this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
@@ -169,17 +162,9 @@ var notificationsWidgets = {
 		// remove childs
 		this.removeChilds(parentWidget);
 
-		// Internationalization
-		try {
-			var headerView_labelDSN=this.strbundle.GetStringFromName("headerView_labelDSN");
-			var headerView_labelMDNDisplayed=this.strbundle.GetStringFromName("headerView_labelMDNDisplayed");
-			var headerView_labelMDNDeleted=this.strbundle.GetStringFromName("headerView_labelMDNDeleted");
-		}
-		catch (e) {
-			var headerView_labelDSN="Delivered";
-			var headerView_labelMDNDisplayed="Displayed";
-			var headerView_labelMDNDeleted="Deleted";
-		}
+		var headerView_labelDSN=this.services.tr("headerView_labelDSN");
+		var headerView_labelMDNDisplayed=this.services.tr("headerView_labelMDNDisplayed");
+		var headerView_labelMDNDeleted=this.services.tr("headerView_labelMDNDeleted");
 
 		var dsnHbox=document.createElement("hbox");
 		parentWidget.appendChild(dsnHbox);
@@ -262,8 +247,8 @@ var notificationsWidgets = {
 				// if user want to consider timeout
 				var class_timeout="dsn_timeout";
 				if (flags & dlveryArray[i].FLAG_TIMEOUT) { //timeout 
-					try {       var i18n_timeout=this.strbundle.GetStringFromName("dsn_timeout"); }
-					catch (e) { var i18n_timeout="time out" }
+					var i18n_timeout=this.services.tr("dsn_timeout");
+
 					if (this.notificationsDisplayTextAndIcons & 0x2) { // if user want icon
 						// create image
 						var imageTimeOut = document.createElement("image");
@@ -283,9 +268,8 @@ var notificationsWidgets = {
 				var actionValue=dlveryArray[i].dsnList[j].actionValue;
 				var messageId=dlveryArray[i].dsnList[j].messageId;
 	
-				// Internationalization
-				try {       var i18n_actionValue=this.strbundle.GetStringFromName("dsn_"+actionValue); }
-				catch (e) { var i18n_actionValue=actionValue; }
+				var i18n_actionValue=this.services.tr("dsn_"+actionValue);
+				if (i18n_actionValue=="") i18n_actionValue=actionValue;
 	
 				// command to display DSN message
 				var onClickCommand="notificationsWidgets.openMessage('"+messageId+"');";
@@ -314,9 +298,8 @@ var notificationsWidgets = {
 				var dispositionType=dlveryArray[i].mdnList[j].dispositionType;
 				var messageId=dlveryArray[i].mdnList[j].messageId;
 	
-				// Internationalization
-				try {       var i18n_dispositionType=this.strbundle.GetStringFromName("mdn_"+dispositionType); }
-				catch (e) { var i18n_dispositionType=dispositionType; }
+				var i18n_dispositionType=this.services.tr("mdn_"+dispositionType);
+				if (i18n_dispositionType=="") i18n_dispositionType=dispositionType;
 	
 				// command to display MDN message
 				var onClickCommand="notificationsWidgets.openMessage('"+messageId+"');";
@@ -373,10 +356,8 @@ var notificationsWidgets = {
 			window.setCursor("auto");
 		}
 		else {
-			try {       var i18n_error=this.strbundle.GetStringFromName("message_not_found"); }
-			catch (e) { var i18n_error="" }
 			window.setCursor("auto");
-			alert(i18n_error);
+			messageBox.warning(this.services.tr("Error"),this.services.tr("message_not_found"));
 		}
 	}
 }
