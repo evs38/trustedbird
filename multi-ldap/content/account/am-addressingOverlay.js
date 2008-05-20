@@ -58,8 +58,8 @@ var bActiveDump = false;
 onInit = function onInitHook(aPageId, aServerId) 
 {
 	onInitOriginal();
-	displayTrace("onInit for Identity key='" + gIdentity.key + "' started.");
 	loadPreferences();
+	displayTrace("onInit for Identity key='" + gIdentity.key + "' started.");
 	setupUI();
 	if (gDirectories){
 		//update checkbox control with data from the new user
