@@ -136,16 +136,16 @@ var notificationsWidgets = {
 
 	/**
 		create label (XUL element)
-		@param {string} id
-		@param {string} value
-		@param {string} class
+		@param {string} lId
+		@param {string} lValue
+		@param {string} lClass
 		@return {Object} XUL element
 	*/
-	createLabel: function (id,value,class) {
+	createLabel: function (lId,lValue,lClass) {
 		var label=document.createElement("label");
-		if (id.length>0) label.setAttribute("id",id);
-		label.setAttribute("value",value);
-		if (class.length>0) label.setAttribute("class",class);
+		if (lId.length>0) label.setAttribute("id",lId);
+		label.setAttribute("value",lValue);
+		if (lClass.length>0) label.setAttribute("class",lClass);
 		return label;
 	},
 
@@ -164,7 +164,7 @@ var notificationsWidgets = {
 	*/
 	createNotificationsWidgetsSummaries: function (parentWidget) {
 		if (! this.header)
-			return null;
+			return;
 
 		// remove childs
 		this.removeChilds(parentWidget);
