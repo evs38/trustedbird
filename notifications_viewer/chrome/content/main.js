@@ -62,6 +62,26 @@ function checkPref() {
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-tags");
 	srv.preferences.setCharPref(srv.extensionKey+".version",srv.extensionVersion);
 	srv.logSrv("checkPref()");
+
+	// Fix incompatibility with thunderbird "Move message to Sent Folder"
+	var key="mail.incorporate.return_receipt";
+
+	if (srv.preferences.intPrefExist(key)) {
+		if (srv.preferences.getIntPref(key)!=0 &&
+				 srv.preferences.getBoolPref(srv.extensionKey+".ask_again.mail_incorporate_return_receipt")) {
+
+			var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+			var check = {value: false};
+			var flags = prompts.BUTTON_TITLE_YES      * prompts.BUTTON_POS_0 +
+				prompts.BUTTON_TITLE_NO           * prompts.BUTTON_POS_1;
+			var result = prompts.confirmEx(window,srv.extensionName , "Your Thunderbird configuration is incompatible with this add-on, do you want to fix it (change 'mail.incorporate.return_receipt' value in your config) ?",flags,null,null,null,"Do not ask me again", check);
+
+			// fix it
+			if (result==0) srv.preferences.setIntPref(key,0);
+			// ask again ?
+			srv.preferences.setBoolPref(srv.extensionKey+".ask_again.mail_incorporate_return_receipt",!check.value);
+		}
+	}
 }
 
 
