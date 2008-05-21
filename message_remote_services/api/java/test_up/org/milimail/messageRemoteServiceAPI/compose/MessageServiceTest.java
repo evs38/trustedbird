@@ -36,76 +36,36 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-import junit.framework.TestCase;
-
-import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
-import org.milimail.messageRemoteServiceAPI.init.API;
-import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
-import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServantConsole;
-import org.milimail.messageRemoteServiceAPI.stubs.Account;
+import org.milimail.messageRemoteServiceAPI.stubs.Attachment;
 import org.milimail.messageRemoteServiceAPI.stubs.Header;
-import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
+import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 
-public class MessageServiceTest extends TestCase {
-	private MessageComposeServiceProxy composeService;
-	private AccountServiceProxy accountService;
-	private MessageSendListener messageListener;
-
-	protected void setUp() throws Exception {
-		ServiceCreator serviceCreator = API.init();
-		composeService = serviceCreator.createMessageComposeService();
-		accountService = serviceCreator.createAccountService();
-		messageListener = serviceCreator.createMessageSendListener(new MessageSendListenerServantConsole());
-	}
-
+public class MessageServiceTest extends AbstractMessageServiceTest {
+	
 	public void testSendMessage() throws Exception{
-		Account[] accounts = null;
-		
-		accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		message.setSubject("Subject from API");
 		message.setBody("body from API");
 
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
-
 		
 		composeService.sendMessage(account, message, messageListener);	
-
 	}
 	
 	public void testSendMessageWithSpecialCharacters() throws Exception{
-		Account[] accounts = null;
-		
-		accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		message.setSubject("Subject from API + é");
 		message.setBody("body from API + é");
 
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
-
 		
 		composeService.sendMessage(account, message, messageListener);	
 
 	}
 	
 	public void testSendMessageSigned() throws Exception{
-		Account[] accounts = null;
-		
-		accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		
 		Security security = new Security();
@@ -118,20 +78,10 @@ public class MessageServiceTest extends TestCase {
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
 
-		
 		composeService.sendMessage(account, message, messageListener);
-		
-
 	}
 	
 	public void testSendMessageCrypted() throws Exception{
-		Account[] accounts = null;
-		
-		accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		
 		Security security = new Security();
@@ -144,20 +94,11 @@ public class MessageServiceTest extends TestCase {
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
 
-		
 		composeService.sendMessage(account, message, messageListener);
 		
-
 	}
 	
 	public void testSendMessageCryptedAndSigned() throws Exception{
-		Account[] accounts = null;
-		
-		accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		
 		Security security = new Security();
@@ -171,9 +112,7 @@ public class MessageServiceTest extends TestCase {
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
 
-		
-		composeService.sendMessage(account, message, messageListener);
-		
+		composeService.sendMessage(account, message, messageListener);		
 
 	}
 	
@@ -186,11 +125,6 @@ public class MessageServiceTest extends TestCase {
 		headers[1].key = "X-MRS-TEST-2";
 		headers[1].value = "X-MRS-VALUE-2";
 		
-		Account[] accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		message.setSubject("Subject from API");
 		message.setBody("body from API");
@@ -198,18 +132,12 @@ public class MessageServiceTest extends TestCase {
 		
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
-
-		
+	
 		composeService.sendMessage(account, message, messageListener);
 
 	}
 	
 	public void testSendMessageWithMDNRequested() throws Exception {
-		Account[] accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		message.setSubject("Subject from API, With MDN Requested");
 		message.setBody("body from API");	
@@ -224,11 +152,6 @@ public class MessageServiceTest extends TestCase {
 	}
 	
 	public void testSendMessageWithDSNRequested() throws Exception {
-		Account[] accounts = accountService.GetAllAccounts();
-		
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		message.setSubject("Subject from API, With MDN Requested");
 		message.setBody("body from API");	
@@ -238,6 +161,40 @@ public class MessageServiceTest extends TestCase {
 		Notification notification = new Notification();
 		notification.setDSNRequested(true);
 		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	public void testSendMessageWithAttachment() throws InternalServerException  {
+		Message message = new Message();
+		message.setSubject("From Api With 1 Attachment");
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+		Attachment[] attachments = new Attachment[1];
+		attachments[0] = new Attachment();
+		attachments[0].dirPath = testPath;
+		attachments[0].fileName = "attachment1.txt";
+		attachments[0].mimeType = "text/plain";
+		message.setAttachments(attachments);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	public void testSendMessageWith2Attachments() throws InternalServerException  {
+		Message message = new Message();
+		message.setSubject("From Api With 2 Attachment");
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+		Attachment[] attachments = new Attachment[2];
+		attachments[0] = new Attachment();
+		attachments[0].dirPath = testPath;
+		attachments[0].fileName = "attachment1.txt";
+		attachments[0].mimeType = "text/plain";
+		attachments[1] = new Attachment();
+		attachments[1].dirPath = testPath;
+		attachments[1].fileName = "attachment2.txt";
+		attachments[1].mimeType = "text/plain";
+		message.setAttachments(attachments);
 		
 		composeService.sendMessage(account, message, messageListener);
 	}

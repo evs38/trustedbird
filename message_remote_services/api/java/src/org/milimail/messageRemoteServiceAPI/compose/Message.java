@@ -37,6 +37,8 @@
 package org.milimail.messageRemoteServiceAPI.compose;
 
 import java.util.UUID;
+
+import org.milimail.messageRemoteServiceAPI.stubs.Attachment;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessage;
 import org.milimail.messageRemoteServiceAPI.stubs.CNotification;
 import org.milimail.messageRemoteServiceAPI.stubs.CSecurity;
@@ -58,6 +60,7 @@ public class Message {
 		message.security.isCrypted = false;
 		message.security.isSigned = false;
 		message.p_headers = new Header[0];
+		message.p_attachments = new Attachment[0];
 	}
 	
 	public String[] getTo() {
@@ -144,5 +147,15 @@ public class Message {
 	
 	public Notification getNotification(){
 		return new Notification(message.notification.isMDNReadRequested, message.notification.isMDNReadRequested);
+	}
+	
+	public void setAttachments(Attachment[] attachments){
+		if (attachments == null) 
+			return;
+		message.p_attachments = attachments;
+	}
+	
+	public Attachment[] getAttachments(){
+		return message.p_attachments;
 	}
 }

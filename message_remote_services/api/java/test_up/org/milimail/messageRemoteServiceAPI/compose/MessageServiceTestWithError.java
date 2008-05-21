@@ -36,31 +36,13 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-import junit.framework.TestCase;
-
-import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
 import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
-import org.milimail.messageRemoteServiceAPI.init.API;
-import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
-import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.stubs.Account;
+import org.milimail.messageRemoteServiceAPI.stubs.Attachment;
 import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
-import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 
-public class MessageServiceTestWithError extends TestCase {
-	private MessageComposeServiceProxy composeService;
-	private AccountServiceProxy accountService;
-	private MessageSendListener messageListener;
+public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 
-	protected void setUp() throws Exception {
-		ServiceCreator serviceCreator = API.init();
-		composeService = serviceCreator.createMessageComposeService();
-		accountService = serviceCreator.createAccountService();
-		messageListener = serviceCreator.createMessageSendListener(new MessageSendListenerServantConsole());
-	}
-
-	
-	
 	public void testSendMessageWithoutSubjectAndBody() throws Exception {
 		Account[] accounts = accountService.GetAllAccounts();
 
@@ -74,7 +56,7 @@ public class MessageServiceTestWithError extends TestCase {
 		composeService.sendMessage(account, message, messageListener);
 	}
 
-	public void testSendMessageWithoutTo()  {
+	public void testSendMessageWithoutTo() {
 		Account[] accounts = null;
 		try {
 			accounts = accountService.GetAllAccounts();
@@ -91,62 +73,79 @@ public class MessageServiceTestWithError extends TestCase {
 		message.setSubject("Subject from API");
 		message.setBody("body from API");
 		boolean exceptionThrown = false;
-		
+
 		try {
 			composeService.sendMessage(account, message, messageListener);
 		} catch (InternalServerException e) {
 			System.out.println(e.cause);
-			exceptionThrown=true;
+			exceptionThrown = true;
 		}
 		
 		assertTrue(exceptionThrown);
 	}
-	
 
-	public void testSendMessageMalformedTo()  {
+	public void testSendMessageMalformedTo() {
 		boolean openComposeWindowOnError = false;
 		sendMessageOnError(openComposeWindowOnError);
 	}
 
-	
-	public void testSendMessageMalformedToAndOpenComposeWindow()  {
+	public void testSendMessageMalformedToAndOpenComposeWindow() {
 		boolean openComposeWindowOnError = true;
 		sendMessageOnError(openComposeWindowOnError);
 	}
 
-
-
+	
 	/**
 	 * @param openComposeWindowOnError
 	 */
 	private void sendMessageOnError(boolean openComposeWindowOnError) {
-		Account[] accounts = null;
-		try {
-			accounts = accountService.GetAllAccounts();
-		} catch (InternalServerException e) {
-			fail();
-		} catch (CommunicationException e) {
-			fail();
-		}
-
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		message.setSubject("Subject from API");
 
 		message.setBody("body from API");
 
-		String[] to = { "user1@test.milimail.org","user2test.milimail.org" };
+		Attachment[] attachments = new Attachment[1];
+		attachments[0] = new Attachment();
+		attachments[0].dirPath = "/tmp/";
+		attachments[0].fileName = "attachment.txt";
+		attachments[0].mimeType = "text/plain";
+		message.setAttachments(attachments);
+		
+		String[] to = { "user1@test.milimail.org", "user2test.milimail.org" };
 		message.setTo(to);
 		boolean exceptionThrown = false;
 		try {
-			composeService.sendMessage(account, message, messageListener, openComposeWindowOnError);
+			composeService.sendMessage(account, message, messageListener,
+					openComposeWindowOnError);
 		} catch (InternalServerException e) {
-			exceptionThrown=true;
+			exceptionThrown = true;
 			System.out.println(e.cause);
 		}
-		
+
 		assertTrue(exceptionThrown);
+	}
+
+	
+	public void testSendMessageWithAttachmentWithWrongPath()  {
+		Message message = new Message();
+		message.setSubject("From Api With 1 Attachment");
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+		Attachment[] attachments = new Attachment[1];
+		attachments[0] = new Attachment();
+		attachments[0].dirPath = "/wrongDirectory/";
+		attachments[0].fileName = "wrongFileName.txt";
+		attachments[0].mimeType = "text/plain";
+		message.setAttachments(attachments);
+		boolean exceptionThrowed = false;
+		
+		try {
+			composeService.sendMessage(account, message, messageListener);
+		} catch (InternalServerException e) {
+			System.out.println(e.cause);
+			exceptionThrowed = true;
+		}
+		
+		assertTrue(exceptionThrowed);
 	}
 }
