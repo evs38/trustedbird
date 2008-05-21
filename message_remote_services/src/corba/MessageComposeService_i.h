@@ -85,8 +85,11 @@ private:
      */
   void AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const Headers& headers);
   
+  void AddAttachment(nsIMsgCompFields * pMsgCompFields, const Attachments& attachments);
+  
+  PRBool IsFile(const Attachment& attachment);
+  
   nsCOMPtr<nsIServiceManager> svcMgr;
-
  
 };
 

@@ -411,6 +411,24 @@ CNotification::operator<<= (cdrStream &_n)
 }
 
 void
+Attachment::operator>>= (cdrStream &_n) const
+{
+  _n.marshalString(dirPath,0);
+  _n.marshalString(fileName,0);
+  _n.marshalString(mimeType,0);
+
+}
+
+void
+Attachment::operator<<= (cdrStream &_n)
+{
+  dirPath = _n.unmarshalString(0);
+  fileName = _n.unmarshalString(0);
+  mimeType = _n.unmarshalString(0);
+
+}
+
+void
 CMessage::operator>>= (cdrStream &_n) const
 {
   (const Addresses&) recipients_to >>= _n;
@@ -422,6 +440,7 @@ CMessage::operator>>= (cdrStream &_n) const
   _n.marshalString(uuid,0);
   (const CSecurity&) security >>= _n;
   (const Headers&) p_headers >>= _n;
+  (const Attachments&) p_attachments >>= _n;
 
 }
 
@@ -437,6 +456,7 @@ CMessage::operator<<= (cdrStream &_n)
   uuid = _n.unmarshalString(0);
   (CSecurity&)security <<= _n;
   (Headers&)p_headers <<= _n;
+  (Attachments&)p_attachments <<= _n;
 
 }
 

@@ -77,6 +77,14 @@ struct CNotification {
 	boolean isMDNReadRequested;
 };
 
+struct Attachment {
+	string dirPath;
+	string fileName;
+	string mimeType;
+};
+
+typedef sequence<Attachment> Attachments;
+
 struct CMessage {
 	Addresses recipients_to;
 	Addresses recipients_cc;
@@ -87,6 +95,7 @@ struct CMessage {
 	string uuid;
 	CSecurity security;
 	Headers p_headers;
+	Attachments p_attachments;
 };
 
 interface MessageSendListener {

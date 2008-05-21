@@ -49,6 +49,7 @@
 #include "MessageRemoteSendListener.h"
 #include "nsIMsgSMIMECompFields.h"
 #include "nsMsgSMIMECID.h"
+#include "nsIMsgAttachment.h"
 #include <iostream>
 
 #define CHAR_NOT_FOUND -1
@@ -122,10 +123,12 @@ void MessageComposeService_i::FillMsgComposeParams(
   
 #ifdef DSN
   //DSN
-   if (p_message.notification.isDSNRequested)
-     pMsgCompFields->SetDSN(PR_TRUE);
+  if (p_message.notification.isDSNRequested)
+    pMsgCompFields->SetDSN(PR_TRUE);
 #endif
    
+  this->AddAttachment(pMsgCompFields, p_message.p_attachments);
+  
   rv = pMsgComposeParams->SetComposeFields(pMsgCompFields);
   ENSURE_SUCCESS(rv,"Cannot SetComposeFields");
 
@@ -303,3 +306,50 @@ void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields
   
 }
 
+void MessageComposeService_i::AddAttachment(nsIMsgCompFields * pMsgCompFields, const Attachments& attachments){
+  nsresult rv;
+  
+  for (int i = 0; i < attachments.length(); ++i) {
+    
+    if (IsFile(attachments[i]) == PR_FALSE)
+      throw InternalServerException("Path error in attachment, maybe file does not exist");
+      
+    nsCOMPtr<nsIMsgAttachment> pMsgAttachment = do_CreateInstance(NS_MSGATTACHMENT_CONTRACTID, &rv);
+    ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment");
+    
+    rv = pMsgAttachment->SetName(NS_ConvertUTF8toUTF16(attachments[i].fileName));
+    ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment name");
+    
+    rv = pMsgAttachment->SetContentType(attachments[i].mimeType);
+    ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment ContentType");
+    
+    nsAutoString path = NS_ConvertUTF8toUTF16("file://");
+    path += NS_ConvertUTF8toUTF16(attachments[i].dirPath);
+    path += NS_ConvertUTF8toUTF16("/");
+    path += NS_ConvertUTF8toUTF16(attachments[i].fileName);
+    
+    
+    rv = pMsgAttachment->SetUrl(NS_LossyConvertUTF16toASCII(path).get());
+    ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment path");
+    
+    rv = pMsgCompFields->AddAttachment(pMsgAttachment);
+    ENSURE_SUCCESS(rv, "Cannot add pMsgAttachment");
+  }
+}
+
+PRBool MessageComposeService_i::IsFile(const Attachment& attachment){
+    PRBool exists =  PR_FALSE;
+    nsresult rv;
+    nsCOMPtr<nsILocalFile> pLocalFile = do_CreateInstance(NS_LOCAL_FILE_CONTRACTID, &rv);
+    ENSURE_SUCCESS(rv, "Cannot create nsILocalFile");
+    
+    rv = pLocalFile->InitWithNativePath(nsDependentCString("/tmp/"));
+    ENSURE_SUCCESS(rv, "Cannot call InitWithNativePath");
+    
+    rv = pLocalFile->AppendRelativeNativePath(nsDependentCString("attachment.txt"));
+    ENSURE_SUCCESS(rv, "Cannot call AppendRelativeNativePath");
+    
+    rv = pLocalFile->Exists(&exists);
+    ENSURE_SUCCESS(rv, "Cannot call Exists");
+    return exists;
+}

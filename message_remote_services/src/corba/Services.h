@@ -599,6 +599,135 @@ typedef CNotification::_var_type CNotification_var;
 
 typedef CNotification& CNotification_out;
 
+struct Attachment {
+  typedef _CORBA_ConstrType_Variable_Var<Attachment> _var_type;
+
+  
+  ::CORBA::String_member dirPath;
+
+  ::CORBA::String_member fileName;
+
+  ::CORBA::String_member mimeType;
+
+
+
+  void operator>>= (cdrStream &) const;
+  void operator<<= (cdrStream &);
+};
+
+typedef Attachment::_var_type Attachment_var;
+
+typedef _CORBA_ConstrType_Variable_OUT_arg< Attachment,Attachment_var > Attachment_out;
+
+class Attachments_var;
+
+class Attachments : public _CORBA_Unbounded_Sequence< Attachment >  {
+public:
+  typedef Attachments_var _var_type;
+  inline Attachments() {}
+  inline Attachments(const Attachments& _s)
+    : _CORBA_Unbounded_Sequence< Attachment > (_s) {}
+
+  inline Attachments(_CORBA_ULong _max)
+    : _CORBA_Unbounded_Sequence< Attachment > (_max) {}
+  inline Attachments(_CORBA_ULong _max, _CORBA_ULong _len, Attachment* _val, _CORBA_Boolean _rel=0)
+    : _CORBA_Unbounded_Sequence< Attachment > (_max, _len, _val, _rel) {}
+
+
+
+  inline Attachments& operator = (const Attachments& _s) {
+    _CORBA_Unbounded_Sequence< Attachment > ::operator=(_s);
+    return *this;
+  }
+};
+
+class Attachments_out;
+
+class Attachments_var {
+public:
+  inline Attachments_var() : _pd_seq(0) {}
+  inline Attachments_var(Attachments* _s) : _pd_seq(_s) {}
+  inline Attachments_var(const Attachments_var& _s) {
+    if( _s._pd_seq )  _pd_seq = new Attachments(*_s._pd_seq);
+    else              _pd_seq = 0;
+  }
+  inline ~Attachments_var() { if( _pd_seq )  delete _pd_seq; }
+    
+  inline Attachments_var& operator = (Attachments* _s) {
+    if( _pd_seq )  delete _pd_seq;
+    _pd_seq = _s;
+    return *this;
+  }
+  inline Attachments_var& operator = (const Attachments_var& _s) {
+    if( _s._pd_seq ) {
+      if( !_pd_seq )  _pd_seq = new Attachments;
+      *_pd_seq = *_s._pd_seq;
+    } else if( _pd_seq ) {
+      delete _pd_seq;
+      _pd_seq = 0;
+    }
+    return *this;
+  }
+  inline Attachment& operator [] (_CORBA_ULong _s) {
+    return (*_pd_seq)[_s];
+  }
+
+
+
+  inline Attachments* operator -> () { return _pd_seq; }
+  inline const Attachments* operator -> () const { return _pd_seq; }
+#if defined(__GNUG__)
+  inline operator Attachments& () const { return *_pd_seq; }
+#else
+  inline operator const Attachments& () const { return *_pd_seq; }
+  inline operator Attachments& () { return *_pd_seq; }
+#endif
+    
+  inline const Attachments& in() const { return *_pd_seq; }
+  inline Attachments&       inout()    { return *_pd_seq; }
+  inline Attachments*&      out() {
+    if( _pd_seq ) { delete _pd_seq; _pd_seq = 0; }
+    return _pd_seq;
+  }
+  inline Attachments* _retn() { Attachments* tmp = _pd_seq; _pd_seq = 0; return tmp; }
+    
+  friend class Attachments_out;
+  
+private:
+  Attachments* _pd_seq;
+};
+
+class Attachments_out {
+public:
+  inline Attachments_out(Attachments*& _s) : _data(_s) { _data = 0; }
+  inline Attachments_out(Attachments_var& _s)
+    : _data(_s._pd_seq) { _s = (Attachments*) 0; }
+  inline Attachments_out(const Attachments_out& _s) : _data(_s._data) {}
+  inline Attachments_out& operator = (const Attachments_out& _s) {
+    _data = _s._data;
+    return *this;
+  }
+  inline Attachments_out& operator = (Attachments* _s) {
+    _data = _s;
+    return *this;
+  }
+  inline operator Attachments*&()  { return _data; }
+  inline Attachments*& ptr()       { return _data; }
+  inline Attachments* operator->() { return _data; }
+
+  inline Attachment& operator [] (_CORBA_ULong _i) {
+    return (*_data)[_i];
+  }
+
+
+
+  Attachments*& _data;
+
+private:
+  Attachments_out();
+  Attachments_out& operator=(const Attachments_var&);
+};
+
 struct CMessage {
   typedef _CORBA_ConstrType_Variable_Var<CMessage> _var_type;
 
@@ -620,6 +749,8 @@ struct CMessage {
   CSecurity security;
 
   Headers p_headers;
+
+  Attachments p_attachments;
 
 
 
