@@ -63,7 +63,7 @@ function propertyObj(propertyName,propertyValue) {
 
 /**
 	listener which will be called when a message is added to the folder
-	@version 0.9.3
+	@version 0.9.4
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@see GLOBALS#notifyInit
 
@@ -77,10 +77,50 @@ var notifyListener = {
 		removeCR: new RegExp('\\r','g'),
 		trim: new RegExp("(?:^\\s*)|(?:\\s*$)","g")
 	},
+
+	/**
+		@return {Array} list of accounts
+	*/
+	listAllSentBox : function() {
+		var idArray = new Array();
+		var msgAccountManager = Components.classes["@mozilla.org/messenger/account-manager;1"]
+				.getService(Components.interfaces.nsIMsgAccountManager);
+		var identities = msgAccountManager.allIdentities;
+
+		for (var i = 0;i < identities.Count(); i++) {
+			var id = identities.QueryElementAt(i,
+					Components.interfaces.nsIMsgIdentity);
+			idArray.push(id.fccFolder);
+		}
+		return idArray;
+	},
+	/**
+		Update all sent box
+	*/
+	updateAllSentBox : function() {
+
+		var RDF = Components.classes['@mozilla.org/rdf/rdf-service;1']
+				.getService();
+		RDF = RDF.QueryInterface(Components.interfaces.nsIRDFService);
+		var sentboxArray = this.listAllSentBox();
+
+		//loop over all Sent Box
+		for (var index = 0;index < sentboxArray.length; index++) {
+			var folderRessource = RDF.GetResource(sentboxArray[index]);
+			var folder = folderRessource
+					.QueryInterface(Components.interfaces.nsIMsgFolder);
+			try {
+				folder.startFolderLoading();
+				folder.updateFolder(null);
+			} catch(e) {}
+		}
+	},
 	/**
 		called when a message is added to the folder
 	*/
-	OnItemAdded: function(parentItem, item) {
+	itemAdded: function(item) {
+		this.updateAllSentBox();
+		
 		try {
 			var header = item.QueryInterface(Components.interfaces.nsIMsgDBHdr);
 			var folder = header.folder.QueryInterface(Components.interfaces.nsIMsgFolder);
@@ -89,7 +129,7 @@ var notifyListener = {
 			// item is not a message
 			return;
 		}
-		
+
 		// Check if this message is new
 		if (header.flags & MSG_FLAG_NEW) {
 			var nViewerTag=header.getStringProperty("x-nviewer-tags");
@@ -100,13 +140,10 @@ var notifyListener = {
 			}
 		}
 	},
-	OnItemBoolPropertyChanged: function(item, property, oldValue, newValue) {},
-	OnItemEvent: function(item, event) {},
-	OnItemIntPropertyChanged: function(item, property, oldValue, newValue) {},
-	OnItemPropertyChanged: function(item, property, oldValue, newValue) {},
-	OnItemPropertyFlagChanged: function(item, property, oldFlag, newFlag) {},
-	OnItemRemoved: function(parentItem, item, view) {},
-	OnItemUnicharPropertyChanged: function(item, property, oldValue, newValue) {},
+	itemDeleted : function(aMove, aSrcItems, aDestFolder) {},
+	itemMoveCopyCompleted : function(item, property, oldValue, newValue) {},
+	folderRenamed : function(aOrigFolder, aNewFolder) {},
+
 	/**
 		Get message source
 		@param {nsIMsgDBHdr} header
@@ -645,7 +682,8 @@ var notifyListener = {
 */
 function notifyInit() {
 	srv.logSrv("notifyInit()");
-	var mailSession = Components.classes["@mozilla.org/messenger/services/session;1"].getService(Components.interfaces.nsIMsgMailSession);
-	mailSession.AddFolderListener(notifyListener, Components.interfaces.nsIFolderListener.added);
+	var notificationService = Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
+		.getService(Components.interfaces.nsIMsgFolderNotificationService);
+	notificationService.addListener(notifyListener);
 }
 
