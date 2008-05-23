@@ -123,6 +123,7 @@ Services.prototype = {
 		try {
 			return this.strbundle.GetStringFromName(str);
 		} catch(e) {
+			this.warningSrv("Impossible to translate: "+str);
 			return "";
 		}
 	}
@@ -284,19 +285,21 @@ function moveMessage (msgHdr, dstFolder) {
 
 	var messagesArray = Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
 
+	var copyService = Components.classes["@mozilla.org/messenger/messagecopyservice;1"].getService(Components.interfaces.nsIMsgCopyService);
+
 	messagesArray.AppendElement(msgHdr);
 
 	srv.logSrv("moveMessage - from: '" + srcFolder.abbreviatedName + "' to '" + dstFolder.abbreviatedName + "': " + msgHdr.messageId);
 
 	try {
-		dstFolder.copyMessages(
+		copyService.CopyMessages(
 			srcFolder,       // srcFolder
 			messagesArray,   // nsISupportsArray
+			dstFolder,       // dstFolder
 			true,            // isMove
-			msgWindow,       // nsIMsgWindow
 			null,            // nsIMsgCopyServiceListener
-			false,           // isFolder
-			true             // allowUndo
+			msgWindow,       // nsIMsgWindow
+			false            // allowUndo
 		);
 	} catch (ex) {
 		srv.errorSrv("moveMessage - Error moving messages from '" + srcFolder.abbreviatedName + "' to '" + dstFolder.abbreviatedName + "' - MsgId: " + msgHdr.messageId);

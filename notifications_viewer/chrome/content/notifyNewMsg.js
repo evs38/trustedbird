@@ -18,7 +18,10 @@
  *       Etat francais Ministere de la Defense
  * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
- * 
+ *
+ * Contributor(s):
+ *     Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -397,21 +400,15 @@ var notifyListener = {
 				// If user want to create a thread on the original message, move Notification message
 				var threadPref=srv.preferences.getBoolPref(srv.extensionKey+".thread_on_original_message");
 
-				if (threadPref && typeOfMsg==enumOfNotification.DSN) {
-					// DSN
+				if (threadPref) {
 					var targetFolder = RDF.GetResource(msgDBHdrOrigin.folder.URI).QueryInterface(Components.interfaces.nsIMsgFolder);
 					// add References and In-Reply-To properties
 					var arrayProperties=new Array();
 					// tag this message
-					arrayProperties.push(new propertyObj("X-NViewer-Tags","DSN"));
+					arrayProperties.push(new propertyObj("X-NViewer-Tags",strTypeNotification));
 					arrayProperties.push(new propertyObj("References","<"+msgDBHdrOrigin.messageId+">"));
 					arrayProperties.push(new propertyObj("In-Reply-To","<"+msgDBHdrOrigin.messageId+">"));
 					notifyListener.threadNotification(header,msgSrc,targetFolder,arrayProperties);
-				}
-
-				if (threadPref && typeOfMsg==enumOfNotification.MDN) {
-					// MDN
-					moveMessage(header,msgDBHdrOrigin.folder);
 				}
 			}
 			else {
