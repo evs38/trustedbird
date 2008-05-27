@@ -260,6 +260,8 @@ bool MessageComposeService_i::ControlFormat(const Addresses& recipients){
     if (recipient.FindChar('@') == CHAR_NOT_FOUND)
       return false;
   }
+  
+  return true;
 }
 
 void MessageComposeService_i::ShowMessageCompositionWindow(nsIMsgComposeParams * pMsgComposeParams) {
