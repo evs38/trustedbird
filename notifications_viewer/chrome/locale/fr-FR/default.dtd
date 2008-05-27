@@ -60,5 +60,5 @@
 <!ENTITY windowDetailNotifications.title "Notifications">
 <!ENTITY PrefsDialog.groupBoxParse "Prendre en charge les notifications">
 <!ENTITY PrefsDialog.labelDSN "Notifications de délivrance (DSN)">
-<!ENTITY PrefsDialog.labelMDN "Avis d'affichage et de suppresion (MDN)">
+<!ENTITY PrefsDialog.labelMDN "Avis d'affichage et de suppression (MDN)">
 

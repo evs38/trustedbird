@@ -204,17 +204,6 @@ var prefDialogBox = {
 			this.windowParent=this.windowParent.opener;
 		}
 
-		document.getElementById("parseDSN").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".parse_dsn");
-		document.getElementById("parseMDN").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".parse_mdn");
-		document.getElementById("considerTimeout").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
-		document.getElementById("timeOut").value = this.services.preferences.getIntPref(this.services.extensionKey+".timeout");
-		this.enableTimeOut();
-		this.parseMdnDsn();
-		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
-		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
-		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
-		document.getElementById("showOnHeaderView").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".display_headerview");
-
 		// columns
 		if (this.windowParent) {
 			document.getElementById("columnDelivered").checked = ! this.windowParent.document.getElementById("colDSN").hidden;
@@ -226,6 +215,17 @@ var prefDialogBox = {
 			document.getElementById("columnDeleted").disabled=true;
 			this.services.warningSrv("prefDialogBox.initPrefDialog - Impossible to hide/show columns with this window preferences");
 		}
+
+		document.getElementById("parseDSN").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".parse_dsn");
+		document.getElementById("parseMDN").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".parse_mdn");
+		document.getElementById("considerTimeout").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
+		document.getElementById("timeOut").value = this.services.preferences.getIntPref(this.services.extensionKey+".timeout");
+		this.enableTimeOut();
+		this.parseMdnDsn();
+		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
+		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
+		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
+		document.getElementById("showOnHeaderView").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".display_headerview");
 	},
 
 	/**
