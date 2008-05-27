@@ -46,7 +46,7 @@
 <!ENTITY PrefsDialog.timeOut "Time (hours)">
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Notification Messages">
 <!ENTITY PrefsDialog.markRead "Mark read">
-<!ENTITY PrefsDialog.moveNotification "Add the notification in the thread of the original message">
+<!ENTITY PrefsDialog.moveNotification "Add the notification in the thread of the associated message">
 <!ENTITY PrefsDialog.display "Display">
 <!ENTITY PrefsDialog.display.notificationsDisplayTextAndIcons "Display notifications with">
 <!ENTITY PrefsDialog.display.textOnly "Text only">
@@ -58,6 +58,8 @@
 <!ENTITY PrefsDialog.display.columnDeleted "Deleted messages">
 <!ENTITY PrefsDialog.display.showOnHeaderView "Display notifications in the extended header view">
 <!ENTITY windowDetailNotifications.title "Notifications">
-
+<!ENTITY PrefsDialog.groupBoxParse "Handle notifications">
+<!ENTITY PrefsDialog.labelDSN "Delivery notifications (DSN)">
+<!ENTITY PrefsDialog.labelMDN "Message disposition notifications (MDN)">
 
 

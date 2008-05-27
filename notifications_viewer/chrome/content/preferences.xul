@@ -59,6 +59,13 @@
 			<tabpanel id="settingsGeneralities">
 				<vbox flex="1">
 					<groupbox flex="1">
+						<caption label="&PrefsDialog.groupBoxParse;" />
+						<vbox flex="1">
+							<checkbox id="parseDSN" label="&PrefsDialog.labelDSN;" oncommand="prefDialogBox.parseMdnDsn();" flex="1" />
+							<checkbox id="parseMDN" label="&PrefsDialog.labelMDN;" oncommand="prefDialogBox.parseMdnDsn();" flex="1" />
+						</vbox>
+					</groupbox>
+					<groupbox flex="1">
 						<caption label="&PrefsDialog.groupBoxtimeOut;" />
 						<hbox flex="1">
 							<checkbox id="considerTimeout" oncommand="prefDialogBox.enableTimeOut();" label="&PrefsDialog.labelconsiderTimeout;" flex="1" />

@@ -204,9 +204,12 @@ var prefDialogBox = {
 			this.windowParent=this.windowParent.opener;
 		}
 
+		document.getElementById("parseDSN").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".parse_dsn");
+		document.getElementById("parseMDN").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".parse_mdn");
 		document.getElementById("considerTimeout").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
 		document.getElementById("timeOut").value = this.services.preferences.getIntPref(this.services.extensionKey+".timeout");
 		this.enableTimeOut();
+		this.parseMdnDsn();
 		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
 		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
 		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
@@ -242,6 +245,8 @@ var prefDialogBox = {
 			return false;
 		}
 
+		this.services.preferences.setBoolPref(this.services.extensionKey+".parse_dsn",document.getElementById("parseDSN").checked);
+		this.services.preferences.setBoolPref(this.services.extensionKey+".parse_mdn",document.getElementById("parseMDN").checked);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".enabled_timeout",document.getElementById("considerTimeout").checked);
 		this.services.preferences.setIntPref(this.services.extensionKey+".timeout",timeOutValue);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_notifications_as_read",document.getElementById("markRead").checked);
@@ -263,6 +268,28 @@ var prefDialogBox = {
 	*/
 	enableTimeOut : function() {
 		document.getElementById("timeOut").disabled= !document.getElementById("considerTimeout").checked;
+	},
+
+	/**
+		correlate or not MDN/DSN
+	*/
+	parseMdnDsn: function() {
+		var parseDSN=document.getElementById("parseDSN").checked;
+		var parseMDN=document.getElementById("parseMDN").checked;
+		document.getElementById("timeOut").disabled=!parseDSN;
+		document.getElementById("considerTimeout").disabled=!parseDSN;
+		document.getElementById("columnDelivered").disabled=!parseDSN;
+
+		document.getElementById("columnDisplayed").disabled=!parseMDN;
+		document.getElementById("columnDeleted").disabled=!parseMDN;
+		if (! parseDSN) {
+			document.getElementById("columnDelivered").checked=false;
+		}
+
+		if (! parseMDN) {
+			document.getElementById("columnDisplayed").checked=false;
+			document.getElementById("columnDeleted").checked=false;
+		}
 	}
 }
 

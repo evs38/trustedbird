@@ -58,5 +58,7 @@
 <!ENTITY PrefsDialog.display.columnDeleted "Messages effacés">
 <!ENTITY PrefsDialog.display.showOnHeaderView "Afficher les notifications avec les en-têtes du message">
 <!ENTITY windowDetailNotifications.title "Notifications">
-
+<!ENTITY PrefsDialog.groupBoxParse "Prendre en charge les notifications">
+<!ENTITY PrefsDialog.labelDSN "Notifications de délivrance (DSN)">
+<!ENTITY PrefsDialog.labelMDN "Avis d'affichage et de suppresion (MDN)">
 
