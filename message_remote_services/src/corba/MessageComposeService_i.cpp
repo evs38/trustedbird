@@ -84,7 +84,7 @@ void MessageComposeService_i::FillMsgComposeParams(
   Addresses recipients = p_message.recipients_to;
   nsAutoString toRecipients;
 
-  for (int i = 0; i < recipients.length(); ++i) {
+  for (uint i = 0; i < recipients.length(); ++i) {
     cout << "Recipient : " << recipients[i] << endl;
 
     if (i>0)
@@ -255,7 +255,7 @@ bool MessageComposeService_i::ControlFormat(const Addresses& recipients){
     return false;
   
   nsAutoString recipient;
-  for (int i = 0; i < recipients.length(); ++i) {
+  for (uint i = 0; i < recipients.length(); ++i) {
     recipient = NS_ConvertUTF8toUTF16(recipients[i]);
     if (recipient.FindChar('@') == CHAR_NOT_FOUND)
       return false;
@@ -293,7 +293,7 @@ void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields
   nsAutoString headers_inline;
   cout << "Custom Headers NB : " << headers.length() << endl;
 
-  for (int i = 0; i < headers.length(); ++i) {
+  for (uint i = 0; i < headers.length(); ++i) {
     cout << "Custom Headers  " << i << " : " << headers[i].key << " , "
         << headers[i].value << endl;
     headers_inline.Append(NS_ConvertUTF8toUTF16(headers[i].key));
@@ -311,7 +311,7 @@ void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields
 void MessageComposeService_i::AddAttachment(nsIMsgCompFields * pMsgCompFields, const Attachments& attachments){
   nsresult rv;
   
-  for (int i = 0; i < attachments.length(); ++i) {
+  for (uint i = 0; i < attachments.length(); ++i) {
     
     if (IsFile(attachments[i]) == PR_FALSE)
       throw InternalServerException("Path error in attachment, maybe file does not exist");
@@ -345,10 +345,10 @@ PRBool MessageComposeService_i::IsFile(const Attachment& attachment){
     nsCOMPtr<nsILocalFile> pLocalFile = do_CreateInstance(NS_LOCAL_FILE_CONTRACTID, &rv);
     ENSURE_SUCCESS(rv, "Cannot create nsILocalFile");
     
-    rv = pLocalFile->InitWithNativePath(nsDependentCString("/tmp/"));
+    rv = pLocalFile->InitWithNativePath(nsDependentCString(attachment.dirPath));
     ENSURE_SUCCESS(rv, "Cannot call InitWithNativePath");
     
-    rv = pLocalFile->AppendRelativeNativePath(nsDependentCString("attachment.txt"));
+    rv = pLocalFile->AppendRelativeNativePath(nsDependentCString(attachment.fileName));
     ENSURE_SUCCESS(rv, "Cannot call AppendRelativeNativePath");
     
     rv = pLocalFile->Exists(&exists);
