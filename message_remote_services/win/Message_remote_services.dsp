@@ -42,19 +42,19 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX  /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /D "XPCOM_GLUE" /YX /FD /c
+# ADD BASE CPP /nologo /MT /W3 /Gm /GX /Od /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /Gm /GX /Od /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "WIN32" /D "NDEBUG" /D "_WINSTATIC" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG"
-# ADD RSC /l 0x40c /d "NDEBUG" /d "XP_WIN"
+# ADD RSC /l 0x40c /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 omniORB4_rt.lib omniDynamic4_rt.lib omnithread_rt.lib xpcom.lib string_s.lib nspr4.lib xpcom_core.lib plds4.lib plc4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"Release/libMessageRemoteService.dll" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
-# SUBTRACT LINK32 /verbose /incremental:yes /debug /nodefaultlib
+# ADD LINK32 omniORB4.lib omniDynamic4.lib omnithread.lib xpcomglue_s.lib xpcom.lib xpcom_core.lib plc4.lib nspr4.lib plds4.lib ws2_32.lib mswsock.lib advapi32.lib /nologo /dll /machine:I386 /out:"Release/libMessageRemoteService.dll" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
+# SUBTRACT LINK32 /verbose /debug /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "Message_remote_services - Win32 Debug"
 
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "__x86__" /D "__NT__" /D __OSVERSION__=4 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D _WIN32_WINNT=0x0400 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "_DEBUG"
@@ -80,7 +80,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 omniORB4.lib omniDynamic4.lib omniCodeSets4.lib omnisslTP.lib COS4.lib COSDynamic4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
+# ADD LINK32 omniORB4d.lib omniDynamic4d.lib omnithreadd.lib xpcomglue_s.lib xpcom.lib xpcom_core.lib plc4.lib nspr4.lib plds4.lib ws2_32.lib mswsock.lib advapi32.lib /nologo /dll /machine:I386 /nodefaultlib:"libcmt" /out:"Release/libMessageRemoteService.dll" /pdbtype:sept /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
+# SUBTRACT LINK32 /verbose /debug /nodefaultlib
 
 !ENDIF 
 
