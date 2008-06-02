@@ -35,25 +35,23 @@
      -  ***** END LICENSE BLOCK ***** -->
 
 <RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
-	 xmlns:NC="http://home.netscape.com/NC-rdf#"
-	 xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-	<RDF:Description about="urn:mozilla:extension:notificationsviewer@milimail.org">
-		<em:updates>
-			<RDF:Seq>
-				<RDF:li resource="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.1.7-alpha"/>
-			</RDF:Seq>
-		</em:updates>
+	xmlns:NC="http://home.netscape.com/NC-rdf#"
+	xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	<RDF:Description RDF:about="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.4-alpha"
+		em:version="0.6.2.4-alpha"
+		em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBADewpSIAi5Tl9hUnQhhJWsO6JFhkuynKQUdt3I7TS3nU2yRKQ2I53gLPAdjMaeaOaw/D5Oy7UsQd9yShkpXfgisCLKLPGtpqCXAZn0ZWuQS+JOB/9Qikeb9x3fPnsX8nPi430RZAfXKYC4Nq1VuT9TmK4EPsxt5ehkgLbE+Z/GL5">
+		<em:targetApplication RDF:resource="rdf:#$uSt.z2"/>
 	</RDF:Description>
-
-	<RDF:Description about="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.1.7-alpha">
-		<em:version>0.6.1.7-alpha</em:version>
-			<em:targetApplication>
-			<Description>
-				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-				<em:minVersion>1.5</em:minVersion>
-				<em:maxVersion>2.0.0.*</em:maxVersion>
-				<em:updateLink>http://admisource.gouv.fr/frs/download.php/539/notifications_viewer-0.6.1.7-alpha.xpi</em:updateLink>
-			</Description>
-		</em:targetApplication>
+	<RDF:Description RDF:about="urn:mozilla:extension:notificationsviewer@milimail.org"
+		em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBADYGx0Fk7TAqu8zQHYeaodd2vDZjGkcPtU34fWH2Zo0Drl3xOSfFcMdP1mw7dVbGC/aOicLb578St+86jryunk+fmlU7Jj0FwJbu6s57yL/JIWvW2fMz9g4J+zJL1RQzyxqLA2NPI4MXL98b0otzvcfQ8PsuteT0vsAg4EGGGQBt">
+		<em:updates RDF:resource="rdf:#$rSt.z2"/>
 	</RDF:Description>
+	<Description RDF:about="rdf:#$uSt.z2"
+		em:id="{3550f703-e582-4d05-9a08-453d09bdfdc6}"
+		em:minVersion="1.5"
+		em:maxVersion="3.0.*"
+		em:updateLink="http://admisource.gouv.fr/frs/download.php/539/notifications_viewer-0.6.2.4-alpha.xpi" />
+	<RDF:Seq RDF:about="rdf:#$rSt.z2">
+			<RDF:li RDF:resource="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.4-alpha"/>
+	</RDF:Seq>
 </RDF:RDF>

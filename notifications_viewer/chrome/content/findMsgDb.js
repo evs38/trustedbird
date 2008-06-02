@@ -62,7 +62,7 @@
 	var message=findmessage.searchByMsgId("20080213131118.4DD991FF88&#64;mydomain.org");
 	if (message) alert("found : "+message.messageId+" "+message.subject);
 	</pre>
-	@version 0.9.2
+	@version 0.9.3
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@constructor
 	@param {nsIMsgFolder} startFolder start search in this folder
@@ -326,14 +326,26 @@ findMsgDb.prototype = {
 
 		// include sub-folders
 		if ((this.flags & this.FLAG_SUB_FOLDERS) && (folder.hasSubFolders)) {
-			var subfolders = folder.GetSubFolders();
+			try {
+				// TB 2.0.0.*
+				var subfolders = folder.GetSubFolders();
+			} catch (e) {
+				// TB 3.0.* (XPCOM 1.9)
+				var subfolders = folder.subFolders;
+			}
 			var subfolder = null;
 			var subFolderURI = "";
 		
 			var done = false;
 			
 			while(!done) {
-				subFolderURI = subfolders.currentItem().QueryInterface(Components.interfaces.nsIRDFResource).Value;
+				try {
+					// TB 2.0.0.*
+					subFolderURI = subfolders.currentItem().QueryInterface(Components.interfaces.nsIRDFResource).Value;
+				} catch (e) {
+					// TB 3.0.* (XPCOM 1.9)
+					subFolderURI = subfolders.getNext().QueryInterface(Components.interfaces.nsIRDFResource).Value;
+				}
 				subfolder = folder.getChildWithURI (subFolderURI,false,false);
 	
 				msgHdr = this.searchInFolder(subfolder);
@@ -341,9 +353,16 @@ findMsgDb.prototype = {
 				if (msgHdr) return msgHdr;
 				
 				try {
-					subfolders.next();
+					// TB 3.0.* (XPCOM 1.9)
+					if (! subfolders.hasMoreElements())
+						done = true;
 				} catch(e) {
-					done = true;
+					// TB 2.0.0.*
+					try {
+						subfolders.next();
+					} catch(e) {
+						done = true;
+					}
 				}
 			}
 		}

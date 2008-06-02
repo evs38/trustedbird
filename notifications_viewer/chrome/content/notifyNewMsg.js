@@ -66,7 +66,7 @@ function propertyObj(propertyName,propertyValue) {
 
 /**
 	listener which will be called when a message is added to the folder
-	@version 0.9.4
+	@version 0.9.5
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@see GLOBALS#notifyInit
 
@@ -463,9 +463,16 @@ var notifyListener = {
 	copyFileMessage: function (file,flags,messageId,targetDBFolder,isRead,isFlagged,count) {
 		srv.logSrv("notifyListener.copyFileMessage - file: "+file+" - target folder /"+targetDBFolder.prettyName + "/ (" + targetDBFolder.rootFolder.prettyName+ ")");
 
-		var fileSpec = Components.classes["@mozilla.org/filespec;1"].createInstance(Components.interfaces.nsIFileSpec);
+		try {
+			// TB 2.0.0.*
+			var fileSpec = Components.classes["@mozilla.org/filespec;1"].createInstance(Components.interfaces.nsIFileSpec);
+			fileSpec.nativePath =file;
+		} catch (e) {
+			// TB 3.0.* (XPCOM 1.9)
+			var fileSpec = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+			fileSpec.initWithPath(file);
+		}
 		var copyService = Components.classes["@mozilla.org/messenger/messagecopyservice;1"].getService(Components.interfaces.nsIMsgCopyService);
-		fileSpec.nativePath =file;
 
 		count++;
 
