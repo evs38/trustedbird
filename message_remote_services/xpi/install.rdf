@@ -54,14 +54,14 @@
       </Description>
     </em:targetApplication>
     
-
+    <em:optionsURL>chrome://mrs/content/options.xul</em:optionsURL>
     <em:targetPlatform>Linux_x86-gcc3</em:targetPlatform>
     <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
   
     <!-- Front End MetaData -->
     <em:name>Milimail MRS</em:name>
     <em:description>Milimail message remote service</em:description>
-    <em:creator>Milimail Team</em:creator>
+    <em:creator>Milimail Teazm</em:creator>
     <em:homepageURL>http://milimail.org/</em:homepageURL>
   </Description>
 
