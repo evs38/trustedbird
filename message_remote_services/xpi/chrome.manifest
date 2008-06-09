@@ -33,7 +33,7 @@
 # 
 # ***** END LICENSE BLOCK *****
 
-overlay	chrome://messenger/content/messenger.xul chrome://mrs/content/overlay.xul
 content     mrs    chrome/content/
-locale	mrs	en-US	locale/en-US/
-locale	mrs fr-FR	locale/fr-FR/
+locale	mrs	en-US	chrome/locale/en-US/
+locale	mrs fr-FR	chrome/locale/fr-FR/
+overlay	chrome://messenger/content/messenger.xul chrome://mrs/content/overlay.xul

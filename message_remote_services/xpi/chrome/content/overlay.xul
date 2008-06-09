@@ -37,8 +37,6 @@
     - ***** END LICENSE BLOCK ***** -->
 <overlay id="mrs-overlay"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-    <script type="text/javascript"
+    <script type="application/x-javascript"
         src="chrome://mrs/content/overlay.js" />
-
 </overlay>
-    
