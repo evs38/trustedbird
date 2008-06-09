@@ -34,11 +34,13 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- #include "nsISupports.idl"
 
+#include "nsISupports.idl"
+ 
 [scriptable, uuid(f9b41dae-2b80-47ac-bfbc-feead1aaef5b)]
 interface IMessageRemoteService : nsISupports
 {
   void Start();
   void Stop();
+  boolean IsStarted();
 };

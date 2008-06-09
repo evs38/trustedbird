@@ -60,6 +60,7 @@ NS_IMPL_ISUPPORTS1(MessageRemoteService, IMessageRemoteService)
 MessageRemoteService::MessageRemoteService()
 {
   /* member initializers and constructor code */
+  isStarted = PR_FALSE;
 }
 
 MessageRemoteService::~MessageRemoteService() {
@@ -114,6 +115,7 @@ NS_IMETHODIMP MessageRemoteService::Start() {
       (void *)(orb), PR_PRIORITY_NORMAL, PR_GLOBAL_THREAD, PR_JOINABLE_THREAD,
       0);
 
+  isStarted = PR_TRUE;
   return NS_OK;
 }
 
@@ -123,8 +125,18 @@ NS_IMETHODIMP MessageRemoteService::Stop() {
   orb->destroy();
   delete accountService;
   delete messageComposeService;
+  isStarted = PR_FALSE;
   return NS_OK;
 }
+
+
+NS_IMETHODIMP MessageRemoteService::IsStarted(PRBool *_retval){
+  
+  *_retval = isStarted;  
+  
+  return NS_OK;
+}
+
 
 /* End of implementation class template. */
 

@@ -77,13 +77,19 @@ var original_Unload = OnUnloadMessenger;
 
 OnUnloadMessenger = function OnUnloadExtended() {
 	original_Unload();
-	
+
 	try {
 		var service = Components.classes[MessageRemoteServiceID].
 			getService(Components.interfaces.IMessageRemoteService);
-		service.Stop();
+			
+		if (service.IsStarted()) {
+			service.Stop();
+		}
+		
 	}	catch(e) {
-		//case occured when there is a problem when loading xpcom from extension	
+		//case occured when there is a problem when loading xpcom from extension
+		alert(stringBundle.GetStringFromName("mrs.alert.stop.1"));
 	}
+	
 }
 

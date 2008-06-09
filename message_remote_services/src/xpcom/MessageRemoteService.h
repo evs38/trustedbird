@@ -73,6 +73,7 @@ private:
   PRThread * orbThread;
   AccountService_i * accountService;
   MessageComposeService_i * messageComposeService;
+  PRBool isStarted;
   
   /*!
    * 
