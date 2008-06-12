@@ -52,7 +52,7 @@ AccountService_i::~AccountService_i() {
 }
 
 //TODO List all Accounts
-Accounts * AccountService_i::GetAllAccounts() {
+CAccounts * AccountService_i::GetAllAccounts() {
   cout << "INFO ENTER AccountService_i::GetAllAccounts()" << endl;
 
   nsresult rv;
@@ -76,7 +76,7 @@ Accounts * AccountService_i::GetAllAccounts() {
   PRUint32 count;
   msgAccounts->Count(&count);
 
-  Accounts * accounts = new Accounts();
+  CAccounts * accounts = new CAccounts();
   accounts->length(count);
 
   for (int i=0; i < count; i++) {
@@ -89,7 +89,7 @@ Accounts * AccountService_i::GetAllAccounts() {
 
     nsXPIDLCString hostname;
     rv = incomingServer->GetHostName(getter_Copies(hostname));
-    Account * account = new Account();
+    CAccount * account = new CAccount();
 
     nsXPIDLCString accountKey;
     rv = msgAccount->GetKey(getter_Copies(accountKey));

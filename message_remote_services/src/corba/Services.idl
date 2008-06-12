@@ -44,17 +44,17 @@ exception InternalServerException {
 	string cause;
 };
 
-struct Account {
+struct CAccount {
 	string serverHostName;
 	
 	string key;
 };
 
-typedef sequence<Account> Accounts;
+typedef sequence<CAccount> CAccounts;
 
 interface AccountService {
 	
-	Accounts GetAllAccounts() raises (InternalServerException);
+	CAccounts GetAllAccounts() raises (InternalServerException);
 	
 };
 
@@ -104,5 +104,5 @@ interface MessageSendListener {
 
 interface MessageComposeService {
 
-	void SendMessage(in Account p_account, in CMessage p_message, in MessageSendListener p_listener, in boolean openComposeWindowOnBadFormat) raises (InternalServerException);
+	void SendMessage(in CAccount p_account, in CMessage p_message, in MessageSendListener p_listener, in boolean openComposeWindowOnBadFormat) raises (InternalServerException);
 };

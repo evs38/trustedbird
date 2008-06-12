@@ -93,8 +93,8 @@ private:
   virtual void _NP_marshal(cdrStream&) const;
 };
 
-struct Account {
-  typedef _CORBA_ConstrType_Variable_Var<Account> _var_type;
+struct CAccount {
+  typedef _CORBA_ConstrType_Variable_Var<CAccount> _var_type;
 
   
   ::CORBA::String_member serverHostName;
@@ -107,52 +107,52 @@ struct Account {
   void operator<<= (cdrStream &);
 };
 
-typedef Account::_var_type Account_var;
+typedef CAccount::_var_type CAccount_var;
 
-typedef _CORBA_ConstrType_Variable_OUT_arg< Account,Account_var > Account_out;
+typedef _CORBA_ConstrType_Variable_OUT_arg< CAccount,CAccount_var > CAccount_out;
 
-class Accounts_var;
+class CAccounts_var;
 
-class Accounts : public _CORBA_Unbounded_Sequence< Account >  {
+class CAccounts : public _CORBA_Unbounded_Sequence< CAccount >  {
 public:
-  typedef Accounts_var _var_type;
-  inline Accounts() {}
-  inline Accounts(const Accounts& _s)
-    : _CORBA_Unbounded_Sequence< Account > (_s) {}
+  typedef CAccounts_var _var_type;
+  inline CAccounts() {}
+  inline CAccounts(const CAccounts& _s)
+    : _CORBA_Unbounded_Sequence< CAccount > (_s) {}
 
-  inline Accounts(_CORBA_ULong _max)
-    : _CORBA_Unbounded_Sequence< Account > (_max) {}
-  inline Accounts(_CORBA_ULong _max, _CORBA_ULong _len, Account* _val, _CORBA_Boolean _rel=0)
-    : _CORBA_Unbounded_Sequence< Account > (_max, _len, _val, _rel) {}
+  inline CAccounts(_CORBA_ULong _max)
+    : _CORBA_Unbounded_Sequence< CAccount > (_max) {}
+  inline CAccounts(_CORBA_ULong _max, _CORBA_ULong _len, CAccount* _val, _CORBA_Boolean _rel=0)
+    : _CORBA_Unbounded_Sequence< CAccount > (_max, _len, _val, _rel) {}
 
 
 
-  inline Accounts& operator = (const Accounts& _s) {
-    _CORBA_Unbounded_Sequence< Account > ::operator=(_s);
+  inline CAccounts& operator = (const CAccounts& _s) {
+    _CORBA_Unbounded_Sequence< CAccount > ::operator=(_s);
     return *this;
   }
 };
 
-class Accounts_out;
+class CAccounts_out;
 
-class Accounts_var {
+class CAccounts_var {
 public:
-  inline Accounts_var() : _pd_seq(0) {}
-  inline Accounts_var(Accounts* _s) : _pd_seq(_s) {}
-  inline Accounts_var(const Accounts_var& _s) {
-    if( _s._pd_seq )  _pd_seq = new Accounts(*_s._pd_seq);
+  inline CAccounts_var() : _pd_seq(0) {}
+  inline CAccounts_var(CAccounts* _s) : _pd_seq(_s) {}
+  inline CAccounts_var(const CAccounts_var& _s) {
+    if( _s._pd_seq )  _pd_seq = new CAccounts(*_s._pd_seq);
     else              _pd_seq = 0;
   }
-  inline ~Accounts_var() { if( _pd_seq )  delete _pd_seq; }
+  inline ~CAccounts_var() { if( _pd_seq )  delete _pd_seq; }
     
-  inline Accounts_var& operator = (Accounts* _s) {
+  inline CAccounts_var& operator = (CAccounts* _s) {
     if( _pd_seq )  delete _pd_seq;
     _pd_seq = _s;
     return *this;
   }
-  inline Accounts_var& operator = (const Accounts_var& _s) {
+  inline CAccounts_var& operator = (const CAccounts_var& _s) {
     if( _s._pd_seq ) {
-      if( !_pd_seq )  _pd_seq = new Accounts;
+      if( !_pd_seq )  _pd_seq = new CAccounts;
       *_pd_seq = *_s._pd_seq;
     } else if( _pd_seq ) {
       delete _pd_seq;
@@ -160,64 +160,64 @@ public:
     }
     return *this;
   }
-  inline Account& operator [] (_CORBA_ULong _s) {
+  inline CAccount& operator [] (_CORBA_ULong _s) {
     return (*_pd_seq)[_s];
   }
 
 
 
-  inline Accounts* operator -> () { return _pd_seq; }
-  inline const Accounts* operator -> () const { return _pd_seq; }
+  inline CAccounts* operator -> () { return _pd_seq; }
+  inline const CAccounts* operator -> () const { return _pd_seq; }
 #if defined(__GNUG__)
-  inline operator Accounts& () const { return *_pd_seq; }
+  inline operator CAccounts& () const { return *_pd_seq; }
 #else
-  inline operator const Accounts& () const { return *_pd_seq; }
-  inline operator Accounts& () { return *_pd_seq; }
+  inline operator const CAccounts& () const { return *_pd_seq; }
+  inline operator CAccounts& () { return *_pd_seq; }
 #endif
     
-  inline const Accounts& in() const { return *_pd_seq; }
-  inline Accounts&       inout()    { return *_pd_seq; }
-  inline Accounts*&      out() {
+  inline const CAccounts& in() const { return *_pd_seq; }
+  inline CAccounts&       inout()    { return *_pd_seq; }
+  inline CAccounts*&      out() {
     if( _pd_seq ) { delete _pd_seq; _pd_seq = 0; }
     return _pd_seq;
   }
-  inline Accounts* _retn() { Accounts* tmp = _pd_seq; _pd_seq = 0; return tmp; }
+  inline CAccounts* _retn() { CAccounts* tmp = _pd_seq; _pd_seq = 0; return tmp; }
     
-  friend class Accounts_out;
+  friend class CAccounts_out;
   
 private:
-  Accounts* _pd_seq;
+  CAccounts* _pd_seq;
 };
 
-class Accounts_out {
+class CAccounts_out {
 public:
-  inline Accounts_out(Accounts*& _s) : _data(_s) { _data = 0; }
-  inline Accounts_out(Accounts_var& _s)
-    : _data(_s._pd_seq) { _s = (Accounts*) 0; }
-  inline Accounts_out(const Accounts_out& _s) : _data(_s._data) {}
-  inline Accounts_out& operator = (const Accounts_out& _s) {
+  inline CAccounts_out(CAccounts*& _s) : _data(_s) { _data = 0; }
+  inline CAccounts_out(CAccounts_var& _s)
+    : _data(_s._pd_seq) { _s = (CAccounts*) 0; }
+  inline CAccounts_out(const CAccounts_out& _s) : _data(_s._data) {}
+  inline CAccounts_out& operator = (const CAccounts_out& _s) {
     _data = _s._data;
     return *this;
   }
-  inline Accounts_out& operator = (Accounts* _s) {
+  inline CAccounts_out& operator = (CAccounts* _s) {
     _data = _s;
     return *this;
   }
-  inline operator Accounts*&()  { return _data; }
-  inline Accounts*& ptr()       { return _data; }
-  inline Accounts* operator->() { return _data; }
+  inline operator CAccounts*&()  { return _data; }
+  inline CAccounts*& ptr()       { return _data; }
+  inline CAccounts* operator->() { return _data; }
 
-  inline Account& operator [] (_CORBA_ULong _i) {
+  inline CAccount& operator [] (_CORBA_ULong _i) {
     return (*_data)[_i];
   }
 
 
 
-  Accounts*& _data;
+  CAccounts*& _data;
 
 private:
-  Accounts_out();
-  Accounts_out& operator=(const Accounts_var&);
+  CAccounts_out();
+  CAccounts_out& operator=(const CAccounts_var&);
 };
 
 #ifndef __AccountService__
@@ -281,7 +281,7 @@ class _objref_AccountService :
   public virtual omniObjRef
 {
 public:
-  Accounts* GetAllAccounts();
+  CAccounts* GetAllAccounts();
 
   inline _objref_AccountService()  { _PR_setobj(0); }  // nil
   _objref_AccountService(omniIOR*, omniIdentity*);
@@ -315,7 +315,7 @@ class _impl_AccountService :
 public:
   virtual ~_impl_AccountService();
 
-  virtual Accounts* GetAllAccounts() = 0;
+  virtual CAccounts* GetAllAccounts() = 0;
   
 public:  // Really protected, workaround for xlC
   virtual _CORBA_Boolean _dispatch(omniCallHandle&);
@@ -930,7 +930,7 @@ class _objref_MessageComposeService :
   public virtual omniObjRef
 {
 public:
-  void SendMessage(const Account& p_account, const CMessage& p_message, MessageSendListener_ptr p_listener, ::CORBA::Boolean openComposeWindowOnBadFormat);
+  void SendMessage(const CAccount& p_account, const CMessage& p_message, MessageSendListener_ptr p_listener, ::CORBA::Boolean openComposeWindowOnBadFormat);
 
   inline _objref_MessageComposeService()  { _PR_setobj(0); }  // nil
   _objref_MessageComposeService(omniIOR*, omniIdentity*);
@@ -964,7 +964,7 @@ class _impl_MessageComposeService :
 public:
   virtual ~_impl_MessageComposeService();
 
-  virtual void SendMessage(const Account& p_account, const CMessage& p_message, MessageSendListener_ptr p_listener, ::CORBA::Boolean openComposeWindowOnBadFormat) = 0;
+  virtual void SendMessage(const CAccount& p_account, const CMessage& p_message, MessageSendListener_ptr p_listener, ::CORBA::Boolean openComposeWindowOnBadFormat) = 0;
   
 public:  // Really protected, workaround for xlC
   virtual _CORBA_Boolean _dispatch(omniCallHandle&);

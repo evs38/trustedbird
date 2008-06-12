@@ -52,7 +52,7 @@ public:
 	 *
 	 * \return All Accounts of the current Thunderbird Profile
 	 */
-	virtual Accounts* GetAllAccounts();
+	virtual CAccounts* GetAllAccounts();
 };
 
 #endif /*ACCOUNTSERVICE_I_H_*/

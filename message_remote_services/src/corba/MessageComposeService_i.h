@@ -55,7 +55,7 @@ public:
    *  \param p_message is the message to send 
    *  \param p_listener is the listener, which receives the sending process events
    */
-  virtual void SendMessage(const Account& p_account, const CMessage& p_message,
+  virtual void SendMessage(const CAccount& p_account, const CMessage& p_message,
                            MessageSendListener_ptr p_listener,
                            ::CORBA::Boolean openComposeWindowOnBadFormat);
 
@@ -68,7 +68,7 @@ private:
    */
   void FillMsgComposeParams(const CMessage& p_message,
                             nsIMsgComposeParams * pMsgComposeParams);
-  void GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const Account& p_account);
+  void GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const CAccount& p_account);
   
   /*!
    * Helper method used to control Format of the recipients addresse

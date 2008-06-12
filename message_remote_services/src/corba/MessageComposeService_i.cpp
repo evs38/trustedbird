@@ -134,7 +134,7 @@ void MessageComposeService_i::FillMsgComposeParams(
 
 }
 
-void MessageComposeService_i::GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const Account& p_account) {
+void MessageComposeService_i::GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const CAccount& p_account) {
   
   nsCOMPtr<nsIMsgAccountManager> pMsgAccountManager;
   nsresult rv = svcMgr->GetServiceByContractID(
@@ -157,7 +157,7 @@ void MessageComposeService_i::GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, con
       << rv << endl;
 }
 
-void MessageComposeService_i::SendMessage(const Account& p_account,
+void MessageComposeService_i::SendMessage(const CAccount& p_account,
                                           const CMessage& p_message,
                                           MessageSendListener_ptr p_listener,
                                           ::CORBA::Boolean openComposeWindowOnBadFormat) {

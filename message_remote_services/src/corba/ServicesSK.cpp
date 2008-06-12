@@ -88,7 +88,7 @@ InternalServerException::operator<<= (cdrStream& _n)
 }
 
 void
-Account::operator>>= (cdrStream &_n) const
+CAccount::operator>>= (cdrStream &_n) const
 {
   _n.marshalString(serverHostName,0);
   _n.marshalString(key,0);
@@ -96,7 +96,7 @@ Account::operator>>= (cdrStream &_n) const
 }
 
 void
-Account::operator<<= (cdrStream &_n)
+CAccount::operator<<= (cdrStream &_n)
 {
   serverHostName = _n.unmarshalString(0);
   key = _n.unmarshalString(0);
@@ -207,7 +207,7 @@ _objref_AccountService::_ptrToObjRef(const char* id)
 }
 
 // Proxy call descriptor class. Mangled signature:
-//  _cAccounts_e_cInternalServerException
+//  _cCAccounts_e_cInternalServerException
 class _0RL_cd_14edc9663ea08cf8_00000000
   : public omniCallDescriptor
 {
@@ -225,19 +225,19 @@ public:
   void userException(cdrStream&,_OMNI_NS(IOP_C)*,const char*);
   static const char* const _user_exns[];
 
-  Accounts_var result;
+  CAccounts_var result;
 };
 
 void _0RL_cd_14edc9663ea08cf8_00000000::marshalReturnedValues(cdrStream& _n)
 {
-  (const Accounts&) result >>= _n;
+  (const CAccounts&) result >>= _n;
 
 }
 
 void _0RL_cd_14edc9663ea08cf8_00000000::unmarshalReturnedValues(cdrStream& _n)
 {
-  result = new Accounts;
-  (Accounts&)result <<= _n;
+  result = new CAccounts;
+  (CAccounts&)result <<= _n;
 
 }
 
@@ -288,7 +288,7 @@ _0RL_lcfn_14edc9663ea08cf8_10000000(omniCallDescriptor* cd, omniServant* svnt)
 
 }
 
-Accounts* _objref_AccountService::GetAllAccounts()
+CAccounts* _objref_AccountService::GetAllAccounts()
 {
   _0RL_cd_14edc9663ea08cf8_00000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_10000000, "GetAllAccounts", 15);
 
@@ -790,7 +790,7 @@ _objref_MessageComposeService::_ptrToObjRef(const char* id)
 }
 
 // Proxy call descriptor class. Mangled signature:
-//  void_i_cAccount_i_cCMessage_i_cMessageSendListener_i_cboolean_e_cInternalServerException
+//  void_i_cCAccount_i_cCMessage_i_cMessageSendListener_i_cboolean_e_cInternalServerException
 class _0RL_cd_14edc9663ea08cf8_40000000
   : public omniCallDescriptor
 {
@@ -808,8 +808,8 @@ public:
   void userException(cdrStream&,_OMNI_NS(IOP_C)*,const char*);
   static const char* const _user_exns[];
 
-  Account_var arg_0_;
-  const Account* arg_0;
+  CAccount_var arg_0_;
+  const CAccount* arg_0;
   CMessage_var arg_1_;
   const CMessage* arg_1;
   MessageSendListener_var arg_2_;
@@ -819,7 +819,7 @@ public:
 
 void _0RL_cd_14edc9663ea08cf8_40000000::marshalArguments(cdrStream& _n)
 {
-  (const Account&) *arg_0 >>= _n;
+  (const CAccount&) *arg_0 >>= _n;
   (const CMessage&) *arg_1 >>= _n;
   MessageSendListener::_marshalObjRef(arg_2,_n);
   _n.marshalBoolean(arg_3);
@@ -828,8 +828,8 @@ void _0RL_cd_14edc9663ea08cf8_40000000::marshalArguments(cdrStream& _n)
 
 void _0RL_cd_14edc9663ea08cf8_40000000::unmarshalArguments(cdrStream& _n)
 {
-  arg_0_ = new Account;
-  (Account&)arg_0_ <<= _n;
+  arg_0_ = new CAccount;
+  (CAccount&)arg_0_ <<= _n;
   arg_0 = &arg_0_.in();
   arg_1_ = new CMessage;
   (CMessage&)arg_1_ <<= _n;
@@ -887,10 +887,10 @@ _0RL_lcfn_14edc9663ea08cf8_50000000(omniCallDescriptor* cd, omniServant* svnt)
 
 }
 
-void _objref_MessageComposeService::SendMessage(const Account& p_account, const CMessage& p_message, MessageSendListener_ptr p_listener, ::CORBA::Boolean openComposeWindowOnBadFormat)
+void _objref_MessageComposeService::SendMessage(const CAccount& p_account, const CMessage& p_message, MessageSendListener_ptr p_listener, ::CORBA::Boolean openComposeWindowOnBadFormat)
 {
   _0RL_cd_14edc9663ea08cf8_40000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_50000000, "SendMessage", 12);
-  _call_desc.arg_0 = &(Account&) p_account;
+  _call_desc.arg_0 = &(CAccount&) p_account;
   _call_desc.arg_1 = &(CMessage&) p_message;
   _call_desc.arg_2 = p_listener;
   _call_desc.arg_3 = openComposeWindowOnBadFormat;
