@@ -117,7 +117,7 @@ public class Message {
 		return message.uuid;
 	}
 
-	public CMessage getCorbaMessage() {
+	public CMessage getCorbaObject() {
 		return message;
 	}
 	

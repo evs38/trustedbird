@@ -36,12 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.account;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
-import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
-import org.milimail.messageRemoteServiceAPI.stubs.Account;
 
 public class AccountServiceTest extends TestCase {
 	private AccountServiceProxy accountService;
@@ -51,32 +51,30 @@ public class AccountServiceTest extends TestCase {
 		accountService = serviceCreator.createAccountService();
 	}
 
-	public void testGetAllAccounts() throws Exception{
+	public void testGetAllAccounts() throws Exception {
 
-		Account[] accounts = null;
-
-		accounts = accountService.GetAllAccounts();
+		List<Account> accounts = accountService.GetAllAccounts();
 
 		assertNotNull(accounts);
+		int i = 0;
 
-		for (int i = 0; i < accounts.length; i++) {
-			Account account = accounts[i];
+		for (Account account : accounts) {
 			assertNotNull(account);
-			String serverName = account.serverHostName;
-			String key = account.key;
-
+			String serverName = account.getServerHostName();
+			String key = account.getKey();
 			assertNotNull(serverName);
 			assertNotNull(key);
 			assertTrue(serverName.length() > 0);
 			assertTrue(key.length() > 0);
 
-			System.out.println("testGetAllAccounts  account.serverHostName "
-					+ i + " : " + serverName);
-			System.out.println("testGetAllAccounts  account.key " + i + " : "
-					+ key);
+			System.out
+					.println("testGetAllAccounts  account.getServerHostName() "
+							+ i + " : " + serverName);
+			System.out.println("testGetAllAccounts  account.getKey " + i
+					+ " : " + key);
+			i++;
 		}
 
 	}
-
 
 }

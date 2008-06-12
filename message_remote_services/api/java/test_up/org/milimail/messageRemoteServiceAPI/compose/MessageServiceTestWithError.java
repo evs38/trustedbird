@@ -36,39 +36,19 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
-import org.milimail.messageRemoteServiceAPI.stubs.Account;
 import org.milimail.messageRemoteServiceAPI.stubs.Attachment;
 import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 
 public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 
 	public void testSendMessageWithoutSubjectAndBody() throws Exception {
-		Account[] accounts = accountService.GetAllAccounts();
-
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
-
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
 		composeService.sendMessage(account, message, messageListener);
 	}
 
 	public void testSendMessageWithoutTo() {
-		Account[] accounts = null;
-		try {
-			accounts = accountService.GetAllAccounts();
-		} catch (InternalServerException e1) {
-			fail();
-		} catch (CommunicationException e1) {
-			fail();
-		}
-
-		Account account = accounts[1];
-		assertNotNull(account);
-
 		Message message = new Message();
 		message.setSubject("Subject from API");
 		message.setBody("body from API");
@@ -80,7 +60,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 			System.out.println(e.cause);
 			exceptionThrown = true;
 		}
-		
+
 		assertTrue(exceptionThrown);
 	}
 
@@ -94,7 +74,6 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		sendMessageOnError(openComposeWindowOnError);
 	}
 
-	
 	/**
 	 * @param openComposeWindowOnError
 	 */
@@ -110,7 +89,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		attachments[0].fileName = "attachment.txt";
 		attachments[0].mimeType = "text/plain";
 		message.setAttachments(attachments);
-		
+
 		String[] to = { "user1@test.milimail.org", "user2test.milimail.org" };
 		message.setTo(to);
 		boolean exceptionThrown = false;
@@ -125,8 +104,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		assertTrue(exceptionThrown);
 	}
 
-	
-	public void testSendMessageWithAttachmentWithWrongPath()  {
+	public void testSendMessageWithAttachmentWithWrongPath() {
 		Message message = new Message();
 		message.setSubject("From Api With 1 Attachment");
 		String[] to = { "user2@test.milimail.org" };
@@ -138,14 +116,14 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		attachments[0].mimeType = "text/plain";
 		message.setAttachments(attachments);
 		boolean exceptionThrowed = false;
-		
+
 		try {
 			composeService.sendMessage(account, message, messageListener);
 		} catch (InternalServerException e) {
 			System.out.println(e.cause);
 			exceptionThrowed = true;
 		}
-		
+
 		assertTrue(exceptionThrowed);
 	}
 }

@@ -1,17 +1,18 @@
 package org.milimail.messageRemoteServiceAPI.compose;
 
 import java.io.File;
+import java.util.List;
 
+import junit.framework.TestCase;
+
+import org.milimail.messageRemoteServiceAPI.account.Account;
 import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
 import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
 import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServantConsole;
-import org.milimail.messageRemoteServiceAPI.stubs.Account;
 import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
-
-import junit.framework.TestCase;
 
 public abstract class AbstractMessageServiceTest extends TestCase {
 	protected MessageComposeServiceProxy composeService;
@@ -32,9 +33,9 @@ public abstract class AbstractMessageServiceTest extends TestCase {
 
 	private Account setUpAccount() throws CommunicationException,
 			InternalServerException {
-		Account[] accounts = accountService.GetAllAccounts();
+		List<Account> accounts = accountService.GetAllAccounts();
 
-		Account account = accounts[1];
+		Account account = accounts.get(1);
 		assertNotNull(account);
 		return account;
 	}

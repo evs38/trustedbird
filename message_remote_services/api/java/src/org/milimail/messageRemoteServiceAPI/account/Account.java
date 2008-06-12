@@ -36,10 +36,11 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.account;
 
+import org.milimail.messageRemoteServiceAPI.stubs.CAccount;
 
 public class Account {
 
-	org.milimail.messageRemoteServiceAPI.stubs.Account account;
+	CAccount account;
 
 	public String getKey() {
 		return account.key;
@@ -48,7 +49,7 @@ public class Account {
 	public void setKey(String key) {
 		if (key == null)
 			return;
-		 account.key = key;
+		account.key = key;
 	}
 
 	public String getServerHostName() {
@@ -61,13 +62,17 @@ public class Account {
 		account.serverHostName = serverHostName;
 	}
 
-	public Account(org.milimail.messageRemoteServiceAPI.stubs.Account account) {
+	public Account(CAccount account) {
 		this.account = account;
 	}
 
 	public Account() {
-		account = new org.milimail.messageRemoteServiceAPI.stubs.Account();
+		account = new CAccount();
 		account.key = "";
 		account.serverHostName = "";
+	}
+
+	public CAccount getCorbaObject() {
+		return account;
 	}
 }

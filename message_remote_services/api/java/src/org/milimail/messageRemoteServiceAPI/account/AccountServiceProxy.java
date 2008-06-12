@@ -36,9 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.account;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
-import org.milimail.messageRemoteServiceAPI.stubs.Account;
 import org.milimail.messageRemoteServiceAPI.stubs.AccountService;
+import org.milimail.messageRemoteServiceAPI.stubs.CAccount;
 import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 import org.omg.CORBA.COMM_FAILURE;
 
@@ -50,14 +53,20 @@ public class AccountServiceProxy {
 		this.accountService = accountService;
 	}
 
-	public Account[] GetAllAccounts() throws CommunicationException,
+	public List<Account> GetAllAccounts() throws CommunicationException,
 			InternalServerException {
-		Account[] accounts = null;
+		CAccount[] caccounts = null;
 		try {
-			accounts = accountService.GetAllAccounts();
+			caccounts = accountService.GetAllAccounts();
 		} catch (COMM_FAILURE e) {
 			throw new CommunicationException(
 					"Communication Failure with Server", e);
+		}
+		
+		List<Account> accounts = new ArrayList<Account>();
+		
+		for (int i = 0; i < caccounts.length; i++) {
+			accounts.add(new Account(caccounts[i]));
 		}
 		
 		return accounts;
