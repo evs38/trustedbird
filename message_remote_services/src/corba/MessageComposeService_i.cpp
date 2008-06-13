@@ -285,7 +285,7 @@ void MessageComposeService_i::ShowMessageCompositionWindow(nsIMsgComposeParams *
 
 }
 
-void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const Headers& headers){
+void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const CHeaders& headers){
   nsresult rv;
   if (headers.length() == 0)
     return;
@@ -308,7 +308,7 @@ void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields
   
 }
 
-void MessageComposeService_i::AddAttachment(nsIMsgCompFields * pMsgCompFields, const Attachments& attachments){
+void MessageComposeService_i::AddAttachment(nsIMsgCompFields * pMsgCompFields, const CAttachments& attachments){
   nsresult rv;
   
   for (uint i = 0; i < attachments.length(); ++i) {
@@ -339,11 +339,13 @@ void MessageComposeService_i::AddAttachment(nsIMsgCompFields * pMsgCompFields, c
   }
 }
 
-PRBool MessageComposeService_i::IsFile(const Attachment& attachment){
+PRBool MessageComposeService_i::IsFile(const CAttachment& attachment){
     PRBool exists =  PR_FALSE;
     nsresult rv;
     nsCOMPtr<nsILocalFile> pLocalFile = do_CreateInstance(NS_LOCAL_FILE_CONTRACTID, &rv);
     ENSURE_SUCCESS(rv, "Cannot create nsILocalFile");
+    
+    cout << attachment.dirPath << endl;
     
     rv = pLocalFile->InitWithNativePath(nsDependentCString(attachment.dirPath));
     ENSURE_SUCCESS(rv, "Cannot call InitWithNativePath");

@@ -83,11 +83,11 @@ private:
   /*!
      * Helper method used add custom headers to message
      */
-  void AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const Headers& headers);
+  void AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const CHeaders& headers);
   
-  void AddAttachment(nsIMsgCompFields * pMsgCompFields, const Attachments& attachments);
+  void AddAttachment(nsIMsgCompFields * pMsgCompFields, const CAttachments& attachments);
   
-  PRBool IsFile(const Attachment& attachment);
+  PRBool IsFile(const CAttachment& attachment);
   
   nsCOMPtr<nsIServiceManager> svcMgr;
  

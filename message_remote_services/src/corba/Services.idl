@@ -58,12 +58,12 @@ interface AccountService {
 	
 };
 
-struct Header {
+struct CHeader {
 	string key;
 	string value;
 };
 
-typedef sequence<Header> Headers;
+typedef sequence<CHeader> CHeaders;
 
 typedef sequence<string> Addresses;
 
@@ -77,13 +77,13 @@ struct CNotification {
 	boolean isMDNReadRequested;
 };
 
-struct Attachment {
+struct CAttachment {
 	string dirPath;
 	string fileName;
 	string mimeType;
 };
 
-typedef sequence<Attachment> Attachments;
+typedef sequence<CAttachment> CAttachments;
 
 struct CMessage {
 	Addresses recipients_to;
@@ -94,8 +94,8 @@ struct CMessage {
 	string body;
 	string uuid;
 	CSecurity security;
-	Headers p_headers;
-	Attachments p_attachments;
+	CHeaders p_headers;
+	CAttachments p_attachments;
 };
 
 interface MessageSendListener {

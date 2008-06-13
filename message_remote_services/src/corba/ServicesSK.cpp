@@ -363,7 +363,7 @@ _impl_AccountService::_mostDerivedRepoId()
 }
 
 void
-Header::operator>>= (cdrStream &_n) const
+CHeader::operator>>= (cdrStream &_n) const
 {
   _n.marshalString(key,0);
   _n.marshalString(value,0);
@@ -371,7 +371,7 @@ Header::operator>>= (cdrStream &_n) const
 }
 
 void
-Header::operator<<= (cdrStream &_n)
+CHeader::operator<<= (cdrStream &_n)
 {
   key = _n.unmarshalString(0);
   value = _n.unmarshalString(0);
@@ -411,7 +411,7 @@ CNotification::operator<<= (cdrStream &_n)
 }
 
 void
-Attachment::operator>>= (cdrStream &_n) const
+CAttachment::operator>>= (cdrStream &_n) const
 {
   _n.marshalString(dirPath,0);
   _n.marshalString(fileName,0);
@@ -420,7 +420,7 @@ Attachment::operator>>= (cdrStream &_n) const
 }
 
 void
-Attachment::operator<<= (cdrStream &_n)
+CAttachment::operator<<= (cdrStream &_n)
 {
   dirPath = _n.unmarshalString(0);
   fileName = _n.unmarshalString(0);
@@ -439,8 +439,8 @@ CMessage::operator>>= (cdrStream &_n) const
   _n.marshalString(body,0);
   _n.marshalString(uuid,0);
   (const CSecurity&) security >>= _n;
-  (const Headers&) p_headers >>= _n;
-  (const Attachments&) p_attachments >>= _n;
+  (const CHeaders&) p_headers >>= _n;
+  (const CAttachments&) p_attachments >>= _n;
 
 }
 
@@ -455,8 +455,8 @@ CMessage::operator<<= (cdrStream &_n)
   body = _n.unmarshalString(0);
   uuid = _n.unmarshalString(0);
   (CSecurity&)security <<= _n;
-  (Headers&)p_headers <<= _n;
-  (Attachments&)p_attachments <<= _n;
+  (CHeaders&)p_headers <<= _n;
+  (CAttachments&)p_attachments <<= _n;
 
 }
 
