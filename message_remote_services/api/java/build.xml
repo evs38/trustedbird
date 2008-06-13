@@ -157,6 +157,7 @@
 			<batchtest fork="no">
 				<fileset dir="test_up">
 					<include name="**/*Test*.java"/>
+					<exclude name="**/Abstract*"/>
 				</fileset>
 			</batchtest>
 		</junit>
