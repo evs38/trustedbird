@@ -104,18 +104,18 @@ void MessageComposeService_i::FillMsgComposeParams(
   //Add headers
   this->AddCustomHeaders(pMsgCompFields, p_message.p_headers);
   
-  nsCOMPtr<nsIMsgSMIMECompFields> mSMIMECompFields = do_CreateInstance(
+  nsCOMPtr<nsIMsgSMIMECompFields> pMsgSMIMECompFields = do_CreateInstance(
       NS_MSGSMIMECOMPFIELDS_CONTRACTID, &rv);
 
   //Sign message
   if (p_message.security.isSigned)
-    mSMIMECompFields->SetSignMessage(PR_TRUE);
+    pMsgSMIMECompFields->SetSignMessage(PR_TRUE);
 
   //Sign message
   if (p_message.security.isCrypted)
-    mSMIMECompFields->SetRequireEncryptMessage(PR_TRUE);
+    pMsgSMIMECompFields->SetRequireEncryptMessage(PR_TRUE);
 
-  pMsgCompFields->SetSecurityInfo(mSMIMECompFields);
+  pMsgCompFields->SetSecurityInfo(pMsgSMIMECompFields);
 
   //MDN
   if (p_message.notification.isMDNReadRequested)
