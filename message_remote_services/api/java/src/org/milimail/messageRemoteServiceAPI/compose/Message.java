@@ -36,13 +36,15 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import org.milimail.messageRemoteServiceAPI.stubs.Attachment;
+import org.milimail.messageRemoteServiceAPI.stubs.CAttachment;
+import org.milimail.messageRemoteServiceAPI.stubs.CHeader;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessage;
 import org.milimail.messageRemoteServiceAPI.stubs.CNotification;
 import org.milimail.messageRemoteServiceAPI.stubs.CSecurity;
-import org.milimail.messageRemoteServiceAPI.stubs.Header;
 
 public class Message {
 	private CMessage message;
@@ -50,7 +52,7 @@ public class Message {
 	public Message() {
 		message = new CMessage();
 		message.body = "";
-		message.subject="";
+		message.subject = "";
 		message.recipients_to = new String[0];
 		message.recipients_cc = new String[0];
 		message.recipients_bcc = new String[0];
@@ -59,103 +61,141 @@ public class Message {
 		message.notification = new CNotification();
 		message.security.isCrypted = false;
 		message.security.isSigned = false;
-		message.p_headers = new Header[0];
-		message.p_attachments = new Attachment[0];
+		message.p_headers = new CHeader[0];
+		message.p_attachments = new CAttachment[0];
 	}
-	
+
 	public String[] getTo() {
 		return message.recipients_to;
 	}
-	
+
 	public void setTo(String[] to) {
 		if (to == null)
 			return;
 		message.recipients_to = to;
 	}
-	
+
 	public String[] getCc() {
 		return message.recipients_cc;
 	}
-	
+
 	public void setCc(String[] cc) {
 		if (cc == null)
 			return;
 		message.recipients_cc = cc;
 	}
-	
+
 	public String[] getBcc() {
 		return message.recipients_bcc;
 	}
-	
+
 	public void setBcc(String[] bcc) {
 		if (bcc == null)
 			return;
 		message.recipients_bcc = bcc;
 	}
-	
+
 	public String getSubject() {
 		return message.subject;
 	}
-	
+
 	public void setSubject(String subject) {
 		if (subject == null)
 			return;
 		message.subject = subject;
 	}
-	
+
 	public String getBody() {
 		return message.body;
 	}
-	
+
 	public void setBody(String body) {
 		if (body == null)
 			return;
 		message.body = body;
 	}
-	
-	public String getUUID(){
+
+	public String getUUID() {
 		return message.uuid;
 	}
 
 	public CMessage getCorbaObject() {
 		return message;
 	}
-	
-	public void setSecurity(Security security){
+
+	public void setSecurity(Security security) {
 		message.security.isCrypted = security.isCrypted();
 		message.security.isSigned = security.isSigned();
 	}
-	
-	public Security getSecurity(){
-		return new Security(message.security.isSigned, message.security.isCrypted);
+
+	public Security getSecurity() {
+		return new Security(message.security.isSigned,
+				message.security.isCrypted);
 	}
-	
-	public void setHeaders(Header[] headers){
-		if (headers == null) 
+
+	public void setHeaders(List<Header> headers) {
+		if (headers == null)
 			return;
-		message.p_headers = headers;
+		
+		CHeader[] cHeaders = new CHeader[headers.size()];
+		int i = 0;
+		
+		for (Header header : headers) {
+			CHeader cHeader = header.getCorbaObject();
+			cHeaders[i] = cHeader;
+			i++;
+		}
+		
+		
+		message.p_headers = cHeaders;
 	}
-	
-	public Header[] getHeaders(){
-		return message.p_headers;
+
+	public List<Header> getHeaders() {
+		List<Header> headers = new ArrayList<Header>();
+
+		for (int i = 0; i < message.p_headers.length; i++) {
+			headers.add(new Header(message.p_headers[i]));
+		}
+
+		return headers;
 	}
-	
-	public void setNotification(Notification notification){
-		message.notification.isMDNReadRequested = notification.isMDNReadRequested();
+
+	public void setNotification(Notification notification) {
+		message.notification.isMDNReadRequested = notification
+				.isMDNReadRequested();
 		message.notification.isDSNRequested = notification.isDSNRequested();
 	}
-	
-	public Notification getNotification(){
-		return new Notification(message.notification.isMDNReadRequested, message.notification.isMDNReadRequested);
+
+	public Notification getNotification() {
+		return new Notification(message.notification.isMDNReadRequested,
+				message.notification.isMDNReadRequested);
 	}
-	
-	public void setAttachments(Attachment[] attachments){
-		if (attachments == null) 
+
+	public void setAttachments(List<Attachment> attachments) {
+		if (attachments == null)
 			return;
-		message.p_attachments = attachments;
+		
+		CAttachment[] cAttachments = new CAttachment[attachments.size()];
+		int i = 0;
+		
+		for (Attachment attachment : attachments) {
+			CAttachment cAttachment = attachment.getCorbaObject();
+			cAttachments[i] = cAttachment;
+			i++;
+		}
+		
+		
+		message.p_attachments = cAttachments;
+
 	}
-	
-	public Attachment[] getAttachments(){
-		return message.p_attachments;
+
+	public List<Attachment> getAttachments() {
+		List<Attachment> attachments = new ArrayList<Attachment>();
+
+		for (int i = 0; i < message.p_attachments.length; i++) {
+			attachments.add(new Attachment(message.p_attachments[i]));
+		}
+
+		return attachments;
 	}
 }

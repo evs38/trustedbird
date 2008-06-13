@@ -36,32 +36,45 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-import org.milimail.messageRemoteServiceAPI.account.Account;
-import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
-import org.milimail.messageRemoteServiceAPI.stubs.MessageComposeService;
-import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
+import org.milimail.messageRemoteServiceAPI.stubs.CAttachment;
 
-public class MessageComposeServiceProxy {
+public class Attachment {
+	private CAttachment attachment;
 
-	private MessageComposeService service;
-
-	public MessageComposeServiceProxy(MessageComposeService service) {
-		super();
-		this.service = service;
+	public Attachment(CAttachment attachment) {
+		this.attachment = attachment;
 	}
 
-	public void sendMessage(Account p_account, Message p_message,
-			MessageSendListener p_listener) throws InternalServerException {
-
-		service.SendMessage(p_account.getCorbaObject(), p_message
-				.getCorbaObject(), p_listener, false);
+	public Attachment() {
+		attachment = new CAttachment();
 	}
 
-	public void sendMessage(Account p_account, Message p_message,
-			MessageSendListener p_listener, boolean openComposeWindowOnBadFormat)
-			throws InternalServerException {
-
-		service.SendMessage(p_account.getCorbaObject(), p_message
-				.getCorbaObject(), p_listener, openComposeWindowOnBadFormat);
+	public String getDirPath() {
+		return attachment.dirPath;
 	}
+
+	public void setDirPath(String dirPath) {
+		attachment.dirPath = dirPath;
+	}
+
+	public String getFileName() {
+		return attachment.fileName;
+	}
+
+	public void setFileName(String fileName) {
+		attachment.fileName = fileName;
+	}
+
+	public String getMimeType() {
+		return attachment.mimeType;
+	}
+
+	public void setMimeType(String mimeType) {
+		attachment.mimeType = mimeType;
+	}
+
+	public CAttachment getCorbaObject() {
+		return attachment;
+	}
+
 }

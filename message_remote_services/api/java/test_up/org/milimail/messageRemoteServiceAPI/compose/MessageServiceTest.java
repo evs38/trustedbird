@@ -36,8 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-import org.milimail.messageRemoteServiceAPI.stubs.Attachment;
-import org.milimail.messageRemoteServiceAPI.stubs.Header;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 
 public class MessageServiceTest extends AbstractMessageServiceTest {
@@ -117,16 +118,19 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 	}
 	
 	public void testSendMessageWithHeaders() throws Exception{
-		Header[] headers = new Header[2];
-		headers[0] = new Header();
-		headers[0].key = "X-MRS-TEST-1";
-		headers[0].value = "X-MRS-VALUE-1";
-		headers[1] = new Header();
-		headers[1].key = "X-MRS-TEST-2";
-		headers[1].value = "X-MRS-VALUE-2";
+		List<Header> headers = new ArrayList<Header>();
+		Header header0 = new Header();
+		header0.setKey("X-MRS-TEST-1");
+		header0.setValue("X-MRS-VALUE-1");
+		Header header1 = new Header();
+		header1.setKey("X-MRS-TEST-2");
+		header1.setValue("X-MRS-VALUE-2");
+		
+		headers.add(header0);
+		headers.add(header1);
 		
 		Message message = new Message();
-		message.setSubject("Subject from API");
+		message.setSubject("Subject from API With Headers");
 		message.setBody("body from API");
 		message.setHeaders(headers);
 		
@@ -170,11 +174,16 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		message.setSubject("From Api With 1 Attachment");
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
-		Attachment[] attachments = new Attachment[1];
-		attachments[0] = new Attachment();
-		attachments[0].dirPath = testPath;
-		attachments[0].fileName = "attachment1.txt";
-		attachments[0].mimeType = "text/plain";
+		
+		List<Attachment> attachments = new ArrayList<Attachment>();
+		Attachment attachment0 = new Attachment();
+		attachment0 = new Attachment();
+		attachment0.setDirPath(testPath);
+		attachment0.setFileName("attachment1.txt");
+		attachment0.setMimeType("text/plain");
+		
+		attachments.add(attachment0);
+		
 		message.setAttachments(attachments);
 		
 		composeService.sendMessage(account, message, messageListener);
@@ -185,15 +194,23 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		message.setSubject("From Api With 2 Attachment");
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
-		Attachment[] attachments = new Attachment[2];
-		attachments[0] = new Attachment();
-		attachments[0].dirPath = testPath;
-		attachments[0].fileName = "attachment1.txt";
-		attachments[0].mimeType = "text/plain";
-		attachments[1] = new Attachment();
-		attachments[1].dirPath = testPath;
-		attachments[1].fileName = "attachment2.txt";
-		attachments[1].mimeType = "text/plain";
+		
+		List<Attachment> attachments = new ArrayList<Attachment>();
+		
+		Attachment attachment0 = new Attachment();
+		attachment0 = new Attachment();
+		attachment0.setDirPath(testPath);
+		attachment0.setFileName("attachment1.txt");
+		attachment0.setMimeType("text/plain");
+		
+		attachments.add(attachment0);
+		
+		Attachment attachment1 = new Attachment();
+		attachment1 = new Attachment();
+		attachment1.setDirPath(testPath);
+		attachment1.setFileName("attachment2.txt");
+		attachment1.setMimeType("text/plain");
+		attachments.add(attachment1);
 		message.setAttachments(attachments);
 		
 		composeService.sendMessage(account, message, messageListener);

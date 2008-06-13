@@ -36,32 +36,37 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-import org.milimail.messageRemoteServiceAPI.account.Account;
-import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
-import org.milimail.messageRemoteServiceAPI.stubs.MessageComposeService;
-import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
+import org.milimail.messageRemoteServiceAPI.stubs.CHeader;
 
-public class MessageComposeServiceProxy {
-
-	private MessageComposeService service;
-
-	public MessageComposeServiceProxy(MessageComposeService service) {
-		super();
-		this.service = service;
+public class Header {
+	
+	private CHeader header;
+	
+	public Header() {
+		header = new CHeader();
+		header.key = "";
+		header.value = "";
+	}
+	
+	public Header(CHeader header) {
+		this.header = header;
+	}
+	
+	public String getKey() {
+		return header.key;
+	}
+	public void setKey(String key) {
+		 header.key = key;
+	}
+	public String getValue() {
+		return  header.value;
+	}
+	public void setValue(String value) {
+		header.value = value;
 	}
 
-	public void sendMessage(Account p_account, Message p_message,
-			MessageSendListener p_listener) throws InternalServerException {
-
-		service.SendMessage(p_account.getCorbaObject(), p_message
-				.getCorbaObject(), p_listener, false);
-	}
-
-	public void sendMessage(Account p_account, Message p_message,
-			MessageSendListener p_listener, boolean openComposeWindowOnBadFormat)
-			throws InternalServerException {
-
-		service.SendMessage(p_account.getCorbaObject(), p_message
-				.getCorbaObject(), p_listener, openComposeWindowOnBadFormat);
+	public CHeader getCorbaObject() {
+		
+		return header;
 	}
 }

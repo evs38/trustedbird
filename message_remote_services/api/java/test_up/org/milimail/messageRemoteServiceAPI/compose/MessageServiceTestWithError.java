@@ -36,7 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
 
-import org.milimail.messageRemoteServiceAPI.stubs.Attachment;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 
 public class MessageServiceTestWithError extends AbstractMessageServiceTest {
@@ -83,13 +85,17 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 
 		message.setBody("body from API");
 
-		Attachment[] attachments = new Attachment[1];
-		attachments[0] = new Attachment();
-		attachments[0].dirPath = "/tmp/";
-		attachments[0].fileName = "attachment.txt";
-		attachments[0].mimeType = "text/plain";
-		message.setAttachments(attachments);
+		List<Attachment> attachments = new ArrayList<Attachment>();
 
+		Attachment attachment0 = new Attachment();
+		attachment0 = new Attachment();
+		attachment0.setDirPath(testPath);
+		attachment0.setFileName("attachment1.txt");
+		attachment0.setMimeType("text/plain");
+
+		attachments.add(attachment0);
+		message.setAttachments(attachments);
+		
 		String[] to = { "user1@test.milimail.org", "user2test.milimail.org" };
 		message.setTo(to);
 		boolean exceptionThrown = false;
@@ -109,11 +115,16 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		message.setSubject("From Api With 1 Attachment");
 		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
-		Attachment[] attachments = new Attachment[1];
-		attachments[0] = new Attachment();
-		attachments[0].dirPath = "/wrongDirectory/";
-		attachments[0].fileName = "wrongFileName.txt";
-		attachments[0].mimeType = "text/plain";
+		List<Attachment> attachments = new ArrayList<Attachment>();
+
+		Attachment attachment0 = new Attachment();
+		attachment0 = new Attachment();
+		attachment0.setDirPath("/wrongdirectory");
+		attachment0.setFileName("wrongfilename.txt");
+		attachment0.setMimeType("text/plain");
+
+		attachments.add(attachment0);
+		
 		message.setAttachments(attachments);
 		boolean exceptionThrowed = false;
 
