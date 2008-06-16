@@ -40,7 +40,7 @@ import org.milimail.messageRemoteServiceAPI.stubs.CAccount;
 
 public class Account {
 
-	CAccount account;
+	private CAccount account;
 
 	public String getKey() {
 		return account.key;
