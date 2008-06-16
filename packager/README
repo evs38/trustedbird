@@ -1,0 +1,15 @@
+= Milimail build instructions =
+
+== Dependencies (Debian) ==
+build-essential ant subversion libgtk2.0-dev libglib1.2-dev libidl-dev libxt-dev gcc-3.4 g++-3.4 zip unzip sun-java5-jdk ccache
+
+== Select Sun Java ==
+ # update-java-alternatives -l
+ # update-java-alternatives -s java-1.5.0-sun
+
+== Initialize and accept SSL certificate  ==
+ $ svn log https://admisource.gouv.fr/svn/milimail/branches/mozilla/MILIMAIL_BRANCH
+ (p = permanently)
+
+== Build ==
+ $ ant build-all

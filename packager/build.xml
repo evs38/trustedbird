@@ -1,0 +1,298 @@
+<?xml version="1.0"?>
+<!-- =================================
+
+     Milimail and extensions packager
+
+
+     Olivier PARNIERE
+     Olivier BRUN
+     Raphael FAIRISE
+
+
+     Build and package everything:
+     $ ant build-all
+
+     Get target list:
+     $ ant -projecthelp
+     ================================= -->
+<project name="Milimail Packager" default="build-all">
+  <description>Build Milimail and extensions</description>
+
+  <property file="package.properties" />
+  <property name="local.build.dir" value="work" />
+  <property name="local.dist.dir" value="dist" />
+  <property name="local.archive.file" value="milimail.tar.bz2" />
+
+  <!-- ant-contrib library -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="ant-contrib-1.0b3.jar"/>
+    </classpath>
+  </taskdef>
+
+
+  <!-- =================================
+       build-all
+       ================================= -->
+  <target name="build-all" description="Extract, update and build Milimail and extensions"
+          depends="distclean, extract-milimail, update-milimail, build-milimail, package-milimail, package-extensions">
+  </target>
+
+
+  <!-- =================================
+       distclean
+       ================================= -->
+  <target name="distclean" description="Clean build/ and dist/ directories">
+    <delete dir="${local.build.dir}" />
+    <delete dir="${local.dist.dir}" />
+  </target>
+
+
+  <!-- =================================
+       clean-milimail
+       ================================= -->
+  <target name="clean-milimail" description="Clean milimail build directory">
+    <delete dir="${local.build.dir}/mozilla" />
+  </target>
+
+
+  <!-- =================================
+       clean-extensions
+       ================================= -->
+  <target name="clean-extensions" description="Clean *.xpi">
+    <delete>
+      <fileset dir="${local.dist.dir}">
+        <include name="*.xpi" />
+      </fileset>
+    </delete>
+  </target>
+
+
+  <!-- =================================
+       checkout-milimail
+       ================================= -->
+  <target name="checkout-milimail" description="Checkout Milimail from SVN"
+          depends="clean-milimail">
+    <mkdir dir="${local.build.dir}" />
+    <exec executable="svn" dir="${local.build.dir}">
+      <arg value="co" />
+      <arg value="${mozilla.repository.url}" />
+      <arg value="mozilla" />
+    </exec>
+  </target>
+
+
+  <!-- =================================
+       extract-milimail
+       ================================= -->
+  <target name="extract-milimail" description="Extract local archive of Milimail"
+          depends="clean-milimail">
+    <!-- Check if archive exists -->
+    <available file="${local.archive.file}" property="sources.archive.available" />
+    <if>
+      <not>
+        <isset property="sources.archive.available" />
+      </not>
+      <then>
+        <antcall target="create-archive-milimail" />
+      </then>
+    </if>
+
+    <!-- Extract archive -->
+    <mkdir dir="${local.build.dir}" />
+    <exec executable="tar">
+      <arg value="xjf" />
+      <arg value="${local.archive.file}" />
+      <arg value="-C" />
+      <arg value="${local.build.dir}/" />
+    </exec>
+  </target>
+
+
+  <!-- =================================
+       create-archive-milimail
+       ================================= -->
+  <target name="create-archive-milimail" description="Create local archive of Milimail"
+          depends="checkout-milimail">
+    <exec executable="tar">
+      <arg value="cjf" />
+      <arg value="${local.archive.file}" />
+      <arg value="-C" />
+      <arg value="${local.build.dir}/" />
+      <arg value="mozilla" />
+    </exec>
+  </target>
+
+
+  <!-- =================================
+       update-milimail
+       ================================= -->
+  <target name="update-milimail" description="Update Milimail from SVN">
+    <available file="${local.build.dir}/mozilla" property="sources.available" />
+    <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first." unless="sources.available" />
+
+    <exec executable="svn" dir="${local.build.dir}">
+      <arg value="up" />
+      <arg value="mozilla" />
+    </exec>
+  </target>
+
+
+  <!-- =================================
+       -define-config-milimail (private)
+       ================================= -->
+  <target name="-define-config-milimail">
+    <condition property="isUnix">
+      <os family="unix" />
+    </condition>
+
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <property name="local.checkbuild.file" value="dist/bin/thunderbird" />
+      </then>
+      <else>
+        <property name="local.checkbuild.file" value="dist/bin/thunderbird.exe" />
+      </else>
+    </if>
+  </target>
+
+
+  <!-- =================================
+       build-milimail
+       ================================= -->
+  <target name="build-milimail" description="Build Milimail"
+          depends="-define-config-milimail">
+    <available file="${local.build.dir}/mozilla" property="sources.available" />
+    <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first." unless="sources.available" />
+
+    <!-- Patch config -->
+    <copy file="mozconfig" tofile="${local.build.dir}/mozilla/.mozconfig" />
+    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
+    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
+
+    <!-- Build -->
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <exec executable="make" dir="${local.build.dir}/mozilla" failonerror="true">
+          <arg value="CC=gcc-3.4" />
+          <arg value="CXX=g++-3.4" />
+          <arg value="-f" />
+          <arg value="client.mk" />
+          <arg value="build" />
+        </exec>
+      </then>
+      <else>
+        <exec executable="make" dir="${local.build.dir}/mozilla" failonerror="true">
+          <arg value="-f" />
+          <arg value="client.mk" />
+          <arg value="build" />
+        </exec>
+      </else>
+    </if>
+  </target>
+
+
+  <!-- =================================
+       package-milimail
+       ================================= -->
+  <target name="package-milimail" description="Create Milimail package"
+          depends="-define-config-milimail">
+    <available file="${local.build.dir}/mozilla/${local.checkbuild.file}" property="build.success" />
+    <fail message="File ${local.checkbuild.file} not found! Build Milimail first." unless="build.success" />
+
+    <tstamp />
+    <mkdir dir="${local.dist.dir}" />
+
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <!-- Create package -->
+        <exec executable="make" dir="${local.build.dir}/mozilla" failonerror="true">
+          <arg value="-C" />
+          <arg value="mail/installer" />
+        </exec>
+
+        <!-- Rename package -->
+        <copy todir="${local.dist.dir}/">
+          <fileset dir="${local.build.dir}/mozilla/dist">
+            <include name="*.tar.gz" />
+          </fileset>
+          <mapper type="regexp" from="(.*)$" to="${mozilla.name}-${DSTAMP}_\1" />
+        </copy>
+      </then>
+      <else>
+        <!-- Create package -->
+        <exec executable="make" dir="${local.build.dir}/mozilla" failonerror="true">
+          <arg value="-C" />
+          <arg value="mail/installer" />
+          <arg value="installer" />
+        </exec>
+
+        <!-- Rename package -->
+        <copy todir="${local.dist.dir}/">
+          <fileset dir="${local.build.dir}/mozilla/dist/install/sea">
+            <include name="*.exe" />
+          </fileset>
+          <mapper type="regexp" from="(.*)$" to="${mozilla.name}-${DSTAMP}_\1" />
+        </copy>
+      </else>
+    </if>
+  </target>
+
+
+  <!-- =================================
+       package-extensions
+       ================================= -->
+  <target name="package-extensions" description="Get extensions from SVN and create packages"
+          depends="clean-extensions">
+    <mkdir dir="${local.build.dir}" />
+    <mkdir dir="${local.dist.dir}" />
+    <foreach list="${extension.list}" target="-package-extension" param="local.extension.name" />
+  </target>
+
+
+  <!-- =================================
+       -package-extension (private)
+       ================================= -->
+  <target name="-package-extension">
+    <propertycopy name="local.extension.repository.url" from="extension.${local.extension.name}.repository.url" />
+    <propertycopy name="local.extension.excludesfile" from="extension.${local.extension.name}.excludesfile" silent="true" />
+
+    <!-- Get extension from SVN -->
+    <delete dir="${local.build.dir}/${local.extension.name}" />
+    <exec executable="svn" dir="${local.build.dir}">
+      <arg value="co" />
+      <arg value="${local.extension.repository.url}" />
+      <arg value="${local.extension.name}" />
+    </exec>
+
+    <!-- Only for 'all-milimail-extensions' extension: copy all already built extensions -->
+    <if>
+      <equals arg1="${local.extension.name}" arg2="all-milimail-extensions" />
+      <then>
+        <copy todir="${local.build.dir}/${local.extension.name}/">
+          <fileset dir="${local.dist.dir}">
+            <include name="*.xpi" />
+          </fileset>
+        </copy>
+      </then>
+    </if>
+
+    <!-- Create package -->
+    <if>
+      <isset property="local.extension.excludesfile" />
+      <then>
+        <zip destfile="${local.dist.dir}/${local.extension.name}.xpi"
+             basedir="${local.build.dir}/${local.extension.name}"
+             excludesfile="${local.build.dir}/${local.extension.name}/${local.extension.excludesfile}" />
+      </then>
+      <else>
+        <zip destfile="${local.dist.dir}/${local.extension.name}.xpi"
+             basedir="${local.build.dir}/${local.extension.name}" />
+      </else>
+    </if>
+  </target>
+
+</project>
