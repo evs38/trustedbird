@@ -74,7 +74,7 @@
   <target name="checkout-milimail" description="Checkout Milimail from SVN"
           depends="clean-milimail">
     <mkdir dir="${local.build.dir}" />
-    <exec executable="svn" dir="${local.build.dir}">
+    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
       <arg value="co" />
       <arg value="${mozilla.repository.url}" />
       <arg value="mozilla" />
@@ -100,7 +100,7 @@
 
     <!-- Extract archive -->
     <mkdir dir="${local.build.dir}" />
-    <exec executable="tar">
+    <exec executable="tar" failonerror="true">
       <arg value="xjf" />
       <arg value="${local.archive.file}" />
       <arg value="-C" />
@@ -114,7 +114,7 @@
        ================================= -->
   <target name="create-archive-milimail" description="Create local archive of Milimail"
           depends="checkout-milimail">
-    <exec executable="tar">
+    <exec executable="tar" failonerror="true">
       <arg value="cjf" />
       <arg value="${local.archive.file}" />
       <arg value="-C" />
@@ -131,7 +131,7 @@
     <available file="${local.build.dir}/mozilla" property="sources.available" />
     <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first." unless="sources.available" />
 
-    <exec executable="svn" dir="${local.build.dir}">
+    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
       <arg value="up" />
       <arg value="mozilla" />
     </exec>
@@ -262,7 +262,7 @@
 
     <!-- Get extension from SVN -->
     <delete dir="${local.build.dir}/${local.extension.name}" />
-    <exec executable="svn" dir="${local.build.dir}">
+    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
       <arg value="co" />
       <arg value="${local.extension.repository.url}" />
       <arg value="${local.extension.name}" />
