@@ -259,6 +259,14 @@
   <target name="-package-extension">
     <propertycopy name="local.extension.repository.url" from="extension.${local.extension.name}.repository.url" />
 
+    <!-- Get extension from SVN -->
+    <delete dir="${local.build.dir}/${local.extension.name}" />
+    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
+      <arg value="co" />
+      <arg value="${local.extension.repository.url}" />
+      <arg value="${local.extension.name}" />
+    </exec>
+
     <!-- Get version -->
     <if>
       <available file="${local.build.dir}/${local.extension.name}/version" />
@@ -274,14 +282,6 @@
         <property name="local.extension.filename" value="${local.extension.name}.xpi" />
       </else>
     </if>
-
-    <!-- Get extension from SVN -->
-    <delete dir="${local.build.dir}/${local.extension.name}" />
-    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
-      <arg value="co" />
-      <arg value="${local.extension.repository.url}" />
-      <arg value="${local.extension.name}" />
-    </exec>
 
     <!-- Only for 'all-milimail-extensions' extension: copy all already built extensions -->
     <if>
