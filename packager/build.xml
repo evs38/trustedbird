@@ -258,7 +258,22 @@
        ================================= -->
   <target name="-package-extension">
     <propertycopy name="local.extension.repository.url" from="extension.${local.extension.name}.repository.url" />
-    <propertycopy name="local.extension.excludesfile" from="extension.${local.extension.name}.excludesfile" silent="true" />
+
+    <!-- Get version -->
+    <if>
+      <available file="${local.build.dir}/${local.extension.name}/version" />
+      <then>
+        <exec executable="head" dir="${local.build.dir}/${local.extension.name}" outputproperty="local.extension.version" failonerror="true">
+          <arg value="-n" />
+          <arg value="1" />
+          <arg value="version" />
+        </exec>
+        <property name="local.extension.filename" value="${local.extension.name}-${local.extension.version}.xpi" />
+      </then>
+      <else>
+        <property name="local.extension.filename" value="${local.extension.name}.xpi" />
+      </else>
+    </if>
 
     <!-- Get extension from SVN -->
     <delete dir="${local.build.dir}/${local.extension.name}" />
@@ -282,15 +297,17 @@
 
     <!-- Create package -->
     <if>
-      <isset property="local.extension.excludesfile" />
+      <available file="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
       <then>
-        <zip destfile="${local.dist.dir}/${local.extension.name}.xpi"
+        <zip destfile="${local.dist.dir}/${local.extension.filename}"
              basedir="${local.build.dir}/${local.extension.name}"
-             excludesfile="${local.build.dir}/${local.extension.name}/${local.extension.excludesfile}" />
+             excludes="${extension.excludes}"
+             excludesfile="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
       </then>
       <else>
-        <zip destfile="${local.dist.dir}/${local.extension.name}.xpi"
-             basedir="${local.build.dir}/${local.extension.name}" />
+        <zip destfile="${local.dist.dir}/${local.extension.filename}"
+             basedir="${local.build.dir}/${local.extension.name}"
+             excludes="${extension.excludes}" />
       </else>
     </if>
   </target>
