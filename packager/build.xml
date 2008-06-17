@@ -60,7 +60,7 @@
        clean-extensions
        ================================= -->
   <target name="clean-extensions" description="Clean *.xpi">
-    <delete>
+    <delete failonerror="false">
       <fileset dir="${local.dist.dir}">
         <include name="*.xpi" />
       </fileset>
