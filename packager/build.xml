@@ -12,6 +12,12 @@
      Build and package everything:
      $ ant build-all
 
+     Build and package Milimail:
+     $ ant extract-milimail update-milimail build-milimail package-milimail
+
+     Package all extensions:
+     $ ant package-extensions
+
      Get target list:
      $ ant -projecthelp
      ================================= -->
