@@ -39,18 +39,18 @@
 	xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<RDF:Description RDF:about="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.4-alpha"
 		em:version="0.6.2.4-alpha"
-		em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBADzvBTdgm6clC1oIgtD2jTRsWOqvTiiAuxIUUaGKnWSv3qaMHp84r3sL5VtPU48KT4giUKNMXtEGVQ/STPiRbJfk453k9xSP3DlrnkHGKNKzEy72NIJWecletWDqvkDqwUEnxB5/K30aAlWN+VqaCNKKdYotV02bZQfK5DNGAdqG">
+		em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAF7BZuqII4iATcdfBosfu2gdf+LgZWM6g2va9BlIRtjw5IBPshZ8uWsSGZG34HWpS6U6xmA+vlZ1vg0rlSpTjNJBV8nLZ0qLqYlK1y8fodmn0NPit4mZ421syDSuDaQHwrlwiz6tO3Fw5DXaFsvAh4gHXYYcM4bo0mWK5Wybnby1">
 		<em:targetApplication RDF:resource="rdf:#$uSt.z2"/>
 	</RDF:Description>
 	<RDF:Description RDF:about="urn:mozilla:extension:notificationsviewer@milimail.org"
-			 em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBACY4kD4xuqhqImaVhKrI/NJ+keAWCAfzsH3mwVCetKbUUUXJ/79LaTPGEwsvJGSQE+arAidXXMq6prkD94PyU+p0rXxO6SCKVdgf9YeV7QiB9JMLDxOzVCVt8Cv0ogOD2Yr7LcyInLxYh+dddApFlpc/ZK8uPJpusTU9CZCTuyeT">
+			 em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAAlcKmB8Fzp+BLCajhgpMj91wxK0MQ1gT8NAYQhAtN7QpUZilmWXL+PyTu7qtjV4NzSScPItFUlxXICRpZlGS4x/u1jmuiRJWu8iUXNVuyL/kbdHOKmfqplyOVbfWKYedgD1z/vIdr5uiKQ6SmnQdhE5HdHp7v/7l3Betv3+oh9T">
 		<em:updates RDF:resource="rdf:#$rSt.z2"/>
 	</RDF:Description>
 	<Description RDF:about="rdf:#$uSt.z2"
 		em:id="{3550f703-e582-4d05-9a08-453d09bdfdc6}"
 		em:minVersion="1.5"
 		em:maxVersion="3.0.*"
-		em:updateLink="http://admisource.gouv.fr/frs/download.php/547/notifications_viewer-0.6.2.4-alpha.xpi" />
+		em:updateLink="http://admisource.gouv.fr/frs/download.php/549/notifications_viewer-0.6.2.4-alpha.xpi" />
 	<RDF:Seq RDF:about="rdf:#$rSt.z2">
 			<RDF:li RDF:resource="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.4-alpha"/>
 	</RDF:Seq>

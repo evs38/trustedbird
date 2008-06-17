@@ -10,3 +10,4 @@ unit_test*
 *.cache
 notifications_viewer_update.rdf
 notifications_viewer_listofmsg.cache
+diag/*
