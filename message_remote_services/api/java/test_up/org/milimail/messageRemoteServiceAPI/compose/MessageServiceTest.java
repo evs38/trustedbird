@@ -215,4 +215,11 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		
 		composeService.sendMessage(account, message, messageListener);
 	}
+	
+	public void testSendMessageWithoutSubjectAndBody() throws Exception {
+		Message message = new Message();
+		String[] to = { "user2@test.milimail.org" };
+		message.setTo(to);
+		composeService.sendMessage(account, message, messageListener);
+	}
 }

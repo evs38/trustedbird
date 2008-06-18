@@ -43,13 +43,6 @@ import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 
 public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 
-	public void testSendMessageWithoutSubjectAndBody() throws Exception {
-		Message message = new Message();
-		String[] to = { "user2@test.milimail.org" };
-		message.setTo(to);
-		composeService.sendMessage(account, message, messageListener);
-	}
-
 	public void testSendMessageWithoutTo() {
 		Message message = new Message();
 		message.setSubject("Subject from API");
