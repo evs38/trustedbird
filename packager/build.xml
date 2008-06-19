@@ -102,16 +102,17 @@
       <then>
         <antcall target="create-archive-milimail" />
       </then>
+      <else>
+        <!-- Extract archive -->
+        <mkdir dir="${local.build.dir}" />
+        <exec executable="tar" failonerror="true">
+          <arg value="xjf" />
+          <arg value="${local.archive.file}" />
+          <arg value="-C" />
+          <arg value="${local.build.dir}/" />
+        </exec>
+      </else>
     </if>
-
-    <!-- Extract archive -->
-    <mkdir dir="${local.build.dir}" />
-    <exec executable="tar" failonerror="true">
-      <arg value="xjf" />
-      <arg value="${local.archive.file}" />
-      <arg value="-C" />
-      <arg value="${local.build.dir}/" />
-    </exec>
   </target>
 
 
