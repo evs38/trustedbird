@@ -38,18 +38,18 @@
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <em:creator>Olivier BRUN</em:creator>
-  <rdf:Description rdf:about="urn:mozilla:card_viewer_extended@milimail.org">
+  <rdf:Description rdf:about="urn:mozilla:extension:card_viewer_extended@milimail.org">
     <em:updates>
       <rdf:Seq>
         <rdf:li>
           <rdf:Description>
-            <em:version>__VERSION__</em:version>
+            <em:version>dev-svn791</em:version>
             <em:targetApplication>
               <rdf:Description>
                 <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
                 <em:minVersion>2.0</em:minVersion>
                 <em:maxVersion>2.0.0.*</em:maxVersion>
-                <em:updateLink>__XPI_URL__</em:updateLink>
+                <em:updateLink>http://packages.milimail.org/nightly/20080623/card_viewer_extended-dev-svn791.xpi</em:updateLink>
               </rdf:Description>
             </em:targetApplication>
           </rdf:Description>
