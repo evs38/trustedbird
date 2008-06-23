@@ -68,12 +68,13 @@
   <!-- =================================
        clean-extensions
        ================================= -->
-  <target name="clean-extensions" description="Clean *.xpi">
+  <target name="clean-extensions" description="Clean built extensions">
     <delete failonerror="false">
       <fileset dir="${local.dist.dir}">
         <include name="*.xpi" />
       </fileset>
     </delete>
+    <delete dir="${local.dist.dir}/updates" />
   </target>
 
 
@@ -341,6 +342,10 @@
       <arg value="s|__XPI_URL__|${local.extension.path}/${local.extension.filename}|" />
       <arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
     </exec>
+
+    <!-- Copy update.rdf -->
+    <mkdir dir="${local.dist.dir}/updates/${local.extension.name}" />
+    <copy file="${local.build.dir}/${local.extension.name}/update.rdf" tofile="${local.dist.dir}/updates/${local.extension.name}/${local.extension.update.rdf.filename}" />
 
     <!-- Only for 'all-milimail-extensions': copy all already built extensions -->
     <if>
