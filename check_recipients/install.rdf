@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
@@ -37,41 +37,36 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<rdf:RDF
-	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <rdf:Description  about="urn:mozilla:install-manifest">
 
-    <rdf:Description  about="urn:mozilla:install-manifest">
+    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
-		<em:updateURL>http://admisource.gouv.fr/svn/milimail/trunk/check_recipients/update.rdf</em:updateURL>
+    <em:id>check_recipients@milimail.org</em:id>
+    <em:name>Check recipients</em:name>
+    <em:version>__VERSION__</em:version>
+    <em:creator>Eric BALLET BAZ</em:creator>
 
-		<em:id>check_recipients@milimail.org</em:id>
-		<em:name>Check recipients</em:name>
-		<em:version>0.1.3.0</em:version>
-		<em:creator>Eric Ballet Baz</em:creator>
-		<em:iconURL>chrome://check_recipients/content/icons/logo_extension.png</em:iconURL>
+    <em:contributor>Olivier BRUN</em:contributor>
+    <em:homepageURL>http://www.milimail.org/</em:homepageURL>
 
-		<!-- optional items -->
-		<em:contributor>Olivier BRUN</em:contributor>
-        <em:homepageURL>http://www.milimail.org/</em:homepageURL>
+    <em:targetApplication>
+      <rdf:Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>2.0</em:minVersion>
+        <em:maxVersion>2.0.0.*</em:maxVersion>
+      </rdf:Description>
+    </em:targetApplication>
 
-		<em:targetApplication>
-			<rdf:Description>
-				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
-				<em:minVersion>2.0</em:minVersion>
-				<em:maxVersion>2.0.0.*</em:maxVersion>
-			</rdf:Description>
-		</em:targetApplication>
-		<em:description>Check recipients</em:description>
-	  	
-		<!-- extensions required -->
-		<em:requires>
-			<rdf:Description >
-				<em:id>multildap@milimail.org</em:id>
-				<em:name>Multi LDAP</em:name>
-				<em:minVersion>0.2.0.*</em:minVersion>
-				<em:maxVersion>0.2.*</em:maxVersion>
-			</rdf:Description>
-		</em:requires>
-    </rdf:Description>
+    <em:description>Check recipients.</em:description>
+
+    <em:requires>
+      <rdf:Description>
+        <em:id>multildap@milimail.org</em:id>
+        <em:name>Multi LDAP</em:name>
+        <em:minVersion>0.2.0.*</em:minVersion>
+        <em:maxVersion>0.2.*</em:maxVersion>
+      </rdf:Description>
+    </em:requires>
+  </rdf:Description>
 </rdf:RDF>
