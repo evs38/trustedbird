@@ -20,6 +20,9 @@
 
      Get target list:
      $ ant -projecthelp
+
+     Generate development builds (svn revision in filenames, install.rdf and update.rdf linked to nightly builds):
+     $ ant -Ddev=1 build-all
      ================================= -->
 <project name="Milimail Packager" default="build-all">
   <description>Build Milimail and extensions</description>
@@ -82,7 +85,7 @@
     <mkdir dir="${local.build.dir}" />
     <exec executable="svn" dir="${local.build.dir}" failonerror="true">
       <arg value="co" />
-      <arg value="${mozilla.repository.url}" />
+      <arg value="${milimail.repository.url}" />
       <arg value="mozilla" />
     </exec>
   </target>
@@ -209,8 +212,25 @@
     <available file="${local.build.dir}/mozilla/${local.checkbuild.file}" property="build.success" />
     <fail message="File ${local.checkbuild.file} not found! Build Milimail first." unless="build.success" />
 
-    <tstamp />
     <mkdir dir="${local.dist.dir}" />
+
+    <!-- Get version -->
+    <if>
+      <isset property="dev" />
+      <then>
+        <!-- Get revision from SVN -->
+        <exec executable="./getLastChangedRev.sh" outputproperty="local.milimail.revision" failonerror="true">
+          <arg value="${local.build.dir}/mozilla" />
+        </exec>
+        <property name="local.milimail.version" value="dev-svn${local.milimail.revision}" />
+      </then>
+      <else>
+        <!-- Get version from file -->
+        <exec executable="./getVersion.sh" outputproperty="local.milimail.version" failonerror="true">
+          <arg value="${local.build.dir}/mozilla" />
+        </exec>
+      </else>
+    </if>
 
     <if>
       <isset property="isUnix" />
@@ -226,7 +246,7 @@
           <fileset dir="${local.build.dir}/mozilla/dist">
             <include name="*.tar.gz" />
           </fileset>
-          <mapper type="regexp" from="(.*)$" to="${mozilla.name}-${DSTAMP}_\1" />
+          <mapper type="regexp" from="(.*)$" to="${milimail.name}-${local.milimail.version}_\1" />
         </copy>
       </then>
       <else>
@@ -242,7 +262,7 @@
           <fileset dir="${local.build.dir}/mozilla/dist/install/sea">
             <include name="*.exe" />
           </fileset>
-          <mapper type="regexp" from="(.*)$" to="${mozilla.name}-${DSTAMP}_\1" />
+          <mapper type="regexp" from="(.*)$" to="${milimail.name}-${local.milimail.version}_\1" />
         </copy>
       </else>
     </if>
@@ -265,6 +285,7 @@
        ================================= -->
   <target name="-package-extension">
     <propertycopy name="local.extension.repository.url" from="extension.${local.extension.name}.repository.url" />
+    <tstamp />
 
     <!-- Get extension from SVN -->
     <delete dir="${local.build.dir}/${local.extension.name}" />
@@ -276,21 +297,52 @@
 
     <!-- Get version -->
     <if>
-      <available file="${local.build.dir}/${local.extension.name}/version" />
+      <isset property="dev" />
       <then>
-        <exec executable="head" dir="${local.build.dir}/${local.extension.name}" outputproperty="local.extension.version" failonerror="true">
-          <arg value="-n" />
-          <arg value="1" />
-          <arg value="version" />
+        <!-- Get revision from SVN -->
+        <exec executable="./getLastChangedRev.sh" outputproperty="local.extension.revision" failonerror="true">
+          <arg value="${local.build.dir}/${local.extension.name}" />
         </exec>
-        <property name="local.extension.filename" value="${local.extension.name}-${local.extension.version}.xpi" />
+        <property name="local.extension.version" value="dev-svn${local.extension.revision}" />
+        <property name="local.extension.update.rdf.filename" value="update-dev.rdf" />
+        <property name="local.extension.path" value="${extension.nightly.url}/${DSTAMP}" />
       </then>
       <else>
-        <property name="local.extension.filename" value="${local.extension.name}.xpi" />
+        <!-- Get version from file -->
+        <exec executable="./getVersion.sh" outputproperty="local.extension.version" failonerror="true">
+          <arg value="${local.build.dir}/${local.extension.name}" />
+        </exec>
+        <property name="local.extension.update.rdf.filename" value="update.rdf" />
+        <property name="local.extension.path" value="${extension.releases.url}/${local.extension.name}" />
       </else>
     </if>
 
-    <!-- Only for 'all-milimail-extensions' extension: copy all already built extensions -->
+    <!-- XPI file name -->
+    <property name="local.extension.filename" value="${local.extension.name}-${local.extension.version}.xpi" />
+
+    <!-- Add version -->
+    <exec executable="sed" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__VERSION__|${local.extension.version}|" />
+      <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+      <arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
+    </exec>
+
+    <!-- Add update.rdf URL -->
+    <exec executable="sed" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__UPDATE_RDF_URL__|${extension.updates.url}/${local.extension.name}/${local.extension.update.rdf.filename}|" />
+      <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+    </exec>
+
+    <!-- Add XPI URL -->
+    <exec executable="sed" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__XPI_URL__|${local.extension.path}/${local.extension.filename}|" />
+      <arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
+    </exec>
+
+    <!-- Only for 'all-milimail-extensions': copy all already built extensions -->
     <if>
       <equals arg1="${local.extension.name}" arg2="all-milimail-extensions" />
       <then>
