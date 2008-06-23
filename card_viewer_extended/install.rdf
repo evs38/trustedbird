@@ -40,11 +40,11 @@
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <rdf:Description  about="urn:mozilla:install-manifest">
 
-    <em:updateURL>http://packages.milimail.org/updates/card_viewer_extended/update-dev.rdf</em:updateURL>
+    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
     <em:id>card_viewer_extended@milimail.org</em:id>
     <em:name>Card Viewer Extended</em:name>
-    <em:version>dev-svn791</em:version>
+    <em:version>__VERSION__</em:version>
     <em:creator>Eric BALLET BAZ</em:creator>
 
     <em:contributor>Olivier BRUN</em:contributor>
