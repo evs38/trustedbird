@@ -36,31 +36,28 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<rdf:RDF
-	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:NC="http://home.netscape.com/NC-rdf#"
-	xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <rdf:Description about="urn:mozilla:install-manifest">
 
-    <!-- Thunderbird -->
-	<rdf:Description rdf:about="rdf:thunderbirdapplication" em:id="{3550f703-e582-4d05-9a08-453d09bdfdc6}" em:minVersion="2.0" em:maxVersion="2.0.0.*" />
+    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
-    <rdf:Description about="urn:mozilla:install-manifest">
+    <em:id>extensions-package@milimail.org</em:id>
+    <em:name>Milimail Extensions</em:name>
+    <em:version>__VERSION__</em:version>
+    <em:creator>Olivier BRUN</em:creator>
 
-        <em:id>extensions-package@milimail.org</em:id>
-        <em:name>Milimail Extensions</em:name>
-        <em:version>0.0.1.0</em:version>
-        <em:description>Install all Milimail extensions in the same time</em:description>
-        <em:creator>Olivier BRUN</em:creator>
+    <em:homepageURL>http://www.milimail.org/</em:homepageURL>
 
-        <!-- optional items -->
-        <em:homepageURL>http://www.milimail.org/</em:homepageURL>
+    <em:type NC:parseType="Integer">32</em:type>
 
-        <!-- Thunderbird -->
-		<em:targetApplication rdf:resource="rdf:thunderbirdapplication" />
+    <em:targetApplication>
+      <rdf:Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>2.0</em:minVersion>
+        <em:maxVersion>2.0.0.*</em:maxVersion>
+      </rdf:Description>
+    </em:targetApplication>
 
-        <!-- type=extension= 32 multi installation -->
-		<em:type NC:parseType="Integer">32</em:type>
-
-    </rdf:Description>
-
+    <em:description>Install all Milimail extensions.</em:description>
+  </rdf:Description>
 </rdf:RDF>
