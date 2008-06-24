@@ -30,12 +30,13 @@
   <property file="package.properties" />
   <property name="local.build.dir" value="work" />
   <property name="local.dist.dir" value="dist" />
+  <property name="local.tools.dir" value="tools" />
   <property name="local.archive.file" value="milimail.tar.bz2" />
 
   <!-- ant-contrib library -->
   <taskdef resource="net/sf/antcontrib/antlib.xml">
     <classpath>
-      <pathelement location="ant-contrib-1.0b3.jar"/>
+      <pathelement location="${local.tools.dir}/ant-contrib-1.0b3.jar"/>
     </classpath>
   </taskdef>
 
@@ -178,7 +179,7 @@
     <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first." unless="sources.available" />
 
     <!-- Patch config -->
-    <copy file="mozconfig" tofile="${local.build.dir}/mozilla/.mozconfig" />
+    <copy file="${local.tools.dir}/mozconfig" tofile="${local.build.dir}/mozilla/.mozconfig" />
     <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
     <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
 
@@ -221,15 +222,15 @@
       <then>
         <!-- Get revision from SVN -->
         <exec executable="sh" outputproperty="local.milimail.revision" failonerror="true">
-          <arg value="getLastChangedRev.sh" />
+          <arg value="${local.tools.dir}/getLastChangedRev.sh" />
           <arg value="${local.build.dir}/mozilla" />
         </exec>
-        <property name="local.milimail.version" value="dev-svn${local.milimail.revision}" />
+        <property name="local.milimail.version" value="0dev-svn${local.milimail.revision}" />
       </then>
       <else>
         <!-- Get version from file -->
         <exec executable="sh" outputproperty="local.milimail.version" failonerror="true">
-          <arg value="getVersion.sh" />
+          <arg value="${local.tools.dir}/getVersion.sh" />
           <arg value="${local.build.dir}/mozilla" />
         </exec>
       </else>
@@ -244,6 +245,14 @@
           <arg value="mail/installer" />
         </exec>
 
+        <!-- Remove existing packages -->
+        <delete failonerror="false">
+          <fileset dir="${local.dist.dir}">
+            <include name="*.tar.gz" />
+            <include name="*.deb" />
+          </fileset>
+        </delete>
+
         <!-- Rename package -->
         <copy todir="${local.dist.dir}/">
           <fileset dir="${local.build.dir}/mozilla/dist">
@@ -251,6 +260,27 @@
           </fileset>
           <mapper type="regexp" from="(.*)$" to="${milimail.name}-${local.milimail.version}_\1" />
         </copy>
+
+        <!-- Create Debian package -->
+        <if>
+          <available file="/usr/bin/dpkg-deb" />
+          <then>
+            <copy todir="${local.build.dir}/">
+              <fileset dir="${local.build.dir}/mozilla/dist">
+                <include name="*.tar.gz" />
+              </fileset>
+              <mapper type="regexp" from="(.*)$" to="${milimail.name}-${local.milimail.version}.tar.gz" />
+            </copy>
+            <exec executable="sh" failonerror="true">
+              <arg value="${local.tools.dir}/createDebianPackage.sh" />
+              <arg value="${local.build.dir}" />
+              <arg value="${local.build.dir}/${milimail.name}-${local.milimail.version}.tar.gz" />
+              <arg value="${local.milimail.version}" />
+              <arg value="${local.tools.dir}/debian-control" />
+            </exec>
+            <copy file="${local.build.dir}/milimail.deb" tofile="${local.dist.dir}/${milimail.name}-${local.milimail.version}.deb" />
+          </then>
+        </if>
       </then>
       <else>
         <!-- Create package -->
@@ -304,17 +334,17 @@
       <then>
         <!-- Get revision from SVN -->
         <exec executable="sh" outputproperty="local.extension.revision" failonerror="true">
-          <arg value="getLastChangedRev.sh" />
+          <arg value="${local.tools.dir}/getLastChangedRev.sh" />
           <arg value="${local.build.dir}/${local.extension.name}" />
         </exec>
-        <property name="local.extension.version" value="dev-svn${local.extension.revision}" />
+        <property name="local.extension.version" value="0dev-svn${local.extension.revision}" />
         <property name="local.extension.update.rdf.filename" value="update-dev.rdf" />
         <property name="local.extension.path" value="${extension.nightly.url}/${DSTAMP}" />
       </then>
       <else>
         <!-- Get version from file -->
         <exec executable="sh" outputproperty="local.extension.version" failonerror="true">
-          <arg value="getVersion.sh" />
+          <arg value="${local.tools.dir}/getVersion.sh" />
           <arg value="${local.build.dir}/${local.extension.name}" />
         </exec>
         <property name="local.extension.update.rdf.filename" value="update.rdf" />

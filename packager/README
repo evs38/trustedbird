@@ -12,6 +12,8 @@
 * g++-3.4
 * zip
 * unzip
+* fakeroot
+* dpkg-deb
 * a Java JDK for ant (java-gcj-compat-dev, sun-java6-jdk, openjdk-6-jdk,...)
 
 ==== Windows ====

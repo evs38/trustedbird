@@ -1,0 +1,11 @@
+Package: milimail
+Version: __VERSION__
+Section: web
+Priority: optional
+Architecture: i386
+Depends: 
+Provides: mail-reader
+Maintainer: Milimail team <contact@milimail.org>
+Description: Mail client based on Mozilla Thunderbird
+ Milimail is a mail client based on Mozilla Thunderbird.
+ See http://www.milimail.org
