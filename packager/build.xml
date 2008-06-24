@@ -220,14 +220,16 @@
       <isset property="dev" />
       <then>
         <!-- Get revision from SVN -->
-        <exec executable="./getLastChangedRev.sh" outputproperty="local.milimail.revision" failonerror="true">
+        <exec executable="sh" outputproperty="local.milimail.revision" failonerror="true">
+          <arg value="getLastChangedRev.sh" />
           <arg value="${local.build.dir}/mozilla" />
         </exec>
         <property name="local.milimail.version" value="dev-svn${local.milimail.revision}" />
       </then>
       <else>
         <!-- Get version from file -->
-        <exec executable="./getVersion.sh" outputproperty="local.milimail.version" failonerror="true">
+        <exec executable="sh" outputproperty="local.milimail.version" failonerror="true">
+          <arg value="getVersion.sh" />
           <arg value="${local.build.dir}/mozilla" />
         </exec>
       </else>
@@ -301,7 +303,8 @@
       <isset property="dev" />
       <then>
         <!-- Get revision from SVN -->
-        <exec executable="./getLastChangedRev.sh" outputproperty="local.extension.revision" failonerror="true">
+        <exec executable="sh" outputproperty="local.extension.revision" failonerror="true">
+          <arg value="getLastChangedRev.sh" />
           <arg value="${local.build.dir}/${local.extension.name}" />
         </exec>
         <property name="local.extension.version" value="dev-svn${local.extension.revision}" />
@@ -310,7 +313,8 @@
       </then>
       <else>
         <!-- Get version from file -->
-        <exec executable="./getVersion.sh" outputproperty="local.extension.version" failonerror="true">
+        <exec executable="sh" outputproperty="local.extension.version" failonerror="true">
+          <arg value="getVersion.sh" />
           <arg value="${local.build.dir}/${local.extension.name}" />
         </exec>
         <property name="local.extension.update.rdf.filename" value="update.rdf" />

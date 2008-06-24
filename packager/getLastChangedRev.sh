@@ -3,4 +3,4 @@
 
 [ -d "$1" ] || exit
 
-svn info "$1" 2>/dev/null | grep "Last Changed Rev" | cut -d: -f2 | tr -d " "
+LC_ALL=C svn info "$1" 2>/dev/null | grep "Last Changed Rev" | cut -d: -f2 | tr -d " "
