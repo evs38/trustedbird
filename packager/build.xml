@@ -360,6 +360,7 @@
             <include name="*.xpi" />
           </fileset>
         </copy>
+        <delete dir="${local.dist.dir}/updates/${local.extension.name}" />
       </then>
     </if>
 
