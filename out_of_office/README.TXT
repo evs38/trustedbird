@@ -60,9 +60,6 @@
 Version 2.0 of Thunderbird is necessary or use the Milimail distribution.
 Download it from url http://www.mozilla.com/en-US/thunderbird/ or http://admisource.gouv.fr/frs/?group_id=40
 
-This extension requires the multi-ldap extention
-Download it from http://admisource.gouv.fr/frs/?group_id=40
-
 --------------------------------------
  3. Installation, configuration and use
 --------------------------------------

@@ -36,34 +36,28 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<rdf:RDF
-	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <rdf:Description about="urn:mozilla:install-manifest">
 
-    <rdf:Description  about="urn:mozilla:install-manifest">
+    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
-		<!-- em:updateURL>http://admisource.gouv.fr/svn/milimail/trunk/out_of_office/update.rdf</em:updateURL -->
+    <em:id>out.of.office@milimail.org</em:id>
+    <em:name>Out Of Office for Accounts</em:name>
+    <em:version>__VERSION__</em:version>
+    <em:creator>Olivier BRUN</em:creator>
 
-		<em:id>out.of.office@milimail.org</em:id>
-		<em:name>Out Of Office for Accounts</em:name>
-		<em:description>Out Of Office for Accounts, allow you define a vacation notification and/or a redirection to another mail account.The extension using Sieve.</em:description>
-		<em:type>2</em:type>
-		<em:version>0.0.1.0</em:version>
-		<em:creator>Olivier BRUN</em:creator>
-		<em:iconURL>chrome://out_of_office/content/images/logo_extension.png</em:iconURL>
-		<!--  em:optionsURL>chrome://out_of_office/content/options/OutOfOfficeAccountListView.xul</em:optionsURL -->   
+    <em:homepageURL>http://www.milimail.org/</em:homepageURL>
+    <em:iconURL>chrome://out_of_office/content/images/logo_extension.png</em:iconURL>
 
-		<!-- optional items -->
-		<!-- em:contributor>Olivier BRUN</em:contributor -->
-        <em:homepageURL>http://www.milimail.org/</em:homepageURL>
+    <em:targetApplication>
+      <rdf:Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>2.0</em:minVersion>
+        <em:maxVersion>2.0.0.*</em:maxVersion>
+      </rdf:Description>
+    </em:targetApplication>
 
-		<em:targetApplication>
-			<rdf:Description>
-				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
-				<em:minVersion>2.0</em:minVersion>
-				<em:maxVersion>2.0.0.*</em:maxVersion>
-			</rdf:Description>
-		</em:targetApplication>
+    <em:description>Out Of Office for Accounts, allow you define a vacation notification and/or a redirection to another mail account.The extension using Sieve.</em:description>
 
-	</rdf:Description>      
+  </rdf:Description>
 </rdf:RDF>
