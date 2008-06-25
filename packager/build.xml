@@ -280,7 +280,7 @@
               <arg value="${local.milimail.version}" />
               <arg value="${local.tools.dir}/debian-control" />
             </exec>
-            <copy file="${local.build.dir}/milimail.deb" tofile="${local.dist.dir}/${milimail.name}_${local.milimail.version}.deb" />
+            <copy file="${local.build.dir}/milimail.deb" tofile="${local.dist.dir}/${milimail.name}_${local.milimail.version}_i686.deb" />
           </then>
         </if>
       </then>
