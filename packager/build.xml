@@ -154,6 +154,9 @@
        -define-config-milimail (private)
        ================================= -->
   <target name="-define-config-milimail">
+    <available file="${local.build.dir}/mozilla" property="sources.available" />
+    <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first." unless="sources.available" />
+
     <condition property="isUnix">
       <os family="unix" />
     </condition>
@@ -167,6 +170,27 @@
         <property name="local.checkbuild.file" value="dist/bin/thunderbird.exe" />
       </else>
     </if>
+
+    <!-- Get version -->
+    <if>
+      <isset property="dev" />
+      <then>
+        <!-- Get revision from SVN -->
+        <exec executable="sh" outputproperty="local.milimail.revision" failonerror="true">
+          <arg value="${local.tools.dir}/getLastChangedRev.sh" />
+          <arg value="${local.build.dir}/mozilla" />
+        </exec>
+        <property name="local.milimail.version" value="0dev-svn${local.milimail.revision}" />
+      </then>
+      <else>
+        <!-- Get version from file -->
+        <exec executable="sh" outputproperty="local.milimail.version" failonerror="true">
+          <arg value="${local.tools.dir}/getVersion.sh" />
+          <arg value="${local.build.dir}/mozilla" />
+        </exec>
+      </else>
+    </if>
+
   </target>
 
 
@@ -175,9 +199,6 @@
        ================================= -->
   <target name="build-milimail" description="Build Milimail"
           depends="-define-config-milimail">
-    <available file="${local.build.dir}/mozilla" property="sources.available" />
-    <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first." unless="sources.available" />
-
     <!-- Patch config -->
     <copy file="${local.tools.dir}/mozconfig" tofile="${local.build.dir}/mozilla/.mozconfig" />
     <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
@@ -215,26 +236,6 @@
     <fail message="File ${local.checkbuild.file} not found! Build Milimail first." unless="build.success" />
 
     <mkdir dir="${local.dist.dir}" />
-
-    <!-- Get version -->
-    <if>
-      <isset property="dev" />
-      <then>
-        <!-- Get revision from SVN -->
-        <exec executable="sh" outputproperty="local.milimail.revision" failonerror="true">
-          <arg value="${local.tools.dir}/getLastChangedRev.sh" />
-          <arg value="${local.build.dir}/mozilla" />
-        </exec>
-        <property name="local.milimail.version" value="0dev-svn${local.milimail.revision}" />
-      </then>
-      <else>
-        <!-- Get version from file -->
-        <exec executable="sh" outputproperty="local.milimail.version" failonerror="true">
-          <arg value="${local.tools.dir}/getVersion.sh" />
-          <arg value="${local.build.dir}/mozilla" />
-        </exec>
-      </else>
-    </if>
 
     <if>
       <isset property="isUnix" />
