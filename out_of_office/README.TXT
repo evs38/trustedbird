@@ -72,5 +72,5 @@ http://www.milimail.org/milimail/index.php/TODO
  4. Changelog
 -------------------------------------
 
-Version 0.0.1.0
+Version 0.0.1.0-alpha
  * First working release
