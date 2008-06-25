@@ -172,6 +172,10 @@
     </if>
 
     <!-- Get version -->
+    <exec executable="sh" outputproperty="local.milimail.versionfile" failonerror="true">
+      <arg value="${local.tools.dir}/getVersion.sh" />
+      <arg value="${local.build.dir}/mozilla" />
+    </exec>
     <if>
       <isset property="dev" />
       <then>
@@ -180,14 +184,10 @@
           <arg value="${local.tools.dir}/getLastChangedRev.sh" />
           <arg value="${local.build.dir}/mozilla" />
         </exec>
-        <property name="local.milimail.version" value="0dev-svn${local.milimail.revision}" />
+        <property name="local.milimail.version" value="${local.milimail.versionfile}-dev-svn${local.milimail.revision}" />
       </then>
       <else>
-        <!-- Get version from file -->
-        <exec executable="sh" outputproperty="local.milimail.version" failonerror="true">
-          <arg value="${local.tools.dir}/getVersion.sh" />
-          <arg value="${local.build.dir}/mozilla" />
-        </exec>
+        <property name="local.milimail.version" value="${local.milimail.versionfile}" />
       </else>
     </if>
 
@@ -203,6 +203,7 @@
     <copy file="${local.tools.dir}/mozconfig" tofile="${local.build.dir}/mozilla/.mozconfig" />
     <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
     <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
+    <echo message="2.0.0.14-${milimail.name}${local.milimail.version}" file="${local.build.dir}/mozilla/mail/config/version.txt" />
 
     <!-- Build -->
     <if>
@@ -259,7 +260,7 @@
           <fileset dir="${local.build.dir}/mozilla/dist">
             <include name="*.tar.gz" />
           </fileset>
-          <mapper type="regexp" from="(.*)$" to="${milimail.name}-${local.milimail.version}_\1" />
+          <mapper type="regexp" from=".*\.([^\.]+)\.tar\.gz$" to="${milimail.name}_${local.milimail.version}_\1.tar.gz" />
         </copy>
 
         <!-- Create Debian package -->
@@ -270,16 +271,16 @@
               <fileset dir="${local.build.dir}/mozilla/dist">
                 <include name="*.tar.gz" />
               </fileset>
-              <mapper type="regexp" from="(.*)$" to="${milimail.name}-${local.milimail.version}.tar.gz" />
+              <mapper type="regexp" from="(.*)$" to="${milimail.name}_${local.milimail.version}.tar.gz" />
             </copy>
             <exec executable="sh" failonerror="true">
               <arg value="${local.tools.dir}/createDebianPackage.sh" />
               <arg value="${local.build.dir}" />
-              <arg value="${local.build.dir}/${milimail.name}-${local.milimail.version}.tar.gz" />
+              <arg value="${local.build.dir}/${milimail.name}_${local.milimail.version}.tar.gz" />
               <arg value="${local.milimail.version}" />
               <arg value="${local.tools.dir}/debian-control" />
             </exec>
-            <copy file="${local.build.dir}/milimail.deb" tofile="${local.dist.dir}/${milimail.name}-${local.milimail.version}.deb" />
+            <copy file="${local.build.dir}/milimail.deb" tofile="${local.dist.dir}/${milimail.name}_${local.milimail.version}.deb" />
           </then>
         </if>
       </then>
@@ -296,7 +297,7 @@
           <fileset dir="${local.build.dir}/mozilla/dist/install/sea">
             <include name="*.exe" />
           </fileset>
-          <mapper type="regexp" from="(.*)$" to="${milimail.name}-${local.milimail.version}_\1" />
+          <mapper type="regexp" from="(.*)$" to="${milimail.name}_${local.milimail.version}_win32.installer.exe" />
         </copy>
       </else>
     </if>
@@ -330,6 +331,10 @@
     </exec>
 
     <!-- Get version -->
+    <exec executable="sh" outputproperty="local.extension.versionfile" failonerror="true">
+      <arg value="${local.tools.dir}/getVersion.sh" />
+      <arg value="${local.build.dir}/${local.extension.name}" />
+    </exec>
     <if>
       <isset property="dev" />
       <then>
@@ -338,23 +343,19 @@
           <arg value="${local.tools.dir}/getLastChangedRev.sh" />
           <arg value="${local.build.dir}/${local.extension.name}" />
         </exec>
-        <property name="local.extension.version" value="0dev-svn${local.extension.revision}" />
+        <property name="local.extension.version" value="${local.extension.versionfile}-dev-svn${local.extension.revision}" />
         <property name="local.extension.update.rdf.filename" value="update-dev.rdf" />
         <property name="local.extension.path" value="${extension.nightly.url}/${DSTAMP}" />
       </then>
       <else>
-        <!-- Get version from file -->
-        <exec executable="sh" outputproperty="local.extension.version" failonerror="true">
-          <arg value="${local.tools.dir}/getVersion.sh" />
-          <arg value="${local.build.dir}/${local.extension.name}" />
-        </exec>
+        <property name="local.extension.version" value="${local.extension.versionfile}" />
         <property name="local.extension.update.rdf.filename" value="update.rdf" />
         <property name="local.extension.path" value="${extension.releases.url}/${local.extension.name}" />
       </else>
     </if>
 
     <!-- XPI file name -->
-    <property name="local.extension.filename" value="${local.extension.name}-${local.extension.version}.xpi" />
+    <property name="local.extension.filename" value="${local.extension.name}_${local.extension.version}.xpi" />
 
     <!-- Add version -->
     <exec executable="sed" failonerror="true">
