@@ -42,15 +42,15 @@
 	@author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
 */
 
+var FILE_HEADER = new String("OutOfOfficeAccountListView: "); 
 var globalServices=new Services();
 var OutOfOfficeAccountTreeView = null;
+var gOutOfOfficeManager = null;
 
 function onWindowLoad()
 {
 	// Load all the Libraries we need...
-	var jsLoader = Components
-	                 .classes["@mozilla.org/moz/jssubscript-loader;1"]
-	                 .getService(Components.interfaces.mozIJSSubScriptLoader);
+	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);                 
 	                 
 	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveAccounts.js");
 	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/Sieve.js");
@@ -60,28 +60,47 @@ function onWindowLoad()
 	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveResponseCodes.js");
 	
 	jsLoader.loadSubScript("chrome://out_of_office/content/editor/OutOfOfficeAccountTreeView.js");
-    
+
+	// Retrieve selected account and create OutOfOffice manager 
+ 	gOutOfOfficeManager = new OutOfOfficeManager(null);
+
+	// Retrieve out of office settings from server Cyrus for the out of office file
+	if( gOutOfOfficeManager.getSettings() == null ){	// No account selected
+		globalServices.errorSrv("No account selected to configure" );
+		return;
+	}
+   
 	// now set our custom TreeView Renderer...
 	var tree = document.getElementById('treeAccounts');	
 	OutOfOfficeAccountTreeView = new OutOfOfficeAccountTreeView(this);
 	tree.view = OutOfOfficeAccountTreeView;
 		
-  	// ... and make sure that an entry is selected.
-	if ((tree.currentIndex == -1) && (tree.view.rowCount > 0))
+	// ... and make sure that an entry is selected.
+	if ((tree.currentIndex == -1) && (tree.view.rowCount > 0)){
+		globalServices.logSrv( FILE_HEADER + "\tSelect item 0");
 	    tree.view.selection.select(0);
+	}
 }
 
 function onCycleCell(sender)
 {
 	//@TODO Add connection to the server to activate or deactivate the out of office script 	
-	globalServices.logSrv("onCycleCell");
+	globalServices.logSrv( FILE_HEADER + "onCycleCell");
 	onTreeSelect(document.getElementById('treeAccounts'));
 }
+ 
+function onKeepAlive()
+{
+	globalServices.logSrv( FILE_HEADER + "onKeepAlive");
+	gOutOfOfficeManager.keepAlive();
+}
+
 
 function onTreeSelect(sender)
 {	
 	//@TODO Remove obsolete code 	
 	
+	globalServices.logSrv( FILE_HEADER + "onTreeSelect Select item=" + sender.currentIndex );
 	if (sender.currentIndex == -1)
 	{
 		document.getElementById('btnEdit').setAttribute('disabled','true');
@@ -91,17 +110,22 @@ function onTreeSelect(sender)
 	
 	var account = OutOfOfficeAccountTreeView.getAccount(sender.currentIndex);
 	document.getElementById('btnEnable').removeAttribute('disabled');
+
+	gOutOfOfficeManager.reConnectServerTo(account);
 	  
-	if (account.isEnabled() == false)
+	if (account.isEnabledOutOfOffice() == false)
 	{
 		document.getElementById('btnEdit').setAttribute('disabled','true');
 		document.getElementById('btnEnable').label = "Enable";
+		
 	}
 	else
 	{
 		document.getElementById('btnEdit').removeAttribute('disabled');
 		document.getElementById('btnEnable').label = "Disable";	
 	}
+	// gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
+	
 		
 	document.getElementById('txtHostname').value = account.getHost().getHostname();
 	document.getElementById('txtPort').value = account.getHost().getPort();
@@ -117,11 +141,6 @@ function onTreeSelect(sender)
 	document.getElementById('txtAuth').value = authType;
 	document.getElementById('txtUserName').value = account.getLogin().getUsername();     	
 }
-
-var sieve = null;
-// var gCompileTimeout = null;
-// var gCompile = null
-// var gCompileDelay = null;
 
 function onEditClick(sender)
 {
@@ -140,11 +159,15 @@ function onEditClick(sender)
 	}
 
 	var args = new Array();
-	args["OutOfOfficeSieveAccountToConfigure"] = currentAccount;
+	// args["OutOfOfficeSieveAccountToConfigure"] = currentAccount;
+	args["OutOfOfficeSieveAccountToConfigure"] = gOutOfOfficeManager;
+	args["OutOfOfficeSieveAccountReturnCode"] = null;
+	globalServices.logSrv( FILE_HEADER + "onEditClick open account settings dialog" );
 
-	window.openDialog("chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.xul",
+	var returnCode = window.openDialog("chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.xul",
 		"OutOfOfficeScriptGenerator", "chrome,modal,titlebar,centerscreen", args);	        
-
+	globalServices.logSrv( FILE_HEADER + "onEditClick ended return code =" + args["OutOfOfficeSieveAccountReturnCode"] );
+	
 	onTreeSelect( document.getElementById('treeAccounts') );
 }
 
@@ -165,4 +188,9 @@ function onEnableClick(sender)
 		alert("Fatal error");
 
 	onTreeSelect(tree);		
+}
+
+function postStatus(progress)
+{
+ 	document.getElementById('logger').value = progress;
 }

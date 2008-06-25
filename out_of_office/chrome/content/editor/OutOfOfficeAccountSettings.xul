@@ -122,6 +122,13 @@
 		</groupbox>
           </hbox>
           </vbox>
+		<groupbox id="gbError" hidden="true">
+			<caption>
+				<image src="chrome://sieve/content/images/syntaxError.png" width="16" height="16"/>
+				<label value="&edit.errors;"/>
+			</caption>
+			<textbox flex="1" id="lblError" multiline="true" rows="3" readonly="true" class="plain"/>
+		</groupbox>  
     </vbox>
   <label id="logger" value="" />
   </dialog>

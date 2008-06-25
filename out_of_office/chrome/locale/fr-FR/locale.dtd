@@ -1,0 +1,83 @@
+<!-- Options Dialog -->
+<!ENTITY options.title "Options Sieve">
+
+<!ENTITY options.tree.active "Actif">
+<!ENTITY options.tree.name "Nom">
+
+<!ENTITY options.login "Identification">
+<!ENTITY options.login.key "I">
+<!ENTITY options.login.noAuth "Pas d'Identification">
+<!ENTITY options.login.imapAuth "Utiliser les pramétres IMAP">
+<!ENTITY options.login.customAuth "Nom et mot de passe de l'utilisateur">
+<!ENTITY options.login.username "Nom utilisateur">
+<!ENTITY options.login.username.key "N">
+<!ENTITY options.login.password "Mot de Passe">
+<!ENTITY options.login.password.key "P">
+<!ENTITY options.login.password.remember "Se souvenir du mot de passe">
+<!ENTITY options.login.password.remember.key "s">
+
+<!ENTITY options.host "ignorer les pramétres IMAP">
+<!ENTITY options.host.key "I">
+<!ENTITY options.host.hostname "Nom du host">
+<!ENTITY options.host.hostname.key "h">
+<!ENTITY options.host.port "Port">
+<!ENTITY options.host.port.key "o">
+<!ENTITY options.host.port.default "Défaut: 2000">
+<!ENTITY options.host.tls.key "t">
+<!ENTITY options.host.tls "Utiliser TLS, si disponible">
+
+<!ENTITY options.misc "Paramétres Généraux">
+<!ENTITY options.misc.keepalive "Send 'Tester la connexion toutes les">
+<!ENTITY options.misc.keepalive.key "T">
+<!ENTITY options.misc.compile "Compiler sur le serveur toutes les">
+<!ENTITY options.misc.compile.key "C">
+<!ENTITY options.misc.debug "Debugger les réponses sieve dans la console d'erreur">
+<!ENTITY options.misc.debug.key "D">
+
+<!ENTITY options.info.servername "Nom du Serveur:">
+<!ENTITY options.info.port "Port:">
+<!ENTITY options.info.secure "Conexion Sécurisée:">
+<!ENTITY options.info.username "Utilisateur:">
+<!ENTITY options.info.auth "Identification:">
+
+
+<!-- Menu entries -->
+<!ENTITY menu.filters "Sieve Filtres de Message...">
+<!ENTITY menu.filters.key "F">
+<!ENTITY menu.options "Sieve Paramétres des Filtres...">
+<!ENTITY menu.options.key "P">
+
+
+<!-- Locales for the List Filter Dialog -->
+<!ENTITY list.title "Filtres Sieve">
+
+<!ENTITY list.accounts "Filtres Pour:">
+
+<!ENTITY list.log "Log">
+
+<!ENTITY list.tree "Serverside Sieve mailfilters">
+<!ENTITY list.tree.active "Actif">
+<!ENTITY list.tree.name "Nom">
+
+<!ENTITY list.new "Nouveau">
+<!ENTITY list.edit "Editer">
+<!ENTITY list.delete "Supprimer">
+<!ENTITY list.rename "Renomer">
+<!ENTITY list.capability "Capacité">
+
+
+<!-- Locales for the Edit Filter Dialog -->
+<!ENTITY edit.title "Edition d'un filtre Sieve">
+
+<!ENTITY edit.scriptname "Nom du script:">
+<!ENTITY edit.script "Script:">
+<!ENTITY edit.errors "Erreurs de Compilation:">
+
+<!ENTITY edit.cancel "Abandonner">
+<!ENTITY edit.save "Sauvegarder">
+
+<!-- Locales for the Capabitity dialog -->
+<!ENTITY capability.title "Capacités Sieve">
+<!ENTITY capability.implementation "Version du Serveur">
+<!ENTITY capability.sasl "SASL">
+<!ENTITY capability.extensions "Extensions Sieve">
