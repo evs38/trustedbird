@@ -50,8 +50,8 @@
 var FILE_HEADER = new String("OutOfOfficeSieveServer: "); 
 
 var gParent = null;
-var gSieve = null;
 var gOutOfOfficeSieveServer = null;
+var gSieve = null;
 var gCompileTimeout = null;
 var gCompile = null
 var gCompileDelay = null;
@@ -285,6 +285,22 @@ var gEventConnection =
 		}
 
 		alert("SERVER ERROR:"+response.getMessage());
+	},
+
+	onCycleCell: function(row,col,script,active)
+	{
+		var request = null;
+		if (active == true){
+			request = new SieveSetActiveRequest();
+		}
+		else {	// Script name hard coded for this extension
+			request = new SieveSetActiveRequest(gOutOfOfficeSieveServer.getScriptName());
+		}
+
+		request.addSetScriptListener(gEventConnection);
+		request.addErrorListener(gEventConnection);
+
+		gSieve.addRequest(request);
 	}
 }
 
@@ -452,23 +468,24 @@ OutOfOfficeSieveServer.prototype = {
 				if (gOutOfOfficeSieveServer.getAccount().getSettings().isKeepAlive())
 					keepAliveInterval = setInterval("onKeepAlive()",gOutOfOfficeSieveServer.getAccount().getSettings().getKeepAliveInterval());
 	
-				this.sieve = new Sieve(
+				gSieve = new Sieve(
 									gOutOfOfficeSieveServer.getAccount().getHost().getHostname(),
 									gOutOfOfficeSieveServer.getAccount().getHost().getPort(),
 									gOutOfOfficeSieveServer.getAccount().getHost().isTLS(),
 									gOutOfOfficeSieveServer.getAccount().getSettings().isDebug() );
+				this.sieve = gSieve;
 	
 				var request = new SieveInitRequest();
 				request.addErrorListener(gEventConnection)
 				request.addInitListener(gEventConnection)
-				this.sieve.addRequest(request);
+				gSieve.addRequest(request);
 	
-				this.sieve.connect();
+				gSieve.connect();
 			}
 		}
 	
 		// Besteht das Objekt überhaupt bzw besteht eine Verbindung?
-		if ((this.sieve == null) || (this.sieve.isAlive() == false))
+		if ((gSieve == null) || (gSieve.isAlive() == false))
 		{
 			// beides schein nicht zu existieren, daher connect direkt aufrufen...
 			levent.onLogoutResponse("");
@@ -486,7 +503,7 @@ OutOfOfficeSieveServer.prototype = {
 		var request = new SieveLogoutRequest();
 		request.addLogoutListener(levent);
 		request.addErrorListener(gEventConnection);
-		this.sieve.addRequest(request);	
+		gSieve.addRequest(request);	
 	},
 
 	/* 
@@ -501,7 +518,7 @@ OutOfOfficeSieveServer.prototype = {
 			keepAliveInterval = null;
 		}
 
-		if (this.sieve == null)
+		if (gSieve == null)
 			return true;
 		// Force disconnect in 500 MS
 		closeTimeout = setTimeout("this.sieve.disconnect(); close();",250);
@@ -510,7 +527,7 @@ OutOfOfficeSieveServer.prototype = {
 		request.addLogoutListener(gEventConnection);
 		request.addErrorListener(gEventConnection);
 		
-		this.sieve.addRequest(request);
+		gSieve.addRequest(request);
 	},
 
 	
@@ -538,7 +555,7 @@ OutOfOfficeSieveServer.prototype = {
 	 */
 	loadScript : function(parent)
 	{
-		if (this.sieve == null){
+		if (gSieve == null){
 			this.getServices().warningSrv( FILE_HEADER + "loadScript invalid sieve server object");
 			return false;
 		}
@@ -551,11 +568,11 @@ OutOfOfficeSieveServer.prototype = {
 		request.addListScriptListener(gEventConnection);
 		request.addErrorListener(gEventConnection);
 
-		this.sieve.addRequest(request);
+		gSieve.addRequest(request);
 */		
 		
 		// script load
-		// this.sieve = this.connect();
+		// gSieve = this.connect();
 		gCompile = this.getAccount().getSettings().isCompile();
 		gCompileDelay = this.getAccount().getSettings().getCompileDelay();
 		this.getServices().logSrv( FILE_HEADER + "loadScript Compile =" + gCompile + " delay=" + gCompileDelay );
@@ -565,7 +582,7 @@ OutOfOfficeSieveServer.prototype = {
 		request.addErrorListener(gEventConnection);
 		this.getServices().logSrv( FILE_HEADER + "loadScript send request to sieve." );
 		
-		this.sieve.addRequest(request);
+		gSieve.addRequest(request);
 		gTryToCreate = true;
 		this.getServices().logSrv( FILE_HEADER + "loadScript ENDED");
 		return true;
@@ -583,7 +600,7 @@ OutOfOfficeSieveServer.prototype = {
 		request.addPutScriptListener(gEventConnection);
 		request.addErrorListener(gEventConnection);
 	
-		this.sieve.addRequest(request);
+		gSieve.addRequest(request);
 	},
 	
 	/*
@@ -595,7 +612,7 @@ OutOfOfficeSieveServer.prototype = {
 		var request = new SievePutScriptRequest("TMP_FILE_DELETE_ME", new String(this.getScriptText()) );
 		request.addPutScriptListener(gEventCompile);
 		request.addErrorListener(gEventCompile);
-		this.sieve.addRequest(request);
+		gSieve.addRequest(request);
 	},
 	
 	/*
@@ -618,7 +635,7 @@ OutOfOfficeSieveServer.prototype = {
       
 		request.addSetScriptListener(gEventConnection);
 		request.addErrorListener(gEventConnection);
-		this.sieve.addRequest(request);
+		gSieve.addRequest(request);
 	},
 	
 	/*
@@ -627,7 +644,7 @@ OutOfOfficeSieveServer.prototype = {
 	keepAlive : function(script,active)
 	{
 	  	// create a sieve request without an eventhandler...
-		this.sieve.addRequest(new SieveCapabilitiesRequest())
+		gSieve.addRequest(new SieveCapabilitiesRequest())
 	},
 
 	/*
@@ -683,4 +700,55 @@ OutOfOfficeSieveServer.prototype = {
 	{
 		return this.services.parseScriptCore();
 	},
+
+}
+
+function onBtnCompile()
+{
+	if ( document.getElementById("btnCompile").checked == false)
+	{
+		gCompile = true;
+		document.getElementById("btnCompile").setAttribute("image","chrome://out_of_office/content/images/syntaxCheckOn.png");
+		onCompile();
+		return
+	}
+
+	clearTimeout(gCompileTimeout);
+	gCompileTimeout = null;
+
+	gCompile = false;
+	document.getElementById("btnCompile").setAttribute("image","chrome://out_of_office/content/images/syntaxCheckOff.png");
+	document.getElementById("gbError").setAttribute('hidden','true')    
+}
+
+function onLoad()
+{
+	// Initialize sieve object to establish communication.
+	startSieveConnection( window.arguments[0] ); // @TODO 
+
+	// script loaded
+	gCompile = window.arguments[0]["compile"];        
+	gCompileDelay = window.arguments[0]["compileDelay"];
+
+	// document.getElementById("btnCompile").checked = gCompile;
+
+	if ( this.getScriptName() == null )
+		return
+
+	var request = new SieveGetScriptRequest(new String(this.getScriptName()) );
+	request.addGetScriptListener(gEventConnection);
+	request.addErrorListener(gEventConnection);
+
+	gSieve.addRequest(request);
+}
+
+function onAccept()
+{
+	var request = new SievePutScriptRequest( new String(this.getScriptName()), new String(this.getScriptText()) );
+	request.addPutScriptListener(gEventConnection)
+	request.addErrorListener(gEventConnection)
+
+	gSieve.addRequest(request)
+
+	return false;
 }
