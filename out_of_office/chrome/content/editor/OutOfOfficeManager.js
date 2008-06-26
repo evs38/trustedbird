@@ -46,8 +46,6 @@
  * Global object to access preference services
  */
 var gPreference = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-var FILE_HEADER = new String("OutOfOfficeManager: "); 
-
 
 /**
 	@class OutOfOfficeSettings object parameters.
@@ -61,12 +59,13 @@ function OutOfOfficeSettings (services) {
 	 * @type boolean
 	 * this.unitestPhase = true;
 	 * this.testCaseNumber = 0;
-	 * */
+	 */
 
 	 /*
 	  * Definition of the constants keyword. These keywords are inserted in comment in the generated script.
 	  * They are decoded when the file is read to retrieve user parameters and initialize interface. 
 	  */
+	this.CONST_HEADER 						= new String("OutOfOfficeSettings: "); // for trace 
 	this.CONST_KEYWORD_PREFIX				= new String( "@" );
 	this.CONST_KEYWORD_REDIRECTION			= new String( "redirection" );
 	this.CONST_KEYWORD_REDIRECTIONADDRESS	= new String( "redirection.address" );
@@ -162,7 +161,7 @@ OutOfOfficeSettings.prototype = {
 		}
 		
 		this.prefURI = "extensions.out_of_office." + uri;
-		this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:initilize URI=" + this.prefURI);
+		this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:initilize URI=" + this.prefURI);
 		// Read settings from preference
 		this.read();
 		
@@ -174,13 +173,13 @@ OutOfOfficeSettings.prototype = {
 	dump : function()
 	{
 		if( this.services != null ) {
-			this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:dump script named'" + this.getScriptName() + "'...");
-			this.services.logSrv( FILE_HEADER + "\tValue.redirectionEnable="+this.redirectionEnable);
-			this.services.logSrv( FILE_HEADER + "\tValue.redirectionDestinationAddress="+this.redirectionDestinationAddress);
-			this.services.logSrv( FILE_HEADER + "\tValue.redirectionKeepMessage="+this.redirectionKeepMessage);
-			this.services.logSrv( FILE_HEADER + "\tValue.notificationEnable="+this.notificationEnable);
-			this.services.logSrv( FILE_HEADER + "\tValue.notificationMessage="+this.notificationMessage);
-			this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:dump ended.");
+			this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:dump script named'" + this.getScriptName() + "'...");
+			this.services.logSrv( this.CONST_HEADER + "\tValue.redirectionEnable="+this.redirectionEnable);
+			this.services.logSrv( this.CONST_HEADER + "\tValue.redirectionDestinationAddress="+this.redirectionDestinationAddress);
+			this.services.logSrv( this.CONST_HEADER + "\tValue.redirectionKeepMessage="+this.redirectionKeepMessage);
+			this.services.logSrv( this.CONST_HEADER + "\tValue.notificationEnable="+this.notificationEnable);
+			this.services.logSrv( this.CONST_HEADER + "\tValue.notificationMessage="+this.notificationMessage);
+			this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:dump ended.");
 		}
 	},
 	
@@ -306,13 +305,13 @@ OutOfOfficeSettings.prototype = {
 	*/
 	getFormatedScript : function()
 	{
-		this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:getFormatedScript '" + this.getScriptName() + "'...");
+		this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:getFormatedScript '" + this.getScriptName() + "'...");
 		/* if( this.scriptCore == null || this.scriptCore == "" ){
 			// script not built then generate it
 			this.generateScript();
 		} */
 		this.generateScript();
-		this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:getFormatedScript ended.");
+		this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:getFormatedScript ended.");
 		return this.scriptCore ;
 	},
 
@@ -321,7 +320,7 @@ OutOfOfficeSettings.prototype = {
 	*/
 	generateScript : function()
 	{
-		this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:generateScript started.");
+		this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:generateScript started.");
 		if( this.scriptCore != null && this.scriptCore != "" ){
 			// Save latest generated script 
 			this.latestScript = this.scriptCore; // Not used
@@ -330,10 +329,10 @@ OutOfOfficeSettings.prototype = {
 		this.generateHeader();
 		this.generateCore();
 		this.generateFooter();
-		this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:generateScript ended.");
-		this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:generated script '" + this.getScriptName() + "'...");
-		this.services.logSrv( FILE_HEADER + this.scriptCore);
-		this.services.logSrv( FILE_HEADER + "OutOfOfficeSettings:generated script.");
+		this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:generateScript ended.");
+		this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:generated script '" + this.getScriptName() + "'...");
+		this.services.logSrv( this.CONST_HEADER + this.scriptCore);
+		this.services.logSrv( this.CONST_HEADER + "OutOfOfficeSettings:generated script.");
 	},
 
 
@@ -361,7 +360,7 @@ OutOfOfficeSettings.prototype = {
 		this.insertLine(" ******************************************************************************/");
 		this.insertLine();
 		this.insertLine();
-		this.services.logSrv( FILE_HEADER + "\tgenerate header of the script");
+		this.services.logSrv( this.CONST_HEADER + "\tgenerate header of the script");
 	},
 	
 	/*
@@ -373,7 +372,7 @@ OutOfOfficeSettings.prototype = {
 		this.generateCoreRedirection();
 		this.generateCoreNotification();
 
-		this.services.logSrv( FILE_HEADER + "\tgenerate core of the script");
+		this.services.logSrv( this.CONST_HEADER + "\tgenerate core of the script");
 	},
 
 	/*
@@ -401,7 +400,7 @@ OutOfOfficeSettings.prototype = {
 		}
 		this.insertLine("];");
 		
-		this.services.logSrv( FILE_HEADER + "\tinsertRequires");
+		this.services.logSrv( this.CONST_HEADER + "\tinsertRequires");
 	},
 
 	/*
@@ -422,7 +421,7 @@ OutOfOfficeSettings.prototype = {
 		}
 		this.insertLine();
 
-		this.services.logSrv( FILE_HEADER + "\tgenerateCoreRedirection" );
+		this.services.logSrv( this.CONST_HEADER + "\tgenerateCoreRedirection" );
 	},
 
 	
@@ -440,7 +439,7 @@ OutOfOfficeSettings.prototype = {
 		this.insertLine("\" \"", false);
 		this.insertLine(this.notificationMessage, false);
 		this.insertLine("\";");
-		this.services.logSrv( FILE_HEADER + "\tgenerateCoreNotification");
+		this.services.logSrv( this.CONST_HEADER + "\tgenerateCoreNotification");
 	},
 
 
@@ -456,7 +455,7 @@ OutOfOfficeSettings.prototype = {
 		this.insertLine(" ******************************************************************************/");
 		this.insertLine();
 		this.insertLine();
-		this.services.logSrv( FILE_HEADER + "\tgenerate footer of the script");
+		this.services.logSrv( this.CONST_HEADER + "\tgenerate footer of the script");
 	},
 
 	/*
@@ -556,11 +555,11 @@ OutOfOfficeSettings.prototype = {
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTION + ".enabled";
 			this.redirectionEnable = gPreference.getBoolPref(valueToRead);
-			this.services.logSrv( FILE_HEADER + valueToRead + "=" + this.redirectionEnable);
+			this.services.logSrv( this.CONST_HEADER + valueToRead + "=" + this.redirectionEnable);
 		}
 		catch(e) {
 			this.redirectionEnable = false; 
-			this.services.logSrv( FILE_HEADER + "Set redirectionEnable to default value (false)" );
+			this.services.logSrv( this.CONST_HEADER + "Set redirectionEnable to default value (false)" );
 		}
 	},
 	
@@ -572,13 +571,13 @@ OutOfOfficeSettings.prototype = {
 	{
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTIONADDRESS;
-			this.services.logSrv( FILE_HEADER + valueToRead + "= ???" );
+			this.services.logSrv( this.CONST_HEADER + valueToRead + "= ???" );
 			this.redirectionDestinationAddress = gPreference.getCharPref(valueToRead);
-			this.services.logSrv( FILE_HEADER + valueToRead + "=" + this.redirectionDestinationAddress);
+			this.services.logSrv( this.CONST_HEADER + valueToRead + "=" + this.redirectionDestinationAddress);
 		}
 		catch(e) {
 			this.redirectionDestinationAddress = ""; 
-			this.services.logSrv( FILE_HEADER + "Set redirectionDestinationAddress to default value (empty string)" );
+			this.services.logSrv( this.CONST_HEADER + "Set redirectionDestinationAddress to default value (empty string)" );
 		}
 	},
 
@@ -590,13 +589,13 @@ OutOfOfficeSettings.prototype = {
 	{
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_KEEPMESSAGE + ".enabled";
-			this.services.logSrv( FILE_HEADER + valueToRead + "= ???" );
+			this.services.logSrv( this.CONST_HEADER + valueToRead + "= ???" );
 			this.redirectionKeepMessage = gPreference.getBoolPref(valueToRead);
-			this.services.logSrv( FILE_HEADER + valueToRead + "=" + this.redirectionKeepMessage);
+			this.services.logSrv( this.CONST_HEADER + valueToRead + "=" + this.redirectionKeepMessage);
 		}
 		catch(e) {
 			this.redirectionKeepMessage = false; 
-			this.services.logSrv( FILE_HEADER + "Set redirectionKeepMessage to default value (false)" );
+			this.services.logSrv( this.CONST_HEADER + "Set redirectionKeepMessage to default value (false)" );
 		}
 	},
 
@@ -609,11 +608,11 @@ OutOfOfficeSettings.prototype = {
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_NOTIFICATION + ".enabled";
 			this.notificationEnable = gPreference.getBoolPref(valueToRead);
-			this.services.logSrv( FILE_HEADER + valueToRead + "=" + this.notificationEnable);
+			this.services.logSrv( this.CONST_HEADER + valueToRead + "=" + this.notificationEnable);
 		}
 		catch(e) {
 			this.notificationEnable = false; 
-			this.services.logSrv( FILE_HEADER + "Set notificationEnable to default value (false)" );
+			this.services.logSrv( this.CONST_HEADER + "Set notificationEnable to default value (false)" );
 		}
 	},
 
@@ -626,11 +625,11 @@ OutOfOfficeSettings.prototype = {
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_NOTIFICATIONMESSAGE;
 			this.notificationMessage = gPreference.getCharPref(valueToRead);
-			this.services.logSrv( FILE_HEADER + valueToRead + "=" + this.notificationMessage);
+			this.services.logSrv( this.CONST_HEADER + valueToRead + "=" + this.notificationMessage);
 		}
 		catch(e) {
 			this.notificationMessage = ""; 
-			this.services.logSrv( FILE_HEADER + "Set notificationMessage to default value (empty string)" );
+			this.services.logSrv( this.CONST_HEADER + "Set notificationMessage to default value (empty string)" );
 		}
 	},
 	
@@ -642,13 +641,13 @@ OutOfOfficeSettings.prototype = {
 		if( this.prefURI == null ){
 			this.prefURI = "extensions.out_of_office." + uri;
 		}
-		this.services.logSrv( FILE_HEADER + "read preferences...");
+		this.services.logSrv( this.CONST_HEADER + "read preferences...");
 		this.readPreferenceRedirection();
 		this.readPreferenceRedirectionAddress();
 		this.readPreferenceRedirectionKeepMessage();
 		this.readPreferenceNotification();
 		this.readPreferenceNotificationMessage();
-		this.services.logSrv( FILE_HEADER + "read preferences ended");
+		this.services.logSrv( this.CONST_HEADER + "read preferences ended");
 	},
 
 	/**
@@ -659,7 +658,7 @@ OutOfOfficeSettings.prototype = {
 		if( this.prefURI == null ){
 			this.prefURI = "extensions.out_of_office." + uri;
 		}
-		this.services.logSrv( FILE_HEADER + "save preferences");
+		this.services.logSrv( this.CONST_HEADER + "save preferences");
 
 		gPreference.setBoolPref(this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTION + ".enabled", this.getRedirection());
 		gPreference.setCharPref(this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTIONADDRESS, this.getRedirectionAddress());
@@ -680,44 +679,47 @@ vacation :days 5
 */
 
 
-/**
-	@class This Class is to manage the configuration from user interface
-	@version 0.1.0
-	@author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
-	@constructor
-	@param {object} SieveAccount account source
-*/
+/*
+ * @class This Class is to manage the configuration from user interface
+ * @version 0.1.0
+ * @author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
+ * @constructor
+ * @param {object} SieveAccount account source
+ */
 
 function OutOfOfficeManager(account) {
 
-// @TODO To check Can be null 
+	this.CONST_HEADER 						= new String("OutOfOfficeManager: "); // for trace 
+
+	// @TODO To check Can be null 
  	if (account == undefined ){
 		// throw  FILE_HEADER + "Account cannot be null";
 		account = null;
 	} 
  
-	/**
-		account to configure
-		@type SieveAccount
-	*/
+	/*
+	 * account to configure
+	 * @type SieveAccount
+	 */
 	this.account = account;
-	/**
-		Object to access to global service (Log, ...) 
-		@type Services
-	*/
+	/*
+	 * Object to access to global service (Log, ...)
+	 * @type Services
+	 */
 	this.services = new Services();
-	/**
-		OutOfOffice settings parameters built read the script from the Sieve server or 
-		set by the user with the interface.
-		@type OutOfOfficeSettings
-	*/
+	/*
+	 * OutOfOffice settings parameters built read the script from the Sieve server or
+	 * set by the user with the interface.
+	 * @type OutOfOfficeSettings
+	 */
 	this.settings = new OutOfOfficeSettings(this.services);
-	/**
-		OutOfOffice sieve server object. Manage connection and communication between 
-		server and client.
-		@type OutOfOfficeSieveServer
-	*/
+	/*
+	 * OutOfOffice sieve server object. Manage connection and communication between
+	 * server and client.
+	 * @type OutOfOfficeSieveServer
+	 * */
 	this.sieveServer = null;
+	this.services.logSrv( this.CONST_HEADER + "Constructor.");
 }
 
 OutOfOfficeManager.prototype = {
@@ -744,13 +746,13 @@ OutOfOfficeManager.prototype = {
 	initialize : function()
 	{
 		if (this.account == null){
-			throw  FILE_HEADER + "Account cannot be null";
+			throw  this.CONST_HEADER + "Account cannot be null";
 		}
 		if( this.settings == null ) {
-			// throw FILE_HEADER + "ERROR : The object settings is null, unable to continue";
+			// throw this.CONST_HEADER + "ERROR : The object settings is null, unable to continue";
 			return null;
 		}
-		this.services.logSrv( FILE_HEADER + "initilize");
+		this.services.logSrv( this.CONST_HEADER + "initilize");
 		this.settings.initialize(this.account.URI);
 	},
 
@@ -762,15 +764,19 @@ OutOfOfficeManager.prototype = {
 	{
 		this.loadClass();
 		if (account == undefined || account == null){
-			throw FILE_HEADER + "Account cannot be null";
+			throw this.CONST_HEADER + "Account cannot be null";
 		}
 		if( this.account == account ){
-			this.services.logSrv( FILE_HEADER + "connectServer Already connected.");
+			this.services.logSrv( this.CONST_HEADER + "connectServer Already connected.");
+			
+			this.services.logSrv( this.CONST_HEADER + "this.sieveServer=" + this.sieveServer );
+			this.services.logSrv( this.CONST_HEADER + "this.sieveServer.sieve=" + this.sieveServer.sieve );
+			
 			return ; // already connected
 		}
-		this.disconnectServer(); // Disconnect latest connection if up
+		//this.disconnectServer(); // Disconnect latest connection if up
 		this.account = account;
-		this.services.logSrv( FILE_HEADER + "connectServer Try to connect to '" + account.getHost().getHostname() + "' user '" + this.account.URI + "'.");
+		this.services.logSrv( this.CONST_HEADER + "connectServer Try to connect to '" + account.getHost().getHostname() + "' user '" + this.account.URI + "'.");
 		this.sieveServer = new OutOfOfficeSieveServer(this.account, this.services, this.settings);
 	},
 
@@ -779,6 +785,7 @@ OutOfOfficeManager.prototype = {
 	 */
 	disconnectServer : function()
 	{
+		this.services.logSrv( this.CONST_HEADER + "disconnectServer.");
 		if( this.sieveServer != null ){
 			this.sieveServer.disconnect();
 			delete this.sieveServer;
@@ -802,7 +809,7 @@ OutOfOfficeManager.prototype = {
 	loadSettings : function(parent)
 	{
 		if (this.account == null){
-			throw FILE_HEADER + "Account cannot be null";
+			throw this.CONST_HEADER + "Account cannot be null";
 		}
 		this.initialize();
 		this.sieveServer.loadScript(parent);
@@ -814,9 +821,9 @@ OutOfOfficeManager.prototype = {
 	saveSettings : function()
 	{
 		if( this.settings == null ) {
-			// throw FILE_HEADER + "ERROR : The object settings is null, unable to continue";
+			// throw this.CONST_HEADER + "ERROR : The object settings is null, unable to continue";
 		}
-		this.services.logSrv( FILE_HEADER + "saveSettings");
+		this.services.logSrv( this.CONST_HEADER + "saveSettings");
 		
 		this.getSettings().getFormatedScript();
 		this.getSettings().save(); // Save parameters to thunderbird configuration
@@ -831,16 +838,17 @@ OutOfOfficeManager.prototype = {
 	activate : function(active)
 	{
 		if (this.account == null){
-			throw FILE_HEADER + "Account cannot be null";
+			throw this.CONST_HEADER + "Account cannot be null";
 		}
 		if( this.settings == null ) {
-			// throw FILE_HEADER + "ERROR : The object settings is null, unable to continue";
+			// throw this.CONST_HEADER + "ERROR : The object settings is null, unable to continue";
 			return null;
 		}
 		if( this.sieveServer == null ) {
 			return ;
 		}
-		this.services.logSrv( FILE_HEADER + "activate(" + active + ")" );
+		this.services.logSrv( this.CONST_HEADER + "activate(" + active + ")" );
+		this.services.logSrv( this.CONST_HEADER + "this.sieve=" + this.sieveServer.sieve );
 		this.sieveServer.activateScript(active);
 	},
 
@@ -852,7 +860,7 @@ OutOfOfficeManager.prototype = {
 		if( this.sieveServer == null ) {
 			return ;
 		}
-		this.services.logSrv( FILE_HEADER + "keepAlive.");
+		this.services.logSrv( this.CONST_HEADER + "keepAlive.");
 		this.sieveServer.keepAlive();
 	},
 
@@ -863,10 +871,10 @@ OutOfOfficeManager.prototype = {
 	getSettings : function()
 	{
 		if( this.settings == null ) {
-			// throw FILE_HEADER + "ERROR : The object settings is null, unable to continue";
+			// throw this.CONST_HEADER + "ERROR : The object settings is null, unable to continue";
 			return null;
 		}
-		// DEBUG this.services.logSrv( FILE_HEADER + "getSettings");
+		// DEBUG this.services.logSrv( this.CONST_HEADER + "getSettings");
 		return this.settings;
 	},
 

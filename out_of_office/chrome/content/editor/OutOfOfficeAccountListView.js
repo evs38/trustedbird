@@ -42,10 +42,10 @@
 	@author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
 */
 
-var FILE_HEADER = new String("OutOfOfficeAccountListView: "); 
 var globalServices=new Services();
 var OutOfOfficeAccountTreeView = null;
 var gOutOfOfficeManager = null;
+var OOOALV_FILE_HEADER = new String("OutOfOfficeAccountListView: "); 
 
 function onWindowLoad()
 {
@@ -77,7 +77,7 @@ function onWindowLoad()
 		
 	// ... and make sure that an entry is selected.
 	if ((tree.currentIndex == -1) && (tree.view.rowCount > 0)){
-		globalServices.logSrv( FILE_HEADER + "\tSelect item 0");
+		globalServices.logSrv( OOOALV_FILE_HEADER + "\tSelect item 0");
 	    tree.view.selection.select(0);
 	}
 }
@@ -85,13 +85,13 @@ function onWindowLoad()
 function onCycleCell(sender)
 {
 	//@TODO Add connection to the server to activate or deactivate the out of office script 	
-	globalServices.logSrv( FILE_HEADER + "onCycleCell");
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onCycleCell");
 	onTreeSelect(document.getElementById('treeAccounts'));
 }
  
 function onKeepAlive()
 {
-	globalServices.logSrv( FILE_HEADER + "onKeepAlive");
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onKeepAlive");
 	gOutOfOfficeManager.keepAlive();
 }
 
@@ -100,7 +100,7 @@ function onTreeSelect(sender)
 {	
 	//@TODO Remove obsolete code 	
 	
-	globalServices.logSrv( FILE_HEADER + "onTreeSelect Select item=" + sender.currentIndex );
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + sender.currentIndex );
 	if (sender.currentIndex == -1)
 	{
 		document.getElementById('btnEdit').setAttribute('disabled','true');
@@ -124,7 +124,7 @@ function onTreeSelect(sender)
 		document.getElementById('btnEdit').removeAttribute('disabled');
 		document.getElementById('btnEnable').label = "Disable";	
 	}
-	// gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
+	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
 	
 		
 	document.getElementById('txtHostname').value = account.getHost().getHostname();
@@ -162,11 +162,11 @@ function onEditClick(sender)
 	// args["OutOfOfficeSieveAccountToConfigure"] = currentAccount;
 	args["OutOfOfficeSieveAccountToConfigure"] = gOutOfOfficeManager;
 	args["OutOfOfficeSieveAccountReturnCode"] = null;
-	globalServices.logSrv( FILE_HEADER + "onEditClick open account settings dialog" );
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onEditClick open account settings dialog" );
 
 	var returnCode = window.openDialog("chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.xul",
 		"OutOfOfficeScriptGenerator", "chrome,modal,titlebar,centerscreen", args);	        
-	globalServices.logSrv( FILE_HEADER + "onEditClick ended return code =" + args["OutOfOfficeSieveAccountReturnCode"] );
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onEditClick ended return code =" + args["OutOfOfficeSieveAccountReturnCode"] );
 	
 	onTreeSelect( document.getElementById('treeAccounts') );
 }
