@@ -183,21 +183,39 @@ var gEventConnection =
 
 	onListScriptResponse: function(response)
 	{
-		if (response.hasError())
-		{
-			alert("Command \"Listscripts\" failed");
+		if (response.hasError()) {
+			alert(gOutOfOfficeSieveServer.CONST_HEADER + "gEventConnection:onListScriptResponse Command \"Listscripts\" failed");
 			return ;
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.CONST_HEADER + "gEventConnection:onListScriptResponse Sieve server script list response. Try to load " +gOutOfOfficeSieveServer.getScriptName());
 //		gOutOfOfficeSieveServer.loadScript();
-	},
+		
+		/*
+		 
+		sieveTreeView.update(response.getScripts());
 
+		var tree = document.getElementById('treeImapRules');
+		tree.view = sieveTreeView;
+		
+		// allways select something
+		if ((tree.currentIndex == -1) && (tree.view.rowCount > 0))
+			tree.view.selection.select(0);
+		*/
+	},
+	
 	onSetActiveResponse: function(response)
 	{
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.CONST_HEADER + "gEventConnection:onSetActiveResponse Sieve server set active response.");
 		if (response.hasError()){
-			alert("Command \"setActive\" failed");			
+			alert(gOutOfOfficeSieveServer.CONST_HEADER + "gEventConnection:onSetActiveResponse Command \"setActive\" failed");			
 		}
+		
+		// Always refresh the table ...
+		var request = new SieveListScriptRequest();
+		request.addListScriptListener(gEventConnection);
+		request.addErrorListener(gEventConnection);
+		
+		gSieve.addRequest(request);
 	},
 
 	onCapabilitiesResponse: function(response)
@@ -487,8 +505,6 @@ OutOfOfficeSieveServer.prototype = {
 				gSieve.addRequest(request);
 	
 				gSieve.connect();
-		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.CONST_HEADER + "connect gSieve=" + gSieve);
-		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.CONST_HEADER + "connect gOutOfOfficeSieveServer.sieve=" + gOutOfOfficeSieveServer.sieve);
 			}
 		}
 	
@@ -636,18 +652,19 @@ OutOfOfficeSieveServer.prototype = {
 			this.getServices().logSrv( this.CONST_HEADER + "The script cannot be set to active=" + active + " because the server is not connected.");
 			return;	
 		}
-		this.getServices().logSrv( this.CONST_HEADER + "activate script=" + active );
+		this.getServices().logSrv( this.CONST_HEADER + "activateScript." +gSieve );
+		this.getServices().logSrv( this.CONST_HEADER + "activateScript." +this.sieve );
 		var request = null;
-		if (active == true)
+		if (active == true){
 			request = new SieveSetActiveRequest();
-		else
-			request = new SieveSetActiveRequest(this.getScriptName())
-      
+			this.getServices().logSrv( this.CONST_HEADER + "activate script=" + active );
+		} else {
+			request = new SieveSetActiveRequest(this.getScriptName());
+			this.getServices().logSrv( this.CONST_HEADER + "activate script=" + active );
+		}
+
 		request.addSetScriptListener(gEventConnection);
 		request.addErrorListener(gEventConnection);
-		this.getServices().logSrv( this.CONST_HEADER + "gSieve=" + gSieve );
-		this.getServices().logSrv( this.CONST_HEADER + "this.sieve=" + this.sieve );
-		alert("toto");
 		this.sieve.addRequest(request);
 	},
 	

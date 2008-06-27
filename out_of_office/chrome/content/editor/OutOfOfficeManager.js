@@ -283,11 +283,11 @@ OutOfOfficeSettings.prototype = {
 	{
 		// Redirection activated check the mail address.
 		if( this.redirectionEnable == true ){
-		/* TODO Desactivated need to check regex 
+		/* TODO Desactivated need to check regex
+		 */ 
 			if( this.services.isAddressMailValid( this.redirectionDestinationAddress, true ) == false ){
 				return 1;
 			}
-		*/
 		}
 		// Redirection activated check the mail address.
 		if( this.notificationEnable == true ){
@@ -746,7 +746,7 @@ OutOfOfficeManager.prototype = {
 	initialize : function()
 	{
 		if (this.account == null){
-			throw  this.CONST_HEADER + "Account cannot be null";
+			throw  this.CONST_HEADER + "initialize:Account cannot be null";
 		}
 		if( this.settings == null ) {
 			// throw this.CONST_HEADER + "ERROR : The object settings is null, unable to continue";
@@ -764,7 +764,7 @@ OutOfOfficeManager.prototype = {
 	{
 		this.loadClass();
 		if (account == undefined || account == null){
-			throw this.CONST_HEADER + "Account cannot be null";
+			throw this.CONST_HEADER + "connectServer:Account cannot be null";
 		}
 		if( this.account == account ){
 			this.services.logSrv( this.CONST_HEADER + "connectServer Already connected.");
@@ -809,7 +809,7 @@ OutOfOfficeManager.prototype = {
 	loadSettings : function(parent)
 	{
 		if (this.account == null){
-			throw this.CONST_HEADER + "Account cannot be null";
+			throw this.CONST_HEADER + "loadSettings:Account cannot be null";
 		}
 		this.initialize();
 		this.sieveServer.loadScript(parent);
@@ -838,7 +838,8 @@ OutOfOfficeManager.prototype = {
 	activate : function(active)
 	{
 		if (this.account == null){
-			throw this.CONST_HEADER + "Account cannot be null";
+			// throw this.CONST_HEADER + "activate:Account cannot be null";
+			return; //not initialized (possible while window is loading)
 		}
 		if( this.settings == null ) {
 			// throw this.CONST_HEADER + "ERROR : The object settings is null, unable to continue";
@@ -848,7 +849,6 @@ OutOfOfficeManager.prototype = {
 			return ;
 		}
 		this.services.logSrv( this.CONST_HEADER + "activate(" + active + ")" );
-		this.services.logSrv( this.CONST_HEADER + "this.sieve=" + this.sieveServer.sieve );
 		this.sieveServer.activateScript(active);
 	},
 

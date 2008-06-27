@@ -52,3 +52,7 @@
 
 <!ENTITY outofoffice.notification "Notification">
 <!ENTITY outofoffice.notification.key "N">
+
+<!ENTITY outofoffice.activation "Activate my Out of Office settings.">
+<!ENTITY outofoffice.activation.key "A">
+

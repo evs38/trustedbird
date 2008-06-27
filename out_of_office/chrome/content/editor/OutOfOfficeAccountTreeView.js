@@ -77,12 +77,15 @@ OutOfOfficeAccountTreeView.prototype.getColumnProperties
 
 OutOfOfficeAccountTreeView.prototype.cycleHeader
 	= function(col){}
+
+var globalServices=new Services();
 	
 OutOfOfficeAccountTreeView.prototype.cycleCell
     = function(row, col)
 {
+	globalServices.logSrv( "OutOfOfficeAccountTreeView >>>>onCycleCell");
 	this.accounts[row].setEnabledOutOfOffice( ! this.accounts[row].isEnabledOutOfOffice());
-	this.listener.onCycleCell(this);
+	this.listener.onCycleCellActivate(this);
 	this.selection.select(row);
 }
 

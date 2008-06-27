@@ -81,6 +81,15 @@ function onWindowLoad()
 	    tree.view.selection.select(0);
 	}
 }
+ 
+function onCycleCellActivate(sender)
+{
+	//@TODO Add connection to the server to activate or deactivate the out of office script 	
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onCycleCellActivate");
+	var account = OutOfOfficeAccountTreeView.getAccount(document.getElementById('treeAccounts').currentIndex);
+	gOutOfOfficeManager.activate( !(account.isEnabledOutOfOffice()));
+}
+ 
 
 function onCycleCell(sender)
 {
@@ -96,21 +105,22 @@ function onKeepAlive()
 }
 
 
-function onTreeSelect(sender)
+function onTreeSelect(treeView)
 {	
 	//@TODO Remove obsolete code 	
 	
-	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + sender.currentIndex );
-	if (sender.currentIndex == -1)
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + treeView.currentIndex );
+	if (treeView.currentIndex == -1)
 	{
 		document.getElementById('btnEdit').setAttribute('disabled','true');
 		document.getElementById('btnEnable').setAttribute('disabled','true');		
 		return;
 	}
 	
-	var account = OutOfOfficeAccountTreeView.getAccount(sender.currentIndex);
+	var account = OutOfOfficeAccountTreeView.getAccount(treeView.currentIndex);
 	document.getElementById('btnEnable').removeAttribute('disabled');
 
+//	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
 	gOutOfOfficeManager.reConnectServerTo(account);
 	  
 	if (account.isEnabledOutOfOffice() == false)
@@ -124,8 +134,6 @@ function onTreeSelect(sender)
 		document.getElementById('btnEdit').removeAttribute('disabled');
 		document.getElementById('btnEnable').label = "Disable";	
 	}
-	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
-	
 		
 	document.getElementById('txtHostname').value = account.getHost().getHostname();
 	document.getElementById('txtPort').value = account.getHost().getPort();

@@ -88,8 +88,8 @@
 											ontextentered="awRecipientTextCommand(eventParam, this)"
 											onerrorcommand="awRecipientErrorCommand(eventParam, this)"
 											oninput="gContentChanged=true; setupAutocomplete();" disableonsend="true"
-											onkeypress="awRecipientKeyPress(event, this)"
-											onkeydown="awRecipientKeyDown(event, this)">
+											onkeypress="awRecipientKeyPress(event, this); onOutOfOfficeDestinationAddressInput(this);"
+											onkeydown="awRecipientKeyDown(event, this); onOutOfOfficeDestinationAddressInput(this);">
 										<image class="person-icon" onclick="this.parentNode.select();"/>
 									</textbox>
 								</listcell>
@@ -111,17 +111,25 @@
 			</groupbox>
           </hbox>
         </vbox>
-          <vbox flex="1">
-          <hbox flex="1">
-		<groupbox flex="1">
-			<caption>          
-			  <checkbox id="outofofficeNotificationCheckbox" label="&outofoffice.notification;" accesskey="&outofoffice.notification.key;" 
-					oncommand="onOutOfOfficeNotificationCommand(this)"/>
-			</caption>
-			<textbox id="txtOutOfOfficeNotification" flex="1" multiline="true" wrap="virtual" onchange="onOutOfOfficeNotificationChange(this)"/>
-		</groupbox>
-          </hbox>
-          </vbox>
+		<vbox flex="1">
+			<hbox flex="1">
+				<groupbox flex="1">
+					<caption>          
+						<checkbox id="outofofficeNotificationCheckbox" label="&outofoffice.notification;" accesskey="&outofoffice.notification.key;" 
+								oncommand="onOutOfOfficeNotificationCommand(this)"/>
+					</caption>
+					<textbox id="txtOutOfOfficeNotification" flex="1" multiline="true" wrap="virtual" onchange="onOutOfOfficeNotificationChange(this)"/>
+				</groupbox>
+			</hbox>
+		</vbox>
+		<vbox flex="1">
+			<hbox flex="1">
+				<caption>          
+					<checkbox id="outofofficeScriptActivation" label="&outofoffice.activation;" accesskey="&outofoffice.activation.key;" 
+							oncommand="onOutOfOfficeActivationCommand(this)"/>
+				</caption>
+			</hbox>
+		</vbox>
 		<groupbox id="gbError" hidden="true">
 			<caption>
 				<image src="chrome://sieve/content/images/syntaxError.png" width="16" height="16"/>

@@ -129,6 +129,7 @@ function enableOutOfOfficeRedirectionCtrl(enabled)
 function onOutOfOfficeDestinationAddressInput(sender)
 {
 	globalServices.displayFieldOnError( 'addressCol2#1', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
+	globalServices.displayFieldOnError( 'textcol-addressingWidget', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
 //	globalServices.displayFieldOnError( 'txtOutOfOfficeDestinationAddress', !globalServices.isAddressMailValid( globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ) );
 	globalServices.logSrv("Destination address have changed.");
 }
@@ -139,6 +140,7 @@ function onOutOfOfficeDestinationAddressInput(sender)
 function onOutOfOfficeDestinationAddressChange(sender)
 {
 	globalServices.displayFieldOnError( 'addressCol2#1', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
+	globalServices.displayFieldOnError( 'textcol-addressingWidget', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
 //	globalServices.displayFieldOnError( 'txtOutOfOfficeDestinationAddress', !globalServices.isAddressMailValid( globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ) );
 	globalServices.logSrv("Destination address have changed.");
 }
@@ -175,6 +177,15 @@ function enableOutOfOfficeNotificationCtrl(enabled)
 function onOutOfOfficeNotificationChange(sender)
 {
 	globalServices.logSrv("Notification message has changed.");
+}
+
+/*
+ * Manage the activation of the out of office UI control
+ */
+function onOutOfOfficeActivationCommand(sender)
+{
+	globalServices.logSrv("Activate my out of office parameters='" + sender.checked + "'.");
+	gOutOfOfficeManager.activate(!(sender.checked));
 }
 
 /*
@@ -216,6 +227,7 @@ function updateData(bSaveAndValidate)
 		switch( gOutOfOfficeManager.getSettings().checkDataValidity() ) { // Check Data validity
 		case 1 :	// Data for address mail are invalid
 			globalServices.setFocusCtrlID( 'addressCol2#1' );
+			globalServices.setFocusCtrlID( 'textcol-addressingWidget' );
 	//		globalServices.setFocusCtrlID( 'txtOutOfOfficeDestinationAddress' );
 			globalServices.warningSrv( "Invalid data code 1.");
 			return false;

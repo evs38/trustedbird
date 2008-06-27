@@ -52,3 +52,6 @@
 
 <!ENTITY outofoffice.notification "Notification">
 <!ENTITY outofoffice.notification.key "N">
+
+<!ENTITY outofoffice.activation "Activer mes paramètres d'absence.">
+<!ENTITY outofoffice.activation.key "A">
