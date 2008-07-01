@@ -425,9 +425,9 @@ tc_mdnparser.tests = {
 
 var preferences=new Preferences();
 var wordList = ["erable","chaine","bouleau"];
-var keyCharTest="extensions.notifications_viewer.unittestchar";
-var keyBoolTest="extensions.notifications_viewer.unittestbool";
-var keyIntTest="extensions.notifications_viewer.unittestint";
+var keyCharTest="extensions.out_of_office.unittestchar";
+var keyBoolTest="extensions.out_of_office.unittestbool";
+var keyIntTest="extensions.out_of_office.unittestint";
 
 /**
 	Preferences unit test
