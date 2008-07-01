@@ -122,6 +122,7 @@
 				</groupbox>
 			</hbox>
 		</vbox>
+		<!-- Not used 
 		<vbox flex="1">
 			<hbox flex="1">
 				<caption>          
@@ -130,6 +131,7 @@
 				</caption>
 			</hbox>
 		</vbox>
+		-->
 		<groupbox id="gbError" hidden="true">
 			<caption>
 				<image src="chrome://sieve/content/images/syntaxError.png" width="16" height="16"/>

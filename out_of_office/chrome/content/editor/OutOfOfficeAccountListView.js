@@ -45,6 +45,7 @@
 var globalServices=new Services();
 var OutOfOfficeAccountTreeView = null;
 var gOutOfOfficeManager = null;
+var gActivateScript = false;
 var OOOALV_FILE_HEADER = new String("OutOfOfficeAccountListView: "); 
 
 function onWindowLoad()
@@ -87,7 +88,11 @@ function onCycleCellActivate(sender)
 	//@TODO Add connection to the server to activate or deactivate the out of office script 	
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onCycleCellActivate");
 	var account = OutOfOfficeAccountTreeView.getAccount(document.getElementById('treeAccounts').currentIndex);
-	gOutOfOfficeManager.activate( !(account.isEnabledOutOfOffice()));
+	gActivateScript = true;
+	account.setEnabledOutOfOffice( ! account.isEnabledOutOfOffice());
+//	gOutOfOfficeManager.activate( account.isEnabledOutOfOffice() );
+//	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
+	onTreeSelect(document.getElementById('treeAccounts'));
 }
  
 
@@ -107,6 +112,9 @@ function onKeepAlive()
 
 function onTreeSelect(treeView)
 {	
+	if(gActivateScript == undefined || gActivateScript == null){
+		gActivateScript = false;
+	}
 	//@TODO Remove obsolete code 	
 	
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + treeView.currentIndex );
@@ -119,9 +127,9 @@ function onTreeSelect(treeView)
 	
 	var account = OutOfOfficeAccountTreeView.getAccount(treeView.currentIndex);
 	document.getElementById('btnEnable').removeAttribute('disabled');
-
 //	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
-	gOutOfOfficeManager.reConnectServerTo(account);
+	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
+	gActivateScript = false;
 	  
 	if (account.isEnabledOutOfOffice() == false)
 	{

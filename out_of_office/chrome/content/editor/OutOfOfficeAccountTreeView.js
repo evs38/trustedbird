@@ -84,8 +84,9 @@ OutOfOfficeAccountTreeView.prototype.cycleCell
     = function(row, col)
 {
 	globalServices.logSrv( "OutOfOfficeAccountTreeView >>>>onCycleCell");
-	this.accounts[row].setEnabledOutOfOffice( ! this.accounts[row].isEnabledOutOfOffice());
+//	this.accounts[row].setEnabledOutOfOffice( ! this.accounts[row].isEnabledOutOfOffice());
 	this.listener.onCycleCellActivate(this);
+//	this.listener.onCycleCell(this);
 	this.selection.select(row);
 }
 

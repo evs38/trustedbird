@@ -185,7 +185,7 @@ function onOutOfOfficeNotificationChange(sender)
 function onOutOfOfficeActivationCommand(sender)
 {
 	globalServices.logSrv("Activate my out of office parameters='" + sender.checked + "'.");
-	gOutOfOfficeManager.activate(!(sender.checked));
+	gOutOfOfficeManager.activate( sender.checked );
 }
 
 /*
