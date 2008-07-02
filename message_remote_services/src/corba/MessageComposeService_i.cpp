@@ -53,10 +53,27 @@
 #include <iostream>
 
 #define CHAR_NOT_FOUND -1
+
+#ifdef MRS_LOG
+
+#ifdef XP_WIN
+#define INFO(x) \
+	logger.Info(x, "MRS");
+#else
+#define INFO(x) \
+	logger.Info(x, __PRETTY_FUNCTION__);
+#endif
+
+#else
+
+#define INFO(x)
+
+#endif
+
 using namespace std;
 
 MessageComposeService_i::MessageComposeService_i() {
- 
+
     NS_GetServiceManager(getter_AddRefs(svcMgr));
 }
 
@@ -68,7 +85,7 @@ void MessageComposeService_i::FillMsgComposeParams(
                                                    nsIMsgComposeParams * pMsgComposeParams) {
   nsresult rv;
   nsCOMPtr<nsIMsgCompFields> pMsgCompFields(do_CreateInstance(
-      NS_MSGCOMPFIELDS_CONTRACTID, &rv));   
+      NS_MSGCOMPFIELDS_CONTRACTID, &rv));
   ENSURE_SUCCESS(rv, "Cannot create nsIMsgCompFields");
 
   rv = pMsgComposeParams->SetFormat(nsIMsgCompFormat::PlainText);
@@ -80,13 +97,11 @@ void MessageComposeService_i::FillMsgComposeParams(
   rv = pMsgCompFields->SetSubject(NS_ConvertUTF8toUTF16(p_message.subject));
   ENSURE_SUCCESS(rv,"Cannot SetSubject");
 
-  cout << "INFO : MessageComposeService_i::SendMessage Addresses To" << endl;
+  INFO("Process Recipients address");
   Addresses recipients = p_message.recipients_to;
   nsAutoString toRecipients;
 
   for (uint i = 0; i < recipients.length(); ++i) {
-    cout << "Recipient : " << recipients[i] << endl;
-
     if (i>0)
       toRecipients += NS_LITERAL_STRING(",");
 
@@ -103,7 +118,7 @@ void MessageComposeService_i::FillMsgComposeParams(
 
   //Add headers
   this->AddCustomHeaders(pMsgCompFields, p_message.p_headers);
-  
+
   nsCOMPtr<nsIMsgSMIMECompFields> pMsgSMIMECompFields = do_CreateInstance(
       NS_MSGSMIMECOMPFIELDS_CONTRACTID, &rv);
 
@@ -120,56 +135,51 @@ void MessageComposeService_i::FillMsgComposeParams(
   //MDN
   if (p_message.notification.isMDNReadRequested)
     pMsgCompFields->SetReturnReceipt(PR_TRUE);
-  
+
 #ifdef DSN
   //DSN
   if (p_message.notification.isDSNRequested)
     pMsgCompFields->SetDSN(PR_TRUE);
 #endif
-   
+
   this->AddAttachment(pMsgCompFields, p_message.p_attachments);
-  
+
   rv = pMsgComposeParams->SetComposeFields(pMsgCompFields);
   ENSURE_SUCCESS(rv,"Cannot SetComposeFields");
 
 }
 
 void MessageComposeService_i::GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const CAccount& p_account) {
-  
+
   nsCOMPtr<nsIMsgAccountManager> pMsgAccountManager;
   nsresult rv = svcMgr->GetServiceByContractID(
       "@mozilla.org/messenger/account-manager;1",
       NS_GET_IID(nsIMsgAccountManager), getter_AddRefs(pMsgAccountManager));
   ENSURE_SUCCESS(rv, "Cannot get nsIMsgAccountManager");
 
-  cout << "INFO : MessageComposeService_i::SendMessage GetAccount" << endl;
+  INFO("Get Account process form MsgAccountManager");
   nsCOMPtr<nsIMsgAccount> pMsgAccount;
   rv = pMsgAccountManager->GetAccount(p_account.key,
       getter_AddRefs(pMsgAccount));
   ENSURE_SUCCESS(rv, "Cannot get nsIMsgAccount by key");
 
-  cout << "INFO : MessageComposeService_i::SendMessage GetDefaultIdentity"
-      << endl;
- 
+  INFO("GetDefaultIdentity From Account");
   rv = pMsgAccount->GetDefaultIdentity(pMsgIdentity);
   ENSURE_SUCCESS(rv, "Cannot get nsIMsgIdentity");
-  cout << "INFO : MessageComposeService_i::GetMsgAccount GetDefaultIdentity "
-      << rv << endl;
 }
 
 void MessageComposeService_i::SendMessage(const CAccount& p_account,
                                           const CMessage& p_message,
                                           MessageSendListener_ptr p_listener,
                                           ::CORBA::Boolean openComposeWindowOnBadFormat) {
-  cout << "INFO : MessageComposeService_i::SendMessage ENTER" << endl;
-
+  INFO("Sending process is beginning");
   nsresult rv;
-  
+
   //Fill MsgComposeParams From CMessage
   nsCOMPtr<nsIMsgComposeParams> pMsgComposeParams(do_CreateInstance(
       NS_MSGCOMPOSEPARAMS_CONTRACTID, &rv));
   ENSURE_SUCCESS(rv, "Cannot create nsIMsgComposeParams");
-  
+
   this->FillMsgComposeParams(p_message,pMsgComposeParams);
 
   //Control Format
@@ -178,11 +188,11 @@ void MessageComposeService_i::SendMessage(const CAccount& p_account,
       ShowMessageCompositionWindow(pMsgComposeParams);
     throw InternalServerException("Bad Format in 'to' field");
   }
-  
+
   //Get account
   nsCOMPtr<nsIMsgIdentity> pDefaultIdentity;
   this->GetMsgAccount(getter_AddRefs(pDefaultIdentity), p_account);
-  
+
   //create Listener to inform client of the process (Observer Pattern)
   nsCOMPtr <nsIMsgSendListener> sendListener = new MessageRemoteSendListener(p_listener, p_message);
   pMsgComposeParams->SetSendListener(sendListener);
@@ -193,7 +203,6 @@ void MessageComposeService_i::SendMessage(const CAccount& p_account,
       NS_GET_IID(nsIMsgComposeService), getter_AddRefs(pMsgComposeService));
   ENSURE_SUCCESS(rv, "Cannot get nsIMsgComposeService");
 
-  cout << "INFO : MessageComposeService_i::SendMessage InitCompose" << endl;
   nsCOMPtr<nsIAppShellService> appService = do_GetService(
       "@mozilla.org/appshell/appShellService;1", &rv);
   ENSURE_SUCCESS(rv,"Cannot create nsIAppShellService");
@@ -210,7 +219,7 @@ void MessageComposeService_i::SendMessage(const CAccount& p_account,
   rv = pMsgComposeService->InitCompose((nsIDOMWindowInternal *)hiddenWindow,
       (nsIMsgComposeParams *)pMsgComposeParams, getter_AddRefs(pMsgCompose));
   ENSURE_SUCCESS(rv,"Cannot InitCompose");
-  
+
   //Proxy to call method inside the UI Thread, async call
   nsCOMPtr<nsIMsgCompose> pMsgComposeProxy;
   ENSURE_SUCCESS(rv,"Cannot get GetProxyForObject nsIProxyObjectManager");
@@ -219,12 +228,11 @@ void MessageComposeService_i::SendMessage(const CAccount& p_account,
       getter_AddRefs(pMsgComposeProxy));
 
   //Send message
-  cout << "INFO : MessageComposeService_i::SendMessage SendMsg : " << rv
-      << endl;
+  INFO("Internal XPCOM method Send from nsIMsgCompose about to be called");
   rv = pMsgComposeProxy->SendMsg(nsIMsgCompDeliverMode::Now, pDefaultIdentity,
       nsnull, nsnull, nsnull) ;
   ENSURE_SUCCESS(rv,"Cannot SendMsg nsIMsgCompose Proxy");
-  
+
   //Loop until the message has been delivered to MTA
   nsCOMPtr<nsIEventQueueService> pEventQService = do_GetService(
       NS_EVENTQUEUESERVICE_CONTRACTID, &rv);
@@ -236,31 +244,27 @@ void MessageComposeService_i::SendMessage(const CAccount& p_account,
 
   nsIMsgSendListener * pSendListener = sendListener;
 
-  if (!pSendListener)
-    cout << "nsIMsgSendListener NULL" << endl;
-
-  cout << "INFO : nsIEventQueueService Looping Start : " << rv << endl;
+  INFO("nsIEventQueueService Looping Start");
 
   while ( !((MessageRemoteSendListener *) pSendListener)->IsDone() ) {
     eventQueue->ProcessPendingEvents();
   }
 
-  cout << "INFO : MessageComposeService_i::SendMessage EXIT" << endl;
-
+  INFO("Sending process is finished");
 }
 
 bool MessageComposeService_i::ControlFormat(const Addresses& recipients){
   //Check if there is at least one recepient
   if (recipients.length() == 0)
     return false;
-  
+
   nsAutoString recipient;
   for (uint i = 0; i < recipients.length(); ++i) {
     recipient = NS_ConvertUTF8toUTF16(recipients[i]);
     if (recipient.FindChar('@') == CHAR_NOT_FOUND)
       return false;
   }
-  
+
   return true;
 }
 
@@ -291,11 +295,8 @@ void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields
     return;
 
   nsAutoString headers_inline;
-  cout << "Custom Headers NB : " << headers.length() << endl;
 
   for (uint i = 0; i < headers.length(); ++i) {
-    cout << "Custom Headers  " << i << " : " << headers[i].key << " , "
-        << headers[i].value << endl;
     headers_inline.Append(NS_ConvertUTF8toUTF16(headers[i].key));
     headers_inline.Append(NS_ConvertUTF8toUTF16(": "));
     headers_inline.Append(NS_ConvertUTF8toUTF16(headers[i].value));
@@ -303,37 +304,38 @@ void MessageComposeService_i::AddCustomHeaders(nsIMsgCompFields * pMsgCompFields
   }
 
   rv = pMsgCompFields->SetOtherRandomHeaders(headers_inline);
-  cout << "Custom Headers : " << NS_LossyConvertUTF16toASCII(headers_inline).get() << endl;
+
+  INFO("Custom Headers");
+  INFO(NS_LossyConvertUTF16toASCII(headers_inline).get());
   ENSURE_SUCCESS(rv, "Cannot set nsIMsgCompFields Other Random Headers");
-  
+
 }
 
 void MessageComposeService_i::AddAttachment(nsIMsgCompFields * pMsgCompFields, const CAttachments& attachments){
   nsresult rv;
-  
+
   for (uint i = 0; i < attachments.length(); ++i) {
-    
+
     if (IsFile(attachments[i]) == PR_FALSE)
       throw InternalServerException("Path error in attachment, maybe file does not exist");
-      
+
     nsCOMPtr<nsIMsgAttachment> pMsgAttachment = do_CreateInstance(NS_MSGATTACHMENT_CONTRACTID, &rv);
     ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment");
-    
+
     rv = pMsgAttachment->SetName(NS_ConvertUTF8toUTF16(attachments[i].fileName));
     ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment name");
-    
+
     rv = pMsgAttachment->SetContentType(attachments[i].mimeType);
     ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment ContentType");
-    
+
     nsAutoString path = NS_ConvertUTF8toUTF16("file://");
     path += NS_ConvertUTF8toUTF16(attachments[i].dirPath);
     path += NS_ConvertUTF8toUTF16("/");
     path += NS_ConvertUTF8toUTF16(attachments[i].fileName);
-    
-    
+
     rv = pMsgAttachment->SetUrl(NS_LossyConvertUTF16toASCII(path).get());
     ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment path");
-    
+
     rv = pMsgCompFields->AddAttachment(pMsgAttachment);
     ENSURE_SUCCESS(rv, "Cannot add pMsgAttachment");
   }
@@ -344,15 +346,13 @@ PRBool MessageComposeService_i::IsFile(const CAttachment& attachment){
     nsresult rv;
     nsCOMPtr<nsILocalFile> pLocalFile = do_CreateInstance(NS_LOCAL_FILE_CONTRACTID, &rv);
     ENSURE_SUCCESS(rv, "Cannot create nsILocalFile");
-    
-    cout << attachment.dirPath << endl;
-    
+
     rv = pLocalFile->InitWithNativePath(nsDependentCString(attachment.dirPath));
     ENSURE_SUCCESS(rv, "Cannot call InitWithNativePath");
-    
+
     rv = pLocalFile->AppendRelativeNativePath(nsDependentCString(attachment.fileName));
     ENSURE_SUCCESS(rv, "Cannot call AppendRelativeNativePath");
-    
+
     rv = pLocalFile->Exists(&exists);
     ENSURE_SUCCESS(rv, "Cannot call Exists");
     return exists;

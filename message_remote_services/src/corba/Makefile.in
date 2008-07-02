@@ -47,7 +47,8 @@ libmrs_a_AR = $(AR) $(ARFLAGS)
 libmrs_a_LIBADD =
 am_libmrs_a_OBJECTS = AccountService_i.$(OBJEXT) \
 	MessageComposeService_i.$(OBJEXT) \
-	MessageRemoteSendListener.$(OBJEXT) ServicesSK.$(OBJEXT)
+	MessageRemoteSendListener.$(OBJEXT) ServicesSK.$(OBJEXT) \
+	MRSLogger.$(OBJEXT)
 libmrs_a_OBJECTS = $(am_libmrs_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,7 +189,7 @@ noinst_LIBRARIES = libmrs.a
 SDK = $(mozilla_sdk)/sdk/include
 DIR = $(mozilla_sdk)/include
 AM_CPPFLAGS = -Wall -I $(DIR)  -I $(DIR)/msgbase  -I $(DIR)/xpcom  -I $(DIR)/mailnews -I $(DIR)/string  -I $(DIR)/msgdb  -I $(DIR)/msgbaseutil  -I $(DIR)/msgcompose  -I $(DIR)/appshell  -I $(DIR)/dom  -I $(DIR)/msgsmime  -DMOZILLA_INTERNAL_API  -I $(SDK) -I ${top_srcdir}/lib/omniORB-4.1.2/include
-libmrs_a_SOURCES = AccountService_i.cpp AccountService_i.h MessageComposeService_i.cpp MessageComposeService_i.h MessageRemoteSendListener.cpp  ServicesSK.cpp Services.h
+libmrs_a_SOURCES = AccountService_i.cpp AccountService_i.h MessageComposeService_i.cpp MessageComposeService_i.h MessageRemoteSendListener.cpp  ServicesSK.cpp Services.h MRSLogger.h MRSLogger.cpp
 all: all-am
 
 .SUFFIXES:
@@ -237,6 +238,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AccountService_i.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MRSLogger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageComposeService_i.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageRemoteSendListener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ServicesSK.Po@am__quote@
