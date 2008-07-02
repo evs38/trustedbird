@@ -38,7 +38,7 @@
 #define ACCOUNTSERVICE_I_H_
 
 #include "Services.h"
-
+#include "MRSLogger.h"
 /*!
  * Corba AccountServicePOA Implementation
  */
@@ -53,6 +53,9 @@ public:
 	 * \return All Accounts of the current Thunderbird Profile
 	 */
 	virtual CAccounts* GetAllAccounts();
+
+private:
+	MRSLogger logger;
 };
 
 #endif /*ACCOUNTSERVICE_I_H_*/

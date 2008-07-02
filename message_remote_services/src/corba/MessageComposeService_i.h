@@ -41,7 +41,7 @@
 #include "nsIMsgComposeParams.h"
 #include "nsIMsgIdentity.h"
 #include "nsIServiceManager.h"
-
+#include "MRSLogger.h"
 /*!
  * Corba MessageComposeServicePOA Implementation
  */
@@ -52,7 +52,7 @@ public:
   /*!
    *  This method is used to Send a Message
    *  \param p_account is the account that will be used to send the message (FROM)
-   *  \param p_message is the message to send 
+   *  \param p_message is the message to send
    *  \param p_listener is the listener, which receives the sending process events
    */
   virtual void SendMessage(const CAccount& p_account, const CMessage& p_message,
@@ -69,28 +69,29 @@ private:
   void FillMsgComposeParams(const CMessage& p_message,
                             nsIMsgComposeParams * pMsgComposeParams);
   void GetMsgAccount(nsIMsgIdentity * * pMsgIdentity, const CAccount& p_account);
-  
+
   /*!
-   * Helper method used to control Format of the recipients addresse
+   * Helper method used to control Format of the recipients address
    */
   bool ControlFormat(const Addresses& recipients);
-  
+
   /*!
    * Helper method used to show Composition Window filled by message attributes
    */
   void ShowMessageCompositionWindow(nsIMsgComposeParams * pMsgComposeParams);
-  
+
   /*!
      * Helper method used add custom headers to message
      */
   void AddCustomHeaders(nsIMsgCompFields * pMsgCompFields, const CHeaders& headers);
-  
+
   void AddAttachment(nsIMsgCompFields * pMsgCompFields, const CAttachments& attachments);
-  
+
   PRBool IsFile(const CAttachment& attachment);
-  
+
   nsCOMPtr<nsIServiceManager> svcMgr;
- 
+
+  MRSLogger logger;
 };
 
 #endif /*MESSAGECOMPOSESERVICE_I_H_*/

@@ -41,7 +41,22 @@
 #include "nsCOMPtr.h"
 #include "nsStringAPI.h"
 #include "Utils.h"
-#include <iostream>
+
+#ifdef MRS_LOG
+
+#ifdef XP_WIN
+#define INFO(x) \
+	logger.Info(x, "MRS");
+#else
+#define INFO(x) \
+	logger.Info(x, __PRETTY_FUNCTION__);
+#endif
+
+#else
+
+#define INFO(x)
+
+#endif
 
 using namespace std;
 
@@ -53,7 +68,7 @@ AccountService_i::~AccountService_i() {
 
 //TODO List all Accounts
 CAccounts * AccountService_i::GetAllAccounts() {
-  cout << "INFO ENTER AccountService_i::GetAllAccounts()" << endl;
+  INFO("Accounts getting process is beginning")
 
   nsresult rv;
 
@@ -80,11 +95,11 @@ CAccounts * AccountService_i::GetAllAccounts() {
   accounts->length(count);
 
   for (int i=0; i < count; i++) {
-    
+
     nsCOMPtr<nsIMsgAccount> msgAccount = do_QueryElementAt(msgAccounts, i);
     nsCOMPtr <nsIMsgIncomingServer> incomingServer;
     rv = msgAccount->GetIncomingServer(getter_AddRefs(incomingServer));
-  
+
     ENSURE_SUCCESS(rv,"Cannot get nsIMsgAccount From nsIMsgIncomingServer");
 
     nsXPIDLCString hostname;
@@ -103,7 +118,7 @@ CAccounts * AccountService_i::GetAllAccounts() {
 
   }
 
-  cout << "INFO EXIT AccountService_i::GetAllAccounts()" << endl;
+  INFO("Accounts getting process is finished")
 
   return accounts;
 }

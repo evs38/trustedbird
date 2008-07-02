@@ -54,6 +54,28 @@
 
 using namespace std;
 
+#ifdef MRS_LOG
+
+#ifdef XP_WIN
+#define INFO(x) \
+	logger.Info(x, "MRS");
+#else
+#define INFO(x) \
+	logger.Info(x, __PRETTY_FUNCTION__);
+#endif
+
+#else
+
+#define INFO(x)
+
+#endif
+
+#ifdef MRS_LOG
+#define ORB_TRACE_LEVEL "50"
+#else
+#define ORB_TRACE_LEVEL "0"
+#endif
+
 /* Implementation file */
 NS_IMPL_ISUPPORTS1(MessageRemoteService, IMessageRemoteService)
 
@@ -69,16 +91,16 @@ MessageRemoteService::~MessageRemoteService() {
 
 /* void Start (); */
 NS_IMETHODIMP MessageRemoteService::Start() {
-  const char* options[][2] = { { "traceLevel", "50" }, { "endPoint",
+  const char* options[][2] = { { "traceLevel", ORB_TRACE_LEVEL }, { "endPoint",
       "giop:tcp:localhost:1449" },{"nativeCharCodeSet","UTF-8"}, { 0, 0 } };
 
   char ** c= NULL;
   int a = 0;
 
   orb = CORBA::ORB_init(a, c, "omniORB4", options);
-  cout << "Corba ORB init" << endl;
+  INFO("Corba ORB is initialized");
 
-  // init POA
+  // initialize POA
   CORBA::Object_var poa_obj = orb->resolve_initial_references("RootPOA");
   PortableServer::POA_var poa = PortableServer::POA::_narrow(poa_obj);
   PortableServer::POAManager_var manager = poa->the_POAManager();
@@ -87,29 +109,28 @@ NS_IMETHODIMP MessageRemoteService::Start() {
 
   // create service
   accountService = new AccountService_i();
-  cout << "AccountService Service created " << endl;
-  
+  INFO("AccountService Service created");
+
   messageComposeService = new MessageComposeService_i();
-  cout << "MessageComposeService Service created " << endl;
- 
-  
+  INFO("MessageComposeService Service created");
+
   //Print IOR
-  cout << "Print IOR AccountService" << endl;
+  INFO("IOR AccountService is printed");
   CORBA::Object_var accountService_obj = accountService->_this();
   CORBA::String_var accountService_sior(orb->object_to_string(accountService_obj));
   nsresult rv = SaveServiceIOR((char*)accountService_sior,"AccountService.ior");
   NS_ENSURE_SUCCESS(rv, rv);
   //accountService->_remove_ref();
 
-  cout << "Print IOR MessageComposeService" << endl;
+  INFO("IOR MessageComposeService is printed");
   CORBA::Object_var composeService_obj = messageComposeService->_this();
   CORBA::String_var composeService_sior(orb->object_to_string(composeService_obj));
   rv = SaveServiceIOR((char*)composeService_sior,"MessageComposeService.ior");
   NS_ENSURE_SUCCESS(rv, rv);
   //messageComposeService->_remove_ref();
 
-  
-  cout << "Launch Thread " << endl;
+
+  INFO("ORB main Thread is created");
   //Launch Thread
   orbThread = PR_CreateThread(PR_USER_THREAD, InternalThreadFunc,
       (void *)(orb), PR_PRIORITY_NORMAL, PR_GLOBAL_THREAD, PR_JOINABLE_THREAD,
@@ -131,9 +152,9 @@ NS_IMETHODIMP MessageRemoteService::Stop() {
 
 
 NS_IMETHODIMP MessageRemoteService::IsStarted(PRBool *_retval){
-  
-  *_retval = isStarted;  
-  
+
+  *_retval = isStarted;
+
   return NS_OK;
 }
 
@@ -141,74 +162,65 @@ NS_IMETHODIMP MessageRemoteService::IsStarted(PRBool *_retval){
 /* End of implementation class template. */
 
 void MessageRemoteService::InternalThreadFunc(void *orb) {
-
-  cout << "Orb run From Thread" << endl;
   ((CORBA::ORB_ptr)orb)->run();
-
-  cout << "ExitFrom Thread" << endl;
 }
 
 NS_IMETHODIMP MessageRemoteService::SaveServiceIOR(const char * const ior, const char * const fileName) {
   nsresult rv;
-  
-  cout << "MessageRemoteService SaveServiceIOR() Start" << endl;
+
   nsCOMPtr<nsIServiceManager> svcMgr;
   rv = NS_GetServiceManager(getter_AddRefs(svcMgr));
-  
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsIProperties> pDirectoryService;
   rv = svcMgr->GetServiceByContractID("@mozilla.org/file/directory_service;1",
       NS_GET_IID(nsIProperties), getter_AddRefs(pDirectoryService));
-  
   NS_ENSURE_SUCCESS(rv, rv);
 
   //Get Home User Path
   nsCOMPtr<nsILocalFile> file;
-  
+
   //NS_WIN_HOME_DIR for XP et NS_OS_HOME_DIR for Linux
   #ifdef XP_WIN
   rv = pDirectoryService->Get(NS_WIN_HOME_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
   #else
    rv = pDirectoryService->Get(NS_OS_HOME_DIR, NS_GET_IID(nsILocalFile), getter_AddRefs(file));
-  #endif 
-  
+  #endif
+
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoString homePath;
   rv = file->GetPath(homePath);
-  
   NS_ENSURE_SUCCESS(rv, rv);
-  
-  //Create Directory .milimail in user Home
+
+  //Create Directory milimail in user Home
   nsCOMPtr<nsILocalFile> pServicesDirectory (do_CreateInstance (NS_LOCAL_FILE_CONTRACTID, &rv));
-  
   NS_ENSURE_SUCCESS(rv,rv);
-  
+
   rv = pServicesDirectory->InitWithPath(homePath);
-  
   NS_ENSURE_SUCCESS(rv,rv);
+
   //Append doe not work (only one character) under Linux Why? Windows?
   rv = pServicesDirectory->AppendNative(nsDependentCString("milimail"));
-  
   NS_ENSURE_SUCCESS(rv,rv);
+
   //Dont check success, directory may exist
   rv = pServicesDirectory->Create(nsIFile::DIRECTORY_TYPE, 0755);
-  
+
   //IOR Services File Create
   rv = pServicesDirectory->AppendNative(nsDependentCString(fileName));
-  
-  
+
   nsAutoString serviceIORPath;
   rv = pServicesDirectory->GetPath(serviceIORPath);
-  
+
   NS_ConvertUTF16toUTF8 temp(serviceIORPath);
-  
+
+  INFO("Writing process of IOR into file is beginning");
   //c++ std style, more elegant and simple than XPCOM Style
   ofstream outfile(temp.get());
   outfile << ior ;
   outfile.close();
-  cout << "MessageRemoteService SaveServiceIOR() End" << endl;
+  INFO("Writing process  of IOR into file is finished");
   return NS_OK;
-  
+
 }
