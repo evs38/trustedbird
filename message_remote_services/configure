@@ -1479,7 +1479,7 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-dsn		turn on dsn
                        default=$dsn_default
-  --enable-log		turn on log
+  --disable-log		turn off log
                        default=$log_default
 
 Optional Packages:
@@ -19795,26 +19795,26 @@ else
 echo "${ECHO_T}no" >&6; }
 fi
 
-{ echo "$as_me:$LINENO: checking whether to enable logging" >&5
-echo $ECHO_N "checking whether to enable logging... $ECHO_C" >&6; }
-log_default="yes"
+{ echo "$as_me:$LINENO: checking whether to disable logging" >&5
+echo $ECHO_N "checking whether to disable logging... $ECHO_C" >&6; }
+log_default="no"
 # Check whether --enable-log was given.
 if test "${enable_log+set}" = set; then
   enableval=$enable_log;  case "$enableval" in yes|no) : ;; *) { { echo "$as_me:$LINENO: error: bad value for --enable-log must be yes or no or empty which means yes" >&5
 echo "$as_me: error: bad value for --enable-log must be yes or no or empty which means yes" >&2;}
    { (exit 1); exit 1; }; }                ;; esac
 else
-  enable_dsn=$dsn_default
+  disable_log=$log_default
 fi
 
 
-if test "x$enable_log" = "xyes"; then
+if test "x$disable_log" = "xno"; then
          CXXFLAGS="$CXXFLAGS -DMRS_LOG"
-{ echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-else
 { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
+else
+{ echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }
 fi
 
 ac_config_files="$ac_config_files Makefile src/Makefile src/corba/Makefile src/xpcom/Makefile"

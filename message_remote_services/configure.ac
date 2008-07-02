@@ -49,18 +49,18 @@ else
 AC_MSG_RESULT(no)
 fi
 
-AC_MSG_CHECKING(whether to enable logging)
-log_default="yes"
-AC_ARG_ENABLE(log, [  --enable-log		turn on log
+AC_MSG_CHECKING(whether to disable logging)
+log_default="no"
+AC_ARG_ENABLE(log, [  --disable-log		turn off log
                        [default=$log_default]],
                        [ case "$enableval" in yes|no) : ;; *) AC_MSG_ERROR(bad value for --enable-log must be yes or no or empty which means yes)                ;; esac ],
-                       enable_dsn=$dsn_default)
+                       disable_log=$log_default)
 
-if test "x$enable_log" = "xyes"; then
+if test "x$disable_log" = "xno"; then
          CXXFLAGS="$CXXFLAGS -DMRS_LOG"
-AC_MSG_RESULT(yes)
-else
 AC_MSG_RESULT(no)
+else
+AC_MSG_RESULT(yes)
 fi
 
 AC_CONFIG_FILES([Makefile src/Makefile src/corba/Makefile src/xpcom/Makefile])
