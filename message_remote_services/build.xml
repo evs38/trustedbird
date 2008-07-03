@@ -45,7 +45,8 @@
      Milimail.org                                                                
      ====================================================================== -->
 
-<project name="project" default="package">
+<project name="project" default="compile-MRS-lib">
+	<property file="package.properties" />
 	<property name="component" value="MRS"/>
 	<description>
            MiliMail MRS Extension Packager
@@ -63,17 +64,54 @@
 		<mkdir dir="xpi/platform/WINNT_x86-msvc/components"/>
 	</target>
 
+	<!-- ================================= 
+          target: clean-Omniorb              
+         ================================= -->
+	<target name="clean-Omniorb" description="clean lib Omniorb">
+		<exec executable="make" dir="lib/omniORB-4.1.2" failonerror="true">
+			<arg value="clean" />
+		</exec>
+	</target>
+
+	<!-- ================================= 
+	          target: clean-MRS-lib             
+	         ================================= -->
+	<target name="clean-MRS-lib" description="clean lib Omniorb">
+		<exec executable="make" dir="." failonerror="true">
+			<arg value="distclean" />
+		</exec>
+	</target>
+
+	<!-- ================================= 
+          target: compile-Omniorb              
+         ================================= -->
+	<target name="compile-Omniorb" depends="prepare-layout" description="Compile lib Omniorb">
+		<exec executable="./configure" dir="lib/omniORB-4.1.2" failonerror="true"/>
+		<exec executable="make" dir="lib/omniORB-4.1.2" failonerror="true"/>
+	</target>
+
+	<!-- ================================= 
+          target: compile              
+         ================================= -->
+	<target name="compile-MRS-lib" depends="compile-Omniorb" description="Compile MRS lib">
+		<exec executable="./configure" dir="." failonerror="true">
+			<arg value="--with-mozilla-sdk=${mozilla.sdk.path}" />
+		</exec>
+
+		<exec executable="make" dir="." failonerror="true">
+		</exec>
+	</target>
 
 
 	<!-- ================================= 
           target: package              
          ================================= -->
-	<target name="package"  depends="prepare-layout" description="--> package MRS in Thunderbird xpi">
+	<target name="package"  depends="compile-MRS-lib" description="--> package MRS in Thunderbird xpi">
 		<copy failonerror="off" file="src/xpcom/.libs/libMessageRemoteService.so.0.0.0" todir="xpi/platform/Linux_x86-gcc3/components/"/>
 		<move failonerror="off" file="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so.0.0.0" tofile="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so"/>
-	
+
 		<copy failonerror="off" file="win/Release/libMessageRemoteService.dll" todir="xpi/platform/WINNT_x86-msvc/components/"/>
-				
+
 		<tstamp/>
 		<zip destfile="Milimail-${component}-${DSTAMP}-${TSTAMP}.xpi">
 			<fileset dir="xpi" id="id">
@@ -85,7 +123,7 @@
 	<!-- ================================= 
           target: clean              
          ================================= -->
-	<target name="clean" description="--> clean">
+	<target name="clean" depends="clean-Omniorb, clean-MRS-lib" description="--> clean">
 		<delete>
 			<fileset dir="xpi">
 				<include name="platform/**"/>
