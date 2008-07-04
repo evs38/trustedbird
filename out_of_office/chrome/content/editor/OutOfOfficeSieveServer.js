@@ -185,11 +185,16 @@ var gEventConnection =
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onLoginResponse Sieve server connected. Request link/unlink script=" + gOutOfOfficeSieveServer.bActivateScript);
 		// enable the disabled controls....
-		postStatus("Connected to '" + gOutOfOfficeSieveServer.getAccount().getHost().getHostname() + "' Sieve server.");
 		gOutOfOfficeSieveServer.accountConnected = gOutOfOfficeSieveServer.getAccount();
+		postStatus("Connected to '" + gOutOfOfficeSieveServer.getAccount().getHost().getHostname() + "' Sieve server.");
 		if( gOutOfOfficeSieveServer.bActivateScript == true ){
 			gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "Set link to script=" + gOutOfOfficeSieveServer.getAccount().isEnabledOutOfOffice() );
 			gOutOfOfficeSieveServer.activateScript(gOutOfOfficeSieveServer.getAccount().isEnabledOutOfOffice());
+		}
+		 else {
+			gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "Try to update script list status." );
+			// Update status for the user interface ...
+			gOutOfOfficeSieveServer.updateScriptListStatus();
 		}
 	},
 
@@ -222,6 +227,18 @@ var gEventConnection =
 			return ;
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onListScriptResponse Sieve server script list response. Try to load " +gOutOfOfficeSieveServer.getScriptName());
+		//@TODO get script list and check if the script out of office is activated or not
+		var scriptList = response.getScripts();
+		for( var count=0; count < scriptList.length ; count++ ){
+			if(scriptList[count][0] == gOutOfOfficeSieveServer.getScriptName() ){
+				gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "postScriptStatus for " + scriptList[count][0] + " to " + scriptList[count][1]);
+				postScriptStatus(scriptList[count][1]);
+				return; // stop loop this extension manage only out of office specific script
+			}
+		}
+		alert("Script out of office not found =" + scriptList.length )
+		postScriptStatus(false);
+//		alert( "postScriptStatus(ENDED);");
 //		gOutOfOfficeSieveServer.loadScript();
 		
 		/*
@@ -249,11 +266,8 @@ var gEventConnection =
 		if (response.hasError()){
 			alert(gOutOfOfficeSieveServer.toString() + "gEventConnection:onSetActiveResponse Command \"setActive\" failed");			
 		}
-		// Always refresh the table ...
-		var request = new SieveListScriptRequest();
-		request.addListScriptListener(gEventConnection);
-		request.addErrorListener(gEventConnection);
-		gSieve.addRequest(request);
+		// Update status for the user interface ...
+		gOutOfOfficeSieveServer.updateScriptListStatus();
 	},
 
 	onCapabilitiesResponse: function(response)
@@ -509,7 +523,7 @@ OutOfOfficeSieveServer.prototype = {
 	toString : function()
 	{
 		if( this.CONST_HEADER == undefined || this.CONST_HEADER == null ){
-			return "Invalid String"; // Error
+			return "OutOfOfficeSieveServer: Invalid String"; // Error
 		}
 		return this.CONST_HEADER;
 	},
@@ -617,6 +631,10 @@ OutOfOfficeSieveServer.prototype = {
 	 */
 	disconnect : function()
 	{
+		if (gSieve == null){
+			this.getServices().warningSrv( this.toString() + "Disconnect invalid sieve server object");
+			return false;
+		}
 		this.getServices().logSrv( this.toString() + "disconnect");
 		if (gKeepAliveInterval != null)
 		{
@@ -643,6 +661,10 @@ OutOfOfficeSieveServer.prototype = {
 	 */
 	createScript : function()
 	{	
+		if (this.sieve == null){
+			this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
+			return false;
+		}
 		this.getServices().logSrv( this.toString() + "createScript" + this.getScriptName());
 
 		// TODO put the right parameters to send to sieve server name and data script
@@ -723,12 +745,10 @@ OutOfOfficeSieveServer.prototype = {
 	
 	/*
 	 * Activate the script out of office on the server with a symbolic link
-	 * @param (string) Name of the script to create link
 	 * @param (boolean) Activate script when true
 	 */
 	activateScript : function(active)
-	{
-		
+	{	
 		if( this.accountConnected == null ){
 			this.getServices().logSrv( this.toString() + "The script cannot be set to active=" + active + " because the server is not connected.");
 			return;	
@@ -743,7 +763,30 @@ OutOfOfficeSieveServer.prototype = {
 
 		request.addSetScriptListener(gEventConnection);
 		request.addErrorListener(gEventConnection);
-		this.sieve.addRequest(request);
+		gSieve.addRequest(request);
+	},
+	
+	/*
+	 * Activate the script out of office on the server with a symbolic link
+	 * @param (boolean) Activate script when true
+	 */
+	updateScriptListStatus : function()
+	{
+		if( this.accountConnected == null ){
+			this.getServices().logSrv( this.toString() + "The update script link status cannot be done because the server is not connected.");
+			return;	
+		}
+		if (gSieve == null){
+			this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
+			return;
+		}
+		this.getServices().logSrv( this.toString() + "Update script link status.");
+	
+		// Always refresh the table to update status for the user interface ...
+		var request = new SieveListScriptRequest();
+		request.addListScriptListener(gEventConnection);
+		request.addErrorListener(gEventConnection);
+		gSieve.addRequest(request);
 	},
 	
 	/*

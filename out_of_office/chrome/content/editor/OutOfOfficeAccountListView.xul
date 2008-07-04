@@ -33,8 +33,8 @@
 				<vbox>
 					<tree  id="treeAccounts" flex="1" hidecolumnpicker="true" seltype="single" onselect="onTreeSelect(this)">
 						<treecols>
-							<treecol id="active" label="&options.tree.active;" cycler="true" />      
 							<treecol id="namecol" label="&options.tree.name;" flex="1" />
+							<treecol id="active" label="&options.tree.active;" cycler="true" />      
 						</treecols>
 						<treechildren />
 					</tree>  

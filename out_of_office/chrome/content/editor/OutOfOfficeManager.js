@@ -160,7 +160,7 @@ OutOfOfficeSettings.prototype = {
 	toString : function()
 	{
 		if( this.CONST_HEADER == undefined || this.CONST_HEADER == null ){
-			return "Invalid String"; // Error
+			return "OutOfOfficeSettings: Invalid String"; // Error
 		}
 		return this.CONST_HEADER;
 	},
@@ -746,7 +746,7 @@ OutOfOfficeManager.prototype = {
 	toString : function()
 	{
 		if( this.CONST_HEADER == undefined || this.CONST_HEADER == null ){
-			return "Invalid String"; // Error
+			return "OutOfOfficeManager: Invalid String"; // Error
 		}
 		return this.CONST_HEADER;
 	},
@@ -779,9 +779,26 @@ OutOfOfficeManager.prototype = {
 			// throw this.toString() + "ERROR : The object settings is null, unable to continue";
 			return null;
 		}
-		this.services.logSrv( this.toString() + "initilize");
+		this.services.logSrv( this.toString() + "initialize");
 		this.settings.initialize(this.account.URI);
 	},
+
+	/*
+	 * Initialize script status from server for each account
+	 * @TODO This function is not used
+	 */
+	initializeScriptStatus : function(accountList)
+	{
+		if (accountList == null){
+			throw  this.toString() + "initialize:Account cannot be null";
+		}
+		this.services.logSrv( this.toString() + "initializeScriptStatus");
+		for(var count= 0; count<accountList.length; count++)
+		{
+			
+		}
+	},
+
 
 	/* 
 	 * Connect to Sieve server.
@@ -792,9 +809,13 @@ OutOfOfficeManager.prototype = {
 		if (account == undefined || account == null){
 			throw this.toString() + "connectServer:Account cannot be null";
 		}
-		if (bActivateScript == undefined || bActivateScript == null){
-			bActivateScript = false;
+		
+		if(bActivateScript == true){
+			account.setEnabledOutOfOffice( ! account.isEnabledOutOfOffice());		
+		} else {
+			bActivateScript = false; // Allways set to false if equal to null or undefined
 		}
+		
 		if( this.account == account ){
 			this.services.logSrv( this.toString() + "connectServer Already connected.");
 			
@@ -841,8 +862,8 @@ OutOfOfficeManager.prototype = {
 	 */
 	loadSettings : function(parent)
 	{
-		if (this.account == null){
-			throw this.toString() + "loadSettings:Account cannot be null";
+		if (this.sieveServer == null){
+			throw this.toString() + "loadSettings:Sieve server object cannot be null";
 		}
 		this.initialize();
 		this.sieveServer.loadScript(parent);
