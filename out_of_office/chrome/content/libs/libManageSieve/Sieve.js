@@ -1,7 +1,16 @@
+// Load all the Libraries we need...
+var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+// includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
+
+var globalServices=new Services();
+
 
 function Sieve(host, port, secure, debug) 
 {
- 
+	this.CONST_HEADER = new String("Sieve: "); // for trace 
+	globalServices.logSrv( this.toString() + "Construtor");
+
   if (debug == null) 
     this.debug = false;    
   else
@@ -15,6 +24,20 @@ function Sieve(host, port, secure, debug)
   this.data = "";
     
   this.requests = new Array();  
+}
+
+/*
+ * Return the name of the class initialized in CONST_HEADER variable.
+ * This function overload the 'toString' standard function from Javascript Object.
+ * 
+ * @return (string) CONST_HEADER containing class name.
+ */
+Sieve.prototype.toString = function()
+{
+	if( this.CONST_HEADER == undefined || this.CONST_HEADER == null ){
+		return "Sieve: Invalid String"; // Error
+	}
+	return this.CONST_HEADER;
 }
 
 Sieve.prototype.isAlive = function()
@@ -43,14 +66,14 @@ Sieve.prototype.addRequest = function(request)
 	// wenn die länge nun eins ist war sie vorher null
 	// daher muss die Requestwarteschalnge neu angestoßen werden.
 	if (this.requests.length > 1)
-		return
+		return;
 
 	// filtert den initrequest heraus...	 	
 	if (request instanceof SieveInitRequest)
-	  return;
+		return;
 
-  var output = request.getNextRequest();
-  this.outstream.write(output,output.length);
+	var output = request.getNextRequest();
+	this.outstream.write(output,output.length);
 }
 
 Sieve.prototype.connect = function () 
@@ -58,12 +81,10 @@ Sieve.prototype.connect = function ()
 	if( this.socket != null)
 		return;
 
-  if ( (this.socket != null) && (this.socket.isAlive()))
-    return;
+	if ( (this.socket != null) && (this.socket.isAlive()))
+		return;
 
-  var transportService =
-      Components.classes["@mozilla.org/network/socket-transport-service;1"]
-        .getService(Components.interfaces.nsISocketTransportService);
+  var transportService = Components.classes["@mozilla.org/network/socket-transport-service;1"].getService(Components.interfaces.nsISocketTransportService);
   
   if (this.secure)
     this.socket = transportService.createTransport(["starttls"], 1,this.host, this.port, null); 
@@ -73,9 +94,7 @@ Sieve.prototype.connect = function ()
   this.outstream = this.socket.openOutputStream(0,0,0);
   
   var stream = this.socket.openInputStream(0,0,0);
-  var pump = Components.
-    classes["@mozilla.org/network/input-stream-pump;1"].
-      createInstance(Components.interfaces.nsIInputStreamPump);
+  var pump = Components.classes["@mozilla.org/network/input-stream-pump;1"].createInstance(Components.interfaces.nsIInputStreamPump);
                   
   pump.init(stream, -1, -1, 5000, 2, true);
   pump.asyncRead(this,null);
@@ -98,29 +117,18 @@ Sieve.prototype.onStopRequest =  function(request, context, status)
 
 Sieve.prototype.onStartRequest = function(request, context)
 {
-  if (this.debug)
-  {
-    var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
-                           .getService(Components.interfaces.nsIConsoleService);
-    consoleService.logStringMessage("Connected to "+this.host+":"+this.port+" ...");
-  }  
+	globalServices.logSrv( this.toString() + "Connected to "+this.host+":"+this.port+"...");
 }
 
 Sieve.prototype.onDataAvailable = function(request, context, inputStream, offset, count)
 {
   
-  var instream = Components.classes["@mozilla.org/scriptableinputstream;1"]
-      .createInstance(Components.interfaces.nsIScriptableInputStream);  
+  var instream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);  
   instream.init(inputStream);
       
   var data = instream.read(count);
     
-  if (this.debug)
-  {
-    var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
-                           .getService(Components.interfaces.nsIConsoleService);
-    consoleService.logStringMessage(data);
-  }  
+	globalServices.logSrv( this.toString()  +"read: "+  data);
 
 	// is a request handler waiting?
 	if ((this.requests.length == 0))
@@ -154,5 +162,6 @@ Sieve.prototype.onDataAvailable = function(request, context, inputStream, offset
 	{
 	  var output = this.requests[0].getNextRequest();
 	  this.outstream.write(output,output.length);
+		globalServices.logSrv( this.toString() +"write: "+ output);
 	}
 }

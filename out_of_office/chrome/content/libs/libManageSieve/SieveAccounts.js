@@ -1,4 +1,12 @@
+// Retrieve preference service...
 var gPref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+
+// Load all the Libraries we need...
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+
+// includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
+var globalServices=new Services();
 
 // Sieve No Auth Class
 // This class is used when no authentication is needed
@@ -88,6 +96,8 @@ function SieveCustomAuth(uri)
         throw "SieveCustomAuth: URI can't be null"; 
         
 	this.uri = uri;
+	// @TODO use the name from out of office Services class
+	this.prefURI = globalServices.extensionKey; 
     this.prefURI = "extensions.sieve.account."+this.uri;
 }
 
@@ -390,6 +400,8 @@ function SieveAccount(account)
 	this.login = new Array(new SieveNoAuth(),new SieveImapAuth(account),new SieveCustomAuth(this.URI))
 	// Initalize the general settings
 	this.settings = new SieveAccountSettings(this.URI);
+	// Default is false while the connection has not be requested.
+	this.bConnectRequest = false;
 }
 
 SieveAccount.prototype.getDescription
@@ -469,6 +481,25 @@ SieveAccount.prototype.setEnabled
     = function (enabled) 
 {
   gPref.setBoolPref(this.prefURI+".enabled",enabled);
+}
+
+/*
+ * Indicate that the connection has been request for the current account done for the curent session
+ * Set boolean bConnectRequest to true 
+ */
+SieveAccount.prototype.setConnectRequest
+    = function ()
+{
+    this.bConnectRequest = true;
+}
+/*
+ * Indicate if the connection has been done one time durring the curent session
+ * @return (boolean) True connection has been establish one time 
+ */
+SieveAccount.prototype.isConnectRequest
+    = function ()
+{
+    return this.bConnectRequest;
 }
 
 /*

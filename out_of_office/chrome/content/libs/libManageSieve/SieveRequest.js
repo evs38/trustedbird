@@ -1,7 +1,23 @@
+// Load all the Libraries we need...
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+
+// includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
+var globalServices=new Services();
+
 
 function SieveGetScriptRequest(script) 
 {
-  this.script = script;
+	SieveCommon.call(this);
+	this.script = script;
+}
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveGetScriptRequest.prototype.toString
+    = function ()
+{
+	return "SieveGetScriptRequest : ";
 }
 
 SieveGetScriptRequest.prototype.addGetScriptListener
@@ -33,6 +49,7 @@ SieveGetScriptRequest.prototype.addResponse
 {
   var response = new SieveGetScriptResponse(this.script,data); 
 		
+	globalServices.logSrv(this.responseListener + " " + this.errorListener + " addResponse");
   if ((response.getResponse() == 0) && (this.responseListener != null))
     this.responseListener.onGetScriptResponse(response);
   else if ((response.getResponse() != 0) && (this.errorListener != null))
@@ -62,8 +79,17 @@ SieveGetScriptRequest.prototype.addResponse
 
 function SievePutScriptRequest(script, body) 
 {
-  this.script = script;
-  this.body = body;
+	SieveCommon.call(this);
+	this.script = script;
+	this.body = body;
+}
+/*
+ * Overlaod toString method to return the class name
+ */
+SievePutScriptRequest.prototype.toString
+    = function ()
+{
+	return "SievePutScriptRequest : ";
 }
 
 SievePutScriptRequest.prototype.hasNextRequest
@@ -161,10 +187,20 @@ SievePutScriptRequest.prototype.addResponse
 // -> sonst wird das aktuelle ative deaktiviert und das neue aktiv
 function SieveSetActiveRequest(script) 
 {
-  if (script == null)
-    this.script = "";
-  else
-    this.script = script;
+	SieveCommon.call(this);
+	if (script == null)
+		this.script = "";
+	else
+		this.script = script;
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveSetActiveRequest.prototype.toString
+    = function ()
+{
+	return "SieveSetActiveRequest : ";
 }
 
 SieveSetActiveRequest.prototype.hasNextRequest
@@ -195,11 +231,19 @@ SieveSetActiveRequest.prototype.addResponse
     = function (data)
 {
   var response = new SieveSetActiveResponse(data);
+	globalServices.logSrv("addResponse("+response+")");
 
-  if ((response.getResponse() == 0) && (this.responseListener != null))
+  if ((response.getResponse() == 0) && (this.responseListener != null)){
+	globalServices.logSrv(this.responseListener + " addResponse onSetActiveResponse");
     this.responseListener.onSetActiveResponse(response);
-  else if ((response.getResponse() != 0) && (this.errorListener != null))
+  }
+  else if ((response.getResponse() != 0) && (this.errorListener != null)){
+	globalServices.logSrv(this.errorListener + " addResponse onError");
     this.errorListener.onError(response);
+  	
+  }else
+  	globalServices.logSrv(this.responseListener + " addResponse NOTHING");
+  
 }
 
 /*******************************************************************************
@@ -223,6 +267,15 @@ SieveSetActiveRequest.prototype.addResponse
 
 function SieveCapabilitiesRequest()
 {
+	SieveCommon.call(this);
+}
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveCapabilitiesRequest.prototype.toString
+    = function ()
+{
+	return "SieveCapabilitiesRequest : ";
 }
 
 SieveCapabilitiesRequest.prototype.hasNextRequest
@@ -282,7 +335,17 @@ SieveCapabilitiesRequest.prototype.addResponse
 
 function SieveDeleteScriptRequest(script) 
 {
-  this.script = script;
+	SieveCommon.call(this);
+	this.script = script;
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveDeleteScriptRequest.prototype.toString
+    = function ()
+{
+	return "SieveDeleteScriptRequest : ";
 }
 
 SieveDeleteScriptRequest.prototype.getNextRequest
@@ -312,7 +375,6 @@ SieveDeleteScriptRequest.prototype.addErrorListener
 SieveDeleteScriptRequest.prototype.addResponse
     = function (data)
 {
-        
   var response = new SieveDeleteScriptResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -342,6 +404,16 @@ SieveDeleteScriptRequest.prototype.addResponse
 
 function SieveListScriptRequest() 
 {
+	SieveCommon.call(this);
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveListScriptRequest.prototype.toString
+    = function ()
+{
+	return "SieveListScriptRequest : ";
 }
 
 SieveListScriptRequest.prototype.hasNextRequest
@@ -371,7 +443,6 @@ SieveListScriptRequest.prototype.addErrorListener
 SieveListScriptRequest.prototype.addResponse 
     = function (data)
 {	
-	
   var response = new SieveListScriptResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -401,6 +472,16 @@ SieveListScriptRequest.prototype.addResponse
 
 function SieveStartTLSRequest() 
 {
+	SieveCommon.call(this);
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveStartTLSRequest.prototype.toString
+    = function ()
+{
+	return "SieveStartTLSRequest : ";
 }
 
 SieveStartTLSRequest.prototype.hasNextRequest
@@ -459,6 +540,16 @@ SieveStartTLSRequest.prototype.addResponse
 
 function SieveLogoutRequest() 
 {
+	SieveCommon.call(this);
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveLogoutRequest.prototype.toString
+    = function ()
+{
+	return "SieveLogoutRequest : ";
 }
 
 SieveLogoutRequest.prototype.getNextRequest
@@ -520,6 +611,16 @@ SieveLogoutRequest.prototype.addResponse
 
 function SieveInitRequest()
 {
+	SieveCommon.call(this);
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveInitRequest.prototype.toString
+    = function ()
+{
+	return "SieveInitRequest : ";
 }
 
 SieveInitRequest.prototype.getNextRequest
@@ -611,7 +712,17 @@ SieveInitRequest.prototype.addResponse
 
 function SieveSaslPlainRequest(username) 
 {
-  this.username = username;
+	SieveCommon.call(this);
+	this.username = username;
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveSaslPlainRequest.prototype.toString
+    = function ()
+{	
+	return "SieveSaslPlainRequest : ";
 }
 
 // TODO obsolete
@@ -729,8 +840,18 @@ SieveSaslPlainRequest.prototype.addResponse
 
 function SieveSaslLoginRequest(username) 
 {
-  this.username = username;
-  this.response = new SieveSaslLoginResponse();
+	SieveCommon.call(this);
+	this.username = username;
+	this.response = new SieveSaslLoginResponse();
+}
+
+/*
+ * Overlaod toString method to return the class name
+ */
+SieveSaslLoginRequest.prototype.toString
+    = function ()
+{
+	return "SieveSaslLoginRequest : ";
 }
 
 // TODO obsolete...
@@ -786,7 +907,6 @@ SieveSaslLoginRequest.prototype.addErrorListener
 SieveSaslLoginRequest.prototype.addResponse 
     = function (data)
 {
-
   this.response.add(data);	
 		
 	if (this.response.getState() != 4)
