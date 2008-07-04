@@ -102,7 +102,9 @@
           target: compile-Omniorb              
          ================================= -->
 	<target name="compile-Omniorb" depends="prepare-layout" description="Compile lib Omniorb">
-		<exec executable="./configure" dir="lib/omniORB-4.1.2" failonerror="true"/>
+		<exec executable="sh" dir="lib/omniORB-4.1.2" failonerror="true">
+			<arg value="configure"/>
+		</exec>
 		<exec executable="make" dir="lib/omniORB-4.1.2" failonerror="true"/>
 	</target>
 
