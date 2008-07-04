@@ -40,7 +40,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>mrs@milimail.org</em:id>
-    <em:version>0.2.0</em:version>
+    <em:version>__VERSION__</em:version>
     <em:type>2</em:type> 
     <em:targetApplication>
       <Description>
