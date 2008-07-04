@@ -141,6 +141,7 @@
 		<copy failonerror="off" file="win/Release/libMessageRemoteService.dll" todir="xpi/platform/WINNT_x86-msvc/components/"/>
 		
 		<copy file="install.rdf" todir="xpi/"></copy>
+		<copy file="update.rdf" todir="xpi/"></copy>
 		<copy file="chrome.manifest" todir="xpi/"></copy>
 		
 		<tstamp/>
