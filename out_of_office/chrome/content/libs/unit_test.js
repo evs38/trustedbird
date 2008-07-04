@@ -47,15 +47,15 @@ var assert = mozlab.mozunit.assertions;
 
 
 
-var loader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-jsLoader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 
 // includes
-loader.loadSubScript("chrome://notifications_viewer/content/preferences.js");
-loader.loadSubScript("chrome://notifications_viewer/content/misc.js");
-loader.loadSubScript("chrome://notifications_viewer/content/unit_test_data.js");
-loader.loadSubScript("chrome://notifications_viewer/content/mailParser.js");
-loader.loadSubScript("chrome://notifications_viewer/content/dsnParser.js");
-loader.loadSubScript("chrome://notifications_viewer/content/mdnParser.js");
+jsLoader.loadSubScript("chrome://notifications_viewer/content/preferences.js");
+jsLoader.loadSubScript("chrome://notifications_viewer/content/misc.js");
+jsLoader.loadSubScript("chrome://notifications_viewer/content/unit_test_data.js");
+jsLoader.loadSubScript("chrome://notifications_viewer/content/mailParser.js");
+jsLoader.loadSubScript("chrome://notifications_viewer/content/dsnParser.js");
+jsLoader.loadSubScript("chrome://notifications_viewer/content/mdnParser.js");
 
 
 var tc_Preferences = new TestCase('Preferences');

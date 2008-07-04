@@ -43,6 +43,15 @@
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */
 
+/*
+ * Constructor of the sieve common class
+ * Overload toString method in each class to return the class name
+ */
+function SieveCommon() 
+{
+	globalServices.logSrv(this.toString()+ "constructor");
+}
+
 
 /**
 	@class Services for this plugin
