@@ -346,6 +346,9 @@
   <target name="package-extensions"
           description="Get extensions from SVN and create packages"
           depends="clean-extensions">
+    
+    
+
     <mkdir dir="${local.build.dir}" />
     <mkdir dir="${local.dist.dir}" />
     <foreach list="${extension.list}"
@@ -440,7 +443,7 @@
     <if>
       <available file="${local.build.dir}/${local.extension.name}/build.xml" />
       <then>
-        <ant inheritall="true"
+        <ant inheritall="false"
              dir="${local.build.dir}/${local.extension.name}" />
         <property name="local.zip.basedir"
                   value="${local.build.dir}/${local.extension.name}/xpi" />
