@@ -232,8 +232,7 @@ function onAccountEditClick(sender)
 
 function getAccountByName(searchAccount) 
 { 
-	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-							 .getService(Components.interfaces.mozIJSSubScriptLoader);
+	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 
 	jsLoader.loadSubScript("chrome://out_of_office/content/options/SieveAccountTreeView.js");
 
