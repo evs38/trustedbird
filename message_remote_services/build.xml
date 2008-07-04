@@ -112,7 +112,8 @@
           target: compile              
          ================================= -->
 	<target name="compile-MRS-lib" depends="compile-Omniorb" description="Compile MRS lib">
-		<exec executable="./configure" dir="." failonerror="true">
+		<exec executable="sh" dir="." failonerror="true">
+		 	<arg value="configure"/>
 			<arg value="--with-mozilla-sdk=${mozilla.sdk.path}" />
 		</exec>
 
