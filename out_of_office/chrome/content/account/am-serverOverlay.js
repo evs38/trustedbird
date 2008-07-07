@@ -237,7 +237,10 @@ function getAccountByName(searchAccount)
 	jsLoader.loadSubScript("chrome://out_of_office/content/options/SieveAccountTreeView.js");
 
 	globalServices.logSrv( "getAccountByName=" + searchAccount + " started.\n" ) ;
-	globalServices.logSrv( "    getAccountByName=" + searchAccount.identityName + ".\n" ) ;
+	globalServices.logSrv( "    getAccountByName identity name=" + searchAccount.identityName + ".\n" ) ;
+	globalServices.logSrv( "    getAccountByName full name=" + searchAccount.fullName + ".\n" ) ;
+	globalServices.logSrv( "    getAccountByName user mail=" + searchAccount.usermail + ".\n" ) ;
+
 	var sieveAccountTreeView = new SievePrefTreeView(this);
 	for (var i = 0; i < sieveAccountTreeView.rowCount; i++)
   	{
@@ -247,7 +250,7 @@ function getAccountByName(searchAccount)
         //if (account.type != "imap")
         //  continue;
 
-		// Retriev each incoming server to find the right account to configure
+		// Retrieve each incoming server to find the right account to configure
 		if( account.getDescription() == searchAccount.fullName )
 		{
 			globalServices.logSrv( "    Account found=" + account + " ended.\n" ) ;
