@@ -346,8 +346,8 @@
   <target name="package-extensions"
           description="Get extensions from SVN and create packages"
           depends="clean-extensions">
-    
-    
+
+
 
     <mkdir dir="${local.build.dir}" />
     <mkdir dir="${local.dist.dir}" />
@@ -482,6 +482,10 @@
              excludes="${extension.excludes}" />
       </else>
     </if>
-  </target>
 
+    <ant dir="${local.build.dir}/mrs-linux-x86/api/java" />
+    <move file="${local.build.dir}/mrs-linux-x86/api/java/dist/MessageRemoteServicesJavaAPI.zip"
+          tofile="${local.dist.dir}/${local.extension.name}_JavaAPI_${local.extension.version}.zip" />
+
+  </target>
 </project>
