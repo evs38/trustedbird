@@ -150,6 +150,19 @@ Services.prototype = {
 	},
 	
 	/**
+		Show or hide the User Interface control.
+		@param (string) Label of the UI control id.
+		@param (boolean) Enabled or disabled (true/false)
+	*/
+	showCtrlID : function( ctrlID, enabled )
+	{
+		if (enabled)
+			document.getElementById(ctrlID).removeAttribute('hidden');
+		else
+			document.getElementById(ctrlID).setAttribute('hidden','true'); 
+	},
+	
+	/**
 		Enable or disable the User Interface.
 		@param (string) Label of the UI control id.
 		@param (boolean) Enabled or disabled (true/false)
