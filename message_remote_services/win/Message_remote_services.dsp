@@ -116,6 +116,10 @@ SOURCE=..\src\xpcom\MessageRemoteServiceModule.cpp
 
 SOURCE=..\src\corba\ServicesSK.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\src\corba\MRSLogger.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -147,6 +151,10 @@ SOURCE=..\src\corba\Services.h
 # Begin Source File
 
 SOURCE=..\src\corba\Utils.h
+# End Source File
+# Begin Source File
+SOURCE=..\src\corba\MRSLogger.h
+
 # End Source File
 # End Group
 # Begin Group "Resource Files"
