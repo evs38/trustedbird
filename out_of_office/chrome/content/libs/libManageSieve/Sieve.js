@@ -102,17 +102,42 @@ Sieve.prototype.connect = function ()
 
 Sieve.prototype.disconnect = function () 
 {	
-  if (this.socket == null)
-    return;
-  
-  this.socket.close(0);
-  this.socket = null;
+	if (this.outstream != null){
+		this.outstream.close();
+	}
+	if (this.socket != null){
+  		globalServices.logSrv( this.toString() + "Disconnected from "+this.host+"...");
+		this.outstream.close();
+		this.socket.close(0);
+	}
+	this.socket = null;
 }
 
 Sieve.prototype.onStopRequest =  function(request, context, status)
 {
-  if (this.socket != null)
-    this.disconnect();
+	if( status != 0 ){ // An error occurs.
+		// is a request handler waiting?
+		if ((this.requests.length > 0)){
+			// responses could be fragmented
+			var message = "NO \"Could not open connection to the host, on port "+this.port+": Connect failed.\"\r\n";
+			this.data += message;
+			
+			// therefore we test if the response is parsable...
+			try
+			{								
+				this.requests[0].addResponse(this.data);
+			}
+			catch (ex)
+			{
+				globalServices.errorSrv( this.toString() + "it was not parsable, so we have to wait for the next one. Request length=" + this.requests.length);
+				// it was not parsable, so we have to wait for the next one
+				// return;
+			}
+		}
+		globalServices.errorSrv( this.toString() + "Connection stop requested with error=" + status + ".");
+	}
+	if (this.socket != null)
+		this.disconnect();
 }
 
 Sieve.prototype.onStartRequest = function(request, context)
@@ -123,10 +148,10 @@ Sieve.prototype.onStartRequest = function(request, context)
 Sieve.prototype.onDataAvailable = function(request, context, inputStream, offset, count)
 {
   
-  var instream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);  
-  instream.init(inputStream);
-      
-  var data = instream.read(count);
+	var instream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);  
+	instream.init(inputStream);
+	    
+	var data = instream.read(count);
     
 	globalServices.logSrv( this.toString()  +"read: "+  data);
 

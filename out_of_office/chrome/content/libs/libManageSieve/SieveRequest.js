@@ -47,9 +47,9 @@ SieveGetScriptRequest.prototype.getNextRequest
 SieveGetScriptRequest.prototype.addResponse
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveGetScriptResponse(this.script,data); 
 		
-	globalServices.logSrv(this.responseListener + " " + this.errorListener + " addResponse");
   if ((response.getResponse() == 0) && (this.responseListener != null))
     this.responseListener.onGetScriptResponse(response);
   else if ((response.getResponse() != 0) && (this.errorListener != null))
@@ -148,6 +148,7 @@ SievePutScriptRequest.prototype.addErrorListener
 SievePutScriptRequest.prototype.addResponse
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SievePutScriptResponse(data);
 
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -230,20 +231,15 @@ SieveSetActiveRequest.prototype.addErrorListener
 SieveSetActiveRequest.prototype.addResponse
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveSetActiveResponse(data);
-	globalServices.logSrv("addResponse("+response+")");
 
   if ((response.getResponse() == 0) && (this.responseListener != null)){
-	globalServices.logSrv(this.responseListener + " addResponse onSetActiveResponse");
     this.responseListener.onSetActiveResponse(response);
   }
   else if ((response.getResponse() != 0) && (this.errorListener != null)){
-	globalServices.logSrv(this.errorListener + " addResponse onError");
     this.errorListener.onError(response);
-  	
-  }else
-  	globalServices.logSrv(this.responseListener + " addResponse NOTHING");
-  
+  }
 }
 
 /*******************************************************************************
@@ -306,6 +302,7 @@ SieveCapabilitiesRequest.prototype.addErrorListener
 SieveCapabilitiesRequest.prototype.addResponse
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveCapabilitiesResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -375,6 +372,7 @@ SieveDeleteScriptRequest.prototype.addErrorListener
 SieveDeleteScriptRequest.prototype.addResponse
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveDeleteScriptResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -443,6 +441,7 @@ SieveListScriptRequest.prototype.addErrorListener
 SieveListScriptRequest.prototype.addResponse 
     = function (data)
 {	
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveListScriptResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -452,10 +451,10 @@ SieveListScriptRequest.prototype.addResponse
 }
 
 /*******************************************************************************
-    CLASS NAME         : SieveListScriptRequest
-    USES CLASSES       : SieveListScriptResponse
+    CLASS NAME         : SieveStartTLSRequest
+    USES CLASSES       : SieveStartTLSResponse
         
-    CONSCTURCTOR       : SieveListScriptRequest(script, listener)
+    CONSCTURCTOR       : SieveStartTLSRequest()
     DECLARED FUNCTIONS : String getCommand()
                          void setResponse(String data)
     EXCEPTIONS         : 
@@ -511,6 +510,7 @@ SieveStartTLSRequest.prototype.addErrorListener
 SieveStartTLSRequest.prototype.addResponse 
     = function (data)
 {		    
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveStartTLSResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -579,6 +579,7 @@ SieveLogoutRequest.prototype.addErrorListener
 SieveLogoutRequest.prototype.addResponse 
     = function (data)
 {		    
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveLogoutResponse(data);
 			
   // a "BYE" or "OK" is in this case a good answer...
@@ -650,6 +651,7 @@ SieveInitRequest.prototype.addErrorListener
 SieveInitRequest.prototype.addResponse
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveInitResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -766,6 +768,7 @@ SieveSaslPlainRequest.prototype.addErrorListener
 SieveSaslPlainRequest.prototype.addResponse
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   var response = new SieveSaslPlainResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
@@ -907,6 +910,7 @@ SieveSaslLoginRequest.prototype.addErrorListener
 SieveSaslLoginRequest.prototype.addResponse 
     = function (data)
 {
+	globalServices.logSrv(this.toString() + this.responseListener + " " + this.errorListener + " addResponse");
   this.response.add(data);	
 		
 	if (this.response.getState() != 4)

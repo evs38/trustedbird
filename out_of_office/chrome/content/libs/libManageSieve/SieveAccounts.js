@@ -8,6 +8,8 @@ var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getS
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
 var globalServices=new Services();
 
+var CONST_PREFERENCE_KEY_ = new String("extensions.sieve.account.");
+
 // Sieve No Auth Class
 // This class is used when no authentication is needed
 function SieveNoAuth() 
@@ -98,7 +100,7 @@ function SieveCustomAuth(uri)
 	this.uri = uri;
 	// @TODO use the name from out of office Services class
 	this.prefURI = globalServices.extensionKey; 
-    this.prefURI = "extensions.sieve.account."+this.uri;
+    this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
 }
 
 SieveCustomAuth.prototype.setLogin
@@ -229,7 +231,7 @@ function SieveCustomHost(uri)
     if (uri == null)
         throw "SieveCustomHost: URI can't be null"; 
 	this.uri = uri;
-    this.prefURI = "extensions.sieve.account."+this.uri;
+    this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
 }
 
 SieveCustomHost.prototype.toString
@@ -302,7 +304,7 @@ function SieveAccountSettings(uri)
     throw "SieveAccountSettings: URI can't be null"; 
     
 	this.uri = uri;
-  this.prefURI = "extensions.sieve.account."+this.uri;
+  this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
 }
 
 SieveAccountSettings.prototype.isKeepAlive
@@ -391,8 +393,11 @@ function SieveAccount(account)
         throw "SieveAccount: Account can't be null"; 
 
     this.URI = account.rootMsgFolder.baseMessageURI.slice(15);
-    this.prefURI = "extensions.sieve.account."+this.URI;
+    this.prefURI = CONST_PREFERENCE_KEY_ + this.URI;
     
+    // Identifiaction of the object server
+    this.keyID = account.key;    
+    // Use pretty name attribut as a description
     this.description = account.prettyName;    
 	// initalize the host settings
 	this.host = new Array(new SieveImapHost(account),new SieveCustomHost(this.URI));
@@ -406,6 +411,9 @@ function SieveAccount(account)
 
 SieveAccount.prototype.getDescription
     = function () { return this.description; }
+
+SieveAccount.prototype.getKeyID
+    = function () { return this.keyID; }
 
 SieveAccount.prototype.getLogin
     = function (type) 
@@ -532,17 +540,15 @@ SieveAccount.prototype.getSettings
 function SieveAccounts()
 {
 	// Retrieve account list from account manager
-	var accountManager = Components.classes['@mozilla.org/messenger/account-manager;1']
-	                        .getService(Components.interfaces.nsIMsgAccountManager);
+	var accountManager = Components.classes['@mozilla.org/messenger/account-manager;1'].getService(Components.interfaces.nsIMsgAccountManager);
 	
 	// Allocate accounts array to fill it
 	this.accounts = new Array();
 	
 	for (var i = 0; i < accountManager.allServers.Count(); i++)
 	{
-		// Retriev each incoming server to create new account entry
-		var account = accountManager.allServers.GetElementAt(i)
-		                .QueryInterface(Components.interfaces.nsIMsgIncomingServer);
+		// Retrieve each incoming server to create new account entry
+		var account = accountManager.allServers.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
 		
 		// DumpIncommingServer( account ) ;
         if (account.type != "imap")

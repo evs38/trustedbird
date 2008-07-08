@@ -1,3 +1,11 @@
+// Load all the Libraries we need...
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+
+// includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
+var globalServices=new Services();
+
+
 /*******************************************************************************
  
   FACTSHEET: 
@@ -516,7 +524,11 @@ function SieveInitResponse(data)
             this.extensions = value;
     }
         
-    this.superior = new SieveAbstractResponse(parser);
+	try {
+    	this.superior = new SieveAbstractResponse(parser);
+    } catch(e) {
+		globalServices.logSrv("SieveResponseParser :" + e);
+    }
 }
 
 SieveInitResponse.prototype.getMessage
