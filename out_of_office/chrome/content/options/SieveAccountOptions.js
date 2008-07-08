@@ -1,108 +1,244 @@
-var account = null;
+// Load all the Libraries we need...
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+
+// includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
+var globalServices=new Services();
+
+var gAccount = null;
+
+function SieveAccountUI(account)
+{
+    if (account == null){
+        throw "SieveAccount: Sieve Account can't be null"; 
+	}
+	// get the custom Host settings
+	this.hostName = account.getHost(1).getHostname();
+	this.hostPort = account.getHost(1).getPort();
+	this.hostTLS = account.getHost(1).isTLS();
+	this.hostType = ( (account.getHost().getType() == 1) ? true : false );
+   
+	// Login field.
+	this.userName = account.getLogin(2).getUsername();
+	this.userPassword = account.getLogin(2).getPassword();
+	this.userPasswordCheck = account.getLogin(2).hasPassword();
+	       
+	this.rgLoginIndex = account.getLogin().getType();
+	  
+	this.keepAlive = account.getSettings().getKeepAliveInterval();
+	this.keepAliveCheck = account.getSettings().isKeepAlive();
+	
+	this.compileDelay = account.getSettings().getCompileDelay();
+	this.compileCheck = account.getSettings().isCompile();
+	
+	this.debugMode = account.getSettings().isDebug();
+}
+
+SieveAccountUI.prototype.getHostName = function () {
+	return this.hostName; 
+}
+SieveAccountUI.prototype.setHostName = function (hostName) {
+	this.hostName = hostName; 
+}
+
+SieveAccountUI.prototype.getHostPort = function () {
+	return this.hostPort; 
+}
+SieveAccountUI.prototype.setHostPort = function (hostPort) {
+	this.hostPort = hostPort; 
+}
+
+SieveAccountUI.prototype.getHostTLS = function () {
+	return this.hostTLS; 
+}
+SieveAccountUI.prototype.setHostTLS = function (hostTLS) {
+	this.hostTLS = hostTLS; 
+}
+
+SieveAccountUI.prototype.getHostType = function () {
+	return this.hostType; 
+}
+SieveAccountUI.prototype.setHostType = function (hostType) {
+	this.hostType = hostType; 
+}
+
+SieveAccountUI.prototype.getUserName = function () {
+	return this.userName; 
+}
+SieveAccountUI.prototype.setUserName = function (userName) {
+	this.userName = userName; 
+}
+
+SieveAccountUI.prototype.getUserPassword = function () {
+	return this.userPassword; 
+}
+SieveAccountUI.prototype.setUserPassword = function (userPassword) {
+	this.userPassword = userPassword; 
+}
+
+SieveAccountUI.prototype.getUserPasswordCheck = function () {
+	return this.userPasswordCheck; 
+}
+SieveAccountUI.prototype.setUserPasswordCheck = function (userPasswordCheck) {
+	this.userPasswordCheck = userPasswordCheck; 
+}
+
+SieveAccountUI.prototype.getLoginIndex = function () {
+	return this.rgLoginIndex; 
+}
+SieveAccountUI.prototype.setLoginIndex = function (rgLoginIndex) {
+	this.rgLoginIndex = rgLoginIndex; 
+}
+	  
+SieveAccountUI.prototype.getKeepAlive = function () {
+	return this.keepAlive; 
+}
+SieveAccountUI.prototype.setKeepAlive = function (keepAlive) {
+	this.keepAlive = keepAlive; 
+}
+
+SieveAccountUI.prototype.getKeepAliveCheck = function () {
+	return this.keepAliveCheck; 
+}
+SieveAccountUI.prototype.setKeepAliveCheck = function (keepAliveCheck) {
+	this.keepAliveCheck = keepAliveCheck; 
+}
+	
+SieveAccountUI.prototype.getCompileDelay = function () {
+	return this.compileDelay; 
+}
+SieveAccountUI.prototype.setCompileDelay = function (compileDelay) {
+	this.compileDelay = compileDelay; 
+}
+
+SieveAccountUI.prototype.getCompileCheck = function () {
+	return this.compileCheck; 
+}
+SieveAccountUI.prototype.setCompileCheck = function (compileCheck) {
+	this.compileCheck = compileCheck; 
+}
+	
+SieveAccountUI.prototype.getDebugMode = function () {
+	return this.debugMode; 
+}
+SieveAccountUI.prototype.setDebugMode = function (debugMode) {
+	this.debugMode = debugMode; 
+}
+
+
+// Global object to configure the Sieve server account
+var gSieveAccountToConfigure = null;
+
     
 function onDialogLoad(sender)
 {
-	account = window.arguments[0]["SieveAccount"];
-    
-  // get the custom Host settings
-  document.getElementById('txtHostname').value
-  	= account.getHost(1).getHostname();
-  document.getElementById('txtPort').value
-  	= account.getHost(1).getPort();
-  document.getElementById('cbxTLS').checked
-  	= account.getHost(1).isTLS();
+	gAccount = window.arguments[0]["SieveAccount"];
+	
+	// Initialize UI parameters
+	gSieveAccountToConfigure = new SieveAccountUI(gAccount);
+	
+   
+	// get the custom Host settings
+	document.getElementById('txtHostname').value = gSieveAccountToConfigure.getHostName();
+	document.getElementById('txtPort').value = gSieveAccountToConfigure.getHostPort();
+	document.getElementById('cbxTLS').checked = gSieveAccountToConfigure.getHostTLS();
+	
+	var cbxHost = document.getElementById('cbxHost');
+	cbxHost.checked = gSieveAccountToConfigure.getHostType();
+	enableHost(cbxHost.checked);
+   
+	// Login field.
+	document.getElementById('txtUsername').value = gSieveAccountToConfigure.getUserName();
+	       
+	var cbxPassword = document.getElementById('cbxPassword');
+	cbxPassword.checked = gSieveAccountToConfigure.getUserPasswordCheck();
+	document.getElementById('txtPassword').value = ( (cbxPassword.checked == true) ? gSieveAccountToConfigure.getUserPassword() : "" );
 
-  var cbxHost = document.getElementById('cbxHost');  
-  if (account.getHost().getType() == 1)
-  	cbxHost.checked = true;
-  else 
-   	cbxHost.checked = false;   	
-  enableHost(cbxHost.checked);
-    
-  // Login field.
-  document.getElementById('txtUsername').value
-  	= account.getLogin(2).getUsername();
-        
-  var cbxPassword = document.getElementById('cbxPassword');
-  if (account.getLogin(2).hasPassword() == true)
-  {
-  	cbxPassword.checked = true;
-   	document.getElementById('txtPassword').value = account.getLogin(2).getPassword();
-  }
-  else
-  	cbxPassword.checked = false;
-
-  var rgLogin = document.getElementById('rgLogin');
-  rgLogin.selectedIndex = account.getLogin().getType();
-  enableLogin(rgLogin.selectedIndex);
-    
-  document.getElementById('txtKeepAlive').value
-  	= account.getSettings().getKeepAliveInterval();
-    
-  var cbxKeepAlive = document.getElementById('cbxKeepAlive');
-  cbxKeepAlive.checked = account.getSettings().isKeepAlive();
-  enableKeepAlive(cbxKeepAlive.checked);
-
-  document.getElementById('txtCompile').value
-  	= account.getSettings().getCompileDelay();
-            
- 	var cbxCompile = document.getElementById('cbxCompile');
-  cbxCompile.checked = account.getSettings().isCompile();
-  enableCompile(cbxCompile.checked);	
-  
-  var cbxDebug = document.getElementById('cbxDebug');
-  cbxDebug.checked = account.getSettings().isDebug();
+	var rgLogin = document.getElementById('rgLogin');
+	rgLogin.selectedIndex = gSieveAccountToConfigure.getLoginIndex();
+	enableLogin(rgLogin.selectedIndex);
+	  
+	document.getElementById('txtKeepAlive').value = gSieveAccountToConfigure.getKeepAlive();
+	  
+	var cbxKeepAlive = document.getElementById('cbxKeepAlive');
+	cbxKeepAlive.checked = gSieveAccountToConfigure.getKeepAliveCheck();
+	enableKeepAlive(cbxKeepAlive.checked);
+	
+	document.getElementById('txtCompile').value = gSieveAccountToConfigure.getCompileDelay();
+	          
+	var cbxCompile = document.getElementById('cbxCompile');
+	cbxCompile.checked = gSieveAccountToConfigure.getCompileCheck();
+	enableCompile(cbxCompile.checked);	
+	
+	var cbxDebug = document.getElementById('cbxDebug');
+	cbxDebug.checked = gSieveAccountToConfigure.getDebugMode();
 }
 
 function onDialogAccept(sender)
 {
-	// Do nothing since there should be only valid entries...
+	// @TODO Make this attibut accessible to the final user.
+	// Hard coded. Activation of the sieve server the current gAccount
+	gAccount.setEnabled(true);
+	/*
+	 * Update gAccount settings
+	 */
+	gAccount.setActiveLogin( gSieveAccountToConfigure.getLoginIndex() );        
+	gAccount.getLogin(2).setLogin( gSieveAccountToConfigure.getUserName(), ( (gSieveAccountToConfigure.getUserPasswordCheck()==true)?gSieveAccountToConfigure.getUserPassword() : null ) );   	
+	gAccount.setActiveHost( gSieveAccountToConfigure.getHostType() );
+
+	gAccount.getHost(1).setHostname( gSieveAccountToConfigure.getHostName() );
+	gAccount.getHost(1).setPort( gSieveAccountToConfigure.getHostPort() );
+	gAccount.getHost(1).setTLS( gSieveAccountToConfigure.getHostTLS() );
+	gAccount.getSettings().setKeepAlive( gSieveAccountToConfigure.getKeepAliveCheck() );
+	gAccount.getSettings().setKeepAliveInterval( gSieveAccountToConfigure.getKeepAlive() );
+	gAccount.getSettings().setCompile( gSieveAccountToConfigure.getCompileCheck() );
+	gAccount.getSettings().setCompileDelay( gSieveAccountToConfigure.getCompileDelay() );
+	gAccount.getSettings().setDebug( gSieveAccountToConfigure.getDebugMode() );
 }
 
 // Function for the custom authentication
 function onLoginSelect(sender)
 {
-  var type = 0;
-  if (sender.selectedItem.id == "rbNoAuth")
-  	type = 0;
-  else if (sender.selectedItem.id == "rbImapAuth")
-  	type = 1;
-  else if (sender.selectedItem.id == "rbCustomAuth")
-  	type = 2;
-
-  account.setActiveLogin(type);        
-  enableLogin(type);
+	var type = 0;
+	if (sender.selectedItem.id == "rbNoAuth")
+		type = 0;
+	else if (sender.selectedItem.id == "rbImapAuth")
+		type = 1;
+	else if (sender.selectedItem.id == "rbCustomAuth")
+		type = 2;
+	
+	gSieveAccountToConfigure.setLoginIndex( type );
+	enableLogin(type);
 }
 
 function enableLogin(type)
 {
 	switch (type)
 	{
-		case 0:
-		case 1: document.getElementById('txtUsername').setAttribute('disabled','true');
-        		document.getElementById('txtPassword').setAttribute('disabled','true');
-		        document.getElementById('cbxPassword').setAttribute('disabled','true');
-
-		        break;
-		case 2: document.getElementById('txtUsername').removeAttribute('disabled');                
-		        document.getElementById('cbxPassword').removeAttribute('disabled');
-		        
-		        var cbxPassword = document.getElementById('cbxPassword');
-        		if (cbxPassword.checked)
-		          document.getElementById('txtPassword').removeAttribute('disabled');
-        		else
-		          document.getElementById('txtPassword').setAttribute('disabled','true');
+	case 0:
+	case 1:
+		globalServices.enableCtrlID('txtUsername', false);
+		globalServices.enableCtrlID('txtPassword', false);
+		globalServices.enableCtrlID('cbxPassword', false);
+        break;
+	case 2: 
+		globalServices.enableCtrlID('txtUsername', true);
+		globalServices.enableCtrlID('cbxPassword', true);
+	        
+        var cbxPassword = document.getElementById('cbxPassword');
+		globalServices.enableCtrlID('txtPassword', cbxPassword.checked);
+		break;
+	default:
+		globalServices.warningSrv("Invalid login type.");
 	}
 }
 
 function onLoginChange(sender)
 {
-  var cbx = document.getElementById('cbxPassword');
-	if (cbx.checked == false)
-	  acccount.getLogin(2).setLogin(document.getElementById('txtUsername').value);
-  else
-	  account.getLogin(2).setLogin(document.getElementById('txtUsername').value,
-	  		document.getElementById('txtPassword').value);   	
+	var cbxPassword = document.getElementById('cbxPassword');
+	gSieveAccountToConfigure.setUserPasswordCheck(cbxPassword.checked);
+	gSieveAccountToConfigure.setUserName(document.getElementById('txtUsername').value);
+	gSieveAccountToConfigure.getUserPassword( ( (cbxPassword.checked == true) ? document.getElementById('txtPassword').value : null ) );
 }
 
 function onPasswordFocus(sender)
@@ -114,99 +250,77 @@ function onPasswordFocus(sender)
 function onPasswordCommand(sender)
 {
 	onLoginChange(sender);    
-  enablePassword(sender.checked); 
+	enablePassword(sender.checked); 
 }
 
 function enablePassword(enabled)
 {
-  if (enabled)
-    document.getElementById('txtPassword').removeAttribute('disabled');
-  else
-    document.getElementById('txtPassword').setAttribute('disabled','true');
+	globalServices.enableCtrlID('txtPassword', enabled);
 }
 
 // Function for the custom server settings
 function onHostCommand(sender)
-{   
-  if (sender.checked)
-    account.setActiveHost(true);
-  else
-    account.setActiveHost(false);    
-     
-  enableHost(sender.checked);
+{
+	gSieveAccountToConfigure.setHostType(sender.checked);
+	enableHost(sender.checked);
 }
 
 function enableHost(enabled)
 {
-  if (enabled)
-  {
-    document.getElementById('txtHostname').removeAttribute('disabled');
-    document.getElementById('txtPort').removeAttribute('disabled');
-    document.getElementById('cbxTLS').removeAttribute('disabled');
-  }
-  else
-  {
-    document.getElementById('txtHostname').setAttribute('disabled','true');    
-    document.getElementById('txtPort').setAttribute('disabled','true');        
-    document.getElementById('cbxTLS').setAttribute('disabled','true');        
-  }
+	globalServices.enableCtrlID('txtHostname', enabled);
+	globalServices.enableCtrlID('txtPort', enabled);
+	globalServices.enableCtrlID('cbxTLS', enabled);
 }
 
 function onHostnameChange(sender)
 {
-  account.getHost(1).setHostname(sender.value);
+	gSieveAccountToConfigure.setHostName( sender.value );
 }
 
 function onPortChange(sender)
 {
-	account.getHost(1).setPort(sender.value)
+	gSieveAccountToConfigure.setHostPort(sender.value)
 }
 
 function onTLSCommand(sender)
 {
-  account.getHost(1).setTLS(sender.checked);        
+	gSieveAccountToConfigure.setHostTLS(sender.checked);        
 }
 
 // Function for the general Settings...
 function onKeepAliveCommand(sender)
-{   
-  account.getSettings().setKeepAlive(sender.checked);
-  enableKeepAlive(sender.checked);    
+{
+	gSieveAccountToConfigure.setKeepAliveCheck(sender.checked);
+	enableKeepAlive(sender.checked);    
 }
 
 function enableKeepAlive(enabled)
 {
-  if (enabled)
-    document.getElementById('txtKeepAlive').removeAttribute('disabled');
-  else
-    document.getElementById('txtKeepAlive').setAttribute('disabled','true'); 
+	globalServices.enableCtrlID('txtKeepAlive', enabled);
 }
 
 function onKeepAliveChange(sender)
 {
-  account.getSettings().setKeepAliveInterval(sender.value)    
+	gSieveAccountToConfigure.setKeepAlive(sender.value);    
 }
 
 function onCompileCommand(sender)
 {    
-  account.getSettings().setCompile(sender.checked); 
-  enableCompile(sender.checked);    
+	gSieveAccountToConfigure.setCompileCheck(sender.checked); 
+	enableCompile(sender.checked);    
 }
 
 function enableCompile(enabled)
 {
-  if (enabled)
-    document.getElementById('txtCompile').removeAttribute('disabled');
-  else
-    document.getElementById('txtCompile').setAttribute('disabled','true'); 
+	globalServices.enableCtrlID('txtCompile', enabled);
 }
 
 function onCompileChange(sender)
 {
-  account.getSettings().setCompileDelay(sender.value)    
+	gSieveAccountToConfigure.setCompileDelay(sender.value);
 }
 
 function onDebugCommand(sender)
 {    
-  account.getSettings().setDebug(sender.checked);
+	gSieveAccountToConfigure.getDebugMode(sender.checked);
 }
