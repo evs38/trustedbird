@@ -2,8 +2,7 @@
 <!-- =================================
 
      Milimail and extensions packager
-	 
-	 (Format 80c 2 spaces)
+
 
      Olivier PARNIERE
      Olivier BRUN
@@ -22,8 +21,11 @@
      Get target list:
      $ ant -projecthelp
 
-     Generate development builds (svn revision in filenames, install.rdf and update.rdf linked to nightly builds):
+     Generate development builds (svn revision in filenames, install.rdf and
+     update.rdf linked to nightly builds):
      $ ant -Ddev=1 build-all
+
+     (Format: 80 columns 2 spaces)
      ================================= -->
 <project name="Milimail Packager" default="build-all">
   <description>Build Milimail and extensions</description>
@@ -53,7 +55,7 @@
 
   <!-- =================================
        distclean
-       ================================ -->
+       ================================= -->
   <target name="distclean" description="Clean build/ and dist/ directories">
     <delete dir="${local.build.dir}" />
     <delete dir="${local.dist.dir}" />
@@ -62,7 +64,7 @@
 
   <!-- =================================
        clean-milimail
-       ================================ -->
+       ================================= -->
   <target name="clean-milimail" description="Clean milimail build directory">
     <delete dir="${local.build.dir}/mozilla" />
   </target>
@@ -70,7 +72,7 @@
 
   <!-- =================================
        clean-extensions
-       ================================ -->
+       ================================= -->
   <target name="clean-extensions" description="Clean built extensions">
     <delete failonerror="false">
       <fileset dir="${local.dist.dir}">
@@ -346,12 +348,9 @@
   <target name="package-extensions"
           description="Get extensions from SVN and create packages"
           depends="clean-extensions">
-
-
-
     <mkdir dir="${local.build.dir}" />
     <mkdir dir="${local.dist.dir}" />
-    <foreach list="${extension.list}"
+    <foreach list="${extension.list},all-milimail-extensions"
              target="-package-extension"
              param="local.extension.name" />
   </target>
@@ -483,9 +482,15 @@
       </else>
     </if>
 
-    <ant dir="${local.build.dir}/mrs-linux-x86/api/java" />
-    <move file="${local.build.dir}/mrs-linux-x86/api/java/dist/MessageRemoteServicesJavaAPI.zip"
-          tofile="${local.dist.dir}/${local.extension.name}_JavaAPI_${local.extension.version}.zip" />
+    <!-- Only for 'mrs-linux-x86': build and package client API -->
+    <if>
+      <equals arg1="${local.extension.name}" arg2="mrs-linux-x86" />
+      <then>
+        <ant dir="${local.build.dir}/mrs-linux-x86/api/java" />
+        <move file="${local.build.dir}/mrs-linux-x86/api/java/dist/MessageRemoteServicesJavaAPI.zip"
+              tofile="${local.dist.dir}/${local.extension.name}_JavaAPI_${local.extension.version}.zip" />
+      </then>
+    </if>
 
   </target>
 </project>
