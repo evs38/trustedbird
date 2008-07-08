@@ -71,7 +71,7 @@ var globalServices=new Services();
 function onPreInit(account, accountValues)
 {
 	gIdentity = account.defaultIdentity;
-	globalServices.logSrv( "onPreInit=" + gIdentity + "\n" ) ;
+	globalServices.logSrv( "onPreInit=" + gIdentity ) ;
 
 
   // Bug 134238
@@ -213,7 +213,7 @@ function loadPreferences(){
 
 function onAccountEditClick(sender)
 {
-	globalServices.logSrv( "onAccountEditClick=" + gIdentity + " started.\n" ) ;
+	globalServices.logSrv( "onAccountEditClick=" + gIdentity + " started." ) ;
 
 	// DumpIdentity( gIdentity );
 	var args = new Array();
@@ -221,13 +221,12 @@ function onAccountEditClick(sender)
 	if(args["SieveAccount"] == null) 
 	{
 		globalServices.warningSrv( "    Account "+ gIdentity.fullName +" not found!");
-		globalServices.logSrv( "onAccountEditClick=" + gIdentity + " ended.\n" ) ;
+		globalServices.logSrv( "onAccountEditClick=" + gIdentity + " ended." ) ;
 		return;
 	}
     
-	window.openDialog("chrome://out_of_office/content/options/SieveAccountOptions.xul",
-	 "FilterEditor", "chrome,modal,titlebar,centerscreen", args);	        
-	globalServices.logSrv( "onAccountEditClick=" + gIdentity + " ended.\n" ) ;
+	window.openDialog("chrome://out_of_office/content/options/SieveAccountOptions.xul", "FilterEditor", "chrome,modal,titlebar,centerscreen", args);	        
+	globalServices.logSrv( "onAccountEditClick=" + gIdentity + " ended." ) ;
 }
 
 function getAccountByName(searchAccount) 
@@ -236,28 +235,24 @@ function getAccountByName(searchAccount)
 
 	jsLoader.loadSubScript("chrome://out_of_office/content/options/SieveAccountTreeView.js");
 
-	globalServices.logSrv( "getAccountByName=" + searchAccount + " started.\n" ) ;
-	globalServices.logSrv( "    getAccountByName identity name=" + searchAccount.identityName + ".\n" ) ;
-	globalServices.logSrv( "    getAccountByName full name=" + searchAccount.fullName + ".\n" ) ;
-	globalServices.logSrv( "    getAccountByName user mail=" + searchAccount.usermail + ".\n" ) ;
+	globalServices.logSrv( "getAccountByName started : search " + gServer.key + "." ) ;
 
+	// Use the SievePrefTreeView object to retrieve the account list (Only account kindof imap
+	// @TODO Optimisation will be to retrieve only the account used (not important).
 	var sieveAccountTreeView = new SievePrefTreeView(this);
 	for (var i = 0; i < sieveAccountTreeView.rowCount; i++)
   	{
 		var account = sieveAccountTreeView.getAccount(i);
 
-		globalServices.logSrv( "Account host=" + account + " description=" + account.getDescription() );
-        //if (account.type != "imap")
-        //  continue;
-
+		globalServices.logSrv( "Account key=" + account.getKeyID() + " description=" + account.getDescription() );
 		// Retrieve each incoming server to find the right account to configure
-		if( account.getDescription() == searchAccount.fullName )
+		if( account.getKeyID() == gServer.key )
 		{
-			globalServices.logSrv( "    Account found=" + account + " ended.\n" ) ;
+			globalServices.logSrv( "    Account found=" + account + " ended." ) ;
 			return account;
 		}
 	}
-	globalServices.logSrv( "getAccountByName: account not found. Function ended.\n" ) ;
+	globalServices.logSrv( "getAccountByName: account not found. Function ended." ) ;
 	return null; // Not found
 }
 	
