@@ -809,7 +809,14 @@ OutOfOfficeManager.prototype = {
 		if (account == undefined || account == null){
 			throw this.toString() + "connectServer:Account cannot be null";
 		}
-		
+		if( account.getHost().getHostname() == null || account.getHost().getHostname() == "" ){
+			// nothing to do the hostname must be define in the Sieve server settings.
+			this.services.warningSrv( this.toString() + "Unable to connect to Sieve server. Invalid Sieve server settings. The host name cannot be empty." );
+			postStatus("Unable to connect to server.");
+			postScriptStatus(false);
+			this.account = null;
+			return;
+		}
 		if(bActivateScript == true){
 			account.setEnabledOutOfOffice( ! account.isEnabledOutOfOffice());		
 		} else {
@@ -824,10 +831,9 @@ OutOfOfficeManager.prototype = {
 				this.activate(this.account.isEnabledOutOfOffice());
 			}
 			else
-				this.services.logSrv( this.toString() + "connectServer DONT CALL activate FUNCTION" );
+				this.services.logSrv( this.toString() + "connectServer Script activation not requested." );
 			return ; // already connected
 		}
-		//this.disconnectServer(); // Disconnect latest connection if up
 		this.account = account;
 		this.services.logSrv( this.toString() + "connectServer Try to connect to '" + account.getHost().getHostname() + "' user '" + this.account.URI + "'.");
 		this.sieveServer = new OutOfOfficeSieveServer(this.account, this.services, this.settings, bActivateScript);

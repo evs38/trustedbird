@@ -85,4 +85,7 @@
 		</stack>
 	</hbox>
 	<label id="logger" value="" />
+    <spacer style="height:1em"/>
+    <progressmeter id="out_of_office_connection_progressmeter" mode="undetermined" hidden="true" />
+    <spacer style="height:1em"/>
 </window>

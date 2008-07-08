@@ -67,10 +67,10 @@ var gEventConnection =
 	onAuthenticate: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
-			throw "gEventConnection:onAuthenticate: Require invalid (gOutOfOfficeSieveServer or Account member).";
+			throw new Exception("gEventConnection:onAuthenticate: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		if( gSieve == null ){
-			throw gOutOfOfficeSieveServer.toString() + "gEventConnection:onAuthenticate: Require invalid (gSieve).";
+			throw new Exception(gOutOfOfficeSieveServer.toString() + "gEventConnection:onAuthenticate: Require invalid (gSieve).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onAuthenticate Sieve server check if password is requested.");
 		var login = gOutOfOfficeSieveServer.getAccount().getLogin();
@@ -115,10 +115,10 @@ var gEventConnection =
 	onInitResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
-			throw "gEventConnection:onInitResponse: Require invalid (gOutOfOfficeSieveServer or Account member).";
+			throw new Exception("gEventConnection:onInitResponse: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		if( gSieve == null ){
-			throw gOutOfOfficeSieveServer.toString() + "gEventConnection:onInitResponse: Require invalid (gSieve).";
+			throw new Exception(gOutOfOfficeSieveServer.toString() + "gEventConnection:onInitResponse: Require invalid (gSieve).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onInitResponse Sieve server initialization done.");
 		var login = gOutOfOfficeSieveServer.getAccount().getLogin();
@@ -140,10 +140,10 @@ var gEventConnection =
 	onStartTLSResponse : function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onStartTLSResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onStartTLSResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		if( gSieve == null ){
-			throw gOutOfOfficeSieveServer.toString() + "gEventConnection:onStartTLSResponse: Require invalid (gSieve).";
+			throw new Exception(gOutOfOfficeSieveServer.toString() + "gEventConnection:onStartTLSResponse: Require invalid (gSieve).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onStartTLSResponse Sieve server start TLS connection.");
 		// activate TLS
@@ -162,7 +162,7 @@ var gEventConnection =
 	onSaslLoginResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onSaslLoginResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onSaslLoginResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onSaslLoginResponse.");
 		gEventConnection.onLoginResponse(response);
@@ -172,7 +172,7 @@ var gEventConnection =
 	onSaslPlainResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onSaslPlainResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onSaslPlainResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onSaslPlainResponse.");
 		gEventConnection.onLoginResponse(response);
@@ -181,7 +181,7 @@ var gEventConnection =
 	onLoginResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
-			throw "gEventConnection:onLoginResponse: Require invalid (gOutOfOfficeSieveServer or Account member).";
+			throw new Exception("gEventConnection:onLoginResponse: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onLoginResponse Sieve server connected. Request link/unlink script=" + gOutOfOfficeSieveServer.bActivateScript);
 		// enable the disabled controls....
@@ -201,10 +201,10 @@ var gEventConnection =
 	onLogoutResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
-			throw "gEventConnection:onLogoutResponse: Require invalid (gOutOfOfficeSieveServer or Account member).";
+			throw new Exception("gEventConnection:onLogoutResponse: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		if( gSieve == null ){
-			throw this.toString() + "gEventConnection:onLogoutResponse: Require invalid (gSieve).";
+			throw new Exception(this.toString() + "gEventConnection:onLogoutResponse: Require invalid (gSieve).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onLogoutResponse Sieve server logout.");
 		if (gSieve.isAlive())
@@ -220,7 +220,7 @@ var gEventConnection =
 	onListScriptResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
-			throw "gEventConnection:onListScriptResponse: Require invalid (gOutOfOfficeSieveServer or Account member).";
+			throw new Exception("gEventConnection:onListScriptResponse: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		if (response.hasError()) {
 			alert(gOutOfOfficeSieveServer.toString() + "gEventConnection:onListScriptResponse Command \"Listscripts\" failed");
@@ -257,10 +257,10 @@ var gEventConnection =
 	onSetActiveResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onSetActiveResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onSetActiveResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		if( gSieve == null ){
-			throw this.toString() + "gEventConnection:onSetActiveResponse: Require invalid (gSieve).";
+			throw new Exception(this.toString() + "gEventConnection:onSetActiveResponse: Require invalid (gSieve).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onSetActiveResponse Sieve server set active response.");
 		if (response.hasError()){
@@ -273,7 +273,7 @@ var gEventConnection =
 	onCapabilitiesResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onCapabilitiesResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onCapabilitiesResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onCapabilitiesResponse.");
 		gEventConnection.onAuthenticate(response);
@@ -282,7 +282,7 @@ var gEventConnection =
 	onDeleteScriptResponse:  function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onDeleteScriptResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onDeleteScriptResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onDeleteScriptResponse.");
 		clearInterval(gCompileTimeout);
@@ -292,7 +292,7 @@ var gEventConnection =
 	onPutScriptResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onPutScriptResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onPutScriptResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onPutScriptResponse script installed.");
 		//gOutOfOfficeSieveServer.disconnect();
@@ -319,7 +319,7 @@ var gEventConnection =
 	onGetScriptResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw "gEventConnection:onGetScriptResponse: Require invalid (gOutOfOfficeSieveServer).";
+			throw new Exception("gEventConnection:onGetScriptResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onGetScriptResponse Get script name =" + response.getScriptName() );
 		gOutOfOfficeSieveServer.setScriptText( response.getScriptBody() );
@@ -335,10 +335,10 @@ var gEventConnection =
 	onError: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
-			throw "gEventConnection:onError: Require invalid (gOutOfOfficeSieveServer or Account member).";
+			throw new Exception("gEventConnection:onError: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		if( gSieve == null ){
-			throw this.toString() + "gEventConnection:onError: Require invalid (gSieve).";
+			throw new Exception(this.toString() + "gEventConnection:onError: Require invalid (gSieve).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onError");
 		var code = response.getResponseCode();
@@ -372,16 +372,18 @@ var gEventConnection =
 			return;			
 		}
 
+		postStatus(response.getMessage());
+		postScriptStatus(false);
 		alert("SERVER ERROR:"+response.getMessage());
 	},
 
 	onCycleCell: function(row,col,script,active)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
-			throw "gEventConnection:onCycleCell: Require invalid (gOutOfOfficeSieveServer or Account member).";
+			throw new Exception("gEventConnection:onCycleCell: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		if( gSieve == null ){
-			throw this.toString() + "gEventConnection:onCycleCell: Require invalid (gSieve).";
+			throw new Exception(this.toString() + "gEventConnection:onCycleCell: Require invalid (gSieve).");
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "onCycleCell Script=" + gOutOfOfficeSieveServer.getScriptName() );
 		var request = null;
@@ -841,7 +843,7 @@ OutOfOfficeSieveServer.prototype = {
 	getServices : function()
 	{	// Require
 		if( this.services == null ){
-			throw this.toString() + "getServices: Require invalid (services).";
+			throw new Exception(this.toString() + "getServices: Require invalid (services).");
 		}
 		return this.services;
 	},

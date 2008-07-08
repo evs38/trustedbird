@@ -133,6 +133,7 @@ function onTreeSelect(treeView)
 	if(gActivateScript == undefined || gActivateScript == null){
 		gActivateScript = false;
 	}
+	connectionProgress( true ); 
 	var account = OutOfOfficeAccountTreeView.getAccount(treeView.currentIndex);
 	gConnectionActive = true;
 	account.setConnectRequest();
@@ -293,6 +294,15 @@ function postScriptStatus(active)
 
 // 		gConnectionActive = true;
 	}
+	connectionProgress( false );
 	onTreeSelect2(tree);
 }
 
+/*
+ * Display or not a progress bar during server connection.
+ * @param (boolean) Show or hide user interface control 
+ */
+function connectionProgress( enable )
+{	//Disable progressmeter when the connection procedure is done
+	globalServices.showCtrlID("out_of_office_connection_progressmeter" , enable);
+}
