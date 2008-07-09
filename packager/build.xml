@@ -493,4 +493,16 @@
     </if>
 
   </target>
+
+  <!-- ================================= 
+          target: package-mrs-win              
+         ================================= -->
+  <target name="package-mrs-win" depends="" description="description">
+    
+    <antcall target="-package-extension">
+      <param name="mrs-win" />
+    </antcall>
+    
+  </target>
+
 </project>
