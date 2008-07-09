@@ -497,10 +497,10 @@
   <!-- ================================= 
           target: package-mrs-win              
          ================================= -->
-  <target name="package-mrs-win" depends="" description="description">
+  <target name="package-mrs-win" depends="" description="package MRS for windows">
     
     <antcall target="-package-extension">
-      <param name="mrs-win" />
+      <param name="local.extension.name" value="mrs-win" />
     </antcall>
     
   </target>
