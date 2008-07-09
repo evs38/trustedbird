@@ -46,124 +46,151 @@
      ====================================================================== -->
 
 <project name="project" default="package">
-	<property file="package.properties" />
-	<property name="component" value="MRS"/>
-	<description>
+  <property file="package.properties" />
+  <property name="component" value="MRS"/>
+  <description>
            MiliMail MRS Extension Packager
     </description>
 
-	<!-- ant-contrib library -->
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-			<pathelement location="tools/ant-contrib-1.0b3.jar" />
-		</classpath>
-	</taskdef>
+  <!-- ant-contrib library -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="tools/ant-contrib-1.0b3.jar" />
+    </classpath>
+  </taskdef>
 
-	<!-- - - - - - - - - - - - - - - - - - 
+  <!-- - - - - - - - - - - - - - - - - - 
           target: config                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="config">
-		<condition property="isUnix">
-			<os family="unix" />
-		</condition>
-	</target>
+  <target name="config">
+    <condition property="isUnix">
+      <os family="unix" />
+    </condition>
+  </target>
 
-	<!-- - - - - - - - - - - - - - - - - - 
+  <!-- - - - - - - - - - - - - - - - - - 
           target: prepare-layout                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="prepare-layout">
-		<mkdir dir="xpi/components"/>
-		<mkdir dir="xpi/platform"/>
-		<mkdir dir="xpi/platform/Linux_x86-gcc3"/>
-		<mkdir dir="xpi/platform/WINNT_x86-msvc"/>
-		<mkdir dir="xpi/platform/Linux_x86-gcc3/components"/>
-		<mkdir dir="xpi/platform/WINNT_x86-msvc/components"/>
-	</target>
+  <target name="prepare-layout">
+    <mkdir dir="xpi/components"/>
+    <mkdir dir="xpi/platform"/>
+    <mkdir dir="xpi/platform/Linux_x86-gcc3"/>
+    <mkdir dir="xpi/platform/WINNT_x86-msvc"/>
+    <mkdir dir="xpi/platform/Linux_x86-gcc3/components"/>
+    <mkdir dir="xpi/platform/WINNT_x86-msvc/components"/>
+  </target>
 
-	<!-- ================================= 
+  <!-- ================================= 
           target: clean-Omniorb              
          ================================= -->
-	<target name="clean-Omniorb" description="clean lib Omniorb">
-		<exec executable="make" dir="lib/omniORB-4.1.2" failonerror="true">
-			<arg value="clean" />
-		</exec>
-	</target>
+  <target name="clean-Omniorb" description="clean lib Omniorb">
+    <exec executable="make" dir="lib/omniORB-4.1.2" failonerror="true">
+      <arg value="clean" />
+    </exec>
+  </target>
 
-	<!-- ================================= 
+  <!-- ================================= 
 	          target: clean-MRS-lib             
 	         ================================= -->
-	<target name="clean-MRS-lib" description="clean lib Omniorb">
-		<exec executable="make" dir="." failonerror="true">
-			<arg value="distclean" />
-		</exec>
-	</target>
+  <target name="clean-MRS-lib" description="clean lib Omniorb">
+    <exec executable="make" dir="." failonerror="true">
+      <arg value="distclean" />
+    </exec>
+  </target>
 
-	<!-- ================================= 
+  <!-- ================================= 
           target: compile-Omniorb              
          ================================= -->
-	<target name="compile-Omniorb" depends="prepare-layout" description="Compile lib Omniorb">
-		<exec executable="sh" dir="lib/omniORB-4.1.2" failonerror="true">
-			<arg value="configure"/>
-		</exec>
-		<exec executable="make" dir="lib/omniORB-4.1.2" failonerror="true"/>
-	</target>
+  <target name="compile-Omniorb" depends="prepare-layout" description="Compile lib Omniorb">
+    <exec executable="sh" dir="lib/omniORB-4.1.2" failonerror="true">
+      <arg value="configure"/>
+    </exec>
+    <exec executable="make" dir="lib/omniORB-4.1.2" failonerror="true"/>
+  </target>
 
-	<!-- ================================= 
+  <!-- ================================= 
           target: compile              
          ================================= -->
-	<target name="compile-MRS-lib" depends="compile-Omniorb" description="Compile MRS lib">
-		<exec executable="sh" dir="." failonerror="true">
-		 	<arg value="configure"/>
-			<arg value="--with-mozilla-sdk=${mozilla.sdk.path}" />
-		</exec>
+  <target name="compile-MRS-lib" depends="compile-Omniorb" description="Compile MRS lib">
+    <exec executable="sh" dir="." failonerror="true">
+      <arg value="configure"/>
+      <arg value="--with-mozilla-sdk=${mozilla.sdk.path}" />
+    </exec>
 
-		<exec executable="make" dir="." failonerror="true">
-		</exec>
-	</target>
+    <exec executable="make" dir="." failonerror="true">
+    </exec>
+  </target>
 
 
-	<!-- ================================= 
+  <!-- ================================= 
           target: compile              
          ================================= -->
-	<target name="compile" depends="config" description="Compile MRS lib">
-		<if>
-			<isset property="isUnix" />
-			<then>
-				<antcall target="compile-MRS-lib"/>
-			</then>
-		</if>
-	</target>
+  <target name="compile" depends="config" description="Compile MRS lib">
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <antcall target="compile-MRS-lib"/>
+      </then>
+      <else>
+        <antcall target="compile-MRS-lib-win"/>
+      </else>
+    </if>
+  </target>
 
-	<!-- ================================= 
+  <!-- ================================= 
           target: package              
          ================================= -->
-	<target name="package"  depends="compile" description="--> package MRS in Thunderbird xpi">
-		<copy failonerror="off" file="src/xpcom/.libs/libMessageRemoteService.so.0.0.0" todir="xpi/platform/Linux_x86-gcc3/components/"/>
-		<move failonerror="off" file="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so.0.0.0" tofile="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so"/>
+  <target name="package"  depends="compile" description="--> package MRS in Thunderbird xpi">
+    <copy failonerror="off" file="src/xpcom/.libs/libMessageRemoteService.so.0.0.0" todir="xpi/platform/Linux_x86-gcc3/components/"/>
+    <move failonerror="off" file="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so.0.0.0" tofile="xpi/platform/Linux_x86-gcc3/components/libMessageRemoteService.so"/>
 
-		<copy failonerror="off" file="win/Release/libMessageRemoteService.dll" todir="xpi/platform/WINNT_x86-msvc/components/"/>
-		
-		<copy file="install.rdf" todir="xpi/"></copy>
-		<copy file="update.rdf" todir="xpi/"></copy>
-		<copy file="chrome.manifest" todir="xpi/"></copy>
-		
-		<tstamp/>
-		<zip destfile="Milimail-${component}-${DSTAMP}-${TSTAMP}.xpi">
-			<fileset dir="xpi" id="id">
-				<include name="**"/>
-			</fileset>
-		</zip>
-	</target>
+    <copy failonerror="off" file="win/Release/libMessageRemoteService.dll" todir="xpi/platform/WINNT_x86-msvc/components/"/>
 
-	<!-- ================================= 
+    <copy file="install.rdf" todir="xpi/">
+    </copy>
+    <copy file="update.rdf" todir="xpi/">
+    </copy>
+    <copy file="chrome.manifest" todir="xpi/">
+    </copy>
+
+    <tstamp/>
+    <zip destfile="Milimail-${component}-${DSTAMP}-${TSTAMP}.xpi">
+      <fileset dir="xpi" id="id">
+        <include name="**"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <!-- ================================= 
           target: clean              
          ================================= -->
-	<target name="clean" depends="clean-Omniorb, clean-MRS-lib" description="--> clean">
-		<delete>
-			<fileset dir="xpi">
-				<include name="platform/**"/>
-			</fileset>
-		</delete>
-	</target>
+  <target name="clean" depends="clean-Omniorb, clean-MRS-lib" description="--> clean">
+    <delete>
+      <fileset dir="xpi">
+        <include name="platform/**"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!-- ================================= 
+          target: compile-MRS-lib-win              
+         ================================= -->
+  <target name="compile-MRS-lib-win"
+            depends=""
+            description="compile MRS lib in Windows">
+      <property name="env.sdk" value="${mozilla.sdk.path}" />
+      <property name="env.sdki" value="${env.sdk}\include" />
+      <exec dir="win/" newenvironment="yes" executable="cmd" failonerror="yes">
+        <env key="PATH"
+             path="${env.PATH};${env.vc6sdk}\Common\MSDev98\Bin;${env.vc6sdk}\VC98\Bin" />
+        <env key="include"
+             path="${env.vc6sdk}\VC98\INCLUDE;${env.vc6sdk}\VC98\ATL\INCLUDE;${env.sdki}\xpcom;${env.sdki}\msgcompose;${env.sdki}\nspr;${env.sdki}\msgbase;${env.sdki}\msgcompose;${env.sdki}\mailnews;${env.sdki}\string;${env.sdki}\necko;${env.sdki}\msgdb;${env.sdki}\msgbaseutil;${env.sdki}\appshell;${env.sdki}\dom;${env.sdki}\msgsmime" />
+        <env key="lib" path="${env.vc6sdk}\VC98\lib;${env.sdk}\lib" />
+        <arg value="/c" />
+        <arg value="build.bat" />
+        <arg value="" />
+      </exec>
+
+    </target>
 
 </project>
