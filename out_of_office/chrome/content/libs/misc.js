@@ -41,7 +41,14 @@
 	@fileoverview
 	misc methods
 	@author Daniel Rocher / Etat francais Ministere de la Defense
+	@author Olivier Brun / Etat francais Ministere de la Defense
 */
+
+// Load all the Libraries we need...
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+
+// includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/preferences.js");
 
 /*
  * Constructor of the sieve common class
@@ -176,6 +183,20 @@ Services.prototype = {
 	},
 	
 	/**
+		Retrieve the User Interface label of the control.
+		@param (string) Label of the UI control id. 
+		@return (string) Label of the control as a string.
+	*/
+	getStringLabel : function( ctrlID )
+	{
+		label = document.getElementById(ctrlID).label;
+		if( label != undefined ){
+			return label;
+		}
+		return this.getStringValue(ctrlID);
+	},
+	
+	/**
 		Retrieve the User Interface value from control.
 		@param (string) Label of the UI control id. 
 		@return (string) Value of the control as a string.
@@ -216,6 +237,50 @@ Services.prototype = {
 		document.getElementById(ctrlID).checked = value;
 	},
 	
+	
+	/**
+		Localize stringBundle. This function can be insert dynamically parameters in the string.
+		The user that define the localized string insert tag as %1, %2 ... The function parse the string
+		and insert each value from the third parameter arrayValue. If the value is not define the value
+		take the value undefined. If the array is too small the value stay the tag %7 for example.
+		If the array is too big nothing append.  
+		@param (string) stringBundle String bundle label id.
+		@param (string) message String id define in the stringBundle file 
+		@param (array) arrayValue Array of the value to replace in string. Value in string are defined with tag %x where x is the value index. 
+		@return (string) Localized string message to use by the caller.
+	*/
+	localizeString : function( stringBundle, message, arrayValue )
+	{
+		if( message == undefined || message == null ){
+			throw new Exception("localizeString: message cannot be null.");
+		}
+		/*
+		 * Check if the localization is requested and the string is valid
+		 */
+		if( stringBundle == undefined || stringBundle == null || 
+			message.length < 3 || message[0] != '&' || message[message.length-1] != ';' ){
+			return message;
+		}
+		
+		/*
+		 * localization is requested
+		 */
+        // Initialize the string bundle resource
+        out_of_office_stringBundle = document.getElementById(stringBundle);        
+	    message = message.substring(1,message.length-1);
+	    message = out_of_office_stringBundle.getString(message);
+
+	    // Check variables array to replace in string
+	    if( arrayValue == undefined || arrayValue == null || arrayValue.length <= 0 )
+	    	return message; // No value to replace
+	    
+        // Replace variables in string
+	    for(var count = 0; count < arrayValue.length; count++ ){
+			var reg = new RegExp("%"+(count+1), "g");	
+			message = message.replace(reg, arrayValue.shift() );
+	    }
+		return message;
+	},
 	
 	/**
 		Retrieve the User Interface value from control.

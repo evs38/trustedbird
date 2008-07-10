@@ -5,6 +5,9 @@ var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getS
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
 var globalServices=new Services();
 
+
+//Global object to configure the Sieve server account
+var gSieveAccountToConfigure = null;
 var gAccount = null;
 
 function SieveAccountUI(account)
@@ -125,75 +128,32 @@ SieveAccountUI.prototype.setDebugMode = function (debugMode) {
 	this.debugMode = debugMode; 
 }
 
-
-// Global object to configure the Sieve server account
-var gSieveAccountToConfigure = null;
-
-    
+   
 function onDialogLoad(sender)
 {
 	gAccount = window.arguments[0]["SieveAccount"];
 	
 	// Initialize UI parameters
 	gSieveAccountToConfigure = new SieveAccountUI(gAccount);
-	
-   
-	// get the custom Host settings
-	document.getElementById('txtHostname').value = gSieveAccountToConfigure.getHostName();
-	document.getElementById('txtPort').value = gSieveAccountToConfigure.getHostPort();
-	document.getElementById('cbxTLS').checked = gSieveAccountToConfigure.getHostTLS();
-	
-	var cbxHost = document.getElementById('cbxHost');
-	cbxHost.checked = gSieveAccountToConfigure.getHostType();
-	enableHost(cbxHost.checked);
-   
-	// Login field.
-	document.getElementById('txtUsername').value = gSieveAccountToConfigure.getUserName();
-	       
-	var cbxPassword = document.getElementById('cbxPassword');
-	cbxPassword.checked = gSieveAccountToConfigure.getUserPasswordCheck();
-	document.getElementById('txtPassword').value = ( (cbxPassword.checked == true) ? gSieveAccountToConfigure.getUserPassword() : "" );
+	updateData(false); // Set data to user interface control
 
-	var rgLogin = document.getElementById('rgLogin');
-	rgLogin.selectedIndex = gSieveAccountToConfigure.getLoginIndex();
-	enableLogin(rgLogin.selectedIndex);
-	  
-	document.getElementById('txtKeepAlive').value = gSieveAccountToConfigure.getKeepAlive();
-	  
-	var cbxKeepAlive = document.getElementById('cbxKeepAlive');
-	cbxKeepAlive.checked = gSieveAccountToConfigure.getKeepAliveCheck();
-	enableKeepAlive(cbxKeepAlive.checked);
-	
-	document.getElementById('txtCompile').value = gSieveAccountToConfigure.getCompileDelay();
-	          
-	var cbxCompile = document.getElementById('cbxCompile');
-	cbxCompile.checked = gSieveAccountToConfigure.getCompileCheck();
-	enableCompile(cbxCompile.checked);	
-	
-	var cbxDebug = document.getElementById('cbxDebug');
-	cbxDebug.checked = gSieveAccountToConfigure.getDebugMode();
+	// Enable dialog control
+	enableHost(gSieveAccountToConfigure.getHostType());
+	enableLogin(gSieveAccountToConfigure.getLoginIndex());
+	enableKeepAlive(gSieveAccountToConfigure.getKeepAliveCheck());
+	enableCompile(gSieveAccountToConfigure.getCompileCheck());	
 }
 
 function onDialogAccept(sender)
 {
-	// @TODO Make this attibut accessible to the final user.
-	// Hard coded. Activation of the sieve server the current gAccount
-	gAccount.setEnabled(true);
-	/*
-	 * Update gAccount settings
-	 */
-	gAccount.setActiveLogin( gSieveAccountToConfigure.getLoginIndex() );        
-	gAccount.getLogin(2).setLogin( gSieveAccountToConfigure.getUserName(), ( (gSieveAccountToConfigure.getUserPasswordCheck()==true)?gSieveAccountToConfigure.getUserPassword() : null ) );   	
-	gAccount.setActiveHost( gSieveAccountToConfigure.getHostType() );
-
-	gAccount.getHost(1).setHostname( gSieveAccountToConfigure.getHostName() );
-	gAccount.getHost(1).setPort( gSieveAccountToConfigure.getHostPort() );
-	gAccount.getHost(1).setTLS( gSieveAccountToConfigure.getHostTLS() );
-	gAccount.getSettings().setKeepAlive( gSieveAccountToConfigure.getKeepAliveCheck() );
-	gAccount.getSettings().setKeepAliveInterval( gSieveAccountToConfigure.getKeepAlive() );
-	gAccount.getSettings().setCompile( gSieveAccountToConfigure.getCompileCheck() );
-	gAccount.getSettings().setCompileDelay( gSieveAccountToConfigure.getCompileDelay() );
-	gAccount.getSettings().setDebug( gSieveAccountToConfigure.getDebugMode() );
+	globalServices.logSrv("onDialogAccept..." );
+	window.arguments[0]["OutOfOfficeSieveAccountReturnCode"] = false;
+	if( updateData() == true ){ // Retrieve and validate data 
+		window.arguments[0]["OutOfOfficeSieveAccountReturnCode"] = true;
+		return true;
+	}
+	globalServices.warningSrv("onDialogAccept: Invalid data." );
+	return false; // Invalid data
 }
 
 // Function for the custom authentication
@@ -230,6 +190,7 @@ function enableLogin(type)
 		break;
 	default:
 		globalServices.warningSrv("Invalid login type.");
+		break;
 	}
 }
 
@@ -323,4 +284,146 @@ function onCompileChange(sender)
 function onDebugCommand(sender)
 {    
 	gSieveAccountToConfigure.getDebugMode(sender.checked);
+}
+
+/*
+ * Call this member function to initialize data in a dialog box, or to retrieve and validate dialog data.
+ * @param (boolean) bSaveAndValidate Flag that indicates whether dialog box is being initialized (FALSE) or data is being retrieved (TRUE).
+ * @return (boolean) Nonzero if the operation is successful; otherwise 0. If bSaveAndValidate is TRUE, then a return value of nonzero means that the data is successfully validated.
+ */
+function updateData(bSaveAndValidate)
+{
+    if (gSieveAccountToConfigure == null){
+        throw "gSieveAccountToConfigure: Sieve Account can't be null"; 
+	}
+	if(bSaveAndValidate == undefined){
+		bSaveAndValidate = true;
+	}
+	if(bSaveAndValidate == true){	// Retrieve and validate value from control ID
+		if( checkDataValidity() == false ) { // Check Data validity
+			return false; // Invalid data
+		}
+		SaveData();
+	} else {	// Set value to control ID
+		LoadData();
+	}
+	return true;	
+}
+
+
+/*
+ * Call this member function to load data from the Sieve account object.
+ */
+function LoadData()
+{
+	// get the custom Host settings
+	document.getElementById('txtHostname').value = gSieveAccountToConfigure.getHostName();
+	document.getElementById('txtPort').value = gSieveAccountToConfigure.getHostPort();
+	document.getElementById('cbxTLS').checked = gSieveAccountToConfigure.getHostTLS();
+	
+	var cbxHost = document.getElementById('cbxHost');
+	cbxHost.checked = gSieveAccountToConfigure.getHostType();
+	
+	// Login field.
+	document.getElementById('txtUsername').value = gSieveAccountToConfigure.getUserName();
+	       
+	var cbxPassword = document.getElementById('cbxPassword');
+	cbxPassword.checked = gSieveAccountToConfigure.getUserPasswordCheck();
+	document.getElementById('txtPassword').value = ( (cbxPassword.checked == true) ? gSieveAccountToConfigure.getUserPassword() : "" );
+	
+	var rgLogin = document.getElementById('rgLogin');
+	rgLogin.selectedIndex = gSieveAccountToConfigure.getLoginIndex();
+  
+	document.getElementById('txtKeepAlive').value = gSieveAccountToConfigure.getKeepAlive();
+	  
+	var cbxKeepAlive = document.getElementById('cbxKeepAlive');
+	cbxKeepAlive.checked = gSieveAccountToConfigure.getKeepAliveCheck();
+	
+	document.getElementById('txtCompile').value = gSieveAccountToConfigure.getCompileDelay();
+	          
+	var cbxCompile = document.getElementById('cbxCompile');
+	cbxCompile.checked = gSieveAccountToConfigure.getCompileCheck();
+	
+	var cbxDebug = document.getElementById('cbxDebug');
+	cbxDebug.checked = gSieveAccountToConfigure.getDebugMode();
+}
+
+/*
+ * Call this member function to check the validity of the data before set the Sieve account object.
+ * @return (boolean) True indicate that the data are correct, False indicate an invalid data set.
+ */
+function checkDataValidity()
+{
+	var type = gSieveAccountToConfigure.getLoginIndex();
+	if ((type < 0) || (type > 2)){
+		alertDataValidity("&outofoffice.settings.invalid.choice;", 'labelLogin' );
+		return false;
+	}
+	if ( type == 2 ){ // Use username/password
+		if( gSieveAccountToConfigure.getUserName() == "" ){	// type 2 request a username
+			alertDataValidity("&outofoffice.settings.invalid.data;", 'labelUsername' );
+			globalServices.setFocusCtrlID('txtUsername');
+			return false;
+		}
+		if( gSieveAccountToConfigure.getUserPasswordCheck()==true ){// Remember the password
+			if( gSieveAccountToConfigure.getUserPassword() == null || gSieveAccountToConfigure.getUserPassword() == "" ){	// Then the password cannot be empty
+				alertDataValidity("&outofoffice.settings.invalid.data;", 'labelPassword' );
+				globalServices.setFocusCtrlID('txtPassword');
+				return false;
+			}
+		}
+	}
+	type = gSieveAccountToConfigure.getHostType();
+	if ((type < 0) || (type > 1)){
+		alertDataValidity("&outofoffice.settings.invalid.choice;", 'cbxHost' );
+		return false;
+	}
+	if( type == 1 && gSieveAccountToConfigure.getHostName() == "" ){
+		alertDataValidity("&outofoffice.settings.invalid.data;", 'labelHostname');
+		globalServices.setFocusCtrlID('txtHostname');
+		return false;
+	}
+
+	return true;
+}
+
+/*
+ * Display an error popup and set the focus to the UI control on error.
+ * @param (string) message String to localize.
+ * @param (string) fieldName Label of the UI control id. 
+ */
+function alertDataValidity( message, fieldName )
+{
+	var values = new Array();
+	values.push( globalServices.getStringLabel(fieldName) );
+	alert( globalServices.localizeString( "out_of_office_stringbundle", message, values) );
+}
+
+/*
+ * Call this member function to save data to the Sieve account object.
+ */
+function SaveData()
+{
+	// @TODO Make this attibut accessible to the final user.
+	// Hard coded. Activation of the sieve server the current gAccount
+	gAccount.setEnabled(true);
+	/*
+	 * Update gAccount settings
+	 */
+	gAccount.setActiveLogin( gSieveAccountToConfigure.getLoginIndex() );
+	if( gSieveAccountToConfigure.getLoginIndex() == 2 ){
+		gAccount.getLogin(2).setLogin( gSieveAccountToConfigure.getUserName(), ( (gSieveAccountToConfigure.getUserPasswordCheck()==true)?gSieveAccountToConfigure.getUserPassword() : null ) );
+	}
+
+	gAccount.setActiveHost( gSieveAccountToConfigure.getHostType() );	
+	if( gSieveAccountToConfigure.getHostType() == 1 ){ // Host name used
+		gAccount.getHost(1).setHostname( gSieveAccountToConfigure.getHostName() );
+	}
+	gAccount.getHost(1).setPort( gSieveAccountToConfigure.getHostPort() );
+	gAccount.getHost(1).setTLS( gSieveAccountToConfigure.getHostTLS() );
+	gAccount.getSettings().setKeepAlive( gSieveAccountToConfigure.getKeepAliveCheck() );
+	gAccount.getSettings().setKeepAliveInterval( gSieveAccountToConfigure.getKeepAlive() );
+	gAccount.getSettings().setCompile( gSieveAccountToConfigure.getCompileCheck() );
+	gAccount.getSettings().setCompileDelay( gSieveAccountToConfigure.getCompileDelay() );
+	gAccount.getSettings().setDebug( gSieveAccountToConfigure.getDebugMode() );
 }

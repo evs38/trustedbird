@@ -5,17 +5,19 @@
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept,cancel"
-				onload="onDialogLoad(this);"
-				ondialogaccept="return onDialogAccept(this);"
+		onload="onDialogLoad(this);"
+		ondialogaccept="return onDialogAccept(this);"
         persist="screenX screenY"
         style="width: 45em; height: 27em;"
         title="&options.title;">
+
+    <stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
 
   <script type="application/x-javascript" src="chrome://out_of_office/content/options/SieveAccountOptions.js"/>
   <vbox>
     <hbox>
       <groupbox flex="1">
-        <caption label="&options.login;" />
+        <caption id="labelLogin" label="&options.login;" />
         <radiogroup id="rgLogin" onselect="onLoginSelect(this);">
           <radio id="rbNoAuth" label="&options.login.noAuth;"/>
           <radio id="rbImapAuth" label="&options.login.imapAuth;"/>
@@ -30,12 +32,12 @@
           </colums>
           <rows>
             <row align="center">
-              <label value="&options.login.username;" accesskey="&options.login.username.key;"
+              <label id="labelUsername" value="&options.login.username;" accesskey="&options.login.username.key;"
           			control="txtUsername"/>
               <textbox id="txtUsername" size="20" onchange="onLoginChange(this)"/>
             </row>
             <row align="center">
-              <label value="&options.login.password;" accesskey="&options.login.password.key;" 
+              <label id="labelPassword" value="&options.login.password;" accesskey="&options.login.password.key;" 
           			control="txtPassword"/>
               <textbox id="txtPassword" type="password" size="20" onchange="onLoginChange(this)" onfocus="onPasswordFocus(this)"/>
             </row>
@@ -61,7 +63,7 @@
         </colums>
         <rows>
           <row align="center">
-            <label value="&options.host.hostname;" accesskey="&options.host.hostname.key;"
+            <label id="labelHostname" value="&options.host.hostname;" accesskey="&options.host.hostname.key;"
             		control="txtHostname" />
             <textbox id="txtHostname" size="25" onchange="onHostnameChange(this)"/>
           </row>

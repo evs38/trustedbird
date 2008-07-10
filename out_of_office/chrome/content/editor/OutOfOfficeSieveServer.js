@@ -90,7 +90,7 @@ var gEventConnection =
 				request.addSaslLoginListener(gEventConnection);
 				break;
 			case "plain":
-				default: // plain is the fallback...
+			default: // plain is the fallback...
 				request = new SieveSaslPlainRequest();
 				request.addSaslPlainListener(gEventConnection);
 				break;        
@@ -185,8 +185,13 @@ var gEventConnection =
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onLoginResponse Sieve server connected. Request link/unlink script=" + gOutOfOfficeSieveServer.bActivateScript);
 		// enable the disabled controls....
-		gOutOfOfficeSieveServer.accountConnected = gOutOfOfficeSieveServer.getAccount();
-		postStatus("Connected to '" + gOutOfOfficeSieveServer.getAccount().getHost().getHostname() + "' Sieve server.");
+		gOutOfOfficeSieveServer.setConnectedTo( gOutOfOfficeSieveServer.getAccount() );
+
+	    // Update status
+		var values = new Array();
+		values.push(gOutOfOfficeSieveServer.getAccount().getHost().getHostname());
+		postStatus(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connected;", values) );
+
 		if( gOutOfOfficeSieveServer.bActivateScript == true ){
 			gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "Set link to script=" + gOutOfOfficeSieveServer.getAccount().isEnabledOutOfOffice() );
 			gOutOfOfficeSieveServer.activateScript(gOutOfOfficeSieveServer.getAccount().isEnabledOutOfOffice());
@@ -213,8 +218,9 @@ var gEventConnection =
 
 		// this will close the Dialog!
 		close();		
-		postStatus("Disconnected from '" + gOutOfOfficeSieveServer.getAccount().getHost().getHostname() + "' Sieve server.");
-		gOutOfOfficeSieveServer.accountConnected = null;
+	    // Update status
+		postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.disconnected;") );
+		gOutOfOfficeSieveServer.setConnectedTo();
 	},
 
 	onListScriptResponse: function(response)
@@ -238,20 +244,6 @@ var gEventConnection =
 		}
 		alert("Script out of office not found =" + scriptList.length )
 		postScriptStatus(false);
-//		alert( "postScriptStatus(ENDED);");
-//		gOutOfOfficeSieveServer.loadScript();
-		
-		/*
-		 
-		sieveTreeView.update(response.getScripts());
-
-		var tree = document.getElementById('treeImapRules');
-		tree.view = sieveTreeView;
-		
-		// allways select something
-		if ((tree.currentIndex == -1) && (tree.view.rowCount > 0))
-			tree.view.selection.select(0);
-		*/
 	},
 	
 	onSetActiveResponse: function(response)
@@ -325,7 +317,7 @@ var gEventConnection =
 		gOutOfOfficeSieveServer.setScriptText( response.getScriptBody() );
 		gTryToCreate = false;
 		if( gParent != null ){
-			gParent.postStatus("Connected and script loaded successfully.");
+			gParent.postStatus(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedloaded;") );
 			gParent.onConnectFinish(true);
 		}else{
 			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "The parent object is not initialized");
@@ -348,7 +340,9 @@ var gEventConnection =
 			// close the old sieve connection
 			gSieve.disconnect();
 
-			postStatus("Referral to "+code.getHostname()+" ...");
+			var values = new Array();
+			values.push(code.getHostname());
+			postStatus(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.codereferral;", values) );
 
 			gSieve = new Sieve(
 								code.getHostname(),
@@ -366,15 +360,50 @@ var gEventConnection =
 			return;
 		}
 		if(gTryToCreate == true /*&& response.getMessage()*/ ){
-			// Always refresh the table ...
 			gOutOfOfficeSieveServer.createScript();
 			gTryToCreate = false;
 			return;			
 		}
-
-		postStatus(response.getMessage());
+	    // Initialize the string bundle resource
+/*	    out_of_office_stringBundle = document.getElementById('out_of_office_stringbundle');
+	    var message = response.getMessage()
+	    var header = "ERRORCODE:";
+		var reg = new RegExp(header, "g");	
+		if( message.length > header.length && message.match(reg) ){ // The message is an error code to build a user label
+			var code = message.substring(header.length, message.length );
+			switch( code )
+			{
+			case "0001" : {
+				var reg = new RegExp("%1", "g");	
+				message = out_of_office_stringBundle.getString("outofoffice.connection.status.cannotopenconnection");
+				message = message.replace(reg, gOutOfOfficeSieveServer.getAccount().getHost().getPort() );
+				break;
+			}
+			default: // Code unknown or the message to display is not in string table
+				break;
+			}
+		}
+*/
+	    var message = response.getMessage()
+	    var header = "ERRORCODE:";
+		var reg = new RegExp(header, "g");	
+		if( message.length > header.length && message.match(reg) ){ // The message is an error code to build a user label
+			var code = message.substring(header.length, message.length );
+			switch( code )
+			{
+			case "0001" : {
+				var values = new Array();
+				values.push(gOutOfOfficeSieveServer.getAccount().getHost().getPort());
+				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.cannotopenconnection;", values);
+				break;
+			}
+			default: // Code unknown or the message to display is not in string table
+				break;
+			}
+		}
+		postStatus(message);
 		postScriptStatus(false);
-		alert("SERVER ERROR:"+response.getMessage());
+		alert("SERVER ERROR: " + message);
 	},
 
 	onCycleCell: function(row,col,script,active)
@@ -412,7 +441,7 @@ var gEventCreateScript =
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventCreateScript:onPutScriptResponse Create script name =" + gOutOfOfficeSieveServer.getScriptName() );
 		gTryToCreate = false;
 		if( gParent != null ){
-			gParent.postStatus("Connected and script created successfully.");
+			gParent.postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedcreated;") );
 			gParent.onConnectFinish(true);
 		}else{
 			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "The parent object is not initialized");
@@ -554,7 +583,7 @@ OutOfOfficeSieveServer.prototype = {
 		 * This is to use the sieve server object by the event objects
 		 */
 		gOutOfOfficeSieveServer = this;
-		this.accountConnected = null;
+		this.setConnectedTo();
 		
 		this.loadClass();
 
@@ -576,17 +605,18 @@ OutOfOfficeSieveServer.prototype = {
 			onLogoutResponse: function(response)
 			{
 				clearTimeout(logoutTimeout);
-				if ((gOutOfOfficeSieveServer.sieve != null) && (gOutOfOfficeSieveServer.sieve.isAlive()))
+				if ((gOutOfOfficeSieveServer.sieve != null) && (gOutOfOfficeSieveServer.sieve.isAlive())){
 					gOutOfOfficeSieveServer.sieve.disconnect();
+				}
 					
 				// Disable and cancel if account is not enabled
 				if (gOutOfOfficeSieveServer.getAccount().isEnabled() == false)
 				{	// If we have this message it is a conflict with Sieve extension    
-					postStatus("Change Sieve Settings to activate this account");
+					postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
 					return;
 				}			
 	
-				postStatus("Connecting...");
+				postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connecting;") );
 				if (gOutOfOfficeSieveServer.getAccount().getSettings().isKeepAlive())
 					gKeepAliveInterval = setInterval("onKeepAlive()",gOutOfOfficeSieveServer.getAccount().getSettings().getKeepAliveInterval());
 	
@@ -751,7 +781,7 @@ OutOfOfficeSieveServer.prototype = {
 	 */
 	activateScript : function(active)
 	{	
-		if( this.accountConnected == null ){
+		if( this.isConnectionActive() == false ){
 			this.getServices().logSrv( this.toString() + "The script cannot be set to active=" + active + " because the server is not connected.");
 			return;	
 		}
@@ -774,7 +804,7 @@ OutOfOfficeSieveServer.prototype = {
 	 */
 	updateScriptListStatus : function()
 	{
-		if( this.accountConnected == null ){
+		if( this.isConnectionActive() == false ){
 			this.getServices().logSrv( this.toString() + "The update script link status cannot be done because the server is not connected.");
 			return;	
 		}
@@ -829,11 +859,32 @@ OutOfOfficeSieveServer.prototype = {
 
 	/**
 	 * Retrieve current sieve account object
-	 * @return (SieveAccount) Sieve account slected 
+	 * @return (SieveAccount) Sieve account selected 
 	 */
 	getAccount : function()
 	{
 		return this.account;
+	},
+
+	/**
+	 * Set the account currently connected to a sieve server
+	 * @param (SieveAccount) Active Sieve account connection
+	 */
+	setConnectedTo : function(account)
+	{
+		if( account == undefined ){ // Accept no parameter
+			account = null;
+		}
+		this.accountConnected = account;
+	},
+
+	/**
+	 * Check if a connection to a sieve server is active
+	 * @return (boolean) Sieve account selected 
+	 */
+	isConnectionActive : function()
+	{
+		return (this.accountConnected != null);
 	},
 
 	/**
@@ -856,56 +907,4 @@ OutOfOfficeSieveServer.prototype = {
 	{
 		return this.getServices().parseScriptCore();
 	},
-
 }
-/*
-function onBtnCompile()
-{
-	if ( document.getElementById("btnCompile").checked == false)
-	{
-		gCompile = true;
-		document.getElementById("btnCompile").setAttribute("image","chrome://out_of_office/content/images/syntaxCheckOn.png");
-		onCompile();
-		return
-	}
-
-	clearTimeout(gCompileTimeout);
-	gCompileTimeout = null;
-
-	gCompile = false;
-	document.getElementById("btnCompile").setAttribute("image","chrome://out_of_office/content/images/syntaxCheckOff.png");
-	document.getElementById("gbError").setAttribute('hidden','true')    
-}
-
-function onLoad()
-{
-	// Initialize sieve object to establish communication.
-	startSieveConnection( window.arguments[0] ); // @TODO 
-
-	// script loaded
-	gCompile = window.arguments[0]["compile"];        
-	gCompileDelay = window.arguments[0]["compileDelay"];
-
-	// document.getElementById("btnCompile").checked = gCompile;
-
-	if ( this.getScriptName() == null )
-		return
-
-	var request = new SieveGetScriptRequest(new String(this.getScriptName()) );
-	request.addGetScriptListener(gEventConnection);
-	request.addErrorListener(gEventConnection);
-
-	gSieve.addRequest(request);
-}
-
-function onAccept()
-{
-	var request = new SievePutScriptRequest( new String(this.getScriptName()), new String(this.getScriptText()) );
-	request.addPutScriptListener(gEventConnection)
-	request.addErrorListener(gEventConnection)
-
-	gSieve.addRequest(request)
-
-	return false;
-}
-*/

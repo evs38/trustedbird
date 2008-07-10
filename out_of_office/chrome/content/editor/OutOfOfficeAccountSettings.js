@@ -87,6 +87,7 @@ function onConnectFinish(success)
 function onDialogAccept(sender)
 {
 	globalServices.logSrv("onDialogAccept..." );
+	window.arguments[0]["OutOfOfficeSieveAccountReturnCode"] = false;
 	if( gOutOfOfficeManager.getSettings() == null ){ // No account selected
 		globalServices.errorSrv("No account selected : unable to configure out of office parameters." );
 		return false;
@@ -189,11 +190,11 @@ function onOutOfOfficeActivationCommand(sender)
 }
 
 /*
- * Display status of the connection to the selected sieve server.
+ * Display status of the connection with the selected Sieve server
  */
-function postStatus(progress)
+function postStatus(message)
 {
-  document.getElementById('logger').value = progress;
+  document.getElementById('logger').value = message;
 }
 
 /*

@@ -14,13 +14,13 @@
         persist="screenX screenY"
         style="width: 45em; height: 25em;"
         title="&outofoffice.title;">
-        
+         
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
-	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/preferences.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeManager.js"/>
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeAccountListView.js"/> 
 
 	<grid flex="1">
+		<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
 		<columns>
 			<column flex="1"/>
 			<column/>
@@ -84,8 +84,10 @@
 			</grid>
 		</stack>
 	</hbox>
-	<label id="logger" value="" />
     <spacer style="height:1em"/>
-    <progressmeter id="out_of_office_connection_progressmeter" mode="undetermined" hidden="true" />
+    	<hbox>
+			<label id="logger" value="" flex="1" />
+		   	<progressmeter id="out_of_office_connection_progressmeter" mode="undetermined" hidden="true" />
+    	</hbox>
     <spacer style="height:1em"/>
 </window>

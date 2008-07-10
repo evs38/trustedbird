@@ -42,11 +42,12 @@
  * @author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
  */
 
+var out_of_office_stringBundle;
 var globalServices=new Services();
 var OutOfOfficeAccountTreeView = null;
 var gOutOfOfficeManager = null;
 var gActivateScript = false;
-var gConnectionActive = false; // Set to false to force the first connection on the first item
+var gConnectionActive = -1; // Set to 0 to force the first connection on the first item
 
 var OOOALV_FILE_HEADER = new String("OutOfOfficeAccountListView: "); 
 
@@ -92,14 +93,20 @@ function onWindowLoad()
 	}
 	*/
 }
- 
+
+/*
+ * Function call by the tree view when an item is selected.
+ * @param (object) sender Object that call the function
+ * @return (boolean) Indicate if the sender can be run action or wait because a connection running 
+ */
 function onCycleCellActivate(sender)
 {
-	if( gConnectionActive == false ){ // No connection to running
+	if( gConnectionActive == -1 ){ // No connection running
 		globalServices.logSrv( OOOALV_FILE_HEADER + "onCycleCellActivate");
 		gActivateScript = true;
 		onTreeSelect(document.getElementById('treeAccounts'));
 	}
+	return ( gConnectionActive == -1 );
 }
 /*
 function  onCycleCell(row,col,script,active)
@@ -128,14 +135,14 @@ function  onCycleCell(row,col,script,active)
 */
 function onTreeSelect(treeView)
 {	
-	if( gConnectionActive == true ) // A connection to serveur is running
+	if( gConnectionActive != -1 ) // A connection to serveur is running
 		return;
 	if(gActivateScript == undefined || gActivateScript == null){
 		gActivateScript = false;
 	}
+	gConnectionActive = treeView.currentIndex;
 	connectionProgress( true ); 
 	var account = OutOfOfficeAccountTreeView.getAccount(treeView.currentIndex);
-	gConnectionActive = true;
 	account.setConnectRequest();
 	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
 }
@@ -147,7 +154,6 @@ function onTreeSelect2(treeView)
 //	}
 	//@TODO Remove obsolete code 	
 
-	gConnectionActive = false;
 	gActivateScript = false;
 
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + treeView.currentIndex );
@@ -157,7 +163,7 @@ function onTreeSelect2(treeView)
 		globalServices.enableCtrlID('btnEnable', false );
 		return;
 	}
-	
+
 	var account = OutOfOfficeAccountTreeView.getAccount(treeView.currentIndex);
 	
 //	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
@@ -252,11 +258,11 @@ function onEnableClick(sender)
 }
 
 /*
- * Display status of the connection step with the Sieve server
+ * Display status of the connection with the selected Sieve server
  */
-function postStatus(progress)
+function postStatus(message)
 {
- 	document.getElementById('logger').value = progress;
+ 	document.getElementById('logger').value = message;
 }
 
 /*
@@ -271,29 +277,28 @@ function postScriptStatus(active)
 		return; // Nothing todo
 	}
 	var index = tree.currentIndex;
-	if (index == -1) {
-		index = 0;
+	if (index == -1 || gConnectionActive == -1 ) {
+		gConnectionActive = 0;
 	}
 	// Unselect current selection to refresh it later and update icon
 	tree.view.selection.clearSelection()
 
 	if( OutOfOfficeAccountTreeView != null ){
-		OutOfOfficeAccountTreeView.getAccount(index).setConnectRequest();
-		OutOfOfficeAccountTreeView.getAccount(index).setEnabledOutOfOffice( active );
+		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setConnectRequest();
+		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setEnabledOutOfOffice( active );
 	} else {
 		throw new Exception( OOOALV_FILE_HEADER + "Tree view control not valid (null)");
 	}
 		
 	// ... and make sure that an entry is selected.
 	// First initialisation
-	if( gConnectionActive == true ){
+	if( gConnectionActive != -1 ){
 		if( tree.view.rowCount > 0 ){
-			globalServices.logSrv( OOOALV_FILE_HEADER + "postScriptStatus for item " + tree.currentIndex);
-		    tree.view.selection.select(index);
+			globalServices.logSrv( OOOALV_FILE_HEADER + "postScriptStatus for item " + gConnectionActive);
+		    tree.view.selection.select(gConnectionActive);
 		}
-
-// 		gConnectionActive = true;
 	}
+	gConnectionActive = -1;
 	connectionProgress( false );
 	onTreeSelect2(tree);
 }
@@ -303,6 +308,20 @@ function postScriptStatus(active)
  * @param (boolean) Show or hide user interface control 
  */
 function connectionProgress( enable )
-{	//Disable progressmeter when the connection procedure is done
+{
+	//Disable progressmeter when the connection procedure is done
 	globalServices.showCtrlID("out_of_office_connection_progressmeter" , enable);
+	
+	/*
+	 * Disable dialog control while connecting
+	 */ 
+	globalServices.enableCtrlID( 'treeAccounts' , !enable );
+	/*
+	 * Disable button control while connecting
+	 * Button will enabled by onTreeSelect2 function with the context result
+	 */ 
+	if( enable == true ){// Disable button control while connecting
+		globalServices.enableCtrlID('btnEdit', false );
+		globalServices.enableCtrlID('btnEnable', false );
+	}
 }

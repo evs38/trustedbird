@@ -809,10 +809,20 @@ OutOfOfficeManager.prototype = {
 		if (account == undefined || account == null){
 			throw this.toString() + "connectServer:Account cannot be null";
 		}
+		// Disable and cancel if account is not enabled
+		if( account.isEnabled() == false )
+		{	// If we have this message it is a conflict with Sieve extension    
+			this.services.warningSrv( this.toString() + "Unable to connect to Sieve server. This Sieve server is disabled." );
+			postStatus(this.services.localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
+			postScriptStatus(false);
+			this.account = null;
+			return;
+		}			
+
 		if( account.getHost().getHostname() == null || account.getHost().getHostname() == "" ){
 			// nothing to do the hostname must be define in the Sieve server settings.
 			this.services.warningSrv( this.toString() + "Unable to connect to Sieve server. Invalid Sieve server settings. The host name cannot be empty." );
-			postStatus("Unable to connect to server.");
+			postStatus(this.services.localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.badsettings;") );
 			postScriptStatus(false);
 			this.account = null;
 			return;

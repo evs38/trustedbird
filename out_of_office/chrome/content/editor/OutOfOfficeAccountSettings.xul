@@ -52,8 +52,9 @@
         style="width: 45em; height: 27em;"
         title="&outofoffice.title;">
 
+    <stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
+
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
-	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/preferences.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeManager.js"/>
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.js"/>
 	

@@ -115,13 +115,13 @@ OutOfOfficeAccountTreeView.prototype.cycleHeader
 
 OutOfOfficeAccountTreeView.prototype.cycleCell
     = function(row, col)
-{
-	globalServices.logSrv( this.toString() + ">>>>onCycleCell");
-//	this.accounts[row].setEnabledOutOfOffice( ! this.accounts[row].isEnabledOutOfOffice());
-	this.listener.onCycleCellActivate(this);
-//	this.listener.onCycleCell(this);
-//    this.listener.onCycleCell(row,col,this.rules[row][0],this.rules[row][1]);
-	this.selection.select(row);
+{	// check if a connection is running
+	globalServices.logSrv(this.toString() + "cycleCell");
+	if( this.listener.onCycleCellActivate(this) == true ){
+		this.selection.select(row);
+	}else{
+		globalServices.logSrv(this.toString() + "Connection active cannot select new item");
+	}
 }
 
 /*

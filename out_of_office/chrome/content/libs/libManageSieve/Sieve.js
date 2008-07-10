@@ -119,7 +119,7 @@ Sieve.prototype.onStopRequest =  function(request, context, status)
 		// is a request handler waiting?
 		if ((this.requests.length > 0)){
 			// responses could be fragmented
-			var message = "NO \"Could not open connection to the host, on port "+this.port+": Connect failed.\"\r\n";
+			var message = "NO \"ERRORCODE:0001\"\r\n";
 			this.data += message;
 			
 			// therefore we test if the response is parsable...
