@@ -175,10 +175,12 @@
       <isset property="isUnix" />
       <then>
         <property name="local.checkbuild.file" value="dist/bin/thunderbird" />
+        <property name="sed.name" value="sed" />
       </then>
       <else>
         <property name="local.checkbuild.file"
                   value="dist/bin/thunderbird.exe" />
+        <property name="sed.name" value="sed-cygwin" />
       </else>
     </if>
 
@@ -412,7 +414,7 @@
               value="${local.extension.name}_${local.extension.version}.xpi" />
 
     <!-- Add version -->
-    <exec executable="sed" failonerror="true">
+    <exec executable="${sed.name}" failonerror="true">
       <arg value="-i" />
       <arg value="s|__VERSION__|${local.extension.version}|" />
       <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
@@ -420,14 +422,14 @@
     </exec>
 
     <!-- Add update.rdf URL -->
-    <exec executable="sed" failonerror="true">
+    <exec executable="${sed.name}" failonerror="true">
       <arg value="-i" />
       <arg value="s|__UPDATE_RDF_URL__|${extension.updates.url}/${local.extension.name}/${local.extension.update.rdf.filename}|" />
       <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
     </exec>
 
     <!-- Add XPI URL -->
-    <exec executable="sed" failonerror="true">
+    <exec executable="${sed.name}" failonerror="true">
       <arg value="-i" />
       <arg value="s|__XPI_URL__|${local.extension.path}/${local.extension.filename}|" />
       <arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
@@ -497,7 +499,7 @@
   <!-- ================================= 
           target: package-mrs-win              
          ================================= -->
-  <target name="package-mrs-win" depends="" description="package MRS for windows">
+  <target name="package-mrs-win" depends="-define-config-milimail" description="package MRS for windows">
     
     <antcall target="-package-extension">
       <param name="local.extension.name" value="mrs-win" />
