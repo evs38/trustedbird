@@ -18,6 +18,9 @@
      Package all extensions:
      $ ant package-extensions
 
+     Package only MRS extension:
+     $ package-extension-mrs
+
      Get target list:
      $ ant -projecthelp
 
@@ -77,6 +80,7 @@
     <delete failonerror="false">
       <fileset dir="${local.dist.dir}">
         <include name="*.xpi" />
+        <include name="*.zip" />
       </fileset>
     </delete>
     <delete dir="${local.dist.dir}/updates" />
@@ -175,12 +179,10 @@
       <isset property="isUnix" />
       <then>
         <property name="local.checkbuild.file" value="dist/bin/thunderbird" />
-        <property name="sed.name" value="sed" />
       </then>
       <else>
         <property name="local.checkbuild.file"
                   value="dist/bin/thunderbird.exe" />
-        <property name="sed.name" value="sed-cygwin" />
       </else>
     </if>
 
@@ -350,21 +352,79 @@
   <target name="package-extensions"
           description="Get extensions from SVN and create packages"
           depends="clean-extensions">
-    <mkdir dir="${local.build.dir}" />
-    <mkdir dir="${local.dist.dir}" />
     <foreach list="${extension.list},all-milimail-extensions"
              target="-package-extension"
-             param="local.extension.name" />
+             param="local.extension.tempname" />
+  </target>
+
+
+  <!-- =================================
+       package-extension-mrs
+       ================================= -->
+  <target name="package-extension-mrs"
+          description="Get from SVN and package only MRS extension">
+
+    <antcall target="-package-extension">
+      <param name="local.extension.tempname" value="mrs" />
+    </antcall>
+
+  </target>
+
+  <!-- =================================
+       -define-config-extensions (private)
+       ================================= -->
+  <target name="-define-config-extensions">
+
+    <mkdir dir="${local.build.dir}" />
+    <mkdir dir="${local.dist.dir}" />
+
+    <condition property="isUnix">
+      <os family="unix" />
+    </condition>
+
+    <!-- Use a more recent version of sed on Windows -->
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <property name="sed.name" value="sed" />
+      </then>
+      <else>
+        <property name="sed.name" value="sed-cygwin" />
+      </else>
+    </if>
+
   </target>
 
 
   <!-- =================================
        -package-extension (private)
        ================================= -->
-  <target name="-package-extension">
-    <propertycopy name="local.extension.repository.url"
-                  from="extension.${local.extension.name}.repository.url" />
+  <target name="-package-extension"
+          depends="-define-config-extensions">
     <tstamp />
+
+    <!-- Get URL of the repository -->
+    <propertycopy name="local.extension.repository.url"
+                  from="extension.${local.extension.tempname}.repository.url" />
+
+    <!-- Rename MRS extension for Linux/Windows -->
+    <if>
+      <equals arg1="${local.extension.tempname}" arg2="mrs" />
+      <then>
+        <if>
+          <isset property="isUnix" />
+          <then>
+            <property name="local.extension.name" value="${local.extension.tempname}-linux-x86" />
+          </then>
+          <else>
+            <property name="local.extension.name" value="${local.extension.tempname}-win" />
+          </else>
+        </if>
+      </then>
+      <else>
+        <property name="local.extension.name" value="${local.extension.tempname}" />
+      </else>
+    </if>
 
     <!-- Get extension from SVN -->
     <delete dir="${local.build.dir}/${local.extension.name}" />
@@ -373,7 +433,6 @@
       <arg value="${local.extension.repository.url}" />
       <arg value="${local.extension.name}" />
     </exec>
-
 
     <!-- Get version -->
     <exec executable="sh"
@@ -390,7 +449,7 @@
               outputproperty="local.extension.revision"
               failonerror="true">
           <arg value="${local.tools.dir}/getLastChangedRev.sh" />
-          <arg value="${local.build.dir}/${local.extension.name}" />
+          <arg value="${local.build.dir=}/${local.extension.name}" />
         </exec>
         <property name="local.extension.version"
                   value="${local.extension.versionfile}-dev-svn${local.extension.revision}" />
@@ -484,27 +543,16 @@
       </else>
     </if>
 
-    <!-- Only for 'mrs-linux-x86': build and package client API -->
+    <!-- Only for MRS: build and package client API -->
     <if>
-      <equals arg1="${local.extension.name}" arg2="mrs-linux-x86" />
+      <equals arg1="${local.extension.tempname}" arg2="mrs" />
       <then>
-        <ant dir="${local.build.dir}/mrs-linux-x86/api/java" />
-        <move file="${local.build.dir}/mrs-linux-x86/api/java/dist/MessageRemoteServicesJavaAPI.zip"
-              tofile="${local.dist.dir}/${local.extension.name}_JavaAPI_${local.extension.version}.zip" />
+        <ant dir="${local.build.dir}/${local.extension.name}/api/java" />
+        <move file="${local.build.dir}/${local.extension.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip"
+              tofile="${local.dist.dir}/${local.extension.tempname}_JavaAPI_${local.extension.version}.zip" />
       </then>
     </if>
 
-  </target>
-
-  <!-- ================================= 
-          target: package-mrs-win              
-         ================================= -->
-  <target name="package-mrs-win" depends="-define-config-milimail" description="package MRS for windows">
-    
-    <antcall target="-package-extension">
-      <param name="local.extension.name" value="mrs-win" />
-    </antcall>
-    
   </target>
 
 </project>
