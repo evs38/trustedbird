@@ -225,7 +225,7 @@ function onAccountEditClick(sender)
 		return;
 	}
     
-	window.openDialog("chrome://out_of_office/content/options/SieveAccountOptions.xul", "FilterEditor", "chrome,modal,titlebar,centerscreen", args);	        
+	window.openDialog("chrome://out_of_office/content/options/OutOfOfficeSieveServerSettings.xul", "FilterEditor", "chrome,modal,titlebar,centerscreen", args);	        
 	globalServices.logSrv( "onAccountEditClick=" + gIdentity + " ended." ) ;
 }
 
@@ -233,7 +233,7 @@ function getAccountByName(searchAccount)
 { 
 	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 
-	jsLoader.loadSubScript("chrome://out_of_office/content/options/SieveAccountTreeView.js");
+	jsLoader.loadSubScript("chrome://out_of_office/content/options/OutOfOfficeSieveServerTreeView.js");
 
 	globalServices.logSrv( "getAccountByName started : search " + gServer.key + "." ) ;
 

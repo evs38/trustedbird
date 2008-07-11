@@ -58,7 +58,7 @@
 	<script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
 	<script type="application/x-javascript" src="chrome://messenger/content/am-prefs.js"/>
 
-	<script type="application/x-javascript" src="chrome://out_of_office/content/options/SieveAccountOptions.js"/> 
+	<script type="application/x-javascript" src="chrome://out_of_office/content/options/OutOfOfficeSieveServerSettings.js"/> 
 	<script type="application/x-javascript" src="chrome://out_of_office/content/account/am-serverOverlay.js" />
 
 	<stringbundle id="bundle_messenger" src="chrome://messenger/locale/messenger.properties"/>
