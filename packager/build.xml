@@ -24,9 +24,9 @@
      Get target list:
      $ ant -projecthelp
 
-     Generate development builds (svn revision in filenames, install.rdf and
+     Generate development builds (install.rdf and
      update.rdf linked to nightly builds):
-     $ ant -Ddev=1 build-all
+     $ ant -Dnightly=1 build-all
 
      (Format: 80 columns 2 spaces)
      ================================= -->
@@ -193,22 +193,24 @@
       <arg value="${local.tools.dir}/getVersion.sh" />
       <arg value="${local.build.dir}/mozilla" />
     </exec>
+
+    <!-- Get revision from SVN -->
+    <exec executable="sh"
+          outputproperty="local.milimail.revision"
+          failonerror="true">
+      <arg value="${local.tools.dir}/getLastChangedRev.sh" />
+      <arg value="${local.build.dir}/mozilla" />
+    </exec>
+
     <if>
-      <isset property="dev" />
+      <isset property="nightly" />
       <then>
-        <!-- Get revision from SVN -->
-        <exec executable="sh"
-              outputproperty="local.milimail.revision"
-              failonerror="true">
-          <arg value="${local.tools.dir}/getLastChangedRev.sh" />
-          <arg value="${local.build.dir}/mozilla" />
-        </exec>
         <property name="local.milimail.version"
-                  value="${local.milimail.versionfile}-dev-svn${local.milimail.revision}" />
+                  value="${local.milimail.versionfile}.${local.milimail.revision}-nightly" />
       </then>
       <else>
         <property name="local.milimail.version"
-                  value="${local.milimail.versionfile}" />
+                  value="${local.milimail.versionfile}.${local.milimail.revision}" />
       </else>
     </if>
 
@@ -441,26 +443,28 @@
       <arg value="${local.tools.dir}/getVersion.sh" />
       <arg value="${local.build.dir}/${local.extension.name}" />
     </exec>
+
+    <!-- Get revision from SVN -->
+    <exec executable="sh"
+          outputproperty="local.extension.revision"
+          failonerror="true">
+      <arg value="${local.tools.dir}/getLastChangedRev.sh" />
+      <arg value="${local.build.dir}/${local.extension.name}" />
+    </exec>
+
     <if>
-      <isset property="dev" />
+      <isset property="nightly" />
       <then>
-        <!-- Get revision from SVN -->
-        <exec executable="sh"
-              outputproperty="local.extension.revision"
-              failonerror="true">
-          <arg value="${local.tools.dir}/getLastChangedRev.sh" />
-          <arg value="${local.build.dir}/${local.extension.name}" />
-        </exec>
         <property name="local.extension.version"
-                  value="${local.extension.versionfile}-dev-svn${local.extension.revision}" />
+                  value="${local.extension.versionfile}.${local.extension.revision}-nightly" />
         <property name="local.extension.update.rdf.filename"
-                  value="update-dev.rdf" />
+                  value="update-nightly.rdf" />
         <property name="local.extension.path"
                   value="${extension.nightly.url}/${DSTAMP}" />
       </then>
       <else>
         <property name="local.extension.version"
-                  value="${local.extension.versionfile}" />
+                  value="${local.extension.versionfile}.${local.extension.revision}" />
         <property name="local.extension.update.rdf.filename"
                   value="update.rdf" />
         <property name="local.extension.path"

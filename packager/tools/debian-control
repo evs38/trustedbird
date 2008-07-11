@@ -1,5 +1,5 @@
 Package: milimail
-Version: __VERSION__
+Version: __VERSION__.0
 Section: mail
 Priority: optional
 Architecture: i386
