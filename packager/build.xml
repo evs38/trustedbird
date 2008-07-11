@@ -449,7 +449,7 @@
               outputproperty="local.extension.revision"
               failonerror="true">
           <arg value="${local.tools.dir}/getLastChangedRev.sh" />
-          <arg value="${local.build.dir=}/${local.extension.name}" />
+          <arg value="${local.build.dir}/${local.extension.name}" />
         </exec>
         <property name="local.extension.version"
                   value="${local.extension.versionfile}-dev-svn${local.extension.revision}" />
