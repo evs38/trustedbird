@@ -173,7 +173,10 @@ function onTreeSelect2(treeView)
 	  
 	globalServices.enableCtrlID('btnEdit', account.isEnabledOutOfOffice());
 	globalServices.enableCtrlID('btnEnable', true);
-	globalServices.setStringValue('btnEnable', ((account.isEnabledOutOfOffice()==true) ? "Enable" : "Disable" ) );
+	var buttonLabel = ((account.isEnabledOutOfOffice()==true) ?
+			globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.enable;" ) : 
+			globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.disable;" ) );
+	globalServices.setStringValue('btnEnable', buttonLabel );
 	
 /*	if (account.isEnabledOutOfOffice() == false)
 	{
@@ -194,11 +197,11 @@ function onTreeSelect2(treeView)
 	var authType = ""; 	
 	switch (account.getLogin().getType())
 	{
-		case 0: authType = "No Authentication"; break;
-		case 1: authType = "Use login from IMAP Account"; break;
-		case 2: authType = "Use custom a custom login"; break;
+		case 0: authType = "outofoffice.list.tree.info.login.noauth"; break;
+		case 1: authType = "outofoffice.list.tree.info.login.useimap"; break;
+		case 2: authType = "outofoffice.list.tree.info.login.custom"; break;
 	}
-	document.getElementById('txtAuth').value = authType;
+	document.getElementById('txtAuth').value = globalServices.localizeString( "out_of_office_stringbundle", "&" + authType + ";" );
 	document.getElementById('txtUserName').value = account.getLogin().getUsername();     	
 }
 
@@ -245,15 +248,11 @@ function onEnableClick(sender)
 	// should never happen
 	if (tree.currentIndex == -1)
 		return;				
-			
-	if (sender.label == "Disable")
-		OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).setEnabled(false);
-	else 	if (sender.label == "Enable")
- 		OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).setEnabled(true);
-	else
-		alert("Fatal error");
-
-	// @TODO Check this code
+	
+	// Reactivate the account to retry connection
+	if( OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).isEnabled() == false ){
+		OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).setEnabled(true);
+	}
 	onTreeSelect(tree);		
 }
 

@@ -65,7 +65,10 @@
           <row align="center">
             <label id="labelHostname" value="&options.host.hostname;" accesskey="&options.host.hostname.key;"
             		control="txtHostname" />
+            <hbox align="center">
             <textbox id="txtHostname" size="25" onchange="onHostnameChange(this)"/>
+            <spacer />
+            </hbox>
           </row>
           <row align="center">
             <label  value="&options.host.port;" accesskey="&options.host.port.key;"
@@ -77,8 +80,11 @@
           </row>
           <row>
             <spacer />
+            <hbox align="center">
             <checkbox id="cbxTLS" oncommand="onTLSCommand(this)" label="&options.host.tls;"
             		accesskey="&options.host.tls.key;" />
+            <spacer />
+            </hbox>
          </row>
 </rows>
 </grid>

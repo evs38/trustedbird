@@ -92,13 +92,13 @@ OutOfOfficeAccountTreeView.prototype.getImageSrc
 	if( this.accounts[row].isEnabled() ){
 		if( this.accounts[row].isConnectRequest() ){
 			if (this.accounts[row].isEnabledOutOfOffice())
-				return "chrome://out_of_office/content/images/active.png";
+				return "chrome://out_of_office/content/images/out_of_office_active.png";
 			else
-				return "chrome://out_of_office/content/images/passive.png";
+				return "chrome://out_of_office/content/images/out_of_office_inactive.png";
 		}   
-	    return "chrome://out_of_office/content/images/unknown.png";
+	    return "chrome://out_of_office/content/images/out_of_office_not_connected.png";
 	}
-	return  "chrome://out_of_office/content/images/deactivated.png";
+	return  "chrome://out_of_office/content/images/out_of_office_connect_failed.png";
 }
 	
 OutOfOfficeAccountTreeView.prototype.getRowProperties

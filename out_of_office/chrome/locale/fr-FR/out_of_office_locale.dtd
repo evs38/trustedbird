@@ -36,11 +36,11 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!-- Menu entries for Out Of Office -->
-<!ENTITY outofoffice.menu.parameters "Paramétres d'Absence...">
+<!ENTITY outofoffice.menu.parameters "Paramètres d'Absence...">
 <!ENTITY outofoffice.menu.parameters.key "A">
 
 <!-- Locales for Out Of Office Dialog -->
-<!ENTITY outofoffice.title "Paramétres d'Absence">
+<!ENTITY outofoffice.title "Paramètres d'Absence">
 <!ENTITY outofoffice.description "Configure pour vos comptes une notification d'absence ou une redirection de message">
 
 <!ENTITY outofoffice.redirection "Redirection">

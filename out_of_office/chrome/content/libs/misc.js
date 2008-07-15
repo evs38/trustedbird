@@ -266,9 +266,13 @@ Services.prototype = {
 		 * localization is requested
 		 */
         // Initialize the string bundle resource
-        out_of_office_stringBundle = document.getElementById(stringBundle);        
+        out_of_office_stringBundle = document.getElementById(stringBundle);
 	    message = message.substring(1,message.length-1);
-	    message = out_of_office_stringBundle.getString(message);
+        try {
+        	message = out_of_office_stringBundle.getString(message);
+        } catch (e){
+        	this.errorSrv( "Exception, unable to get string '" + message + "', it will displayed instead of the localize string.");
+        }
 
 	    // Check variables array to replace in string
 	    if( arrayValue == undefined || arrayValue == null || arrayValue.length <= 0 )

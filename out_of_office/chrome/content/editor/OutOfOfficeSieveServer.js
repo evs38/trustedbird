@@ -395,6 +395,8 @@ var gEventConnection =
 				var values = new Array();
 				values.push(gOutOfOfficeSieveServer.getAccount().getHost().getPort());
 				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.cannotopenconnection;", values);
+				// Disable account on error
+				gOutOfOfficeSieveServer.getAccount().setEnabled(false);
 				break;
 			}
 			default: // Code unknown or the message to display is not in string table
@@ -612,6 +614,7 @@ OutOfOfficeSieveServer.prototype = {
 				// Disable and cancel if account is not enabled
 				if (gOutOfOfficeSieveServer.getAccount().isEnabled() == false)
 				{	// If we have this message it is a conflict with Sieve extension    
+					alert(this.toString());
 					postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
 					return;
 				}			

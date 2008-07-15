@@ -813,6 +813,7 @@ OutOfOfficeManager.prototype = {
 		if( account.isEnabled() == false )
 		{	// If we have this message it is a conflict with Sieve extension    
 			this.services.warningSrv( this.toString() + "Unable to connect to Sieve server. This Sieve server is disabled." );
+			alert(this.toString());
 			postStatus(this.services.localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
 			postScriptStatus(false);
 			this.account = null;

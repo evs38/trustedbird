@@ -14,13 +14,14 @@
         persist="screenX screenY"
         style="width: 45em; height: 25em;"
         title="&outofoffice.title;">
+
+	<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
          
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeManager.js"/>
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeAccountListView.js"/> 
 
 	<grid flex="1">
-		<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
 		<columns>
 			<column flex="1"/>
 			<column/>
@@ -41,7 +42,7 @@
 				</vbox>
 
 				<vbox>
-					<button id="btnEdit" label="Edit" oncommand="onEditClick();"/>
+					<button id="btnEdit" label="&list.edit;" oncommand="onEditClick();"/>
 					<button id="btnEnable" label="Enable" oncommand="onEnableClick(this);"/>
 					<!--        <spacer flex="1"/>
 								<button id="btnHelp" label="Help" oncommand="onHelpClick();"/>         
