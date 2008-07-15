@@ -242,7 +242,7 @@ var gEventConnection =
 				return; // stop loop this extension manage only out of office specific script
 			}
 		}
-		alert("Script out of office not found =" + scriptList.length )
+		alert("Script out of office '" + gOutOfOfficeSieveServer.getScriptName() + "' not found .");
 		postScriptStatus(false);
 	},
 	
@@ -614,7 +614,6 @@ OutOfOfficeSieveServer.prototype = {
 				// Disable and cancel if account is not enabled
 				if (gOutOfOfficeSieveServer.getAccount().isEnabled() == false)
 				{	// If we have this message it is a conflict with Sieve extension    
-					alert(this.toString());
 					postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
 					return;
 				}			
