@@ -8,8 +8,6 @@
 * libglib1.2-dev
 * libidl-dev
 * libxt-dev
-* gcc-3.4
-* g++-3.4
 * zip
 * unzip
 * fakeroot

@@ -232,29 +232,13 @@
           file="${local.build.dir}/mozilla/mail/config/version.txt" />
 
     <!-- Build -->
-    <if>
-      <isset property="isUnix" />
-      <then>
-        <exec executable="make"
-              dir="${local.build.dir}/mozilla"
-              failonerror="true">
-          <arg value="CC=gcc-3.4" />
-          <arg value="CXX=g++-3.4" />
-          <arg value="-f" />
-          <arg value="client.mk" />
-          <arg value="build" />
-        </exec>
-      </then>
-      <else>
-        <exec executable="make"
-              dir="${local.build.dir}/mozilla"
-              failonerror="true">
-          <arg value="-f" />
-          <arg value="client.mk" />
-          <arg value="build" />
-        </exec>
-      </else>
-    </if>
+    <exec executable="make"
+          dir="${local.build.dir}/mozilla"
+          failonerror="true">
+      <arg value="-f" />
+      <arg value="client.mk" />
+      <arg value="build" />
+    </exec>
   </target>
 
 
