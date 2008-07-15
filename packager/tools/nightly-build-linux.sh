@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build milimail and extensions and upload the files to packages.milimail.org
+# Build milimail and extensions then upload the files to packages.milimail.org
 # (Linux version)
 
 REMOTE_SERVER=dga@62.193.246.126
