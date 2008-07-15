@@ -51,8 +51,7 @@
     </em:targetApplication>
     
     <em:optionsURL>chrome://mrs/content/options.xul</em:optionsURL>
-    <em:targetPlatform>Linux_x86-gcc3</em:targetPlatform>
-    <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
+    <em:targetPlatform>__TARGET_PLATFORM__</em:targetPlatform>
   
     <em:name>Milimail MRS</em:name>
     <em:description>Milimail message remote service</em:description>
