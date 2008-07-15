@@ -19,7 +19,7 @@
      $ ant package-extensions
 
      Package only MRS extension:
-     $ package-extension-mrs
+     $ ant package-extension-mrs
 
      Get target list:
      $ ant -projecthelp
