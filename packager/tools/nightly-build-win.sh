@@ -1,9 +1,9 @@
 #!/bin/sh
-# Build milimail and upload the files to packages.milimail.org
+# Build milimail and extensions then upload the files to packages.milimail.org
 # (Windows version)
 
 REMOTE_SERVER=dga@62.193.246.126
-REMOTE_DIRECTORY=/var/www/vhosts/packages.milimail.org/httpdocs/
+REMOTE_DIRECTORY=/var/www/vhosts/packages.milimail.org/httpdocs
 DIRECTORY_NAME=`date +"%Y%m%d"`
 
 cd /c/milimail
@@ -18,3 +18,4 @@ mv dist/*.exe dist/*.xpi dist/$DIRECTORY_NAME/ >/dev/null 2>&1
 
 # Upload files
 scp -r dist/$DIRECTORY_NAME $REMOTE_SERVER:$REMOTE_DIRECTORY/nightly/ >/dev/null 2>&1 || echo "scp failed"
+scp -r dist/updates $REMOTE_SERVER:$REMOTE_DIRECTORY/ >/dev/null 2>&1 || echo "scp failed"
