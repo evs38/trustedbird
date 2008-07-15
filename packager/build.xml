@@ -417,14 +417,17 @@
           <isset property="isUnix" />
           <then>
             <property name="local.extension.name" value="${local.extension.tempname}-linux-x86" />
+            <property name="local.extension.target.platform" value="Linux_x86-gcc3" />
           </then>
           <else>
             <property name="local.extension.name" value="${local.extension.tempname}-win" />
+            <property name="local.extension.target.platform" value="WINNT_x86-msvc" />
           </else>
         </if>
       </then>
       <else>
         <property name="local.extension.name" value="${local.extension.tempname}" />
+        <property name="local.extension.target.platform" value="" />
       </else>
     </if>
 
@@ -488,6 +491,13 @@
     <exec executable="${sed.name}" failonerror="true">
       <arg value="-i" />
       <arg value="s|__UPDATE_RDF_URL__|${extension.updates.url}/${local.extension.name}/${local.extension.update.rdf.filename}|" />
+      <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+    </exec>
+
+    <!-- Add target platform -->
+    <exec executable="${sed.name}" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__TARGET_PLATFORM__|${local.extension.target.platform}|" />
       <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
     </exec>
 
