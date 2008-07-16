@@ -547,7 +547,7 @@
       <then>
         <ant dir="${local.build.dir}/${local.extension.name}/api/java" />
         <move file="${local.build.dir}/${local.extension.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip"
-              tofile="${local.dist.dir}/${local.extension.tempname}_JavaAPI_${local.extension.version}.zip" />
+              tofile="${local.dist.dir}/${local.extension.tempname}-JavaAPI_${local.extension.version}.zip" />
       </then>
     </if>
 
