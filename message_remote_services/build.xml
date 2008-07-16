@@ -115,6 +115,7 @@
     <exec executable="sh" dir="." failonerror="true">
       <arg value="configure"/>
       <arg value="--with-mozilla-sdk=${mozilla.sdk.path}" />
+      <arg value="--enable-dsn" />
     </exec>
 
     <exec executable="make" dir="." failonerror="true">
