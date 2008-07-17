@@ -147,7 +147,7 @@ function onTreeSelect(treeView)
 	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
 }
 
-function onTreeSelect2(treeView)
+function onUpdateControl(treeView)
 {	
 //	if(gActivateScript == undefined || gActivateScript == null){
 //		gActivateScript = false;
@@ -156,7 +156,7 @@ function onTreeSelect2(treeView)
 
 	gActivateScript = false;
 
-	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + treeView.currentIndex );
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onUpdateControl Select item=" + treeView.currentIndex );
 	if (treeView.currentIndex == -1)
 	{
 		globalServices.enableCtrlID('btnEdit', false );
@@ -173,10 +173,12 @@ function onTreeSelect2(treeView)
 	  
 	globalServices.enableCtrlID('btnEdit', account.isEnabledOutOfOffice());
 	globalServices.enableCtrlID('btnEnable', true);
-	var buttonLabel = ((account.isEnabledOutOfOffice()==true) ?
-			globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.enable;" ) : 
-			globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.disable;" ) );
-	globalServices.setStringValue('btnEnable', buttonLabel );
+	var buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.disable;" );
+	if( account.isEnabledOutOfOffice() == false ){
+		buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.enable;" );
+	}
+	alert(buttonLabel);
+	globalServices.setStringLabel('btnEnable', buttonLabel );
 	
 /*	if (account.isEnabledOutOfOffice() == false)
 	{
@@ -237,7 +239,7 @@ function onEditClick(sender)
 		"OutOfOfficeScriptGenerator", "chrome,modal,titlebar,centerscreen", args);	        
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onEditClick ended return code =" + args["OutOfOfficeSieveAccountReturnCode"] );
 	
-	onTreeSelect( document.getElementById('treeAccounts') );
+	onUpdateControl( document.getElementById('treeAccounts') );
 }
 
 
@@ -252,8 +254,15 @@ function onEnableClick(sender)
 	// Reactivate the account to retry connection
 	if( OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).isEnabled() == false ){
 		OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).setEnabled(true);
+		if( gConnectionActive == -1 ){ // No connection running
+			globalServices.logSrv( OOOALV_FILE_HEADER + "onEnableClick");
+			gActivateScript = true;
+			onTreeSelect(tree);
+		}
+	} else {
+		onUpdateControl( document.getElementById('treeAccounts') );
 	}
-	onTreeSelect(tree);		
+	return;
 }
 
 /*
@@ -299,7 +308,7 @@ function postScriptStatus(active)
 	}
 	gConnectionActive = -1;
 	connectionProgress( false );
-	onTreeSelect2(tree);
+	onUpdateControl(tree);
 }
 
 /*
@@ -317,7 +326,7 @@ function connectionProgress( enable )
 	globalServices.enableCtrlID( 'treeAccounts' , !enable );
 	/*
 	 * Disable button control while connecting
-	 * Button will enabled by onTreeSelect2 function with the context result
+	 * Button will enabled by onUpdateControl function with the context result
 	 */ 
 	if( enable == true ){// Disable button control while connecting
 		globalServices.enableCtrlID('btnEdit', false );

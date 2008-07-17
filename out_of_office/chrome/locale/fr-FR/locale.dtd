@@ -36,7 +36,7 @@
 
 <!ENTITY options.info.servername "Nom du Serveur:">
 <!ENTITY options.info.port "Port:">
-<!ENTITY options.info.secure "Conexion Sécurisée:">
+<!ENTITY options.info.secure "Connexion Sécurisée:">
 <!ENTITY options.info.username "Utilisateur:">
 <!ENTITY options.info.auth "Identification:">
 

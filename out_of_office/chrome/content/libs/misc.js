@@ -44,12 +44,6 @@
 	@author Olivier Brun / Etat francais Ministere de la Defense
 */
 
-// Load all the Libraries we need...
-var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
-
-// includes
-jsLoader.loadSubScript("chrome://out_of_office/content/libs/preferences.js");
-
 /*
  * Constructor of the sieve common class
  * Overload toString method in each class to return the class name
@@ -228,6 +222,16 @@ Services.prototype = {
 	},
 	
 	/**
+		Set string label to the control of the User Interface.
+		@param (string) Label of the UI control id. 
+		@param (string) label to set to the control as a string. 
+	*/
+	setStringLabel : function( ctrlID, label )
+	{
+		document.getElementById(ctrlID).label = label;
+	},
+	
+	/**
 		Set boolean value to the control of the User Interface.
 		@param (string) Label of the UI control id. 
 		@param (boolean) Value to set to the control false/true.
@@ -300,6 +304,7 @@ Services.prototype = {
 		if( email == null || email == "" ){
 			return false;
 		}
+		return true;
    		var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 		if(reg.test(email) == false) {
 			if( log == true ) {

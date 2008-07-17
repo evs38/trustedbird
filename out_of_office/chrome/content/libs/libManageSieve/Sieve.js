@@ -1,6 +1,7 @@
 // Load all the Libraries we need...
 var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 // includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/preferences.js");
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
 
 var globalServices=new Services();
@@ -63,8 +64,8 @@ Sieve.prototype.startTLS = function ()
 Sieve.prototype.addRequest = function(request)
 {
 	this.requests[this.requests.length] = request;
-	// wenn die länge nun eins ist war sie vorher null
-	// daher muss die Requestwarteschalnge neu angestoßen werden.
+	// wenn die lï¿½nge nun eins ist war sie vorher null
+	// daher muss die Requestwarteschalnge neu angestoï¿½en werden.
 	if (this.requests.length > 1)
 		return;
 

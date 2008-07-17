@@ -1,5 +1,4 @@
-/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * ***** BEGIN LICENSE BLOCK *****
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -38,7 +37,8 @@
 
 /**
 	@fileoverview
-	@TODO 
+	User interface to set out of office parameters to a user account.
+	This file is called by the OutOfOfficeAccountListView
 	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
 */
 

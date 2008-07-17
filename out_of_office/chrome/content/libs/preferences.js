@@ -48,6 +48,8 @@
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@constructor
 */
+
+
 function Preferences() {
 	/**
 		a nsIPrefBranch object

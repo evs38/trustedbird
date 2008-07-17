@@ -2,6 +2,7 @@
 var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 
 // includes
+jsLoader.loadSubScript("chrome://out_of_office/content/libs/preferences.js");
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
 var globalServices=new Services();
 
