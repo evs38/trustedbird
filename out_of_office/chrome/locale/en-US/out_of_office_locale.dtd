@@ -39,6 +39,9 @@
 <!ENTITY outofoffice.menu.parameters "Out Of Office Settings...">
 <!ENTITY outofoffice.menu.parameters.key "S">
 
+<!-- Tree list for Out Of Office -->
+<!ENTITY outofoffice.tree.sieve.status "Status">
+
 <!-- Locales for Out Of Office Dialog -->
 <!ENTITY outofoffice.list.title "Out of Office Account List">
 <!ENTITY outofoffice.description "Configure the notification or redirection for your Accounts">

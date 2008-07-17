@@ -99,10 +99,10 @@ OutOfOfficeAccountTreeView.prototype.getCellText
     	var information  = new String("");
 	 	if( this.accounts[row].isEnabled() ){
 	    	if(this.accounts[row].isConnectRequest() == false){
-	    		information  = " [Connection not yet requested]";
+	    		information =  " [" + globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.account.norequest;" ) + "]";
 	    	}
 	 	} else {
-	 		information  = " [Account not activated]";
+	 		information =  " [" + globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.account.noactivate;" ) + "]";
 	 	}
         return this.accounts[row].getDescription() + information;
     }

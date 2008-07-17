@@ -39,6 +39,9 @@
 <!ENTITY outofoffice.menu.parameters "Paramètres d'Absence...">
 <!ENTITY outofoffice.menu.parameters.key "A">
 
+<!-- Tree list for Out Of Office -->
+<!ENTITY outofoffice.tree.sieve.status "Statuts">
+
 <!-- Locales for Out Of Office Dialog -->
 <!ENTITY outofoffice.list.title "Liste des Comptes pour les Paramètres d'Absence">
 <!ENTITY outofoffice.description "Configure pour vos comptes une notification d'absence ou une redirection de message">
