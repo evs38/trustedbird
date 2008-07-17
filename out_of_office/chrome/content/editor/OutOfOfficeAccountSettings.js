@@ -192,7 +192,7 @@ function onOutOfOfficeActivationCommand(sender)
 /*
  * Display status of the connection with the selected Sieve server
  */
-function postStatus(message)
+function postStatusMessage(message)
 {
   document.getElementById('logger').value = message;
 }

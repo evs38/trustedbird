@@ -50,7 +50,7 @@
         onload="onWindowLoad();"
         persist="screenX screenY"
         style="width: 45em; height: 25em;"
-        title="&outofoffice.title;">
+        title="&outofoffice.list.title;">
 
 	<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
          

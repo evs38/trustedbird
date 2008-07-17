@@ -50,7 +50,7 @@
 				ondialogaccept="return onDialogAccept(this);"
         persist="screenX screenY"
         style="width: 45em; height: 27em;"
-        title="&outofoffice.title;">
+        title="&outofoffice.settings.title;">
 
     <stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
 

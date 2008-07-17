@@ -40,9 +40,10 @@
 <!ENTITY outofoffice.menu.parameters.key "S">
 
 <!-- Locales for Out Of Office Dialog -->
-<!ENTITY outofoffice.title "Out of Office Settings">
+<!ENTITY outofoffice.list.title "Out of Office Account List">
 <!ENTITY outofoffice.description "Configure the notification or redirection for your Accounts">
 
+<!ENTITY outofoffice.settings.title "Out of Office Settings for the Account">
 <!ENTITY outofoffice.redirection "Redirection">
 <!ENTITY outofoffice.redirection.key "R">
 <!ENTITY outofoffice.destination.address "Destination Address">

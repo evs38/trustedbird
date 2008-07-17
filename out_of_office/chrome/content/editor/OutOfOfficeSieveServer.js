@@ -190,7 +190,7 @@ var gEventConnection =
 	    // Update status
 		var values = new Array();
 		values.push(gOutOfOfficeSieveServer.getAccount().getHost().getHostname());
-		postStatus(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connected;", values) );
+		postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connected;", values) );
 
 		if( gOutOfOfficeSieveServer.bActivateScript == true ){
 			gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "Set link to script=" + gOutOfOfficeSieveServer.getAccount().isEnabledOutOfOffice() );
@@ -219,7 +219,7 @@ var gEventConnection =
 		// this will close the Dialog!
 		close();		
 	    // Update status
-		postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.disconnected;") );
+		postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.disconnected;") );
 		gOutOfOfficeSieveServer.setConnectedTo();
 	},
 
@@ -237,13 +237,14 @@ var gEventConnection =
 		var scriptList = response.getScripts();
 		for( var count=0; count < scriptList.length ; count++ ){
 			if(scriptList[count][0] == gOutOfOfficeSieveServer.getScriptName() ){
-				gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "postScriptStatus for " + scriptList[count][0] + " to " + scriptList[count][1]);
-				postScriptStatus(scriptList[count][1]);
+//				gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "postStatusAndUpdateUI for " + scriptList[count][0] + " to " + scriptList[count][1]);
+				postStatusAndUpdateUI(scriptList[count][1]);
 				return; // stop loop this extension manage only out of office specific script
 			}
 		}
-		alert("Script out of office '" + gOutOfOfficeSieveServer.getScriptName() + "' not found .");
-		postScriptStatus(false);
+// TODO Make a log message or popup user message if needed
+// alert("Script out of office '" + gOutOfOfficeSieveServer.getScriptName() + "' not found .");
+		postStatusAndUpdateUI(false);
 	},
 	
 	onSetActiveResponse: function(response)
@@ -317,7 +318,7 @@ var gEventConnection =
 		gOutOfOfficeSieveServer.setScriptText( response.getScriptBody() );
 		gTryToCreate = false;
 		if( gParent != null ){
-			gParent.postStatus(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedloaded;") );
+			gParent.postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedloaded;") );
 			gParent.onConnectFinish(true);
 		}else{
 			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "The parent object is not initialized");
@@ -342,7 +343,7 @@ var gEventConnection =
 
 			var values = new Array();
 			values.push(code.getHostname());
-			postStatus(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.codereferral;", values) );
+			postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.codereferral;", values) );
 
 			gSieve = new Sieve(
 								code.getHostname(),
@@ -403,8 +404,9 @@ var gEventConnection =
 				break;
 			}
 		}
-		postStatus(message);
-		postScriptStatus(false);
+		postStatusMessage(message);
+		// Send status with connection error to reset manager
+		postStatusAndUpdateUI(false, true);
 		alert("SERVER ERROR: " + message);
 	},
 
@@ -443,7 +445,7 @@ var gEventCreateScript =
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventCreateScript:onPutScriptResponse Create script name =" + gOutOfOfficeSieveServer.getScriptName() );
 		gTryToCreate = false;
 		if( gParent != null ){
-			gParent.postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedcreated;") );
+			gParent.postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedcreated;") );
 			gParent.onConnectFinish(true);
 		}else{
 			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "The parent object is not initialized");
@@ -614,14 +616,18 @@ OutOfOfficeSieveServer.prototype = {
 				// Disable and cancel if account is not enabled
 				if (gOutOfOfficeSieveServer.getAccount().isEnabled() == false)
 				{	// If we have this message it is a conflict with Sieve extension    
-					postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
+					postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
 					return;
 				}			
 	
-				postStatus( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connecting;") );
+				postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connecting;") );
+				
+				// TODO To be reactivated if this functionality is requested
+				/*
 				if (gOutOfOfficeSieveServer.getAccount().getSettings().isKeepAlive())
 					gKeepAliveInterval = setInterval("onKeepAlive()",gOutOfOfficeSieveServer.getAccount().getSettings().getKeepAliveInterval());
-	
+				*/
+
 				gSieve = new Sieve(
 									gOutOfOfficeSieveServer.getAccount().getHost().getHostname(),
 									gOutOfOfficeSieveServer.getAccount().getHost().getPort(),

@@ -57,7 +57,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Out Of Office extension is a version ALPHA. Out Of Office for Accounts, allow you define a vacation notification and/or a redirection to another mail account.The extension using Sieve.</em:description>
+    <em:description>Out Of Office for Accounts, allow you define a vacation notification and/or a redirection to another mail account. The extension use a Sieve server provided with an IMAP server.</em:description>
 
   </rdf:Description>
 </rdf:RDF>

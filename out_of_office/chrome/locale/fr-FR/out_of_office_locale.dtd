@@ -40,9 +40,10 @@
 <!ENTITY outofoffice.menu.parameters.key "A">
 
 <!-- Locales for Out Of Office Dialog -->
-<!ENTITY outofoffice.title "Paramètres d'Absence">
+<!ENTITY outofoffice.list.title "Liste des Comptes pour les Paramètres d'Absence">
 <!ENTITY outofoffice.description "Configure pour vos comptes une notification d'absence ou une redirection de message">
 
+<!ENTITY outofoffice.settings.title "Paramètres d'Absence pour le Compte">
 <!ENTITY outofoffice.redirection "Redirection">
 <!ENTITY outofoffice.redirection.key "R">
 <!ENTITY outofoffice.destination.address "Adresse de Destination">

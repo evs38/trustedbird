@@ -108,7 +108,7 @@ function onCycleCellActivate(sender)
 	}
 	return ( gConnectionActive == -1 );
 }
-/*
+/* TODO Remove obsolete code
 function  onCycleCell(row,col,script,active)
 {
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onCycleCell " + script + " script is active=" + active);
@@ -147,12 +147,17 @@ function onTreeSelect(treeView)
 	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
 }
 
+/*
+ * Function to update UI control on the dialog box.
+ * @param (object) TreeView object
+ */
 function onUpdateControl(treeView)
 {	
+	// TODO Remove obsolete code 	
+
 //	if(gActivateScript == undefined || gActivateScript == null){
 //		gActivateScript = false;
 //	}
-	//@TODO Remove obsolete code 	
 
 	gActivateScript = false;
 
@@ -207,12 +212,19 @@ function onUpdateControl(treeView)
 	document.getElementById('txtUserName').value = account.getLogin().getUsername();     	
 }
 
+/*
+ * TODO To be reactivated if this functionality is requested (See file OutOfOfficeSieveServer.js)
+ * Function called to check the validity of the current connection.
+ */
 function onKeepAlive()
 {
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onKeepAlive");
 	gOutOfOfficeManager.keepAlive();
 }
 
+/*
+ * Function called when user press button key
+ */
 function onEditClick(sender)
 {
 	var tree = document.getElementById('treeAccounts');
@@ -255,7 +267,7 @@ function onEnableClick(sender)
 	if( OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).isEnabled() == false ){
 		OutOfOfficeAccountTreeView.getAccount(tree.currentIndex).setEnabled(true);
 		if( gConnectionActive == -1 ){ // No connection running
-			globalServices.logSrv( OOOALV_FILE_HEADER + "onEnableClick");
+			globalServices.logSrv( OOOALV_FILE_HEADER + "onEnableClick retry connection on account number=" + tree.currentIndex);
 			gActivateScript = true;
 			onTreeSelect(tree);
 		}
@@ -268,17 +280,17 @@ function onEnableClick(sender)
 /*
  * Display status of the connection with the selected Sieve server
  */
-function postStatus(message)
+function postStatusMessage(message)
 {
  	document.getElementById('logger').value = message;
 }
 
 /*
- * Update the icon status of the out of office functionnality for the current account
+ * Update the icon status of the out of office functionality for the current account
  * @param (boolean) Indicate if the script out of office is active 
  */
-function postScriptStatus(active)
-{	
+function postStatusAndUpdateUI(active, connectionError)
+{
 	// now set our custom TreeView Renderer...
 	var tree = document.getElementById('treeAccounts');	
 	if( tree == null || tree.view == null ){
@@ -299,13 +311,26 @@ function postScriptStatus(active)
 	}
 		
 	// ... and make sure that an entry is selected.
-	// First initialisation
+	// First initialization
 	if( gConnectionActive != -1 ){
 		if( tree.view.rowCount > 0 ){
-			globalServices.logSrv( OOOALV_FILE_HEADER + "postScriptStatus for item " + gConnectionActive);
+			globalServices.logSrv( OOOALV_FILE_HEADER + "Try to select item " + gConnectionActive);
 		    tree.view.selection.select(gConnectionActive);
 		}
 	}
+	if( connectionError == undefined || connectionError == null ){
+		connectionError = false;
+	}
+	// On connection error, reset 
+	if( gOutOfOfficeManager != null ){ 
+		if( connectionError == true ){
+			 // Delete and reset attributes for the next retry
+			gOutOfOfficeManager.disconnectServer();
+		}
+	} else {
+		globalServices.warningSrv( OOOALV_FILE_HEADER + "Unable to reset Out of Office manager. The object is null.");
+	}
+
 	gConnectionActive = -1;
 	connectionProgress( false );
 	onUpdateControl(tree);
@@ -317,7 +342,7 @@ function postScriptStatus(active)
  */
 function connectionProgress( enable )
 {
-	//Disable progressmeter when the connection procedure is done
+	//Disable progress meter when the connection procedure is done
 	globalServices.showCtrlID("out_of_office_connection_progressmeter" , enable);
 	
 	/*

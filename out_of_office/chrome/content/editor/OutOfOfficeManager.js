@@ -768,6 +768,15 @@ OutOfOfficeManager.prototype = {
 	},
 
 	/*
+	 * Reset attributes
+	 */
+	reset : function()
+	{
+		this.account = null;
+		this.sieveServer = null;
+	},
+	
+	/*
 	 * Initialize OutOfOfficeManager
 	 */
 	initialize : function()
@@ -785,7 +794,7 @@ OutOfOfficeManager.prototype = {
 
 	/*
 	 * Initialize script status from server for each account
-	 * @TODO This function is not used
+	 * TODO This function is not used
 	 */
 	initializeScriptStatus : function(accountList)
 	{
@@ -813,18 +822,18 @@ OutOfOfficeManager.prototype = {
 		if( account.isEnabled() == false )
 		{	// If we have this message it is a conflict with Sieve extension    
 			this.services.warningSrv( this.toString() + "Unable to connect to Sieve server. This Sieve server is disabled." );
-			postStatus(this.services.localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
-			postScriptStatus(false);
-			this.account = null;
+			postStatusMessage(this.services.localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
+			postStatusAndUpdateUI(false);
+			this.reset();
 			return;
 		}			
 
 		if( account.getHost().getHostname() == null || account.getHost().getHostname() == "" ){
 			// nothing to do the hostname must be define in the Sieve server settings.
 			this.services.warningSrv( this.toString() + "Unable to connect to Sieve server. Invalid Sieve server settings. The host name cannot be empty." );
-			postStatus(this.services.localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.badsettings;") );
-			postScriptStatus(false);
-			this.account = null;
+			postStatusMessage(this.services.localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.badsettings;") );
+			postStatusAndUpdateUI(false);
+			this.reset();
 			return;
 		}
 		if(bActivateScript == true){
@@ -859,8 +868,7 @@ OutOfOfficeManager.prototype = {
 			this.sieveServer.disconnect();
 			delete this.sieveServer;
 		}
-		this.sieveServer = null;
-		
+		this.reset();
 	},
 	
 	/* 
