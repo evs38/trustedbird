@@ -17,11 +17,24 @@
 ==== Windows ====
 See http://developer.mozilla.org/en/docs/Windows_Build_Prerequisites
 
+=== Get build scripts/packager ===
+==== Read only / through SVN protocol (TCP port 3690) ====
+ $ svn co svn://svn.adullact.net/svnroot/milimail/trunk/packager milimail
+
+==== Read-write / through SSH (TCP port 22) ====
+ $ svn co svn+ssh://my_username@svn.adullact.net/svnroot/milimail/trunk/packager milimail
+   (replace my_username by your Adullact SSH username)
+
+  // Copy the file server.properties.template to server.properties
+ $ cp milimail/server.properties.template milimail/server.properties
+
+  // Set your SSH username in server.properties
+ $ sed -i s/SSH_USERNAME/my_username/ milimail/server.properties
+   (replace my_username by your Adullact SSH username)
+
 === Building ===
-  // Get packager from SVN
- $ svn co https://admisource.gouv.fr/svn/milimail/trunk/packager milimail
- (permanently accept SSL certificate if asked)
  $ cd milimail
+
   // Build and package milimail and extensions
  $ ant build-all
 

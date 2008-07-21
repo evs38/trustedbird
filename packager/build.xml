@@ -11,7 +11,7 @@
 
      To enable SVN write access through SSH:
      - copy the file server.properties.template to server.properties
-       and modify your SSH username in server.properties
+       and set your Adullact SSH username in server.properties
 
 
      Build and package everything:
