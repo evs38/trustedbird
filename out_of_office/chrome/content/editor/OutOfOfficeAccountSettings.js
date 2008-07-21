@@ -95,7 +95,7 @@ function onDialogAccept(sender)
 
 	if( updateData() == true ){
 		window.arguments[0]["OutOfOfficeSieveAccountReturnCode"] = true;
-		gOutOfOfficeManager.saveSettings();
+		// gOutOfOfficeManager.saveSettings();
 		gOutOfOfficeManager = null;
 		return true;
 	}

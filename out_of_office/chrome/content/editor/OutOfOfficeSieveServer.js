@@ -229,7 +229,8 @@ var gEventConnection =
 			throw new Exception("gEventConnection:onListScriptResponse: Require invalid (gOutOfOfficeSieveServer or Account member).");
 		}
 		if (response.hasError()) {
-			alert(gOutOfOfficeSieveServer.toString() + "gEventConnection:onListScriptResponse Command \"Listscripts\" failed");
+			// alert(gOutOfOfficeSieveServer.toString() + "gEventConnection:onListScriptResponse Command \"Listscripts\" failed");
+			gOutOfOfficeSieveServer.getServices().errorSrv(gOutOfOfficeSieveServer.toString() + "gEventConnection:onListScriptResponse Command \"Listscripts\" failed");
 			return ;
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onListScriptResponse Sieve server script list response. Try to load " +gOutOfOfficeSieveServer.getScriptName());
@@ -257,7 +258,8 @@ var gEventConnection =
 		}
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onSetActiveResponse Sieve server set active response.");
 		if (response.hasError()){
-			alert(gOutOfOfficeSieveServer.toString() + "gEventConnection:onSetActiveResponse Command \"setActive\" failed");			
+			// alert(gOutOfOfficeSieveServer.toString() + "gEventConnection:onSetActiveResponse Command \"setActive\" failed");			
+			gOutOfOfficeSieveServer.getServices().errorSrv(gOutOfOfficeSieveServer.toString() + "gEventConnection:onSetActiveResponse Command \"setActive\" failed");
 		}
 		// Update status for the user interface ...
 		gOutOfOfficeSieveServer.updateScriptListStatus();
@@ -305,7 +307,7 @@ var gEventConnection =
 		 */
 
 		// clearTimeout(gCompileTimeout);
-		gOutOfOfficeSieveServer.compileScript();
+		// gOutOfOfficeSieveServer.compileScript();
 		// close();
 	},
 
@@ -392,7 +394,7 @@ var gEventConnection =
 			var code = message.substring(header.length, message.length );
 			switch( code )
 			{
-			case "0001" : {
+			case "0001" : { // Hard coded error from sieve.js
 				var values = new Array();
 				values.push(gOutOfOfficeSieveServer.getAccount().getHost().getPort());
 				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.cannotopenconnection;", values);
@@ -407,7 +409,7 @@ var gEventConnection =
 		postStatusMessage(message);
 		// Send status with connection error to reset manager
 		postStatusAndUpdateUI(false, true);
-		alert("SERVER ERROR: " + message);
+		// alert("SERVER ERROR: " + message);
 	},
 
 	onCycleCell: function(row,col,script,active)
@@ -776,11 +778,14 @@ OutOfOfficeSieveServer.prototype = {
 	 */
 	compileScript : function()
 	{
+		this.saveScript();
+		/*
 		this.getServices().logSrv( this.toString() + "compileScript");
 		var request = new SievePutScriptRequest("TMP_FILE_DELETE_ME", new String(this.getScriptText()) );
 		request.addPutScriptListener(gEventCompile);
 		request.addErrorListener(gEventCompile);
 		gSieve.addRequest(request);
+		*/
 	},
 	
 	/*

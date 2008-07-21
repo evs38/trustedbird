@@ -182,7 +182,7 @@ function onUpdateControl(treeView)
 	if( account.isEnabledOutOfOffice() == false ){
 		buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.enable;" );
 	}
-	alert(buttonLabel);
+	// alert(buttonLabel); TODO Check it to solve problem with the French language
 	globalServices.setStringLabel('btnEnable', buttonLabel );
 	
 /*	if (account.isEnabledOutOfOffice() == false)
@@ -247,10 +247,12 @@ function onEditClick(sender)
 	args["OutOfOfficeSieveAccountReturnCode"] = null;
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onEditClick open account settings dialog" );
 
-	var returnCode = window.openDialog("chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.xul",
-		"OutOfOfficeScriptGenerator", "chrome,modal,titlebar,centerscreen", args);	        
+	window.openDialog("chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.xul", "OutOfOfficeScriptGenerator", "chrome,modal,titlebar,centerscreen", args);	        
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onEditClick ended return code =" + args["OutOfOfficeSieveAccountReturnCode"] );
-	
+	if( args["OutOfOfficeSieveAccountReturnCode"] == true ){
+		gOutOfOfficeManager.saveSettings();
+	}
+
 	onUpdateControl( document.getElementById('treeAccounts') );
 }
 

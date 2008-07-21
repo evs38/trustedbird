@@ -354,26 +354,24 @@ OutOfOfficeSettings.prototype = {
 		Generate header of the script.
 	*/
 	generateHeader : function()
-	{
+	{	// Don't use the comment /* */ the sieve compiler doesn't works correctly
 		this.insertLine();
-		this.insertLine("/******************************************************************************");
-		this.insertLine(" * Script file generated automaticaly by the '"+ this.services.getExtensionNameDisplayable() +"'.");
-		this.insertLine(" * Do not modify this part.");
-		this.insertLine(" *" ); 
-		this.insertLine(" *\t" + this.CONST_KEYWORD_PREFIX, false);
+		this.insertLine("# ******************************************************************************");
+		this.insertLine("# * Script file generated automaticaly by the '"+ this.services.getExtensionNameDisplayable() +"'.");
+		this.insertLine("# * Do not modify this part.");
+		this.insertLine("# *" ); 
+		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_REDIRECTION 			+ "=" + this.redirectionEnable);
-		this.insertLine(" *\t" + this.CONST_KEYWORD_PREFIX, false);
+		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_REDIRECTIONADDRESS	+ "=" + this.redirectionDestinationAddress);
-		this.insertLine(" *\t" + this.CONST_KEYWORD_PREFIX, false);
+		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_KEEPMESSAGE 			+ "=" + this.redirectionKeepMessage);
-		this.insertLine(" *\t" + this.CONST_KEYWORD_PREFIX, false);
+		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_NOTIFICATION 		+ "=" + this.notificationEnable);
 		var tempNotification = this.encodeNotification( this.notificationMessage );
-		this.insertLine(" *\t" + this.CONST_KEYWORD_PREFIX, false);
+		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_NOTIFICATIONMESSAGE	+ "=" + tempNotification);
-		this.insertLine(" ******************************************************************************/");
-		this.insertLine();
-		this.insertLine();
+		this.insertLine("# ******************************************************************************");
 		this.services.logSrv( this.toString() + "\tgenerate header of the script");
 	},
 	
@@ -461,12 +459,12 @@ OutOfOfficeSettings.prototype = {
 	 * Generate footer of the script.
 	 */
 	generateFooter : function()
-	{
+	{	// Don't use the comment /* */ the sieve compiler doesn't works correctly
 		this.insertLine();
-		this.insertLine("/******************************************************************************");
-		this.insertLine(" * End of script file generated automaticaly by the '"+ this.services.getExtensionNameDisplayable() +"'.");
-		this.insertLine(" * Do not modify this part.");
-		this.insertLine(" ******************************************************************************/");
+		this.insertLine("# ******************************************************************************");
+		this.insertLine("# * End of script file generated automaticaly by the '"+ this.services.getExtensionNameDisplayable() +"'.");
+		this.insertLine("# * Do not modify this part.");
+		this.insertLine("# ******************************************************************************");
 		this.insertLine();
 		this.insertLine();
 		this.services.logSrv( this.toString() + "\tgenerate footer of the script");
@@ -904,7 +902,7 @@ OutOfOfficeManager.prototype = {
 		this.services.logSrv( this.toString() + "saveSettings");
 		
 		this.getSettings().getFormatedScript();
-		this.getSettings().save(); // Save parameters to thunderbird configuration
+		this.getSettings().save(); // Save parameters to Thunderbird configuration
 		this.sieveServer.saveScript();
 
 	},
