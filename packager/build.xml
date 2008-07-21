@@ -9,6 +9,11 @@
      Raphael FAIRISE
 
 
+     To enable SVN write access through SSH:
+     - copy the file server.properties.template to server.properties
+       and modify your SSH username in server.properties
+
+
      Build and package everything:
      $ ant build-all
 
@@ -33,7 +38,9 @@
 <project name="Milimail Packager" default="build-all">
   <description>Build Milimail and extensions</description>
 
+  <property file="server.properties" />
   <property file="package.properties" />
+
   <property name="local.build.dir" value="work" />
   <property name="local.dist.dir" value="dist" />
   <property name="local.tools.dir" value="tools" />
