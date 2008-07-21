@@ -37,21 +37,22 @@
 <RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
 	xmlns:NC="http://home.netscape.com/NC-rdf#"
 	xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-	<RDF:Description RDF:about="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.4-alpha"
-		em:version="0.6.2.4-alpha"
-		em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAF7BZuqII4iATcdfBosfu2gdf+LgZWM6g2va9BlIRtjw5IBPshZ8uWsSGZG34HWpS6U6xmA+vlZ1vg0rlSpTjNJBV8nLZ0qLqYlK1y8fodmn0NPit4mZ421syDSuDaQHwrlwiz6tO3Fw5DXaFsvAh4gHXYYcM4bo0mWK5Wybnby1">
+	<RDF:Description RDF:about="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.5-alpha"
+		em:version="0.6.2.5-alpha"
+		em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAH4JWk2ipGMYWvAuMb8G4zBYDHti5pfXtnV4hy3z1tPXGBvjGsGNRACepPKnwi/gRRKW3GibHyPOz8otSrbad4UZ4cRUvVPKXkhAiTIcyvEjc/V/k3R9fUHPeWoNTs3HJbjJ11iw2omk/nYfel7djlQhkMADEUuDpzbA/1DZg1iT">
 		<em:targetApplication RDF:resource="rdf:#$uSt.z2"/>
 	</RDF:Description>
 	<RDF:Description RDF:about="urn:mozilla:extension:notificationsviewer@milimail.org"
-			 em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAAlcKmB8Fzp+BLCajhgpMj91wxK0MQ1gT8NAYQhAtN7QpUZilmWXL+PyTu7qtjV4NzSScPItFUlxXICRpZlGS4x/u1jmuiRJWu8iUXNVuyL/kbdHOKmfqplyOVbfWKYedgD1z/vIdr5uiKQ6SmnQdhE5HdHp7v/7l3Betv3+oh9T">
+			 em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAJGUPv+On6CkLB52asZlduzM1TU7DwTGf1mDP+2xROCBnTv4pAnzlxx3TQC3FDVfiwXDnWaskOvIlgaKlC05IbAJoU6b2iOk6MN6TyW6HjrUA9OkFrYn1t7gtVJf2X3DNPzUXaLiTLN6IH5cVW9QEFC1gVPVcF3K2aJjl8bPBVry">
 		<em:updates RDF:resource="rdf:#$rSt.z2"/>
 	</RDF:Description>
 	<Description RDF:about="rdf:#$uSt.z2"
 		em:id="{3550f703-e582-4d05-9a08-453d09bdfdc6}"
 		em:minVersion="1.5"
 		em:maxVersion="3.0.*"
-		em:updateLink="http://admisource.gouv.fr/frs/download.php/549/notifications_viewer-0.6.2.4-alpha.xpi" />
+		em:updateLink="http://adullact.net/frs/download.php/3920/notifications_viewer-0.6.2.5-alpha.xpi"
+		em:updateHash="sha1:c9745b0d25397a2948e5276466d24916974e83fc" />
 	<RDF:Seq RDF:about="rdf:#$rSt.z2">
-			<RDF:li RDF:resource="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.4-alpha"/>
+			<RDF:li RDF:resource="urn:mozilla:extension:notificationsviewer@milimail.org:0.6.2.5-alpha"/>
 	</RDF:Seq>
 </RDF:RDF>
