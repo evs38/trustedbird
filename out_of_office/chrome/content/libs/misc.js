@@ -304,7 +304,7 @@ Services.prototype = {
 		if( email == null || email == "" ){
 			return false;
 		}
-		return true;
+		// TODO Put this line 'return true;' to bypass mail check
    		var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 		if(reg.test(email) == false) {
 			if( log == true ) {
