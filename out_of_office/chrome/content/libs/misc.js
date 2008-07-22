@@ -291,10 +291,10 @@ Services.prototype = {
 	},
 	
 	/**
-		Retrieve the User Interface value from control.
-		@param (string) Label of the UI control id.
+		Check the validity of the mail address.
+		@param (string) email mail address to be check.
 		@param (boolean) log Indicate if the log message will be displayed in the console 
-		@return (boolean) Value of the control false/true.
+		@return (boolean) result of the validity false/true.
 	*/
 	isAddressMailValid : function( email, log )
 	{
@@ -302,6 +302,9 @@ Services.prototype = {
 			log = false;
 		}
 		if( email == null || email == "" ){
+			if( log == true ) {
+				this.warningSrv( "The Email Address is null or emty.");
+			}
 			return false;
 		}
 		// TODO Put this line 'return true;' to bypass mail check
@@ -312,6 +315,29 @@ Services.prototype = {
 			}
 			return false;
 		}
+		return true;
+	},
+	
+	/**
+		Check the validity of the message for notification.
+		TODO No restriction at this time for the message.
+		@param (string) notification message to be check.
+		@param (boolean) log Indicate if the log message will be displayed in the console 
+		@return (boolean) result of the validity false/true.
+	*/
+	isNotificationMessageValid : function( notification, log )
+	{
+		if( log == undefined ){
+			log = false;
+		}
+		if( notification == null ){
+			if( log == true ) {
+				this.warningSrv( "The notification message is null.");
+			}
+			return false;
+		}
+		// TODO Add restriction notification message when they will defined
+
 		return true;
 	},
 	

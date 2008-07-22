@@ -230,10 +230,10 @@ function updateData(bSaveAndValidate)
 			globalServices.setFocusCtrlID( 'addressCol2#1' );
 			globalServices.setFocusCtrlID( 'textcol-addressingWidget' );
 	//		globalServices.setFocusCtrlID( 'txtOutOfOfficeDestinationAddress' );
-			globalServices.warningSrv( "Invalid data code 1.");
+			globalServices.warningSrv( "Invalid address " + globalServices.getStringValue('addressCol2#1') );
 			return false;
 		case 2 :	// Data for message notification are invalid
-			globalServices.warningSrv( "Invalid data code 2.");
+			globalServices.warningSrv( "Invalid notification " + globalServices.getStringValue('txtOutOfOfficeNotification') );
 			return false;
 		default :	// 0 or other value, the data are valid
 			globalServices.logSrv( "Data valid.");

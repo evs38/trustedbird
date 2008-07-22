@@ -297,18 +297,15 @@ OutOfOfficeSettings.prototype = {
 	{
 		// Redirection activated check the mail address.
 		if( this.redirectionEnable == true ){
-		/* TODO Desactivated need to check regex
-		 */ 
 			if( this.services.isAddressMailValid( this.redirectionDestinationAddress, true ) == false ){
 				return 1;
 			}
 		}
 		// Redirection activated check the mail address.
 		if( this.notificationEnable == true ){
-/*			if( this.services.isNotificationMessageValid( notificationMessage ) == false ){
+			if( this.services.isNotificationMessageValid( notificationMessage ) == false ){
 				return 2;
 			}
-*/
 		}
 		return 0;
 	},
