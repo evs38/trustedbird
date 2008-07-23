@@ -16,7 +16,7 @@
 <!ENTITY options.login.password.remember "Remember Password">
 <!ENTITY options.login.password.remember.key "R">
 
-<!ENTITY options.host "ignore IMAP Settings">
+<!ENTITY options.host "Ignore IMAP Settings">
 <!ENTITY options.host.key "I">
 <!ENTITY options.host.hostname "Hostname">
 <!ENTITY options.host.hostname.key "h">
@@ -24,7 +24,7 @@
 <!ENTITY options.host.port.key "o">
 <!ENTITY options.host.port.default "Default: 2000">
 <!ENTITY options.host.tls.key "t">
-<!ENTITY options.host.tls "use TLS, if avaiable">
+<!ENTITY options.host.tls "use TLS, if available">
 
 <!ENTITY options.misc "General Settings">
 <!ENTITY options.misc.keepalive "Send 'keep alive' every">
