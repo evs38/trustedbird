@@ -50,7 +50,7 @@
  */
 function SieveCommon() 
 {
-	globalServices.logSrv(this.toString()+ "constructor");
+	globalServices.logSrv(this.toString()+ "constructor.");
 }
 
 
