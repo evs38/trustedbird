@@ -133,10 +133,18 @@ function  onCycleCell(row,col,script,active)
 	sieve.addRequest(request);
 }
 */
+var gInternalSelect = false;
 function onTreeSelect(treeView)
 {	
-	if( gConnectionActive != -1 ) // A connection to serveur is running
+	if( gConnectionActive != -1 ){ // A connection to serveur is running
 		return;
+	}
+	if( gInternalSelect == true){ // Do not retry connection, two events of select item occurs in same time. Conflict problem.
+		globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect internal Select item=" + treeView.currentIndex );
+		gInternalSelect = false;
+		return;
+	}
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + treeView.currentIndex );
 	if(gActivateScript == undefined || gActivateScript == null){
 		gActivateScript = false;
 	}
@@ -174,7 +182,7 @@ function onUpdateControl(treeView)
 //	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
 //	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
 
-	gActivateScript = false;
+//	gActivateScript = false;
 	  
 	globalServices.enableCtrlID('btnEdit', account.isEnabledOutOfOffice());
 	globalServices.enableCtrlID('btnEnable', true);
@@ -306,20 +314,11 @@ function postStatusAndUpdateUI(active, connectionError)
 	tree.view.selection.clearSelection()
 
 	if( OutOfOfficeAccountTreeView != null ){
-		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setConnectRequest();
 		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setEnabledOutOfOffice( active );
 	} else {
 		throw new Exception( OOOALV_FILE_HEADER + "Tree view control not valid (null)");
 	}
 		
-	// ... and make sure that an entry is selected.
-	// First initialization
-	if( gConnectionActive != -1 ){
-		if( tree.view.rowCount > 0 ){
-			globalServices.logSrv( OOOALV_FILE_HEADER + "Try to select item " + gConnectionActive);
-		    tree.view.selection.select(gConnectionActive);
-		}
-	}
 	if( connectionError == undefined || connectionError == null ){
 		connectionError = false;
 	}
@@ -331,6 +330,18 @@ function postStatusAndUpdateUI(active, connectionError)
 		}
 	} else {
 		globalServices.warningSrv( OOOALV_FILE_HEADER + "Unable to reset Out of Office manager. The object is null.");
+	}
+
+	// ... and make sure that an entry is selected.
+	// First initialization
+	if( gConnectionActive != -1 ){
+		if( tree.view.rowCount > 0 ){
+			globalServices.logSrv( OOOALV_FILE_HEADER + "Try to select item " + gConnectionActive + " index=" + index);
+//			tree.currentIndex = gConnectionActive;
+			if( gConnectionActive !=  index )
+				gInternalSelect = true;
+		    tree.view.selection.select(gConnectionActive);
+		}
 	}
 
 	gConnectionActive = -1;
