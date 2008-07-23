@@ -38,9 +38,6 @@
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <rdf:Description about="urn:mozilla:install-manifest">
-
-    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
-
     <em:id>extensions-package@milimail.org</em:id>
     <em:name>Milimail Extensions</em:name>
     <em:version>__VERSION__</em:version>
