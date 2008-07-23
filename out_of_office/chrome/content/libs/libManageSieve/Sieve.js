@@ -10,7 +10,7 @@ var globalServices=new Services();
 function Sieve(host, port, secure, debug) 
 {
 	this.CONST_HEADER = new String("Sieve: "); // for trace 
-	globalServices.logSrv( this.toString() + "Construtor");
+	globalServices.logSrv( this.toString() + "Constructor host=" + host + " port=" + port);
 
   if (debug == null) 
     this.debug = false;    
