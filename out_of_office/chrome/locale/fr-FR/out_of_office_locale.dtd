@@ -40,7 +40,7 @@
 <!ENTITY outofoffice.menu.parameters.key "A">
 
 <!-- Tree list for Out Of Office -->
-<!ENTITY outofoffice.tree.sieve.status "Statuts">
+<!ENTITY outofoffice.tree.sieve.status "Etat">
 
 <!-- Locales for Out Of Office Dialog -->
 <!ENTITY outofoffice.list.title "Liste des Comptes pour les Paramètres d'Absence">
