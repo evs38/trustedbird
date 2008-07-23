@@ -18,7 +18,7 @@
    $ ant build-all
 
    Build and package Milimail:
-   $ ant extract-milimail update-milimail build-milimail package-milimail
+   $ ant extract-milimail update-milimail package-milimail-src build-milimail package-milimail
 
    Package all extensions:
    $ ant package-extensions
@@ -58,7 +58,7 @@
        ================================= -->
 	<target name="build-all"
 	        description="Extract, update and build Milimail and extensions"
-	        depends="distclean, extract-milimail, update-milimail, build-milimail, package-milimail, package-extensions">
+	        depends="distclean, extract-milimail, update-milimail, package-milimail-src, build-milimail, package-milimail, package-extensions">
 	</target>
 
 
@@ -221,6 +221,52 @@
 			</else>
 		</if>
 
+		<!-- Patch config -->
+		<copy file="${local.tools.dir}/mozconfig"
+		      tofile="${local.build.dir}/mozilla/.mozconfig" />
+		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
+		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
+		<echo message="2.0.0.14-${milimail.name}${local.milimail.version}"
+		      file="${local.build.dir}/mozilla/mail/config/version.txt" />
+	</target>
+
+
+	<!-- =================================
+       package-milimail-src
+       ================================= -->
+	<target name="package-milimail-src"
+	        description="Create source Milimail package"
+	        depends="-define-config-milimail">
+		<available file="${local.build.dir}/mozilla/${local.checkbuild.file}"
+		           property="build.success" />
+		<fail message="File ${local.checkbuild.file} found! Clean Milimail first (targets 'clean-milimail' or 'distclean')."
+		      if="build.success" />
+
+		<mkdir dir="${local.dist.dir}" />
+
+		<delete dir="${local.build.dir}/src-package" />
+		<mkdir dir="${local.build.dir}/src-package" />
+
+		<!-- Make a copy of the directory -->
+		<copy todir="${local.build.dir}/src-package/mozilla">
+			<fileset dir="${local.build.dir}/mozilla" />
+		</copy>
+
+		<!-- Clean directory -->
+		<delete>
+			<fileset dir="${local.build.dir}/src-package/"
+			         includes="**/.svn"
+			         defaultexcludes="false" />
+		</delete>
+
+		<!-- Create source package -->
+		<exec executable="tar" failonerror="true">
+			<arg value="cjf" />
+			<arg value="${local.dist.dir}/${milimail.name}_${local.milimail.version}_src.tar.bz2" />
+			<arg value="-C" />
+			<arg value="${local.build.dir}/src-package/" />
+			<arg value="mozilla" />
+		</exec>
 	</target>
 
 
@@ -230,15 +276,6 @@
 	<target name="build-milimail"
 	        description="Build Milimail"
 	        depends="-define-config-milimail">
-		<!-- Patch config -->
-		<copy file="${local.tools.dir}/mozconfig"
-		      tofile="${local.build.dir}/mozilla/.mozconfig" />
-		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
-		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
-		<echo message="2.0.0.14-${milimail.name}${local.milimail.version}"
-		      file="${local.build.dir}/mozilla/mail/config/version.txt" />
-
-		<!-- Build -->
 		<exec executable="make"
 		      dir="${local.build.dir}/mozilla"
 		      failonerror="true">

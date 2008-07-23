@@ -39,6 +39,6 @@ See http://developer.mozilla.org/en/docs/Windows_Build_Prerequisites
  $ ant build-all
 
   // OR: build and package milimail
- $ ant extract-milimail update-milimail build-milimail package-milimail
+ $ ant extract-milimail update-milimail package-milimail-src build-milimail package-milimail
   // OR: build and package extensions
  $ ant package-extensions
