@@ -14,7 +14,7 @@ ant -Dnightly=1 >/dev/null 2>&1 || echo "building failed"
 # Prepare files
 [ -d dist ] || exit
 mkdir -p dist/$DIRECTORY_NAME 
-mv dist/*.xpi dist/*.zip dist/*.tar.gz dist/*.deb dist/$DIRECTORY_NAME/ >/dev/null 2>&1
+mv dist/*.xpi dist/*.zip dist/*.tar.gz dist/*.tar.bz2 dist/*.deb dist/$DIRECTORY_NAME/ >/dev/null 2>&1
 
 # Upload files
 scp -r dist/$DIRECTORY_NAME $REMOTE_SERVER:$REMOTE_DIRECTORY/nightly/ >/dev/null 2>&1 || echo "scp failed"
