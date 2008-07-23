@@ -1,563 +1,568 @@
 <?xml version="1.0"?>
 <!-- =================================
 
-     Milimail and extensions packager
+   Milimail and extensions packager
 
 
-     Olivier PARNIERE
-     Olivier BRUN
-     Raphael FAIRISE
+   Olivier PARNIERE
+   Olivier BRUN
+   Raphael FAIRISE
 
 
-     To enable SVN write access through SSH:
-     - copy the file server.properties.template to server.properties
-       and set your Adullact SSH username in server.properties
+   To enable SVN write access through SSH:
+   - copy the file server.properties.template to server.properties
+     and set your Adullact SSH username in server.properties
 
 
-     Build and package everything:
-     $ ant build-all
+   Build and package everything:
+   $ ant build-all
 
-     Build and package Milimail:
-     $ ant extract-milimail update-milimail build-milimail package-milimail
+   Build and package Milimail:
+   $ ant extract-milimail update-milimail build-milimail package-milimail
 
-     Package all extensions:
-     $ ant package-extensions
+   Package all extensions:
+   $ ant package-extensions
 
-     Package only MRS extension:
-     $ ant package-extension-mrs
+   Package only MRS extension:
+   $ ant package-extension-mrs
 
-     Get target list:
-     $ ant -projecthelp
+   Get target list:
+   $ ant -projecthelp
 
-     Generate development builds (install.rdf and
-     update.rdf linked to nightly builds):
-     $ ant -Dnightly=1 build-all
+   Generate development builds (install.rdf and
+   update.rdf linked to nightly builds):
+   $ ant -Dnightly=1 build-all
 
-     (Format: 80 columns 2 spaces)
-     ================================= -->
+   ================================= -->
 <project name="Milimail Packager" default="build-all">
-  <description>Build Milimail and extensions</description>
+	<description>Build Milimail and extensions</description>
 
-  <property file="server.properties" />
-  <property file="package.properties" />
+	<property file="server.properties" />
+	<property file="package.properties" />
 
-  <property name="local.build.dir" value="work" />
-  <property name="local.dist.dir" value="dist" />
-  <property name="local.tools.dir" value="tools" />
-  <property name="local.archive.file" value="milimail.tar.bz2" />
+	<property name="local.build.dir" value="work" />
+	<property name="local.dist.dir" value="dist" />
+	<property name="local.tools.dir" value="tools" />
+	<property name="local.archive.file" value="milimail.tar.bz2" />
 
-  <!-- ant-contrib library -->
-  <taskdef resource="net/sf/antcontrib/antlib.xml">
-    <classpath>
-      <pathelement location="${local.tools.dir}/ant-contrib-1.0b3.jar" />
-    </classpath>
-  </taskdef>
+	<!-- ant-contrib library -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${local.tools.dir}/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
 
 
-  <!-- =================================
+	<!-- =================================
        build-all
        ================================= -->
-  <target name="build-all"
-          description="Extract, update and build Milimail and extensions"
-          depends="distclean, extract-milimail, update-milimail, build-milimail, package-milimail, package-extensions">
-  </target>
+	<target name="build-all"
+	        description="Extract, update and build Milimail and extensions"
+	        depends="distclean, extract-milimail, update-milimail, build-milimail, package-milimail, package-extensions">
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        distclean
        ================================= -->
-  <target name="distclean" description="Clean build/ and dist/ directories">
-    <delete dir="${local.build.dir}" />
-    <delete dir="${local.dist.dir}" />
-  </target>
+	<target name="distclean" description="Clean build/ and dist/ directories">
+		<delete dir="${local.build.dir}" />
+		<delete dir="${local.dist.dir}" />
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        clean-milimail
        ================================= -->
-  <target name="clean-milimail" description="Clean milimail build directory">
-    <delete dir="${local.build.dir}/mozilla" />
-  </target>
+	<target name="clean-milimail" description="Clean milimail build directory">
+		<delete dir="${local.build.dir}/mozilla" />
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        clean-extensions
        ================================= -->
-  <target name="clean-extensions" description="Clean built extensions">
-    <delete failonerror="false">
-      <fileset dir="${local.dist.dir}">
-        <include name="*.xpi" />
-        <include name="*.zip" />
-      </fileset>
-    </delete>
-    <delete dir="${local.dist.dir}/updates" />
-  </target>
+	<target name="clean-extensions" description="Clean built extensions">
+		<delete failonerror="false">
+			<fileset dir="${local.dist.dir}">
+				<include name="*.xpi" />
+				<include name="*.zip" />
+			</fileset>
+		</delete>
+		<delete dir="${local.dist.dir}/updates" />
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        checkout-milimail
        ================================= -->
-  <target name="checkout-milimail"
-          description="Checkout Milimail from SVN"
-          depends="clean-milimail">
-    <mkdir dir="${local.build.dir}" />
-    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
-      <arg value="co" />
-      <arg value="${milimail.repository.url}" />
-      <arg value="mozilla" />
-    </exec>
-  </target>
+	<target name="checkout-milimail"
+	        description="Checkout Milimail from SVN"
+	        depends="clean-milimail">
+		<mkdir dir="${local.build.dir}" />
+		<exec executable="svn" dir="${local.build.dir}" failonerror="true">
+			<arg value="co" />
+			<arg value="${milimail.repository.url}" />
+			<arg value="mozilla" />
+		</exec>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        extract-milimail
        ================================= -->
-  <target name="extract-milimail"
-          description="Extract local archive of Milimail"
-          depends="clean-milimail">
-    <!-- Check if archive exists -->
-    <available file="${local.archive.file}"
-               property="sources.archive.available" />
-    <if>
-      <not>
-        <isset property="sources.archive.available" />
-      </not>
-      <then>
-        <antcall target="create-archive-milimail" />
-      </then>
-      <else>
-        <!-- Extract archive -->
-        <mkdir dir="${local.build.dir}" />
-        <exec executable="tar" failonerror="true">
-          <arg value="xjf" />
-          <arg value="${local.archive.file}" />
-          <arg value="-C" />
-          <arg value="${local.build.dir}/" />
-        </exec>
-      </else>
-    </if>
-  </target>
+	<target name="extract-milimail"
+	        description="Extract local archive of Milimail"
+	        depends="clean-milimail">
+		<if>
+			<not>
+				<!-- Check if archive exists -->
+				<available file="${local.archive.file}" />
+			</not>
+			<then>
+				<antcall target="create-archive-milimail" />
+			</then>
+			<else>
+				<!-- Extract archive -->
+				<mkdir dir="${local.build.dir}" />
+				<exec executable="tar" failonerror="true">
+					<arg value="xjf" />
+					<arg value="${local.archive.file}" />
+					<arg value="-C" />
+					<arg value="${local.build.dir}/" />
+				</exec>
+			</else>
+		</if>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        create-archive-milimail
        ================================= -->
-  <target name="create-archive-milimail"
-          description="Create local archive of Milimail"
-          depends="checkout-milimail">
-    <exec executable="tar" failonerror="true">
-      <arg value="cjf" />
-      <arg value="${local.archive.file}" />
-      <arg value="-C" />
-      <arg value="${local.build.dir}/" />
-      <arg value="mozilla" />
-    </exec>
-  </target>
+	<target name="create-archive-milimail"
+	        description="Create local archive of Milimail"
+	        depends="checkout-milimail">
+		<exec executable="tar" failonerror="true">
+			<arg value="cjf" />
+			<arg value="${local.archive.file}" />
+			<arg value="-C" />
+			<arg value="${local.build.dir}/" />
+			<arg value="mozilla" />
+		</exec>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        update-milimail
        ================================= -->
-  <target name="update-milimail" description="Update Milimail from SVN">
-    <available file="${local.build.dir}/mozilla" property="sources.available" />
-    <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first."
-          unless="sources.available" />
+	<target name="update-milimail" description="Update Milimail from SVN">
+		<available file="${local.build.dir}/mozilla"
+		           property="sources.available" />
+		<fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first."
+		      unless="sources.available" />
 
-    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
-      <arg value="up" />
-      <arg value="mozilla" />
-    </exec>
-  </target>
+		<exec executable="svn" dir="${local.build.dir}" failonerror="true">
+			<arg value="up" />
+			<arg value="mozilla" />
+		</exec>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        -define-config-milimail (private)
        ================================= -->
-  <target name="-define-config-milimail">
-    <available file="${local.build.dir}/mozilla" property="sources.available" />
-    <fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first."
-          unless="sources.available" />
+	<target name="-define-config-milimail">
+		<available file="${local.build.dir}/mozilla"
+		           property="sources.available" />
+		<fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first."
+		      unless="sources.available" />
 
-    <condition property="isUnix">
-      <os family="unix" />
-    </condition>
+		<condition property="isUnix">
+			<os family="unix" />
+		</condition>
 
-    <if>
-      <isset property="isUnix" />
-      <then>
-        <property name="local.checkbuild.file" value="dist/bin/thunderbird" />
-      </then>
-      <else>
-        <property name="local.checkbuild.file"
-                  value="dist/bin/thunderbird.exe" />
-      </else>
-    </if>
+		<if>
+			<isset property="isUnix" />
+			<then>
+				<property name="local.checkbuild.file"
+				          value="dist/bin/thunderbird" />
+			</then>
+			<else>
+				<property name="local.checkbuild.file"
+				          value="dist/bin/thunderbird.exe" />
+			</else>
+		</if>
 
-    <!-- Get version -->
-    <exec executable="sh"
-          outputproperty="local.milimail.versionfile"
-          failonerror="true">
-      <arg value="${local.tools.dir}/getVersion.sh" />
-      <arg value="${local.build.dir}/mozilla" />
-    </exec>
+		<!-- Get version -->
+		<exec executable="sh"
+		      outputproperty="local.milimail.versionfile"
+		      failonerror="true">
+			<arg value="${local.tools.dir}/getVersion.sh" />
+			<arg value="${local.build.dir}/mozilla" />
+		</exec>
 
-    <!-- Get revision from SVN -->
-    <exec executable="sh"
-          outputproperty="local.milimail.revision"
-          failonerror="true">
-      <arg value="${local.tools.dir}/getLastChangedRev.sh" />
-      <arg value="${local.build.dir}/mozilla" />
-    </exec>
+		<!-- Get revision from SVN -->
+		<exec executable="sh"
+		      outputproperty="local.milimail.revision"
+		      failonerror="true">
+			<arg value="${local.tools.dir}/getLastChangedRev.sh" />
+			<arg value="${local.build.dir}/mozilla" />
+		</exec>
 
-    <if>
-      <isset property="nightly" />
-      <then>
-        <property name="local.milimail.version"
-                  value="${local.milimail.versionfile}.${local.milimail.revision}-nightly" />
-      </then>
-      <else>
-        <property name="local.milimail.version"
-                  value="${local.milimail.versionfile}.${local.milimail.revision}" />
-      </else>
-    </if>
+		<if>
+			<isset property="nightly" />
+			<then>
+				<property name="local.milimail.version"
+				          value="${local.milimail.versionfile}.${local.milimail.revision}-nightly" />
+			</then>
+			<else>
+				<property name="local.milimail.version"
+				          value="${local.milimail.versionfile}.${local.milimail.revision}" />
+			</else>
+		</if>
 
-  </target>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        build-milimail
        ================================= -->
-  <target name="build-milimail"
-          description="Build Milimail"
-          depends="-define-config-milimail">
-    <!-- Patch config -->
-    <copy file="${local.tools.dir}/mozconfig"
-          tofile="${local.build.dir}/mozilla/.mozconfig" />
-    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
-    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
-    <echo message="2.0.0.14-${milimail.name}${local.milimail.version}"
-          file="${local.build.dir}/mozilla/mail/config/version.txt" />
+	<target name="build-milimail"
+	        description="Build Milimail"
+	        depends="-define-config-milimail">
+		<!-- Patch config -->
+		<copy file="${local.tools.dir}/mozconfig"
+		      tofile="${local.build.dir}/mozilla/.mozconfig" />
+		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
+		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
+		<echo message="2.0.0.14-${milimail.name}${local.milimail.version}"
+		      file="${local.build.dir}/mozilla/mail/config/version.txt" />
 
-    <!-- Build -->
-    <exec executable="make"
-          dir="${local.build.dir}/mozilla"
-          failonerror="true">
-      <arg value="-f" />
-      <arg value="client.mk" />
-      <arg value="build" />
-    </exec>
-  </target>
+		<!-- Build -->
+		<exec executable="make"
+		      dir="${local.build.dir}/mozilla"
+		      failonerror="true">
+			<arg value="-f" />
+			<arg value="client.mk" />
+			<arg value="build" />
+		</exec>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        package-milimail
        ================================= -->
-  <target name="package-milimail"
-          description="Create Milimail package"
-          depends="-define-config-milimail">
-    <available file="${local.build.dir}/mozilla/${local.checkbuild.file}"
-               property="build.success" />
-    <fail message="File ${local.checkbuild.file} not found! Build Milimail first."
-          unless="build.success" />
+	<target name="package-milimail"
+	        description="Create Milimail package"
+	        depends="-define-config-milimail">
+		<available file="${local.build.dir}/mozilla/${local.checkbuild.file}"
+		           property="build.success" />
+		<fail message="File ${local.checkbuild.file} not found! Build Milimail first."
+		      unless="build.success" />
 
-    <mkdir dir="${local.dist.dir}" />
+		<mkdir dir="${local.dist.dir}" />
 
-    <if>
-      <isset property="isUnix" />
-      <then>
-        <!-- Create package -->
-        <exec executable="make"
-              dir="${local.build.dir}/mozilla"
-              failonerror="true">
-          <arg value="-C" />
-          <arg value="mail/installer" />
-        </exec>
+		<if>
+			<isset property="isUnix" />
+			<then>
+				<!-- Create package -->
+				<exec executable="make"
+				      dir="${local.build.dir}/mozilla"
+				      failonerror="true">
+					<arg value="-C" />
+					<arg value="mail/installer" />
+				</exec>
 
-        <!-- Remove existing packages -->
-        <delete failonerror="false">
-          <fileset dir="${local.dist.dir}">
-            <include name="*.tar.gz" />
-            <include name="*.deb" />
-          </fileset>
-        </delete>
+				<!-- Remove existing packages -->
+				<delete failonerror="false">
+					<fileset dir="${local.dist.dir}">
+						<include name="*.tar.gz" />
+						<include name="*.deb" />
+					</fileset>
+				</delete>
 
-        <!-- Rename package -->
-        <copy todir="${local.dist.dir}/">
-          <fileset dir="${local.build.dir}/mozilla/dist">
-            <include name="*.tar.gz" />
-          </fileset>
-          <mapper type="regexp"
-                  from=".*\.([^\.]+)\.tar\.gz$"
-                  to="${milimail.name}_${local.milimail.version}_\1.tar.gz" />
-        </copy>
+				<!-- Rename package -->
+				<copy todir="${local.dist.dir}/">
+					<fileset dir="${local.build.dir}/mozilla/dist">
+						<include name="*.tar.gz" />
+					</fileset>
+					<mapper type="regexp"
+					        from=".*\.([^\.]+)\.tar\.gz$"
+					        to="${milimail.name}_${local.milimail.version}_\1.tar.gz" />
+				</copy>
 
-        <!-- Create Debian package -->
-        <if>
-          <available file="/usr/bin/dpkg-deb" />
-          <then>
-            <copy todir="${local.build.dir}/">
-              <fileset dir="${local.build.dir}/mozilla/dist">
-                <include name="*.tar.gz" />
-              </fileset>
-              <mapper type="regexp"
-                      from="(.*)$"
-                      to="${milimail.name}_${local.milimail.version}.tar.gz" />
-            </copy>
-            <exec executable="sh" failonerror="true">
-              <arg value="${local.tools.dir}/createDebianPackage.sh" />
-              <arg value="${local.build.dir}" />
-              <arg value="${local.build.dir}/${milimail.name}_${local.milimail.version}.tar.gz" />
-              <arg value="${local.milimail.version}" />
-              <arg value="${local.tools.dir}/debian-control" />
-            </exec>
-            <copy file="${local.build.dir}/milimail.deb"
-                  tofile="${local.dist.dir}/${milimail.name}_${local.milimail.version}_i686.deb" />
-          </then>
-        </if>
-      </then>
-      <else>
-        <!-- Create package -->
-        <exec executable="make"
-              dir="${local.build.dir}/mozilla"
-              failonerror="true">
-          <arg value="-C" />
-          <arg value="mail/installer" />
-          <arg value="installer" />
-        </exec>
+				<!-- Create Debian package -->
+				<if>
+					<available file="/usr/bin/dpkg-deb" />
+					<then>
+						<copy todir="${local.build.dir}/">
+							<fileset dir="${local.build.dir}/mozilla/dist">
+								<include name="*.tar.gz" />
+							</fileset>
+							<mapper type="regexp"
+							        from="(.*)$"
+							        to="${milimail.name}_${local.milimail.version}.tar.gz" />
+						</copy>
+						<exec executable="sh" failonerror="true">
+							<arg value="${local.tools.dir}/createDebianPackage.sh" />
+							<arg value="${local.build.dir}" />
+							<arg value="${local.build.dir}/${milimail.name}_${local.milimail.version}.tar.gz" />
+							<arg value="${local.milimail.version}" />
+							<arg value="${local.tools.dir}/debian-control" />
+						</exec>
+						<copy file="${local.build.dir}/milimail.deb"
+						      tofile="${local.dist.dir}/${milimail.name}_${local.milimail.version}_i686.deb" />
+					</then>
+				</if>
+			</then>
+			<else>
+				<!-- Create package -->
+				<exec executable="make"
+				      dir="${local.build.dir}/mozilla"
+				      failonerror="true">
+					<arg value="-C" />
+					<arg value="mail/installer" />
+					<arg value="installer" />
+				</exec>
 
-        <!-- Rename package -->
-        <copy todir="${local.dist.dir}/">
-          <fileset dir="${local.build.dir}/mozilla/dist/install/sea">
-            <include name="*.exe" />
-          </fileset>
-          <mapper type="regexp"
-                  from="(.*)$"
-                  to="${milimail.name}_${local.milimail.version}_win32.installer.exe" />
-        </copy>
-      </else>
-    </if>
-  </target>
+				<!-- Rename package -->
+				<copy todir="${local.dist.dir}/">
+					<fileset dir="${local.build.dir}/mozilla/dist/install/sea">
+						<include name="*.exe" />
+					</fileset>
+					<mapper type="regexp"
+					        from="(.*)$"
+					        to="${milimail.name}_${local.milimail.version}_win32.installer.exe" />
+				</copy>
+			</else>
+		</if>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        package-extensions
        ================================= -->
-  <target name="package-extensions"
-          description="Get extensions from SVN and create packages"
-          depends="clean-extensions">
-    <foreach list="${extension.list},all-milimail-extensions"
-             target="-package-extension"
-             param="local.extension.tempname" />
-  </target>
+	<target name="package-extensions"
+	        description="Get extensions from SVN and create packages"
+	        depends="clean-extensions">
+		<foreach list="${extension.list},all-milimail-extensions"
+		         target="-package-extension"
+		         param="local.extension.tempname" />
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        package-extension-mrs
        ================================= -->
-  <target name="package-extension-mrs"
-          description="Get from SVN and package only MRS extension">
+	<target name="package-extension-mrs"
+	        description="Get from SVN and package only MRS extension">
 
-    <antcall target="-package-extension">
-      <param name="local.extension.tempname" value="mrs" />
-    </antcall>
+		<antcall target="-package-extension">
+			<param name="local.extension.tempname" value="mrs" />
+		</antcall>
 
-  </target>
+	</target>
 
-  <!-- =================================
+	<!-- =================================
        -define-config-extensions (private)
        ================================= -->
-  <target name="-define-config-extensions">
+	<target name="-define-config-extensions">
 
-    <mkdir dir="${local.build.dir}" />
-    <mkdir dir="${local.dist.dir}" />
+		<mkdir dir="${local.build.dir}" />
+		<mkdir dir="${local.dist.dir}" />
 
-    <condition property="isUnix">
-      <os family="unix" />
-    </condition>
+		<condition property="isUnix">
+			<os family="unix" />
+		</condition>
 
-    <!-- Use a more recent version of sed on Windows -->
-    <if>
-      <isset property="isUnix" />
-      <then>
-        <property name="sed.name" value="sed" />
-      </then>
-      <else>
-        <property name="sed.name" value="sed-cygwin" />
-      </else>
-    </if>
+		<!-- Use a more recent version of sed on Windows -->
+		<if>
+			<isset property="isUnix" />
+			<then>
+				<property name="sed.name" value="sed" />
+			</then>
+			<else>
+				<property name="sed.name" value="sed-cygwin" />
+			</else>
+		</if>
 
-  </target>
+	</target>
 
 
-  <!-- =================================
+	<!-- =================================
        -package-extension (private)
        ================================= -->
-  <target name="-package-extension"
-          depends="-define-config-extensions">
-    <tstamp />
+	<target name="-package-extension" depends="-define-config-extensions">
+		<tstamp />
 
-    <!-- Get URL of the repository -->
-    <propertycopy name="local.extension.repository.url"
-                  from="extension.${local.extension.tempname}.repository.url" />
+		<!-- Get URL of the repository -->
+		<propertycopy name="local.extension.repository.url"
+		              from="extension.${local.extension.tempname}.repository.url" />
 
-    <!-- Rename MRS extension for Linux/Windows -->
-    <if>
-      <equals arg1="${local.extension.tempname}" arg2="mrs" />
-      <then>
-        <if>
-          <isset property="isUnix" />
-          <then>
-            <property name="local.extension.name" value="${local.extension.tempname}-linux-x86" />
-            <property name="local.extension.target.platform" value="Linux_x86-gcc3" />
-          </then>
-          <else>
-            <property name="local.extension.name" value="${local.extension.tempname}-win" />
-            <property name="local.extension.target.platform" value="WINNT_x86-msvc" />
-          </else>
-        </if>
-      </then>
-      <else>
-        <property name="local.extension.name" value="${local.extension.tempname}" />
-        <property name="local.extension.target.platform" value="" />
-      </else>
-    </if>
+		<!-- Rename MRS extension for Linux/Windows -->
+		<if>
+			<equals arg1="${local.extension.tempname}" arg2="mrs" />
+			<then>
+				<if>
+					<isset property="isUnix" />
+					<then>
+						<property name="local.extension.name"
+						          value="${local.extension.tempname}-linux-x86" />
+						<property name="local.extension.target.platform"
+						          value="Linux_x86-gcc3" />
+					</then>
+					<else>
+						<property name="local.extension.name"
+						          value="${local.extension.tempname}-win" />
+						<property name="local.extension.target.platform"
+						          value="WINNT_x86-msvc" />
+					</else>
+				</if>
+			</then>
+			<else>
+				<property name="local.extension.name"
+				          value="${local.extension.tempname}" />
+				<property name="local.extension.target.platform" value="" />
+			</else>
+		</if>
 
-    <!-- Get extension from SVN -->
-    <delete dir="${local.build.dir}/${local.extension.name}" />
-    <exec executable="svn" dir="${local.build.dir}" failonerror="true">
-      <arg value="co" />
-      <arg value="${local.extension.repository.url}" />
-      <arg value="${local.extension.name}" />
-    </exec>
+		<!-- Get extension from SVN -->
+		<delete dir="${local.build.dir}/${local.extension.name}" />
+		<exec executable="svn" dir="${local.build.dir}" failonerror="true">
+			<arg value="co" />
+			<arg value="${local.extension.repository.url}" />
+			<arg value="${local.extension.name}" />
+		</exec>
 
-    <!-- Get version -->
-    <exec executable="sh"
-          outputproperty="local.extension.versionfile"
-          failonerror="true">
-      <arg value="${local.tools.dir}/getVersion.sh" />
-      <arg value="${local.build.dir}/${local.extension.name}" />
-    </exec>
+		<!-- Get version -->
+		<exec executable="sh"
+		      outputproperty="local.extension.versionfile"
+		      failonerror="true">
+			<arg value="${local.tools.dir}/getVersion.sh" />
+			<arg value="${local.build.dir}/${local.extension.name}" />
+		</exec>
 
-    <!-- Get revision from SVN -->
-    <exec executable="sh"
-          outputproperty="local.extension.revision"
-          failonerror="true">
-      <arg value="${local.tools.dir}/getLastChangedRev.sh" />
-      <arg value="${local.build.dir}/${local.extension.name}" />
-    </exec>
+		<!-- Get revision from SVN -->
+		<exec executable="sh"
+		      outputproperty="local.extension.revision"
+		      failonerror="true">
+			<arg value="${local.tools.dir}/getLastChangedRev.sh" />
+			<arg value="${local.build.dir}/${local.extension.name}" />
+		</exec>
 
-    <if>
-      <isset property="nightly" />
-      <then>
-        <property name="local.extension.version"
-                  value="${local.extension.versionfile}.${local.extension.revision}-nightly" />
-        <property name="local.extension.update.rdf.filename"
-                  value="update-nightly.rdf" />
-        <property name="local.extension.path"
-                  value="${extension.nightly.url}/${DSTAMP}" />
-      </then>
-      <else>
-        <property name="local.extension.version"
-                  value="${local.extension.versionfile}.${local.extension.revision}" />
-        <property name="local.extension.update.rdf.filename"
-                  value="update.rdf" />
-        <property name="local.extension.path"
-                  value="${extension.releases.url}/${local.extension.name}" />
-      </else>
-    </if>
+		<if>
+			<isset property="nightly" />
+			<then>
+				<property name="local.extension.version"
+				          value="${local.extension.versionfile}.${local.extension.revision}-nightly" />
+				<property name="local.extension.update.rdf.filename"
+				          value="update-nightly.rdf" />
+				<property name="local.extension.path"
+				          value="${extension.nightly.url}/${DSTAMP}" />
+			</then>
+			<else>
+				<property name="local.extension.version"
+				          value="${local.extension.versionfile}.${local.extension.revision}" />
+				<property name="local.extension.update.rdf.filename"
+				          value="update.rdf" />
+				<property name="local.extension.path"
+				          value="${extension.releases.url}/${local.extension.name}" />
+			</else>
+		</if>
 
-    <!-- XPI file name -->
-    <property name="local.extension.filename"
-              value="${local.extension.name}_${local.extension.version}.xpi" />
+		<!-- XPI file name -->
+		<property name="local.extension.filename"
+		          value="${local.extension.name}_${local.extension.version}.xpi" />
 
-    <!-- Add version -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__VERSION__|${local.extension.version}|" />
-      <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
-      <arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
-    </exec>
+		<!-- Add version -->
+		<exec executable="${sed.name}" failonerror="true">
+			<arg value="-i" />
+			<arg value="s|__VERSION__|${local.extension.version}|" />
+			<arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+			<arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
+		</exec>
 
-    <!-- Add update.rdf URL -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__UPDATE_RDF_URL__|${extension.updates.url}/${local.extension.name}/${local.extension.update.rdf.filename}|" />
-      <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
-    </exec>
+		<!-- Add update.rdf URL -->
+		<exec executable="${sed.name}" failonerror="true">
+			<arg value="-i" />
+			<arg value="s|__UPDATE_RDF_URL__|${extension.updates.url}/${local.extension.name}/${local.extension.update.rdf.filename}|" />
+			<arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+		</exec>
 
-    <!-- Add target platform -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__TARGET_PLATFORM__|${local.extension.target.platform}|" />
-      <arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
-    </exec>
+		<!-- Add target platform -->
+		<exec executable="${sed.name}" failonerror="true">
+			<arg value="-i" />
+			<arg value="s|__TARGET_PLATFORM__|${local.extension.target.platform}|" />
+			<arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+		</exec>
 
-    <!-- Add XPI URL -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__XPI_URL__|${local.extension.path}/${local.extension.filename}|" />
-      <arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
-    </exec>
+		<!-- Add XPI URL -->
+		<exec executable="${sed.name}" failonerror="true">
+			<arg value="-i" />
+			<arg value="s|__XPI_URL__|${local.extension.path}/${local.extension.filename}|" />
+			<arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
+		</exec>
 
-    <!-- Copy update.rdf -->
-    <mkdir dir="${local.dist.dir}/updates/${local.extension.name}" />
-    <copy file="${local.build.dir}/${local.extension.name}/update.rdf"
-          tofile="${local.dist.dir}/updates/${local.extension.name}/${local.extension.update.rdf.filename}" />
+		<!-- Copy update.rdf -->
+		<mkdir dir="${local.dist.dir}/updates/${local.extension.name}" />
+		<copy file="${local.build.dir}/${local.extension.name}/update.rdf"
+		      tofile="${local.dist.dir}/updates/${local.extension.name}/${local.extension.update.rdf.filename}" />
 
-    <!-- Call ant if available -->
-    <if>
-      <available file="${local.build.dir}/${local.extension.name}/build.xml" />
-      <then>
-        <ant inheritall="false"
-             dir="${local.build.dir}/${local.extension.name}" />
-        <property name="local.zip.basedir"
-                  value="${local.build.dir}/${local.extension.name}/xpi" />
-      </then>
-      <else>
-        <property name="local.zip.basedir"
-                  value="${local.build.dir}/${local.extension.name}" />
-      </else>
-    </if>
+		<!-- Call ant if available -->
+		<if>
+			<available file="${local.build.dir}/${local.extension.name}/build.xml" />
+			<then>
+				<ant inheritall="false"
+				     dir="${local.build.dir}/${local.extension.name}" />
+				<property name="local.zip.basedir"
+				          value="${local.build.dir}/${local.extension.name}/xpi" />
+			</then>
+			<else>
+				<property name="local.zip.basedir"
+				          value="${local.build.dir}/${local.extension.name}" />
+			</else>
+		</if>
 
-    <!-- Only for 'all-milimail-extensions': copy all already built extensions -->
-    <if>
-      <equals arg1="${local.extension.name}" arg2="all-milimail-extensions" />
-      <then>
-        <copy todir="${local.build.dir}/${local.extension.name}/">
-          <fileset dir="${local.dist.dir}">
-            <include name="*.xpi" />
-          </fileset>
-        </copy>
-        <delete dir="${local.dist.dir}/updates/${local.extension.name}" />
-      </then>
-    </if>
+		<!-- Only for 'all-milimail-extensions': copy all already built extensions -->
+		<if>
+			<equals arg1="${local.extension.name}"
+			        arg2="all-milimail-extensions" />
+			<then>
+				<copy todir="${local.build.dir}/${local.extension.name}/">
+					<fileset dir="${local.dist.dir}">
+						<include name="*.xpi" />
+					</fileset>
+				</copy>
+				<delete dir="${local.dist.dir}/updates/${local.extension.name}" />
+			</then>
+		</if>
 
-    <!-- Create package -->
-    <if>
-      <available file="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
-      <then>
-        <zip destfile="${local.dist.dir}/${local.extension.filename}"
-             basedir="${local.build.dir}/${local.extension.name}"
-             excludes="${extension.excludes}"
-             excludesfile="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
-      </then>
-      <else>
-        <zip destfile="${local.dist.dir}/${local.extension.filename}"
-             basedir="${local.zip.basedir}"
-             excludes="${extension.excludes}" />
-      </else>
-    </if>
+		<!-- Create package -->
+		<if>
+			<available file="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
+			<then>
+				<zip destfile="${local.dist.dir}/${local.extension.filename}"
+				     basedir="${local.build.dir}/${local.extension.name}"
+				     excludes="${extension.excludes}"
+				     excludesfile="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
+			</then>
+			<else>
+				<zip destfile="${local.dist.dir}/${local.extension.filename}"
+				     basedir="${local.zip.basedir}"
+				     excludes="${extension.excludes}" />
+			</else>
+		</if>
 
-    <!-- Only for MRS: build and package client API -->
-    <if>
-      <equals arg1="${local.extension.tempname}" arg2="mrs" />
-      <then>
-        <ant dir="${local.build.dir}/${local.extension.name}/api/java" />
-        <move file="${local.build.dir}/${local.extension.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip"
-              tofile="${local.dist.dir}/${local.extension.tempname}-JavaAPI_${local.extension.version}.zip" />
-      </then>
-    </if>
+		<!-- Only for MRS: build and package client API -->
+		<if>
+			<equals arg1="${local.extension.tempname}" arg2="mrs" />
+			<then>
+				<ant dir="${local.build.dir}/${local.extension.name}/api/java" />
+				<move file="${local.build.dir}/${local.extension.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip"
+				      tofile="${local.dist.dir}/${local.extension.tempname}-JavaAPI_${local.extension.version}.zip" />
+			</then>
+		</if>
 
-  </target>
+	</target>
 
 </project>
