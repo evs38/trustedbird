@@ -43,7 +43,7 @@
     <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
     <em:id>crl_over_ldap@milimail.org</em:id>
-    <em:name>Card Viewer Extended</em:name>
+    <em:name>CRL over LDAP</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Eric BALLET BAZ</em:creator>
 
