@@ -49,6 +49,7 @@
 
     <em:contributor>Olivier BRUN</em:contributor>
     <em:homepageURL>http://www.milimail.org/</em:homepageURL>
+	<em:iconURL>chrome://check_recipients/content/icons/logo_extension.png</em:iconURL>
 
     <em:targetApplication>
       <rdf:Description>
