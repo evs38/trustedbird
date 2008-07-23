@@ -42,7 +42,6 @@
  * @author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
  */
 
-var out_of_office_stringBundle;
 var globalServices=new Services();
 var OutOfOfficeAccountTreeView = null;
 var gOutOfOfficeManager = null;
@@ -73,25 +72,24 @@ function onWindowLoad()
 		globalServices.errorSrv( OOOALV_FILE_HEADER + "No account selected to configure" );
 		return;
 	}
-   
+	
+	// Set label of button 
+	globalServices.setStringLabel('btnEnable', globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.enable;" ) );
+
+	// Disable control while not initialized
+	globalServices.enableCtrlID('btnEdit', false );
+	globalServices.enableCtrlID('btnEnable', false );
+
 	// now set our custom TreeView Renderer...
 	var tree = document.getElementById('treeAccounts');	
 	OutOfOfficeAccountTreeView = new OutOfOfficeAccountTreeView(this);
 	tree.view = OutOfOfficeAccountTreeView;
 	
-	if ((tree.currentIndex == -1) && (tree.view.rowCount > 0)){ // Force selection to the fisrt item.
-//		var account = OutOfOfficeAccountTreeView.getAccount(0);
-//		gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
+	// Force selection to the first item and initialize connection to the first server.
+	if ((tree.currentIndex == -1) && (tree.view.rowCount > 0)){
 		tree.currentIndex = 0;
 		onTreeSelect(tree);
 	}
-			
-	// ... and make sure that an entry is selected.
-/*	if ((tree.currentIndex == -1) && (tree.view.rowCount > 0)){
-		globalServices.logSrv( OOOALV_FILE_HEADER + "\tSelect item 0");
-	    tree.view.selection.select(0);
-	}
-	*/
 }
 
 /*
@@ -134,7 +132,7 @@ function  onCycleCell(row,col,script,active)
 }
 */
 var gInternalSelect = false;
-function onTreeSelect(treeView)
+function onTreeSelect(tree)
 {	
 	if( gConnectionActive != -1 ){ // A connection to serveur is running
 		return;
@@ -144,22 +142,22 @@ function onTreeSelect(treeView)
 		gInternalSelect = false;
 		return;
 	}
-	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + treeView.currentIndex );
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect Select item=" + tree.currentIndex );
 	if(gActivateScript == undefined || gActivateScript == null){
 		gActivateScript = false;
 	}
-	gConnectionActive = treeView.currentIndex;
+	gConnectionActive = tree.currentIndex;
 	connectionProgress( true ); 
-	var account = OutOfOfficeAccountTreeView.getAccount(treeView.currentIndex);
+	var account = OutOfOfficeAccountTreeView.getAccount(tree.currentIndex);
 	account.setConnectRequest();
 	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
 }
 
 /*
  * Function to update UI control on the dialog box.
- * @param (object) TreeView object
+ * @param (object) tree object
  */
-function onUpdateControl(treeView)
+function onUpdateControl(tree)
 {	
 	// TODO Remove obsolete code 	
 
@@ -169,15 +167,15 @@ function onUpdateControl(treeView)
 
 	gActivateScript = false;
 
-	globalServices.logSrv( OOOALV_FILE_HEADER + "onUpdateControl Select item=" + treeView.currentIndex );
-	if (treeView.currentIndex == -1)
+	globalServices.logSrv( OOOALV_FILE_HEADER + "onUpdateControl Select item=" + tree.currentIndex );
+	if (tree.currentIndex == -1 || tree.view.rowCount <= 0 )
 	{
 		globalServices.enableCtrlID('btnEdit', false );
 		globalServices.enableCtrlID('btnEnable', false );
 		return;
 	}
 
-	var account = OutOfOfficeAccountTreeView.getAccount(treeView.currentIndex);
+	var account = OutOfOfficeAccountTreeView.getAccount(tree.currentIndex);
 	
 //	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
 //	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
@@ -314,23 +312,12 @@ function postStatusAndUpdateUI(active, connectionError)
 	tree.view.selection.clearSelection()
 
 	if( OutOfOfficeAccountTreeView != null ){
+		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setConnectRequest();
 		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setEnabledOutOfOffice( active );
 	} else {
 		throw new Exception( OOOALV_FILE_HEADER + "Tree view control not valid (null)");
 	}
 		
-	if( connectionError == undefined || connectionError == null ){
-		connectionError = false;
-	}
-	// On connection error, reset 
-	if( gOutOfOfficeManager != null ){ 
-		if( connectionError == true ){
-			 // Delete and reset attributes for the next retry
-			gOutOfOfficeManager.disconnectServer();
-		}
-	} else {
-		globalServices.warningSrv( OOOALV_FILE_HEADER + "Unable to reset Out of Office manager. The object is null.");
-	}
 
 	// ... and make sure that an entry is selected.
 	// First initialization
@@ -344,6 +331,18 @@ function postStatusAndUpdateUI(active, connectionError)
 		}
 	}
 
+	if( connectionError == undefined || connectionError == null ){
+		connectionError = false;
+	}
+	// On connection error, reset 
+	if( gOutOfOfficeManager != null ){ 
+		if( connectionError == true ){
+			 // Delete and reset attributes for the next retry
+			gOutOfOfficeManager.disconnectServer();
+		}
+	} else {
+		globalServices.warningSrv( OOOALV_FILE_HEADER + "Unable to reset Out of Office manager. The object is null.");
+	}
 	gConnectionActive = -1;
 	connectionProgress( false );
 	onUpdateControl(tree);

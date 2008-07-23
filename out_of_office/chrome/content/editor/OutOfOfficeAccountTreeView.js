@@ -55,7 +55,7 @@ function OutOfOfficeAccountTreeView(listener)
 	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveAccounts.js");
 	
 	this.CONST_HEADER = new String("OutOfOfficeAccountTreeView: "); // for trace 
-	globalServices.logSrv( this.toString() + "Construtor");
+	globalServices.logSrv( this.toString() + "Constructor.");
   
 	this.sieveAccounts = new SieveAccounts();    
 	this.accounts = this.sieveAccounts.getAccounts();

@@ -400,6 +400,8 @@ var gEventConnection =
 				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.cannotopenconnection;", values);
 				// Disable account on error
 				gOutOfOfficeSieveServer.getAccount().setEnabled(false);
+				gSieve.disconnect();
+				gSieve = null;
 				break;
 			}
 			default: // Code unknown or the message to display is not in string table
@@ -409,7 +411,7 @@ var gEventConnection =
 		postStatusMessage(message);
 		// Send status with connection error to reset manager
 		postStatusAndUpdateUI(false, true);
-		// alert("SERVER ERROR: " + message);
+//		alert("Sever ERROR: " + message);
 	},
 
 	onCycleCell: function(row,col,script,active)
@@ -673,13 +675,17 @@ OutOfOfficeSieveServer.prototype = {
 	 */
 	disconnect : function()
 	{
+		/* 
+		 * Can be null if an error occurs
 		if (gSieve == null){
-			this.getServices().warningSrv( this.toString() + "Disconnect invalid sieve server object");
+			this.getServices().warningSrv( this.toString() + "disconnect invalid sieve server object.");
 			return false;
 		}
-		this.getServices().logSrv( this.toString() + "disconnect");
+		 */
+		this.getServices().logSrv( this.toString() + "disconnect.");
 		if (gKeepAliveInterval != null)
 		{
+			this.getServices().logSrv( this.toString() + "disconnect : Disable gKeepAliveInterval.");
 			clearInterval(gKeepAliveInterval);
 			gKeepAliveInterval = null;
 		}
