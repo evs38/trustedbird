@@ -45,7 +45,7 @@
 
     <em:homepageURL>http://www.milimail.org/</em:homepageURL>
 
-    <em:type NC:parseType="Integer">32</em:type>
+    <em:type>32</em:type>
 
     <em:targetApplication>
       <rdf:Description>
