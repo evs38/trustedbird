@@ -102,6 +102,7 @@ OutOfOfficeAccountTreeView.prototype.getCellText
 	    		information =  " [" + globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.account.norequest;" ) + "]";
 	    	}
 	 	} else {
+	 		
 	 		information =  " [" + globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.account.noactivate;" ) + "]";
 	 	}
         return this.accounts[row].getDescription() + information;

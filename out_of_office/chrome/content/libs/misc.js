@@ -270,11 +270,15 @@ Services.prototype = {
 		 * localization is requested
 		 */
         // Initialize the string bundle resource
-        out_of_office_stringBundle = document.getElementById(stringBundle);
+		
+		var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+    	out_of_office_stringBundle = stringBundleService.createBundle("chrome://out_of_office/locale/out_of_office_locale.properties");
+	
 	    message = message.substring(1,message.length-1);
         try {
-        	message = out_of_office_stringBundle.getString(message);
+        	message = out_of_office_stringBundle.GetStringFromName(message);
         } catch (e){
+        	this.errorSrv(e);
         	this.errorSrv( "Exception, unable to get string '" + message + "', it will displayed instead of the localize string.");
         }
 

@@ -115,6 +115,7 @@ function onPreInit(account, accountValues)
 */
 onInit = function onInitHook(aPageId, aServerId) 
 {
+	
 //	loadPreferences();
 	globalServices.logSrv("onInitHook for Identity='" + gIdentity.key + "' started.");
 	globalServices.logSrv("onInitHook for Server='" + gServer.key + "' started.");
@@ -164,19 +165,16 @@ function addSieveSettingsButton()
 
 		btn = document.createElement("button");
 		hbox.appendChild(btn);
-		
-		var message = "";
-	    var out_of_office_stringBundle = document.getElementById("out_of_office_stringbundle");
+	
+		var buttonLabel = "";
+	 
         try {
-        	message = out_of_office_stringBundle.getString("outofoffice.button.label");
-            alert(message);
+        	buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.button.label;");
         } catch (e){
         	globalServices.errorSrv( "Exception, unable to get string '" + message + "', it will displayed instead of the localize string.");
         }
 		
-		var buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.button.label;" );
 		btn.setAttribute("label", buttonLabel );
-		btn.setAttribute("label", "Sieve Options..." );
 		btn.setAttribute("id","server.sieve.settings");
 		btn.setAttribute("accesskey","S");
 		btn.setAttribute("oncommand",'onAccountEditClick();');
@@ -193,6 +191,8 @@ function addSieveSettingsButton()
 
 //Hook original OnLoad function
 onLoad = function onLoadHook(){
+	alert("onLoad");
+	
 	if (kLDAPPrefContractID in Components.classes)
 		gLDAPPrefsService = Components.classes[kLDAPPrefContractID].getService(Components.interfaces.nsILDAPPrefsService);
 
@@ -394,3 +394,4 @@ function getSafeCharPref(prefService, uri){
 	} catch(e){}
 	return value;
 }
+
