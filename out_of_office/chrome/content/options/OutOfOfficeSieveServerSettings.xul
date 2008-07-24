@@ -6,8 +6,8 @@
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	buttons="accept,cancel" onload="onDialogLoad(this);" ondialogaccept="return onDialogAccept(this);"
 	persist="screenX screenY" title="&options.title;">
-	<stringbundle id="out_of_office_stringbundle"
-		src="chrome://out_of_office/locale/out_of_office_locale.properties" />
+	<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
+
 	<script type="application/x-javascript"
 		src="chrome://out_of_office/content/options/OutOfOfficeSieveServerSettings.js" />
 	<vbox>
