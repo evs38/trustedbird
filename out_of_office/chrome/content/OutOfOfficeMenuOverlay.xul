@@ -45,6 +45,8 @@
 
 <overlay id="sieveOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+	<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
+
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/preferences.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/main.js" />
