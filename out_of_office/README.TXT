@@ -72,5 +72,14 @@ http://www.milimail.org/milimail/index.php/TODO
  4. Changelog
 -------------------------------------
 
+Version 0.0.4.0-alpha
+ * French localization fix
+  
+Version 0.0.4.0-alpha
+ * [#3888] bug fix : Tools window suddenly disappears when sieve server cannot be contacted
+  
+Version 0.0.2.0-alpha 
+ * Internal bugs fix
+ 
 Version 0.0.1.0-alpha
  * First working release

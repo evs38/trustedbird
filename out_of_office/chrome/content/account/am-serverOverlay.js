@@ -115,7 +115,6 @@ function onPreInit(account, accountValues)
 */
 onInit = function onInitHook(aPageId, aServerId) 
 {
-	
 //	loadPreferences();
 	globalServices.logSrv("onInitHook for Identity='" + gIdentity.key + "' started.");
 	globalServices.logSrv("onInitHook for Server='" + gServer.key + "' started.");
@@ -191,8 +190,6 @@ function addSieveSettingsButton()
 
 //Hook original OnLoad function
 onLoad = function onLoadHook(){
-	alert("onLoad");
-	
 	if (kLDAPPrefContractID in Components.classes)
 		gLDAPPrefsService = Components.classes[kLDAPPrefContractID].getService(Components.interfaces.nsILDAPPrefsService);
 
@@ -394,4 +391,3 @@ function getSafeCharPref(prefService, uri){
 	} catch(e){}
 	return value;
 }
-
