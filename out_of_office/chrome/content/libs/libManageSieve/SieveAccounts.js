@@ -202,7 +202,8 @@ function SieveImapHost(account)
 SieveImapHost.prototype.getHostname
     = function ()
 {
-	return this.account.hostName;
+	// return this.account.hostName; not the @IP of the server
+	return this.account.realHostName;
 }
 
 SieveImapHost.prototype.getPort
@@ -395,7 +396,9 @@ function SieveAccount(account)
 
     this.URI = account.rootMsgFolder.baseMessageURI.slice(15);
     this.prefURI = CONST_PREFERENCE_KEY_ + this.URI;
-    
+
+    globalServices.logSrv("SieveAccount: Created for URI=" + this.URI + " Real host name=" + account.realHostName + " port=" + account.port + "." );
+
     // Identifiaction of the object server
     this.keyID = account.key;    
     // Use pretty name attribut as a description
