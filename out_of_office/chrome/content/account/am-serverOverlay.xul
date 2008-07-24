@@ -53,6 +53,8 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 
+	<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
+
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/preferences.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
 
