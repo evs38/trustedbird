@@ -237,26 +237,29 @@
 	<target name="package-milimail-src"
 	        description="Create source Milimail package"
 	        depends="-define-config-milimail">
-		<available file="${local.build.dir}/mozilla/${local.checkbuild.file}"
-		           property="build.success" />
-		<fail message="File ${local.checkbuild.file} found! Clean Milimail first (targets 'clean-milimail' or 'distclean')."
-		      if="build.success" />
+		<available file="${local.build.dir}/mozilla/.mozconfig.out"
+		           property="not.clean" />
+		<fail message="Clean Milimail first (targets 'clean-milimail' or 'distclean')."
+		      if="not.clean" />
 
 		<mkdir dir="${local.dist.dir}" />
 
 		<delete dir="${local.build.dir}/src-package" />
 		<mkdir dir="${local.build.dir}/src-package" />
 
-		<!-- Make a copy of the directory -->
-		<copy todir="${local.build.dir}/src-package/mozilla">
-			<fileset dir="${local.build.dir}/mozilla" />
-		</copy>
+		<!-- Make a copy of the directory with cp because ant removes permissions -->
+		<exec executable="cp" failonerror="true">
+			<arg value="-a" />
+			<arg value="${local.build.dir}/mozilla" />
+			<arg value="${local.build.dir}/src-package/" />
+		</exec>
 
 		<!-- Clean directory -->
-		<delete>
-			<fileset dir="${local.build.dir}/src-package/"
-			         includes="**/.svn"
-			         defaultexcludes="false" />
+		<delete includeemptydirs="true">
+			<fileset dir="${local.build.dir}/src-package"
+			         defaultexcludes="false">
+				<include name="**/.svn/" />
+			</fileset>
 		</delete>
 
 		<!-- Create source package -->
