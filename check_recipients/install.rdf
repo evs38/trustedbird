@@ -59,11 +59,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Check recipients can check email address from the compose message window before sending an email.
-					Due to check-recipient, user can check the validity of emails addresses using Local  Address books or Multi LDAP servers.
-					To work, this add-on requires the "Multi Ldap" extension from Milimail project.
-					See the following link [http://www.milimail.org/milimail/index.php/Multi_ldap_auto_completion_user]
-    </em:description>
+    <em:description>Check recipients can check email address from the compose message window before sending an email. Due to check-recipient, user can check the validity of emails addresses using Local  Address books or Multi LDAP servers. To work, this add-on requires the "Multi Ldap" extension from Milimail project.</em:description>
     
     <em:requires>
       <rdf:Description>
