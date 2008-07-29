@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /Gm /GX /Od /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /Gm /GX /Od /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "WIN32" /D "NDEBUG" /D "_WINSTATIC" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /Gm /GX /Od /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "WIN32" /D "NDEBUG" /D "_WINSTATIC" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /D "DSN" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG"
