@@ -1,0 +1,10 @@
+#ifndef MOZ_XUL_APP
+messenger.jar:
+    content/messenger/am-dsn.xul                                     (resources/content/am-dsn.xul)
+    content/messenger/am-dsn.js                                      (resources/content/am-dsn.js)
+*   content/messenger-dsn/contents.rdf                               (resources/content/contents.rdf)
+
+en-US.jar:
+    locale/en-US/messenger/am-dsn.dtd                                (resources/locale/en-US/am-dsn.dtd)  
+    locale/en-US/messenger/am-dsn.properties                         (resources/locale/en-US/am-dsn.properties)  
+#endif
