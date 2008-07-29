@@ -138,7 +138,7 @@ function onTreeSelect(tree)
 		return;
 	}
 	if( gInternalSelect == true){ // Do not retry connection, two events of select item occurs in same time. Conflict problem.
-		globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect internal Select item=" + treeView.currentIndex );
+		globalServices.logSrv( OOOALV_FILE_HEADER + "onTreeSelect internal Select item=" + tree.currentIndex );
 		gInternalSelect = false;
 		return;
 	}
@@ -278,10 +278,17 @@ function onEnableClick(sender)
 			globalServices.logSrv( OOOALV_FILE_HEADER + "onEnableClick retry connection on account number=" + tree.currentIndex);
 			gActivateScript = true;
 			onTreeSelect(tree);
+			return; // The update control will be donne later
 		}
-	} else {
-		onUpdateControl( document.getElementById('treeAccounts') );
 	}
+/*	connectionProgress( true ); 
+	gActivateScript = true;
+	var account = OutOfOfficeAccountTreeView.getAccount(tree.currentIndex);
+	account.setConnectRequest();
+	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
+*/
+	onUpdateControl( document.getElementById('treeAccounts') );
+
 	return;
 }
 

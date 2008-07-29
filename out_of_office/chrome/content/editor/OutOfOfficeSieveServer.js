@@ -57,6 +57,7 @@ var gCompileDelay = null;
 var closeTimeout = null;
 var gKeepAliveInterval = null;
 var gTryToCreate = false;
+var gRequestedScriptActivation = false;
 
 /**
 	@TODO 
@@ -217,9 +218,12 @@ var gEventConnection =
 		clearTimeout(closeTimeout);
 
 		// this will close the Dialog!
-		close();		
+//		close();		
 	    // Update status
-		postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.disconnected;") );
+	    // Update status
+		var values = new Array();
+		values.push(gOutOfOfficeSieveServer.getAccount().getHost().getHostname());
+		postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.disconnected;", values) );
 		gOutOfOfficeSieveServer.setConnectedTo();
 	},
 
@@ -245,6 +249,7 @@ var gEventConnection =
 		}
 // TODO Make a log message or popup user message if needed
 // alert("Script out of office '" + gOutOfOfficeSieveServer.getScriptName() + "' not found .");
+		gOutOfOfficeSieveServer.createScript();
 		postStatusAndUpdateUI(false);
 	},
 	
@@ -263,6 +268,7 @@ var gEventConnection =
 		}
 		// Update status for the user interface ...
 		gOutOfOfficeSieveServer.updateScriptListStatus();
+		gRequestedScriptActivation = false;
 	},
 
 	onCapabilitiesResponse: function(response)
@@ -323,7 +329,7 @@ var gEventConnection =
 			gParent.postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedloaded;") );
 			gParent.onConnectFinish(true);
 		}else{
-			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "The parent object is not initialized");
+			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onGetScriptResponse:The parent object is not initialized");
 		}
 	},
 
@@ -362,11 +368,16 @@ var gEventConnection =
 			gSieve.connect();
 			return;
 		}
-		if(gTryToCreate == true /*&& response.getMessage()*/ ){
+/*		if(gRequestedScriptActivation == true ){ // Script doesn't exist
+			gOutOfOfficeSieveServer.createScript();
+			return;			
+		}
+*/		if(gTryToCreate == true /*&& response.getMessage()*/ ){
 			gOutOfOfficeSieveServer.createScript();
 			gTryToCreate = false;
 			return;			
 		}
+		
 	    // Initialize the string bundle resource
 /*	    out_of_office_stringBundle = document.getElementById('out_of_office_stringbundle');
 	    var message = response.getMessage()
@@ -387,7 +398,8 @@ var gEventConnection =
 			}
 		}
 */
-	    var message = response.getMessage()
+	    var message = response.getMessage();
+	    alert(message);
 	    var header = "ERRORCODE:";
 		var reg = new RegExp(header, "g");	
 		if( message.length > header.length && message.match(reg) ){ // The message is an error code to build a user label
@@ -452,8 +464,11 @@ var gEventCreateScript =
 			gParent.postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedcreated;") );
 			gParent.onConnectFinish(true);
 		}else{
-			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "The parent object is not initialized");
-			stop();
+//			if( gRequestedScriptActivation == true )
+	//			return;
+			
+//			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "gEventCreateScript:onPutScriptResponse The parent object is not initialized");
+//			stop();
 		}
 	},
 
@@ -464,7 +479,6 @@ var gEventCreateScript =
 		// the server did not accept our script therfore wa can't delete it...   		
 	}
 }
-
 
 
 /**
@@ -811,7 +825,7 @@ OutOfOfficeSieveServer.prototype = {
 		} else {
 			request = new SieveSetActiveRequest(this.getScriptName());
 		}
-
+//		gRequestedScriptActivation = true;
 		request.addSetScriptListener(gEventConnection);
 		request.addErrorListener(gEventConnection);
 		gSieve.addRequest(request);
