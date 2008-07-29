@@ -226,7 +226,24 @@
 		      tofile="${local.build.dir}/mozilla/.mozconfig" />
 		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
 		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
-		<echo message="2.0.0.14-${milimail.name}${local.milimail.version}"
+
+		<!-- Set version -->
+		<if>
+			<not>
+				<available file="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+			</not>
+			<then>
+				<copy file="${local.build.dir}/mozilla/mail/config/version.txt"
+				      tofile="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+			</then>
+		</if>
+		<loadfile property="local.mozilla.version"
+		          srcfile="${local.build.dir}/mozilla/mail/config/version.txt-orig">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+		<echo message="${local.mozilla.version}-${milimail.name}${local.milimail.version}"
 		      file="${local.build.dir}/mozilla/mail/config/version.txt" />
 	</target>
 
