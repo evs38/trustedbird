@@ -67,6 +67,6 @@
     </listbox>
 
     <spacer style="height:1em"/>
-    <progressmeter id="card_viewer_extended_progressmeter"/>
+    <progressmeter id="check_recipient_extended_progressmeter"/>
     <spacer style="height:1em"/>
 </dialog>

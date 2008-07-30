@@ -127,7 +127,7 @@ function check_recipients_onLoadDialog() {
         }
 
 		//Disable progressmeter if no contact to check
-		var progressmeter = document.getElementById("card_viewer_extended_progressmeter");
+		var progressmeter = document.getElementById("check_recipient_extended_progressmeter");
 		if (progressmeter && bListEmpty == true) {
 			progressmeter.setAttribute("hidden", "true");
 		}
@@ -201,7 +201,7 @@ var check_recipients_LDAPMessageListener = {
                 check_recipients_initLDAPAndSearch();
             // Search is finish
             } else {
-                var progressmeter = document.getElementById("card_viewer_extended_progressmeter");
+                var progressmeter = document.getElementById("check_recipient_extended_progressmeter");
                 if (progressmeter) {
                     progressmeter.setAttribute("hidden", "true");
                 }
@@ -294,7 +294,7 @@ function check_recipients_initLDAPAndSearch() {
 
     if (!directoryPref) {
 	
-		var progressmeter = document.getElementById("card_viewer_extended_progressmeter");
+		var progressmeter = document.getElementById("check_recipient_extended_progressmeter");
 		if (progressmeter) {
 			progressmeter.setAttribute("hidden", "true");
 		}
