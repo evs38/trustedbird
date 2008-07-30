@@ -281,7 +281,7 @@ function onEnableClick(sender)
 			return; // The update control will be donne later
 		}
 	}
-	connectionProgress( true ); 
+//	connectionProgress( true ); 
 	gConnectionActive = tree.currentIndex;
 	gActivateScript = true;
 	var account = OutOfOfficeAccountTreeView.getAccount(tree.currentIndex);
