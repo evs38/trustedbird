@@ -303,7 +303,7 @@ OutOfOfficeSettings.prototype = {
 		}
 		// Redirection activated check the mail address.
 		if( this.notificationEnable == true ){
-			if( this.services.isNotificationMessageValid( notificationMessage ) == false ){
+			if( this.services.isNotificationMessageValid( this.notificationMessage ) == false ){
 				return 2;
 			}
 		}
