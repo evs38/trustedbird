@@ -38,15 +38,14 @@
 
 
 /**
-	@fileoverview
-	misc methods
-	@author Daniel Rocher / Etat francais Ministere de la Defense
-	@author Olivier Brun / Etat francais Ministere de la Defense
-*/
+ * @fileoverview misc methods
+ * @author Daniel Rocher / Etat francais Ministere de la Defense
+ * @author Olivier Brun / Etat francais Ministere de la Defense
+ */
 
 /*
- * Constructor of the sieve common class
- * Overload toString method in each class to return the class name
+ * Constructor of the sieve common class Overload toString method in each class
+ * to return the class name
  */
 function SieveCommon() 
 {
@@ -55,10 +54,10 @@ function SieveCommon()
 
 
 /**
-	@class Services for this plugin
-	@constructor
-	@author Daniel Rocher / Etat francais Ministere de la Defense
-*/
+ * @class Services for this plugin
+ * @constructor
+ * @author Daniel Rocher / Etat francais Ministere de la Defense
+ */
 function Services() {
 	/** @type string */
 	this.extensionName="out_of_office";
@@ -66,11 +65,23 @@ function Services() {
 	this.extensionNameDisplayable="Out Of Office extension";
 	/** @type string */
 	this.extensionKey="extensions."+this.extensionName;
-	/** define current version for this extension @type string */
+	/**
+	 * define current version for this extension
+	 * 
+	 * @type string
+	 */
 	this.extensionVersion="0.0.1";
-	/** preferences @type Preferences */
+	/**
+	 * preferences
+	 * 
+	 * @type Preferences
+	 */
 	this.preferences=new Preferences();
-	/** set debug mode @type boolean */
+	/**
+	 * set debug mode
+	 * 
+	 * @type boolean
+	 */
 	this.modeDebug=this.preferences.getBoolPref(this.extensionKey+".debug");
 	/** @type nsIConsoleService */
 	this.consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
@@ -79,27 +90,31 @@ function Services() {
 Services.prototype = {
 	
 	/**
-		Retrieve the extension name definition.
-		@return (string) The extension name.
-	*/
+	 * Retrieve the extension name definition.
+	 * 
+	 * @return (string) The extension name.
+	 */
 	getExtensionName : function()
 	{
 		return this.extensionName;
 	},
 
 	/**
-		Retrieve the displayable pretty extension name definition.
-		@return (string) The pretty extension name.
-	*/
+	 * Retrieve the displayable pretty extension name definition.
+	 * 
+	 * @return (string) The pretty extension name.
+	 */
 	getExtensionNameDisplayable : function()
 	{
 		return this.extensionNameDisplayable;
 	},
 	
 	/**
-		log message to console (only if debug mode is enabled)
-		@param {string} msg Message to log
-	*/
+	 * log message to console (only if debug mode is enabled)
+	 * 
+	 * @param (string)
+	 *            msg Message to log
+	 */
 	logSrv : function( msg )
 	{
 		if (!this.modeDebug) return;
@@ -108,9 +123,11 @@ Services.prototype = {
 	},
 
 	/**
-		reports error to console
-		@param err error to report
-	*/
+	 * reports error to console
+	 * 
+	 * @param (string)
+	 *            err error to report
+	 */
 	errorSrv : function(err) {
 		var scriptError = Components.classes["@mozilla.org/scripterror;1"].createInstance(Components.interfaces.nsIScriptError);
 		scriptError.init(this.extensionName+" : "+err, "", "", 0,0,0,0);
@@ -119,9 +136,11 @@ Services.prototype = {
 	},
 
 	/**
-		reports warning to console
-		@param msg warning to report
-	*/
+	 * reports warning to console
+	 * 
+	 * @param (string)
+	 *            msg warning to report
+	 */
 	warningSrv: function(msg)
 	{
 		var scriptWarning = Components.classes["@mozilla.org/scripterror;1"].createInstance(Components.interfaces.nsIScriptError);
@@ -131,9 +150,10 @@ Services.prototype = {
 	},
 
 	/**
-		return current date
-		@return {string} current date
-	*/
+	 * return current date
+	 * 
+	 * @return {string} current date
+	 */
 	currentDate: function ()
 	{
 		date=new Date();
@@ -141,9 +161,12 @@ Services.prototype = {
 	},
 	
 	/**
-		Select the text that have generate the error and set the focus to the control of User Interface define by his ID.
-		@param (string) Label of the UI control id.
-	*/
+	 * Select the text that have generate the error and set the focus to the
+	 * control of User Interface define by his ID.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 */
 	setFocusCtrlID : function( ctrlID )
 	{
 		document.getElementById(ctrlID).setSelectionRange ( 0 , document.getElementById(ctrlID).textLength ) 
@@ -151,10 +174,13 @@ Services.prototype = {
 	},
 	
 	/**
-		Show or hide the User Interface control.
-		@param (string) Label of the UI control id.
-		@param (boolean) Enabled or disabled (true/false)
-	*/
+	 * Show or hide the User Interface control.
+	 * 
+	 * @param (string)
+	 *            ctrlID Label of the UI control id.
+	 * @param (boolean)
+	 *            enabled Enabled or disabled (true/false)
+	 */
 	showCtrlID : function( ctrlID, enabled )
 	{
 		if (enabled)
@@ -164,10 +190,13 @@ Services.prototype = {
 	},
 	
 	/**
-		Enable or disable the User Interface.
-		@param (string) Label of the UI control id.
-		@param (boolean) Enabled or disabled (true/false)
-	*/
+	 * Enable or disable the User Interface.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @param (boolean)
+	 *            Enabled or disabled (true/false)
+	 */
 	enableCtrlID : function( ctrlID, enabled )
 	{
 		if (enabled)
@@ -177,10 +206,12 @@ Services.prototype = {
 	},
 	
 	/**
-		Retrieve the User Interface label of the control.
-		@param (string) Label of the UI control id. 
-		@return (string) Label of the control as a string.
-	*/
+	 * Retrieve the User Interface label of the control.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @return (string) Label of the control as a string.
+	 */
 	getStringLabel : function( ctrlID )
 	{
 		label = document.getElementById(ctrlID).label;
@@ -191,20 +222,24 @@ Services.prototype = {
 	},
 	
 	/**
-		Retrieve the User Interface value from control.
-		@param (string) Label of the UI control id. 
-		@return (string) Value of the control as a string.
-	*/
+	 * Retrieve the User Interface value from control.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @return (string) Value of the control as a string.
+	 */
 	getStringValue : function( ctrlID )
 	{
 		return document.getElementById(ctrlID).value;
 	},
 	
 	/**
-		Retrieve the User Interface value from control.
-		@param (string) Label of the UI control id. 
-		@return (boolean) Value of the control false/true.
-	*/
+	 * Retrieve the User Interface value from control.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @return (boolean) Value of the control false/true.
+	 */
 	getBooleanValue : function( ctrlID )
 	{
 		return document.getElementById(ctrlID).checked;
@@ -212,30 +247,39 @@ Services.prototype = {
 	
 	
 	/**
-		Set string value to the control of the User Interface.
-		@param (string) Label of the UI control id. 
-		@param (string) Value to set to the control as a string. 
-	*/
+	 * Set string value to the control of the User Interface.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @param (string)
+	 *            Value to set to the control as a string.
+	 */
 	setStringValue : function( ctrlID, value )
 	{
 		document.getElementById(ctrlID).value = value;
 	},
 	
 	/**
-		Set string label to the control of the User Interface.
-		@param (string) Label of the UI control id. 
-		@param (string) label to set to the control as a string. 
-	*/
+	 * Set string label to the control of the User Interface.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @param (string)
+	 *            label to set to the control as a string.
+	 */
 	setStringLabel : function( ctrlID, label )
 	{
 		document.getElementById(ctrlID).label = label;
 	},
 	
 	/**
-		Set boolean value to the control of the User Interface.
-		@param (string) Label of the UI control id. 
-		@param (boolean) Value to set to the control false/true.
-	*/
+	 * Set boolean value to the control of the User Interface.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @param (boolean)
+	 *            Value to set to the control false/true.
+	 */
 	setBooleanValue : function( ctrlID, value )
 	{
 		document.getElementById(ctrlID).checked = value;
@@ -243,16 +287,22 @@ Services.prototype = {
 	
 	
 	/**
-		Localize stringBundle. This function can be insert dynamically parameters in the string.
-		The user that define the localized string insert tag as %1, %2 ... The function parse the string
-		and insert each value from the third parameter arrayValue. If the value is not define the value
-		take the value undefined. If the array is too small the value stay the tag %7 for example.
-		If the array is too big nothing append.  
-		@param (string) stringBundle String bundle label id.
-		@param (string) message String id define in the stringBundle file 
-		@param (array) arrayValue Array of the value to replace in string. Value in string are defined with tag %x where x is the value index. 
-		@return (string) Localized string message to use by the caller.
-	*/
+	 * Localize stringBundle. This function can be insert dynamically parameters
+	 * in the string. The user that define the localized string insert tag as
+	 * %1, %2 ... The function parse the string and insert each value from the
+	 * third parameter arrayValue. If the value is not define the value take the
+	 * value undefined. If the array is too small the value stay the tag %7 for
+	 * example. If the array is too big nothing append.
+	 * 
+	 * @param (string)
+	 *            stringBundle String bundle label id.
+	 * @param (string)
+	 *            message String id define in the stringBundle file
+	 * @param (array)
+	 *            arrayValue Array of the value to replace in string. Value in
+	 *            string are defined with tag %x where x is the value index.
+	 * @return (string) Localized string message to use by the caller.
+	 */
 	localizeString : function( stringBundle, message, arrayValue )
 	{
 		if( message == undefined || message == null ){
@@ -295,11 +345,15 @@ Services.prototype = {
 	},
 	
 	/**
-		Check the validity of the mail address.
-		@param (string) email mail address to be check.
-		@param (boolean) log Indicate if the log message will be displayed in the console 
-		@return (boolean) result of the validity false/true.
-	*/
+	 * Check the validity of the mail address.
+	 * 
+	 * @param (string)
+	 *            email mail address to be check.
+	 * @param (boolean)
+	 *            log Indicate if the log message will be displayed in the
+	 *            console
+	 * @return (boolean) result of the validity false/true.
+	 */
 	isAddressMailValid : function( email, log )
 	{
 		if( log == undefined ){
@@ -311,6 +365,10 @@ Services.prototype = {
 			}
 			return false;
 		}
+/*
+ * if(this.echeck(email) == false) { if( log == true ) { this.warningSrv( "The
+ * Email Address is invalid (" + email + ")."); } return false; }
+ */		return true;
 		// TODO Put this line 'return true;' to bypass mail check
    		var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 		if(reg.test(email) == false) {
@@ -322,13 +380,57 @@ Services.prototype = {
 		return true;
 	},
 	
+
+	echeck : function(str)
+	{
+		var at="@"
+		var dot="."
+		var lat=str.indexOf(at)
+		var lstr=str.length
+		var ldot=str.indexOf(dot)
+		if (str.indexOf(at)==-1){
+		   return false
+		}
+
+		if (str.indexOf(at)==-1 || str.indexOf(at)==0 || str.indexOf(at)==lstr){
+		   return false
+		}
+
+		if (str.indexOf(dot)==-1 || str.indexOf(dot)==0 || str.indexOf(dot)==lstr){
+		    return false
+		}
+
+		 if (str.indexOf(at,(lat+1))!=-1){
+		    return false
+		 }
+
+		 if (str.substring(lat-1,lat)==dot || str.substring(lat+1,lat+2)==dot){
+		    return false
+		 }
+
+		 if (str.indexOf(dot,(lat+2))==-1){
+		    return false
+		 }
+		
+		 if (str.indexOf(" ")!=-1){
+		    return false
+		 }
+
+ 		 return true					
+	},
+
+	
 	/**
-		Check the validity of the message for notification.
-		TODO No restriction at this time for the message.
-		@param (string) notification message to be check.
-		@param (boolean) log Indicate if the log message will be displayed in the console 
-		@return (boolean) result of the validity false/true.
-	*/
+	 * Check the validity of the message for notification. TODO No restriction
+	 * at this time for the message.
+	 * 
+	 * @param (string)
+	 *            notification message to be check.
+	 * @param (boolean)
+	 *            log Indicate if the log message will be displayed in the
+	 *            console
+	 * @return (boolean) result of the validity false/true.
+	 */
 	isNotificationMessageValid : function( notification, log )
 	{
 		if( log == undefined ){
@@ -346,10 +448,13 @@ Services.prototype = {
 	},
 	
 	/**
-		Set field in red color to indicate an error to the user.
-		@param (string) Label of the UI control id. 
-		@param (boolean) True if the field has an error. 
-	*/
+	 * Set field in red color to indicate an error to the user.
+	 * 
+	 * @param (string)
+	 *            Label of the UI control id.
+	 * @param (boolean)
+	 *            True if the field has an error.
+	 */
 	displayFieldOnError : function( ctrlID, error )
 	{
 		if (error == true ) {
@@ -362,18 +467,87 @@ Services.prototype = {
 }
 
 
+/**
+ * 
+ * UTF-8 data encode / decode Function provide by http://www.webtoolkit.info/
+ * 
+ */
+
+var Utf8 = {
+
+	// public method for url encoding
+	encode : function (string) {
+		string = string.replace(/\r\n/g,"\n");
+		var utftext = "";
+
+		for (var n = 0; n < string.length; n++) {
+
+			var c = string.charCodeAt(n);
+
+			if (c < 128) {
+				utftext += String.fromCharCode(c);
+			}
+			else if((c > 127) && (c < 2048)) {
+				utftext += String.fromCharCode((c >> 6) | 192);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+			else {
+				utftext += String.fromCharCode((c >> 12) | 224);
+				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+
+		}
+
+		return utftext;
+	},
+
+	// public method for url decoding
+	decode : function (utftext) {
+		var string = "";
+		var i = 0;
+		var c = c1 = c2 = 0;
+
+		while ( i < utftext.length ) {
+
+			c = utftext.charCodeAt(i);
+
+			if (c < 128) {
+				string += String.fromCharCode(c);
+				i++;
+			}
+			else if((c > 191) && (c < 224)) {
+				c2 = utftext.charCodeAt(i+1);
+				string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+				i += 2;
+			}
+			else {
+				c2 = utftext.charCodeAt(i+1);
+				c3 = utftext.charCodeAt(i+2);
+				string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+				i += 3;
+			}
+
+		}
+
+		return string;
+	}
+
+}
 
 
 
 
 
-
-/***
-	place the metacharacter \ (backslash) in front of the metacharacter that we want to use as a literal
-	@param {string} str a string
-	@return {string} str with escape keys
-
-*/
+/*******************************************************************************
+ * place the metacharacter \ (backslash) in front of the metacharacter that we
+ * want to use as a literal
+ * 
+ * @param {string}
+ *            str a string
+ * @return {string} str with escape keys
+ * 
+ */
 function escapeRegExp(str) {
 	var keys=["\\","$","^","-",".","[","]","{","}","?","*","+","(",")"];
 	for (var i=0 ; i < keys.length ; i++)
@@ -386,15 +560,16 @@ function escapeRegExp(str) {
 
 
 /**
-	Preferences Dialog Box
-	@author Daniel Rocher / Etat francais Ministere de la Defense
-*/
+ * Preferences Dialog Box
+ * 
+ * @author Daniel Rocher / Etat francais Ministere de la Defense
+ */
 var prefDialogBox = {
 	services : null,
 
 	/**
-		Init Preferences Dialog Box
-	*/
+	 * Init Preferences Dialog Box
+	 */
 	initPrefDialog : function () {
 		if (!this.services)
 			this.services= new Services();
@@ -407,9 +582,10 @@ var prefDialogBox = {
 	},
 
 	/**
-		Save Preferences from Dialog Box
-		@return {boolean} <b>false</b> if an error occured
-	*/
+	 * Save Preferences from Dialog Box
+	 * 
+	 * @return {boolean} <b>false</b> if an error occured
+	 */
 	savePrefs : function() {
 		if (!this.services)
 			this.services= new Services();
@@ -432,8 +608,8 @@ var prefDialogBox = {
 	},
 
 	/**
-		Enable/disable TimeOut
-	*/
+	 * Enable/disable TimeOut
+	 */
 	enableTimeOut : function() {
 		document.getElementById("timeOut").disabled= !document.getElementById("considerTimeout").checked;
 	}
@@ -441,11 +617,14 @@ var prefDialogBox = {
 
 
 /**
-	Move message
-	@param {nsIMsgDBHdr} msgHdr message to move
-	@param {nsIMsgFolder} dstFolder folder destination
-	@return {boolean} return <b>false</b> if an error occured
-*/
+ * Move message
+ * 
+ * @param {nsIMsgDBHdr}
+ *            msgHdr message to move
+ * @param {nsIMsgFolder}
+ *            dstFolder folder destination
+ * @return {boolean} return <b>false</b> if an error occured
+ */
 function moveMessage (msgHdr, dstFolder) {
 
 	var srcFolder=msgHdr.folder;
