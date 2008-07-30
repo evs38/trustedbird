@@ -223,7 +223,7 @@ function updateData(bSaveAndValidate)
 		//	globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ,
 			globalServices.getBooleanValue('outofofficeKeepMessageCheckbox') ,
 			globalServices.getBooleanValue('outofofficeNotificationCheckbox') ,
-			globalServices.getStringValue('txtOutOfOfficeNotification')	
+			Utf8.encode( globalServices.getStringValue('txtOutOfOfficeNotification') )	
 		);
 		switch( gOutOfOfficeManager.getSettings().checkDataValidity() ) { // Check Data validity
 		case 1 :	// Data for address mail are invalid
@@ -245,7 +245,7 @@ function updateData(bSaveAndValidate)
 	//	globalServices.setStringValue('txtOutOfOfficeDestinationAddress', gOutOfOfficeManager.getSettings().getRedirectionAddress() );
 		globalServices.setBooleanValue('outofofficeKeepMessageCheckbox', gOutOfOfficeManager.getSettings().getRedirectionKeepMessage() );
 		globalServices.setBooleanValue('outofofficeNotificationCheckbox', gOutOfOfficeManager.getSettings().getNotification() );
-		globalServices.setStringValue('txtOutOfOfficeNotification', gOutOfOfficeManager.getSettings().getNotificationMessage());
+		globalServices.setStringValue('txtOutOfOfficeNotification', Utf8.decode(gOutOfOfficeManager.getSettings().getNotificationMessage()));
 	}
 	return true;	
 }
