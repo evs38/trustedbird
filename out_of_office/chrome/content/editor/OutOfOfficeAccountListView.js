@@ -74,7 +74,7 @@ function onWindowLoad()
 	}
 	
 	// Set label of button 
-	globalServices.setStringLabel('btnEnable', globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.enable;" ) );
+	globalServices.setStringLabel('btnEnable', globalServices.localizeString(  "out_of_office_locale.properties", "&outofoffice.list.tree.button.enable;" ) );
 
 	// Disable control while not initialized
 	globalServices.enableCtrlID('btnEdit', false );
@@ -159,12 +159,6 @@ function onTreeSelect(tree)
  */
 function onUpdateControl(tree)
 {	
-	// TODO Remove obsolete code 	
-
-//	if(gActivateScript == undefined || gActivateScript == null){
-//		gActivateScript = false;
-//	}
-
 	gActivateScript = false;
 
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onUpdateControl Select item=" + tree.currentIndex );
@@ -177,18 +171,13 @@ function onUpdateControl(tree)
 
 	var account = OutOfOfficeAccountTreeView.getAccount(tree.currentIndex);
 	
-//	gOutOfOfficeManager.activate(account.isEnabledOutOfOffice());
-//	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
-
-//	gActivateScript = false;
-	  
 	globalServices.enableCtrlID('btnEdit', account.isEnabledOutOfOffice());
 	globalServices.enableCtrlID('btnEnable', true);
-	var buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.disable;" );
+	var buttonLabel = globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.list.tree.button.disable;" );
 	if( account.isEnabledOutOfOffice() == false ){
-		buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.list.tree.button.enable;" );
+		buttonLabel = globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.list.tree.button.enable;" );
 	}
-	// alert(buttonLabel); TODO Check it to solve problem with the French language
+
 	globalServices.setStringLabel('btnEnable', buttonLabel );
 	
 /*	if (account.isEnabledOutOfOffice() == false)
@@ -214,7 +203,7 @@ function onUpdateControl(tree)
 		case 1: authType = "outofoffice.list.tree.info.login.useimap"; break;
 		case 2: authType = "outofoffice.list.tree.info.login.custom"; break;
 	}
-	document.getElementById('txtAuth').value = globalServices.localizeString( "out_of_office_stringbundle", "&" + authType + ";" );
+	document.getElementById('txtAuth').value = globalServices.localizeString( "out_of_office_locale.properties", "&" + authType + ";" );
 	document.getElementById('txtUserName').value = account.getLogin().getUsername();     	
 }
 

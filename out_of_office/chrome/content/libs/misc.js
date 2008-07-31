@@ -295,7 +295,7 @@ Services.prototype = {
 	 * example. If the array is too big nothing append.
 	 * 
 	 * @param (string)
-	 *            stringBundle String bundle label id.
+	 *            localeFileName String bundle label id.
 	 * @param (string)
 	 *            message String id define in the stringBundle file
 	 * @param (array)
@@ -303,17 +303,19 @@ Services.prototype = {
 	 *            string are defined with tag %x where x is the value index.
 	 * @return (string) Localized string message to use by the caller.
 	 */
-	localizeString : function( stringBundle, message, arrayValue )
+	localizeString : function( localeFileName, message, arrayValue )
 	{
 		if( message == undefined || message == null ){
 			throw new Exception("localizeString: message cannot be null.");
 		}
 		/*
-		 * Check if the localization is requested and the string is valid
+		 * Check if the localization requested and the string are valid
 		 */
-		if( stringBundle == undefined || stringBundle == null || 
-			message.length < 3 || message[0] != '&' || message[message.length-1] != ';' ){
-			return message;
+		if( localeFileName == undefined || localeFileName == null ){ // Use default file
+			localeFileName = "out_of_office_locale.properties";
+		}
+		if( message.length < 3 || message[0] != '&' || message[message.length-1] != ';' ){
+			return message; // Syntax error id of string to localize must be &<id>;
 		}
 		
 		/*
@@ -322,7 +324,7 @@ Services.prototype = {
         // Initialize the string bundle resource
 		
 		var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
-    	out_of_office_stringBundle = stringBundleService.createBundle("chrome://out_of_office/locale/out_of_office_locale.properties");
+    	out_of_office_stringBundle = stringBundleService.createBundle("chrome://out_of_office/locale/" + localeFileName );
 	
 	    message = message.substring(1,message.length-1);
         try {

@@ -457,7 +457,7 @@ function alertDataValidity( message, fieldName )
 {
 	var values = new Array();
 	values.push( globalServices.getStringLabel(fieldName) );
-	alert( globalServices.localizeString( "out_of_office_stringbundle", message, values) );
+	alert( globalServices.localizeString( "out_of_office_locale.properties", message, values) );
 }
 
 /*

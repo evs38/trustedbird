@@ -168,7 +168,7 @@ function addSieveSettingsButton()
 		var buttonLabel = "";
 	 
         try {
-        	buttonLabel = globalServices.localizeString( "out_of_office_stringbundle", "&outofoffice.button.label;");
+        	buttonLabel = globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.button.label;" );
         } catch (e){
         	globalServices.errorSrv( "Exception, unable to get string '" + message + "', it will displayed instead of the localize string.");
         }

@@ -34,7 +34,7 @@
    - the provisions above, a recipient may use your version of this file under
    - the terms of any one of the MPL, the GPL or the LGPL.
    -
-   - ***** END LICENSE BLOCK ***** -->
+   - ***** END LICENSE BLOCK *****-->
 
 <!DOCTYPE overlay [
 <!ENTITY % sieveDTD SYSTEM "chrome://out_of_office/locale/locale.dtd">
@@ -43,20 +43,18 @@
 %outofofficeDTD;
 ]>
 
-<overlay id="sieveOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
-	<stringbundle id="out_of_office_stringbundle" src="chrome://out_of_office/locale/out_of_office_locale.properties"/>
-
-	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/preferences.js" />
+<overlay id="sieveOverlay"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script type="application/x-javascript"
+		src="chrome://out_of_office/content/libs/preferences.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/main.js" />
-
-<menupopup id="taskPopup">
-  <menuitem id="menuOutOfOfficeParametersDialog" insertafter="applyFilters" label="&outofoffice.menu.parameters;"
-  		oncommand='window.open("chrome://out_of_office/content/editor/OutOfOfficeAccountListView.xul", "outofofficeOptions", "chrome,centerscreen");' 
-  		accesskey="&outofoffice.menu.parameters.key;" />
- 		
-  <menuseparator id="menuOutOfOfficeSeparator" insertafter="applyFilters"/>  		
-</menupopup>
-
+	<menupopup id="taskPopup">
+		<menuitem id="menuOutOfOfficeParametersDialog" insertafter="applyFilters"
+			label="&outofoffice.menu.parameters;"
+			oncommand='window.open("chrome://out_of_office/content/editor/OutOfOfficeAccountListView.xul", "outofofficeOptions", "chrome,centerscreen");'
+			accesskey="&outofoffice.menu.parameters.key;" />
+		<menuseparator id="menuOutOfOfficeSeparator"
+			insertafter="applyFilters" />
+	</menupopup>
 </overlay>
