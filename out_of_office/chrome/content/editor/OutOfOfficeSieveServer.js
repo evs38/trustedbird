@@ -96,19 +96,19 @@ var gEventConnection =
 				request.addSaslPlainListener(gEventConnection);
 				break;        
 		}
-
 		request.addErrorListener(gEventConnection);
-		request.setUsername(login.getUsername())
+		request.setUsername(login.getUsername());
 
-		if (login.hasPassword())
+		if (login.hasPassword()){
 			request.setPassword(login.getPassword());
+		}
 		else
 		{
 			var password = promptPassword();
-			if (password == null)
-				return;
-
-			request.setPassword(login.password);    	    	
+			if (password == null){
+				return; // Make an error and disconnect the server properly.
+			}
+			request.setPassword(password);    	    	
 		}
 		gSieve.addRequest(request);    		
 	},
@@ -191,7 +191,7 @@ var gEventConnection =
 	    // Update status
 		var values = new Array();
 		values.push(gOutOfOfficeSieveServer.getAccount().getHost().getHostname());
-		postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connected;", values) );
+		postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.connected;", values) );
 
 		if( gOutOfOfficeSieveServer.bActivateScript == true ){
 			gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "Set link to script=" + gOutOfOfficeSieveServer.getAccount().isEnabledOutOfOffice() );
@@ -223,7 +223,7 @@ var gEventConnection =
 	    // Update status
 		var values = new Array();
 		values.push(gOutOfOfficeSieveServer.getAccount().getHost().getHostname());
-		postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.disconnected;", values) );
+		postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.disconnected;", values) );
 		gOutOfOfficeSieveServer.setConnectedTo();
 	},
 
@@ -326,7 +326,7 @@ var gEventConnection =
 		gOutOfOfficeSieveServer.setScriptText( response.getScriptBody() );
 		gTryToCreate = false;
 		if( gParent != null ){
-			gParent.postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedloaded;") );
+			gParent.postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.connectedloaded;") );
 			gParent.onConnectFinish(true);
 		}else{
 			gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onGetScriptResponse:The parent object is not initialized");
@@ -351,7 +351,7 @@ var gEventConnection =
 
 			var values = new Array();
 			values.push(code.getHostname());
-			postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.codereferral;", values) );
+			postStatusMessage(gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.codereferral;", values) );
 
 			gSieve = new Sieve(
 								code.getHostname(),
@@ -377,27 +377,9 @@ var gEventConnection =
 			gTryToCreate = false;
 			return;			
 		}
-		
-	    // Initialize the string bundle resource
-/*	    out_of_office_stringBundle = document.getElementById('out_of_office_stringbundle');
-	    var message = response.getMessage()
-	    var header = "ERRORCODE:";
-		var reg = new RegExp(header, "g");	
-		if( message.length > header.length && message.match(reg) ){ // The message is an error code to build a user label
-			var code = message.substring(header.length, message.length );
-			switch( code )
-			{
-			case "0001" : {
-				var reg = new RegExp("%1", "g");	
-				message = out_of_office_stringBundle.getString("outofoffice.connection.status.cannotopenconnection");
-				message = message.replace(reg, gOutOfOfficeSieveServer.getAccount().getHost().getPort() );
-				break;
-			}
-			default: // Code unknown or the message to display is not in string table
-				break;
-			}
-		}
-*/
+		/*
+		 * Error code treatment
+		 */
 	    var message = response.getMessage();
 	    alert(message);
 	    var header = "ERRORCODE:";
@@ -409,7 +391,7 @@ var gEventConnection =
 			case "0001" : { // Hard coded error from sieve.js
 				var values = new Array();
 				values.push(gOutOfOfficeSieveServer.getAccount().getHost().getPort());
-				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.cannotopenconnection;", values);
+				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.cannotopenconnection;", values);
 				// Disable account on error
 				gOutOfOfficeSieveServer.getAccount().setEnabled(false);
 				gSieve.disconnect();
@@ -448,12 +430,28 @@ var gEventConnection =
 		gSieve.addRequest(request);
 	}
 }
+/*
+ * Request password if the connection has not been establish
+ */
+function promptPassword()
+{
+    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                        .getService(Components.interfaces.nsIPromptService);
+                        
+    input = {value:null};
+    check = {value:false}; 
+    var result = prompts.promptPassword(window,"Password", "Please enter the password for your Sieve account", input, null, check);
+    
+    if (result)
+        return input.value;
 
+    return null;
+}
 
-/**
-	@TODO 
-	Event to manange script creation.
-*/
+/*
+ *  @TODO
+ *  Event to manange script creation.
+ */
 var gEventCreateScript = 
 {
 	onPutScriptResponse: function(response)
@@ -461,7 +459,7 @@ var gEventCreateScript =
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventCreateScript:onPutScriptResponse Create script name =" + gOutOfOfficeSieveServer.getScriptName() );
 		gTryToCreate = false;
 		if( gParent != null ){
-			gParent.postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connectedcreated;") );
+			gParent.postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.connectedcreated;") );
 			gParent.onConnectFinish(true);
 		}else{
 //			if( gRequestedScriptActivation == true )
@@ -566,378 +564,375 @@ function OutOfOfficeSieveServer(account, services, settings, bActivateScript) {
 	this.initialize();
 }
 
-OutOfOfficeSieveServer.prototype = {
-	/*
-	 * Return the name of the class initialized in CONST_HEADER variable.
-	 * This function overload the 'toString' standard function from Javascript Object.
-	 * 
-	 * @return (string) CONST_HEADER containing class name.
-	 */
-	toString : function()
-	{
-		if( this.CONST_HEADER == undefined || this.CONST_HEADER == null ){
-			return "OutOfOfficeSieveServer: Invalid String"; // Error
-		}
-		return this.CONST_HEADER;
-	},
+/*
+ * Return the name of the class initialized in CONST_HEADER variable.
+ * This function overload the 'toString' standard function from Javascript Object.
+ * 
+ * @return (string) CONST_HEADER containing class name.
+ */
+OutOfOfficeSieveServer.prototype.toString	= function ()
+{
+	if( this.CONST_HEADER == undefined || this.CONST_HEADER == null ){
+		return "OutOfOfficeSieveServer: Invalid String"; // Error
+	}
+	return this.CONST_HEADER;
+}
 
-	/*
-	 * Load all the Libraries we need.
-	 */
-	loadClass : function()
-	{
-		var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
-		jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveAccounts.js");
-		jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/Sieve.js");
-		jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveRequest.js");
-		jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveResponse.js");    
-		jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveResponseParser.js");        
-		jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveResponseCodes.js");
-	},
+/*
+ * Load all the Libraries we need.
+ */
+OutOfOfficeSieveServer.prototype.loadClass	= function ()
+{
+	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveAccounts.js");
+	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/Sieve.js");
+	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveRequest.js");
+	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveResponse.js");    
+	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveResponseParser.js");        
+	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveResponseCodes.js");
+}
 
-	/*
-	 * Initialize OutOfOfficeSieveServer
-	 */
-	initialize : function()
-	{
-		/* 
-		 * Initialize sieve server as a global object
-		 * This is to use the sieve server object by the event objects
-		 */
-		gOutOfOfficeSieveServer = this;
-		this.setConnectedTo();
-		
-		this.loadClass();
-
-		// @TODO Initialize sieve object
-		this.connect();
-	},
-	
-	/*
-	 * Start connection to sieve server
-	 */
-	connect : function()
-	{
-		this.getServices().logSrv( this.toString() + "try to connect to sieve server " + this.getAccount().getHost().getHostname() );
-		this.getServices().logSrv( this.toString() + "activate=" + this.bActivateScript );
-		var logoutTimeout = null;	
-		// Override the unsual request handler because we have to logout first
-		var levent = 
-		{
-			onLogoutResponse: function(response)
-			{
-				clearTimeout(logoutTimeout);
-				if ((gOutOfOfficeSieveServer.sieve != null) && (gOutOfOfficeSieveServer.sieve.isAlive())){
-					gOutOfOfficeSieveServer.sieve.disconnect();
-				}
-					
-				// Disable and cancel if account is not enabled
-				if (gOutOfOfficeSieveServer.getAccount().isEnabled() == false)
-				{	// If we have this message it is a conflict with Sieve extension    
-					postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.inactive;") );
-					return;
-				}			
-	
-				postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_stringbundle", "&outofoffice.connection.status.connecting;") );
-				
-				// TODO To be reactivated if this functionality is requested
-				/*
-				if (gOutOfOfficeSieveServer.getAccount().getSettings().isKeepAlive())
-					gKeepAliveInterval = setInterval("onKeepAlive()",gOutOfOfficeSieveServer.getAccount().getSettings().getKeepAliveInterval());
-				*/
-
-				gSieve = new Sieve(
-									gOutOfOfficeSieveServer.getAccount().getHost().getHostname(),
-									gOutOfOfficeSieveServer.getAccount().getHost().getPort(),
-									gOutOfOfficeSieveServer.getAccount().getHost().isTLS(),
-									gOutOfOfficeSieveServer.getAccount().getSettings().isDebug() );
-				gOutOfOfficeSieveServer.sieve = gSieve;
-	
-				var request = new SieveInitRequest();
-				request.addErrorListener(gEventConnection)
-				request.addInitListener(gEventConnection)
-				gSieve.addRequest(request);
-	
-				gSieve.connect();
-			}
-		}
-	
-		// Besteht das Objekt überhaupt bzw besteht eine Verbindung?
-		if ((gSieve == null) || (gSieve.isAlive() == false))
-		{
-			// beides schein nicht zu existieren, daher connect direkt aufrufen...
-			levent.onLogoutResponse("");
-			return;
-		}
-	
-		// hier haben wir etwas weniger Zeit ...
-		logoutTimeout = setTimeout("levent.onLogoutResponse(\"\")",250);
-	
-		if (gKeepAliveInterval != null)
-		{
-			clearInterval(gKeepAliveInterval);
-			gKeepAliveInterval = null;
-		}
-		var request = new SieveLogoutRequest();
-		request.addLogoutListener(levent);
-		request.addErrorListener(gEventConnection);
-		gSieve.addRequest(request);	
-	},
-
+/*
+ * Initialize OutOfOfficeSieveServer
+ */
+OutOfOfficeSieveServer.prototype.initialize	= function ()
+{
 	/* 
-	 * Stop connection to sieve server 
+	 * Initialize sieve server as a global object
+	 * This is to use the sieve server object by the event objects
 	 */
-	disconnect : function()
+	gOutOfOfficeSieveServer = this;
+	this.setConnectedTo();
+	
+	this.loadClass();
+
+	// @TODO Initialize sieve object
+	this.connect();
+}
+
+/*
+ * Start connection to sieve server
+ */
+OutOfOfficeSieveServer.prototype.connect	= function ()
+{
+	this.getServices().logSrv( this.toString() + "try to connect to sieve server " + this.getAccount().getHost().getHostname() );
+	this.getServices().logSrv( this.toString() + "activate=" + this.bActivateScript );
+	var logoutTimeout = null;	
+	// Override the unsual request handler because we have to logout first
+	var levent = 
 	{
-		/* 
-		 * Can be null if an error occurs
-		if (gSieve == null){
-			this.getServices().warningSrv( this.toString() + "disconnect invalid sieve server object.");
-			return false;
-		}
-		 */
-		this.getServices().logSrv( this.toString() + "disconnect.");
-		if (gKeepAliveInterval != null)
+		onLogoutResponse: function(response)
 		{
-			this.getServices().logSrv( this.toString() + "disconnect : Disable gKeepAliveInterval.");
-			clearInterval(gKeepAliveInterval);
-			gKeepAliveInterval = null;
+			clearTimeout(logoutTimeout);
+			if ((gOutOfOfficeSieveServer.sieve != null) && (gOutOfOfficeSieveServer.sieve.isAlive())){
+				gOutOfOfficeSieveServer.sieve.disconnect();
+			}
+				
+			// Disable and cancel if account is not enabled
+			if (gOutOfOfficeSieveServer.getAccount().isEnabled() == false)
+			{	// If we have this message it is a conflict with Sieve extension    
+				postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.inactive;") );
+				return;
+			}			
+
+			postStatusMessage( gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.connecting;") );
+			
+			// TODO To be reactivated if this functionality is requested
+			/*
+			if (gOutOfOfficeSieveServer.getAccount().getSettings().isKeepAlive())
+				gKeepAliveInterval = setInterval("onKeepAlive()",gOutOfOfficeSieveServer.getAccount().getSettings().getKeepAliveInterval());
+			*/
+
+			gSieve = new Sieve(
+								gOutOfOfficeSieveServer.getAccount().getHost().getHostname(),
+								gOutOfOfficeSieveServer.getAccount().getHost().getPort(),
+								gOutOfOfficeSieveServer.getAccount().getHost().isTLS(),
+								gOutOfOfficeSieveServer.getAccount().getSettings().isDebug() );
+			gOutOfOfficeSieveServer.sieve = gSieve;
+
+			var request = new SieveInitRequest();
+			request.addErrorListener(gEventConnection)
+			request.addInitListener(gEventConnection)
+			gSieve.addRequest(request);
+
+			gSieve.connect();
 		}
+	}
 
-		if (gSieve == null)
-			return true;
-		// Force disconnect in 500 MS
-		closeTimeout = setTimeout("gSieve.disconnect(); close();",500);
-		
-		var request = new SieveLogoutRequest(gEventConnection)
-		request.addLogoutListener(gEventConnection);
-		request.addErrorListener(gEventConnection);
-		
-		gSieve.addRequest(request);
-	},
-
-	
-	/*
-	 * Create script if it doesn't exist on the server
-	 * 
-	 */
-	createScript : function()
-	{	
-		if (this.sieve == null){
-			this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
-			return false;
-		}
-		this.getServices().logSrv( this.toString() + "createScript" + this.getScriptName());
-
-		// TODO put the right parameters to send to sieve server name and data script
-		var request = new SievePutScriptRequest( new String(this.getScriptName()), new String("/*NEW*/") );
-		request.addPutScriptListener(gEventCreateScript);
-		request.addErrorListener(gEventCreateScript);
-	
-		this.sieve.addRequest(request);
-	},
-
-
-	/*
-	 * Load the script out of office from sieve server
-	 * @param (object) Parent window that request the load
-	 * @return (boolean) Load script successfully started
-	 */
-	loadScript : function(parent)
+	// Besteht das Objekt überhaupt bzw besteht eine Verbindung?
+	if ((gSieve == null) || (gSieve.isAlive() == false))
 	{
-		if (gSieve == null){
-			this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
-			return false;
-		}
-		this.getServices().logSrv( this.toString() + "loadScript " + this.getScriptName() );
-		
-		gParent = parent;
-		
-		// List all scripts as soon as we are connected
-/*		var request = new SieveListScriptRequest();
-		request.addListScriptListener(gEventConnection);
-		request.addErrorListener(gEventConnection);
+		// beides schein nicht zu existieren, daher connect direkt aufrufen...
+		levent.onLogoutResponse("");
+		return;
+	}
 
-		gSieve.addRequest(request);
-*/		
-		
-		// script load
-		// gSieve = this.connect();
-		gCompile = this.getAccount().getSettings().isCompile();
-		gCompileDelay = this.getAccount().getSettings().getCompileDelay();
-		this.getServices().logSrv( this.toString() + "loadScript Compile =" + gCompile + " delay=" + gCompileDelay );
-	
-		var request = new SieveGetScriptRequest( new String(this.getScriptName()) );
-		request.addGetScriptListener(gEventConnection);
-		request.addErrorListener(gEventConnection);
-		this.getServices().logSrv( this.toString() + "loadScript send request to sieve." );
-		
-		gSieve.addRequest(request);
-		gTryToCreate = true;
-		this.getServices().logSrv( this.toString() + "loadScript ENDED");
+	// hier haben wir etwas weniger Zeit ...
+	logoutTimeout = setTimeout("levent.onLogoutResponse(\"\")",250);
+
+	if (gKeepAliveInterval != null)
+	{
+		clearInterval(gKeepAliveInterval);
+		gKeepAliveInterval = null;
+	}
+	var request = new SieveLogoutRequest();
+	request.addLogoutListener(levent);
+	request.addErrorListener(gEventConnection);
+	gSieve.addRequest(request);	
+}
+
+/* 
+ * Stop connection to sieve server 
+ */
+OutOfOfficeSieveServer.prototype.disconnect	= function ()
+{
+	/* 
+	 * Can be null if an error occurs
+	if (gSieve == null){
+		this.getServices().warningSrv( this.toString() + "disconnect invalid sieve server object.");
+		return false;
+	}
+	 */
+	this.getServices().logSrv( this.toString() + "disconnect.");
+	if (gKeepAliveInterval != null)
+	{
+		this.getServices().logSrv( this.toString() + "disconnect : Disable gKeepAliveInterval.");
+		clearInterval(gKeepAliveInterval);
+		gKeepAliveInterval = null;
+	}
+
+	if (gSieve == null)
 		return true;
-	},
+	// Force disconnect in 500 MS
+	closeTimeout = setTimeout("gSieve.disconnect(); close();",500);
 	
-	/**
-		Save the script out of office to sieve server 
+	var request = new SieveLogoutRequest(gEventConnection)
+	request.addLogoutListener(gEventConnection);
+	request.addErrorListener(gEventConnection);
+	
+	gSieve.addRequest(request);
+}
+
+
+/*
+ * Create script if it doesn't exist on the server
+ * 
+ */
+OutOfOfficeSieveServer.prototype.createScript	= function ()
+{	
+	if (this.sieve == null){
+		this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
+		return false;
+	}
+	this.getServices().logSrv( this.toString() + "createScript" + this.getScriptName());
+
+	// TODO put the right parameters to send to sieve server name and data script
+	var request = new SievePutScriptRequest( new String(this.getScriptName()), new String("/*NEW*/") );
+	request.addPutScriptListener(gEventCreateScript);
+	request.addErrorListener(gEventCreateScript);
+
+	this.sieve.addRequest(request);
+}
+
+/*
+ * Load the script out of office from sieve server
+ * @param (object) Parent window that request the load
+ * @return (boolean) Load script successfully started
+ */
+OutOfOfficeSieveServer.prototype.loadScript	= function (parent)
+{
+	if (gSieve == null){
+		this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
+		return false;
+	}
+	this.getServices().logSrv( this.toString() + "loadScript " + this.getScriptName() );
+	
+	gParent = parent;
+	
+	// List all scripts as soon as we are connected
+/*		var request = new SieveListScriptRequest();
+	request.addListScriptListener(gEventConnection);
+	request.addErrorListener(gEventConnection);
+
+	gSieve.addRequest(request);
+*/		
+	
+	// script load
+	// gSieve = this.connect();
+	gCompile = this.getAccount().getSettings().isCompile();
+	gCompileDelay = this.getAccount().getSettings().getCompileDelay();
+	this.getServices().logSrv( this.toString() + "loadScript Compile =" + gCompile + " delay=" + gCompileDelay );
+
+	var request = new SieveGetScriptRequest( new String(this.getScriptName()) );
+	request.addGetScriptListener(gEventConnection);
+	request.addErrorListener(gEventConnection);
+	this.getServices().logSrv( this.toString() + "loadScript send request to sieve." );
+	
+	gSieve.addRequest(request);
+	gTryToCreate = true;
+	this.getServices().logSrv( this.toString() + "loadScript ENDED");
+	return true;
+}
+
+/*
+ * Save the script out of office to sieve server 
+ */
+OutOfOfficeSieveServer.prototype.saveScript	= function ()
+{	
+	this.getServices().logSrv( this.toString() + "saveScript");
+
+	// TODO put the right parameters to send to sieve server name and data script
+	var request = new SievePutScriptRequest( new String(this.getScriptName()), new String(this.getScriptText()) );
+	request.addPutScriptListener(gEventConnection);
+	request.addErrorListener(gEventConnection);
+
+	gSieve.addRequest(request);
+}
+
+/*
+ * Compile the script out of office and check result
+ */
+OutOfOfficeSieveServer.prototype.compileScript	= function ()
+{
+	this.saveScript();
+	/*
+	this.getServices().logSrv( this.toString() + "compileScript");
+	var request = new SievePutScriptRequest("TMP_FILE_DELETE_ME", new String(this.getScriptText()) );
+	request.addPutScriptListener(gEventCompile);
+	request.addErrorListener(gEventCompile);
+	gSieve.addRequest(request);
 	*/
-	saveScript : function()
-	{	
-		this.getServices().logSrv( this.toString() + "saveScript");
+}
 
-		// TODO put the right parameters to send to sieve server name and data script
-		var request = new SievePutScriptRequest( new String(this.getScriptName()), new String(this.getScriptText()) );
-		request.addPutScriptListener(gEventConnection);
-		request.addErrorListener(gEventConnection);
-	
-		gSieve.addRequest(request);
-	},
-	
-	/*
-	 * Compile the script out of office and check result
-	 */
-	compileScript : function()
-	{
-		this.saveScript();
-		/*
-		this.getServices().logSrv( this.toString() + "compileScript");
-		var request = new SievePutScriptRequest("TMP_FILE_DELETE_ME", new String(this.getScriptText()) );
-		request.addPutScriptListener(gEventCompile);
-		request.addErrorListener(gEventCompile);
-		gSieve.addRequest(request);
-		*/
-	},
-	
-	/*
-	 * Activate the script out of office on the server with a symbolic link
-	 * @param (boolean) Activate script when true
-	 */
-	activateScript : function(active)
-	{	
-		if( this.isConnectionActive() == false ){
-			this.getServices().logSrv( this.toString() + "The script cannot be set to active=" + active + " because the server is not connected.");
-			return;	
-		}
-		this.getServices().logSrv( this.toString() + "activate script=" + active );
-		var request = null;
-		if (active == false){
-			request = new SieveSetActiveRequest();
-		} else {
-			request = new SieveSetActiveRequest(this.getScriptName());
-		}
-//		gRequestedScriptActivation = true;
-		request.addSetScriptListener(gEventConnection);
-		request.addErrorListener(gEventConnection);
-		gSieve.addRequest(request);
-	},
-	
-	/*
-	 * Activate the script out of office on the server with a symbolic link
-	 * @param (boolean) Activate script when true
-	 */
-	updateScriptListStatus : function()
-	{
-		if( this.isConnectionActive() == false ){
-			this.getServices().logSrv( this.toString() + "The update script link status cannot be done because the server is not connected.");
-			return;	
-		}
-		if (gSieve == null){
-			this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
-			return;
-		}
-		this.getServices().logSrv( this.toString() + "Update script link status.");
-	
-		// Always refresh the table to update status for the user interface ...
-		var request = new SieveListScriptRequest();
-		request.addListScriptListener(gEventConnection);
-		request.addErrorListener(gEventConnection);
-		gSieve.addRequest(request);
-	},
-	
-	/*
-	 * Keep Alive
-	 */
-	keepAlive : function(script,active)
-	{
-	  	// create a sieve request without an eventhandler...
-		gSieve.addRequest(new SieveCapabilitiesRequest())
-	},
+/*
+ * Activate the script out of office on the server with a symbolic link
+ * @param (boolean) Activate script when true
+ */
+OutOfOfficeSieveServer.prototype.activateScript	= function (active)
+{	
+	if( this.isConnectionActive() == false ){
+		this.getServices().logSrv( this.toString() + "The script cannot be set to active=" + active + " because the server is not connected.");
+		return;	
+	}
+	this.getServices().logSrv( this.toString() + "activate script=" + active );
+	var request = null;
+	if (active == false){
+		request = new SieveSetActiveRequest();
+	} else {
+		request = new SieveSetActiveRequest(this.getScriptName());
+	}
+//	gRequestedScriptActivation = true;
+	request.addSetScriptListener(gEventConnection);
+	request.addErrorListener(gEventConnection);
+	gSieve.addRequest(request);
+}
 
-	/*
-	 * Retrieve the name of the script file
-	 * @return (string) scriptName Text of the script 
-	 */
-	getScriptName : function()
-	{
-		return this.settings.getScriptName();
-	},
+/*
+ * Activate the script out of office on the server with a symbolic link
+ * @param (boolean) Activate script when true
+ */
+OutOfOfficeSieveServer.prototype.updateScriptListStatus	= function ()
+{
+	if( this.isConnectionActive() == false ){
+		this.getServices().logSrv( this.toString() + "The update script link status cannot be done because the server is not connected.");
+		return;	
+	}
+	if (gSieve == null){
+		this.getServices().warningSrv( this.toString() + "loadScript invalid sieve server object");
+		return;
+	}
+	this.getServices().logSrv( this.toString() + "Update script link status.");
 
-	/*
-	 * Retrieve the text of the script after read from file or generated with data from UI
-	 * @return (string) script Text of the script 
-	 */
-	getScriptText : function()
-	{
-		return this.settings.scriptCore;
-	},
+	// Always refresh the table to update status for the user interface ...
+	var request = new SieveListScriptRequest();
+	request.addListScriptListener(gEventConnection);
+	request.addErrorListener(gEventConnection);
+	gSieve.addRequest(request);
+}
 
-	/**
-	 * Set the text of the script after read from file or generated with data from UI
-	 * @param (string) script Text of the script 
-	 */
-	setScriptText : function(script)
-	{
-		this.settings.scriptCore = script;
-	},
+/*
+ * Keep Alive
+ */
+OutOfOfficeSieveServer.prototype.keepAlive	= function (script,active)
+{
+  	// create a sieve request without an eventhandler...
+	gSieve.addRequest(new SieveCapabilitiesRequest())
+}
 
-	/**
-	 * Retrieve current sieve account object
-	 * @return (SieveAccount) Sieve account selected 
-	 */
-	getAccount : function()
-	{
-		return this.account;
-	},
+/*
+ * Retrieve the name of the script file
+ * @return (string) scriptName Text of the script 
+ */
+OutOfOfficeSieveServer.prototype.getScriptName	= function ()
+{
+	return this.settings.getScriptName();
+}
 
-	/**
-	 * Set the account currently connected to a sieve server
-	 * @param (SieveAccount) Active Sieve account connection
-	 */
-	setConnectedTo : function(account)
-	{
-		if( account == undefined ){ // Accept no parameter
-			account = null;
-		}
-		this.accountConnected = account;
-	},
+/*
+ * Retrieve the text of the script after read from file or generated with data from UI
+ * @return (string) script Text of the script 
+ */
+OutOfOfficeSieveServer.prototype.getScriptText	= function ()
+{
+	return this.settings.scriptCore;
+}
 
-	/**
-	 * Check if a connection to a sieve server is active
-	 * @return (boolean) Sieve account selected 
-	 */
-	isConnectionActive : function()
-	{
-		return (this.accountConnected != null);
-	},
+/**
+ * Set the text of the script after read from file or generated with data from UI
+ * @param (string) script Text of the script 
+ */
+OutOfOfficeSieveServer.prototype.setScriptText	= function (script)
+{
+	this.settings.scriptCore = script;
+}
 
-	/**
-	 * Retrieve object service  
-	 * @return (Services) Services object 
-	 */
-	getServices : function()
-	{	// Require
-		if( this.services == null ){
-			throw new Exception(this.toString() + "getServices: Require invalid (services).");
-		}
-		return this.services;
-	},
+/**
+ * Retrieve current sieve account object
+ * @return (SieveAccount) Sieve account selected 
+ */
+OutOfOfficeSieveServer.prototype.getAccount	= function ()
+{
+	return this.account;
+}
 
-	/**
-	 * Parse the script file read and extract value to initialize Out of Office settings objectc.
-	 * This will use by the OutOfOfficeAccountSettings to set the user interface  
-	 */
-	fillSettings : function()
-	{
-		return this.getServices().parseScriptCore();
-	},
+/**
+ * Set the account currently connected to a sieve server
+ * @param (SieveAccount) Active Sieve account connection
+ */
+OutOfOfficeSieveServer.prototype.setConnectedTo	= function (account)
+{
+	if( account == undefined ){ // Accept no parameter
+		account = null;
+	}
+	this.accountConnected = account;
+}
+
+/**
+ * Check if a connection to a sieve server is active
+ * @return (boolean) Sieve account selected 
+ */
+OutOfOfficeSieveServer.prototype.isConnectionActive	= function ()
+{
+	return (this.accountConnected != null);
+}
+
+/**
+ * Retrieve object service  
+ * @return (Services) Services object 
+ */
+OutOfOfficeSieveServer.prototype.getServices	= function ()
+{	// Require
+	if( this.services == null ){
+		throw new Exception(this.toString() + "getServices: Require invalid (services).");
+	}
+	return this.services;
+}
+
+/**
+ * Parse the script file read and extract value to initialize Out of Office settings objectc.
+ * This will use by the OutOfOfficeAccountSettings to set the user interface  
+ */
+OutOfOfficeSieveServer.prototype.fillSettings	= function ()
+{
+	return this.getServices().parseScriptCore();
 }
