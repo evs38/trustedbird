@@ -1,0 +1,43 @@
+Serveur recette milimail
+------------------------
+
+/etc/apt/sources.list:
+main contrib non-free
+
+aptitude update
+aptitude dist-upgrade
+
+VMware tools:
+aptitude install psmisc build-essential linux-headers-2.6-686
+=> VMware tools
+
+aptitude install postfix qpsmtpd ssh
+
+== Postfix ==
+access unix socket /var/run/cyrus/socket/lmtp:
+adduser postfix mail
+
+main.cf:
+mailbox_transport = lmtp:unix:/var/run/cyrus/socket/lmtp
+local_recipient_maps =
+
+master.cf:
+lmtp NOT in chroot
+
+== Cyrus ==
+Base de passwords utilisateurs: /dev/sasldb2
+saslpasswd2 -c cyrus
+saslpasswd2 -c user1
+sasldblistusers2
+chown cyrus /etc/sasldb2
+
+cyradm --user cyrus localhost
+cyradm> cm user.user1
+
+Suppression mailbox:
+cyradm> sam user.user1 cyrus all
+cyradm> dm user.user1
+
+Test login IMAP:
+imtest -a user1 localhost
+
