@@ -76,14 +76,14 @@ var gEventConnection =
 		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onAuthenticate Sieve server check if password is requested.");
 		var login = gOutOfOfficeSieveServer.getAccount().getLogin();
 
-		if (login.hasUsername() == false)
-		{
-			gEventConnection.onSaslPlainResponse(null);
+		// Without a user name, we can skip the authentication 
+		if (login.hasUsername() == false){
+			gEventConnection.onLoginResponse(null);
 			return;
 		}
 
 		var request = null;
-		// the first in the sasl list is prefferd by the server
+		// the first in the sasl list is preferred by the server
 		switch (response.getSasl()[0].toLowerCase())
 		{
 			case "login":
@@ -99,18 +99,17 @@ var gEventConnection =
 		request.addErrorListener(gEventConnection);
 		request.setUsername(login.getUsername());
 
-		if (login.hasPassword()){
-			request.setPassword(login.getPassword());
-		}
-		else
+		var password = login.getPassword();
+		// TODO: terminate connection in case of an invalid password and notify the user
+		if (password == null)
 		{
-			var password = promptPassword();
-			if (password == null){
-				return; // Make an error and disconnect the server properly.
-			}
-			request.setPassword(password);    	    	
+			gEventConnection.onTreatError( "ERRORCODE:0002" ); // invalid password
+			return; //TODO Make an error and disconnect the server properly.
+			//sivSetStatus(2, "Error: Unable to retrieve Authentication information.");
+			//return;
 		}
-		gSieve.addRequest(request);    		
+	    request.setPassword(password);
+	    gSieve.addRequest(request);    		
 	},
 
 	onInitResponse: function(response)
@@ -219,7 +218,6 @@ var gEventConnection =
 
 		// this will close the Dialog!
 //		close();		
-	    // Update status
 	    // Update status
 		var values = new Array();
 		values.push(gOutOfOfficeSieveServer.getAccount().getHost().getHostname());
@@ -377,31 +375,56 @@ var gEventConnection =
 			gTryToCreate = false;
 			return;			
 		}
-		/*
-		 * Error code treatment
-		 */
 	    var message = response.getMessage();
-	    alert(message);
+	    gEventConnection.onTreatError(message);
+	},
+	
+	/*
+	 * Error code treatment
+	 */
+	onTreatError: function(message)
+	{	// Require
+		if( gOutOfOfficeSieveServer == null || gOutOfOfficeSieveServer.getAccount() == null ){
+			throw new Exception("gEventConnection:onError: Require invalid (gOutOfOfficeSieveServer or Account member).");
+		}
+		if( gSieve == null ){
+			throw new Exception(this.toString() + "gEventConnection:onError: Require invalid (gSieve).");
+		}
+		var disableAccount = true;
 	    var header = "ERRORCODE:";
 		var reg = new RegExp(header, "g");	
 		if( message.length > header.length && message.match(reg) ){ // The message is an error code to build a user label
 			var code = message.substring(header.length, message.length );
 			switch( code )
 			{
-			case "0001" : { // Hard coded error from sieve.js
+			case "0001" : { // Hard coded error from sieve.js connection to server error
 				var values = new Array();
 				values.push(gOutOfOfficeSieveServer.getAccount().getHost().getPort());
 				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.cannotopenconnection;", values);
-				// Disable account on error
-				gOutOfOfficeSieveServer.getAccount().setEnabled(false);
-				gSieve.disconnect();
-				gSieve = null;
 				break;
 			}
-			default: // Code unknown or the message to display is not in string table
+			case "0002" : { // Invalid password from user
+				var values = new Array();
+				values.push(gOutOfOfficeSieveServer.getAccount().getLogin().getUsername());
+				message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.invalidpassword;", values);
 				break;
 			}
+			default: // Code unknown
+				gOutOfOfficeSieveServer.getServices().errorSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onTreaError ==>" + message );
+				break;
+			}
+		} else { // Error from server, the message cannot be localize.
+			var values = new Array();
+			values.push(message);
+			message = gOutOfOfficeSieveServer.getServices().localizeString( "out_of_office_locale.properties", "&outofoffice.connection.status.errorfromserver;", values);
 		}
+		if( disableAccount == true){ // set it to false if don't need
+			// Disable account on error
+			gOutOfOfficeSieveServer.getAccount().setEnabled(false);
+			gSieve.disconnect();
+			gSieve = null;
+		}
+
 		postStatusMessage(message);
 		// Send status with connection error to reset manager
 		postStatusAndUpdateUI(false, true);
