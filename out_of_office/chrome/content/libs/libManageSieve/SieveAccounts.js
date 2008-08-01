@@ -11,7 +11,8 @@ var globalServices=new Services();
 
 var CONST_PREFERENCE_KEY_ = new String("extensions.sieve.account.");
 
-// Sieve No Auth Class
+
+// Sieve No Authentication Class
 // This class is used when no authentication is needed
 function SieveNoAuth() 
 {}
@@ -58,26 +59,35 @@ function SieveImapAuth(account)
 SieveImapAuth.prototype.getPassword
     = function ()
 {
-	return this.account.password;
+  // in case the passwordPromptRequired attribute is true...
+  // ... thunderbird will take care on retrieving a valid password...
+  //       
+  if (this.account.passwordPromptRequired == false)
+    return this.account.password;
+    
+  // ... otherwise we it is our job...
+  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                      .getService(Components.interfaces.nsIPromptService);
+                        
+  var input = {value:null};
+  var check = {value:false};
+  // Localization of the popup title and label
+  var title = globalServices.localizeString( "locale.properties", "&popup.connection.authentification.password.title;" );
+  var label = globalServices.localizeString( "locale.properties", "&popup.connection.authentification.password.label;" );
+  var result = prompts.promptPassword(window,title, label, input, null, check);
+  
+  prompts = null;
+  
+  if (result)
+    return input.value;
+
+  return null;
 }
 
 SieveImapAuth.prototype.getUsername
     = function ()
 {
 	return this.account.username;
-}
-
-SieveImapAuth.prototype.hasPassword
-    = function ()
-{
-    // passwordPromptRequired liefert zurück, ob wir uns um ein 
-    // gültiges Passwort kümmern müssen, oder nicht. Bei einem false 
-    // ist es Thunderbirds Aufgabe ein gültiges Passwort zu beschaffen.
-    // Ein True bedeutet hingegen, dass es unsere Aufgabe ist...
-    	
-	// Somit ist der Rückgabewert genau Spiegelverkehrt...
-	// ... und muss negiert werden!
-	return ! this.account.passwordPromptRequired;
 }
 
 SieveImapAuth.prototype.hasUsername
@@ -166,7 +176,7 @@ SieveCustomAuth.prototype.getUsername
 {
   if (gPref.prefHasUserValue(this.prefURI+".login.username"))
     return gPref.getCharPref(this.prefURI+".login.username");
-            
+
   return "";
 }
 
@@ -175,7 +185,7 @@ SieveCustomAuth.prototype.hasPassword
 {
     if (gPref.prefHasUserValue(this.prefURI+".login.hasPassword"))
         return gPref.getBoolPref(this.prefURI+".login.hasPassword");
-        
+
 	return false;
 }
 
@@ -191,7 +201,7 @@ SieveCustomAuth.prototype.getType
 	return 2;
 }
 
-// Dies läd die Imap einstellungen direkt vom Account
+// Loads the account related Imap settings
 function SieveImapHost(account)
 {
     if (account == null)
@@ -480,6 +490,36 @@ SieveAccount.prototype.setActiveHost
 	gPref.setIntPref(this.prefURI+".activeHost",type);
 }
 
+SieveAccount.prototype.getAuthorization
+    = function (type)
+{ 
+  if ((type == null) && gPref.prefHasUserValue(this.prefURI+".activeAuthorization")) 
+  {
+   type = gPref.getIntPref(this.prefURI+".activeAuthorization");
+  }
+
+  switch (type)
+  {
+    case 0  : return new SieveNoAuthorization();
+    case 2  : return new SievePromptAuthorization();
+    case 3  : return new SieveCustomAuthorization(this.URI);
+    
+    default : return new SieveDefaultAuthorization(this.getLogin().getUsername()); 
+  }
+}
+
+SieveAccount.prototype.setActiveAuthorization
+    = function (type)
+{ 
+  if (type == null)
+    throw "Authorization type is null";
+  if ((type < 0) || (type > 3))
+    throw "invalid Authorization type";
+
+  gPref.setIntPref(this.prefURI+".activeAuthorization",type);
+}
+
+
 SieveAccount.prototype.isEnabled
     = function ()
 {
@@ -494,6 +534,15 @@ SieveAccount.prototype.setEnabled
 {
   gPref.setBoolPref(this.prefURI+".enabled",enabled);
 }
+
+SieveAccount.prototype.getSettings
+    = function ()
+{
+  return this.settings;
+}
+
+
+
 
 /*
  * Indicate that the connection has been request for the current account done for the curent session
@@ -535,12 +584,7 @@ SieveAccount.prototype.setEnabledOutOfOffice
   gPref.setBoolPref(this.prefURI+".enabledOutOfOffice",enabled);
 }
 
-SieveAccount.prototype.getSettings
-    = function ()
-{
-  return this.settings;
-}
-
+/******************************************************************************/
 function SieveAccounts()
 {
 	// Retrieve account list from account manager

@@ -1,12 +1,3 @@
-// Load all the Libraries we need...
-var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
-
-// includes
-jsLoader.loadSubScript("chrome://out_of_office/content/libs/preferences.js");
-jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
-var globalServices=new Services();
-
-
 /*******************************************************************************
  
   FACTSHEET: 
@@ -384,7 +375,7 @@ SieveSaslLoginResponse.prototype.add
   
   if ((this.state == 1) && (parser.isString()))
   {
-    // Sting should be equivalten to 'Password:'
+    // String should be equivalten to 'Password:'
     this.state++;
     return;
   }
@@ -393,11 +384,23 @@ SieveSaslLoginResponse.prototype.add
   {
     // Should be either a NO, BYE or OK
     this.state = 4;
-    this.superior = new SieveAbstractResponse(data);
+    this.superior = new SieveAbstractResponse(parser);
     return;
   }
+  
+  // is it an error message? 
+  try
+  {
+    this.superior = new SieveAbstractResponse(parser);
+    this.state = 4;
+    return;
+  }
+  catch (ex) 
+  {
+    throw 'Illegal State:'+this.state+' / '+data+'\n'+ex;    
+  }
     
-  throw new Exception('Illegal State:'+this.state+' / '+data);
+  throw 'Illegal State:'+this.state+' / '+data;
 }
 
 SieveSaslLoginResponse.prototype.getState
@@ -431,6 +434,87 @@ SieveSaslLoginResponse.prototype.getResponse
 }
 
 SieveSaslLoginResponse.prototype.getResponseCode
+  = function () 
+{
+  if (this.state != 4)
+    throw "Illegal State, request not completed";
+    
+  return this.superior.getResponseCode(); 
+}
+
+//*************************************
+function SieveSaslCramMd5Response()
+{
+  this.superior = null;
+  this.state = 0;
+}
+
+SieveSaslCramMd5Response.prototype.add
+  = function (data) 
+{
+  
+  var parser = new SieveResponseParser(data);
+  
+  if ((this.state == 0) && (parser.isString()))
+  {
+    // The challange is contained within a string
+    this.challange = parser.extractString();
+    this.state++;
+    
+    return;
+  }
+  
+  if (this.state == 1)
+  {
+    // Should be either a NO, BYE or OK
+    this.state = 4;
+    this.superior = new SieveAbstractResponse(parser);
+    return;
+  }
+    
+  throw 'Illegal State:'+this.state+' / '+data;
+}
+
+SieveSaslCramMd5Response.prototype.getState
+  = function () { return this.state; }
+
+SieveSaslCramMd5Response.prototype.getChallange
+  = function ()
+{
+  if (this.state < 1)
+    throw "Illegal State, request not completed";
+      
+  return this.challange; 
+}
+
+SieveSaslCramMd5Response.prototype.getMessage
+  = function ()
+{
+  if (this.state != 4)
+    throw "Illegal State, request not completed";
+      
+  return this.superior.getMessage(); 
+}
+
+SieveSaslCramMd5Response.prototype.hasError
+  = function () 
+{
+  if (this.state != 4)
+    throw "Illegal State, request not completed";
+    
+  return this.superior.hasError(); 
+}
+
+SieveSaslCramMd5Response.prototype.getResponse
+  = function () 
+{
+  if (this.state != 4)
+    throw "Illegal State, request not completed";
+      
+  return this.superior.getResponse(); 
+}
+
+SieveSaslCramMd5Response.prototype.getResponseCode
   = function () 
 {
   if (this.state != 4)
@@ -525,11 +609,7 @@ function SieveInitResponse(data)
             this.extensions = value;
     }
         
-	try {
-    	this.superior = new SieveAbstractResponse(parser);
-    } catch(e) {
-		globalServices.logSrv("SieveResponseParser :" + e);
-    }
+    this.superior = new SieveAbstractResponse(parser);
 }
 
 SieveInitResponse.prototype.getMessage
@@ -556,8 +636,6 @@ SieveInitResponse.prototype.getExtensions
 SieveInitResponse.prototype.getTLS
     = function () { return this.tls; }    
     
-//*************************************
-//*************************************
 
 /*********************************************************
     literal               = "{" number  "+}" CRLF *OCTET
