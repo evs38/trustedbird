@@ -49,7 +49,7 @@
 
     <em:contributor>Olivier BRUN</em:contributor>
     <em:homepageURL>http://www.milimail.org/</em:homepageURL>
-	<em:iconURL>chrome://check_recipients/content/icons/logo_extension.png</em:iconURL>
+    <em:iconURL>chrome://check_recipients/content/icons/logo_extension.png</em:iconURL>
 
     <em:targetApplication>
       <rdf:Description>
@@ -59,7 +59,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Check recipients can check email address from the compose message window before sending an email. Due to check-recipient, user can check the validity of emails addresses using Local  Address books or Multi LDAP servers. To work, this add-on requires the "Multi Ldap" extension from Milimail project.</em:description>
+    <em:description>Check recipients checks email addresses in the compose message window before sending an email. It can validate email addresses using local address books or LDAP servers. Requirement: Multi LDAP extension from Milimail project.</em:description>
     
     <em:requires>
       <rdf:Description>
