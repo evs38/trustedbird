@@ -58,6 +58,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Extends the Card screen to show user's certificate.</em:description>
+    <em:description>This extension, extends the 'Edit Card' to allow the user to get and show the certificate of a selected user. The certificate can be retrieved from the local address books or from directory servers.</em:description>
   </rdf:Description>
 </rdf:RDF>

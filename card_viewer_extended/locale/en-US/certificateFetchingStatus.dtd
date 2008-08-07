@@ -20,6 +20,7 @@
    -
    - Contributor(s):
    -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+   -   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,5 +37,5 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!ENTITY title.label "Downloading certificate">
-<!ENTITY info.message "Searching the directory for contact's certificate. This may take a few minutes.">
+<!ENTITY info.message "Searching the directory for contact's certificate. This operation can take a few minutes.">
 <!ENTITY stop.label "Stop Searching">
