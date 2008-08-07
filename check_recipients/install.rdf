@@ -59,7 +59,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Check recipients checks email addresses in the compose message window before sending an email. It can validate email addresses using local address books or LDAP servers. Requirement: Multi LDAP extension from Milimail project.</em:description>
+    <em:description>Check recipients extension, checks email addresses in the compose message window before sending an email. It can validate email addresses using local address books or LDAP servers. Requirement: Multi LDAP extension from Milimail project.</em:description>
     
     <em:requires>
       <rdf:Description>
