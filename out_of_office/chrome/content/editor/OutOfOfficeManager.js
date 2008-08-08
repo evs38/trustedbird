@@ -72,6 +72,9 @@ function OutOfOfficeSettings (services) {
 	this.CONST_KEYWORD_KEEPMESSAGE			= new String( "redirection.keepMessage" );
 	this.CONST_KEYWORD_NOTIFICATION			= new String( "notification" );
 	this.CONST_KEYWORD_NOTIFICATIONMESSAGE	= new String( "notification.message" );
+	
+	this.CONST_PREFERENCE_KEY_ 				= null;
+
 	  
 	/**
 		Preference URI of the extension.
@@ -173,8 +176,7 @@ OutOfOfficeSettings.prototype = {
 		if( this.services == undefined || this.services == null ) {
 			this.services = new Services();
 		}
-		
-		this.prefURI = "extensions.out_of_office." + uri;
+		this.prefURI = this.services.getExtensionKey() + uri;
 		this.services.logSrv( this.toString() + "OutOfOfficeSettings:initilize URI=" + this.prefURI);
 		// Read settings from preference
 		this.read();
@@ -421,7 +423,7 @@ OutOfOfficeSettings.prototype = {
 			return;  // Do not need to add redirection code
 		}
 		this.insertLine();
-		this.insertLine("if address :is \"From\" \"" + this.redirectionDestinationAddress +"\" {");
+		this.insertLine("if header :contains  \"From\" \"" + this.redirectionDestinationAddress +"\" {");
 		this.insertLine("\tstop;");
 		this.insertLine("}");
 		this.insertLine("redirect \"" + this.redirectionDestinationAddress +"\";");
@@ -535,7 +537,7 @@ OutOfOfficeSettings.prototype = {
 	{
 		if( this.scriptName == null ){
 			try {
-				this.scriptName = this.services.preferences.getCharPref(globalServices.extensionKey+".scriptFileName");
+				this.scriptName = this.services.preferences.getCharPref(globalServices.getExtensionKey()+"scriptFileName");
 			} catch (e) {}
 		}
 		return this.scriptName;
@@ -549,7 +551,7 @@ OutOfOfficeSettings.prototype = {
 	{
 		if( this.notificationSubject == null ){
 			try {
-				this.notificationSubject = this.services.preferences.getCharPref(globalServices.extensionKey+".notificationSubject");
+				this.notificationSubject = this.services.preferences.getCharPref(globalServices.getExtensionKey()+"notificationSubject");
 			} catch (e) {}
 		}
 		return this.notificationSubject;
@@ -646,7 +648,7 @@ OutOfOfficeSettings.prototype = {
 	read : function()
 	{
 		if( this.prefURI == null ){
-			this.prefURI = "extensions.out_of_office." + uri;
+			throw  this.toString() + "Preference URI cannot be null to read preference parameters";
 		}
 		this.services.logSrv( this.toString() + "read preferences...");
 		this.readPreferenceRedirection();
@@ -663,7 +665,7 @@ OutOfOfficeSettings.prototype = {
 	save : function()
 	{
 		if( this.prefURI == null ){
-			this.prefURI = "extensions.out_of_office." + uri;
+			throw  this.toString() + "Preference URI cannot be null to save preference parameters";
 		}
 		this.services.logSrv( this.toString() + "save preferences");
 
@@ -784,7 +786,7 @@ OutOfOfficeManager.prototype = {
 			return null;
 		}
 		this.services.logSrv( this.toString() + "initialize");
-		this.settings.initialize(this.account.URI);
+		this.settings.initialize( this.account.getUri() );
 	},
 
 	/*
@@ -849,7 +851,7 @@ OutOfOfficeManager.prototype = {
 			return ; // already connected
 		}
 		this.account = account;
-		this.services.logSrv( this.toString() + "connectServer Try to connect to '" + account.getHost().getHostname() + "' user '" + this.account.URI + "'.");
+		this.services.logSrv( this.toString() + "connectServer Try to connect to '" + this.account.getHost().getHostname() + "' user '" + this.account.getUri() + "'.");
 		this.sieveServer = new OutOfOfficeSieveServer(this.account, this.services, this.settings, bActivateScript);
 	},
 

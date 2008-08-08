@@ -354,8 +354,11 @@ var gEventConnection =
 			gSieve = new Sieve(
 								code.getHostname(),
 								gOutOfOfficeSieveServer.getAccount().getHost().getPort(),
-								gOutOfOfficeSieveServer.getAccount().isTLS(),
-								gOutOfOfficeSieveServer.getAccount().getSettings().isDebug() );
+								gOutOfOfficeSieveServer.getAccount().getHost().isTLS(),
+			                    (gOutOfOfficeSieveServer.getAccount().getSettings().isKeepAlive() ?
+			                    	gOutOfOfficeSieveServer.getAccount().getSettings().getKeepAliveInterval():null));
+
+			gSieve.setDebugLevel( gOutOfOfficeSieveServer.getAccount().getSettings().getDebugFlags(), null );                
 			gOutOfOfficeSieveServer.sieve = gSieve;
 
 			var request = new SieveInitRequest();
@@ -670,7 +673,10 @@ OutOfOfficeSieveServer.prototype.connect	= function ()
 								gOutOfOfficeSieveServer.getAccount().getHost().getHostname(),
 								gOutOfOfficeSieveServer.getAccount().getHost().getPort(),
 								gOutOfOfficeSieveServer.getAccount().getHost().isTLS(),
-								gOutOfOfficeSieveServer.getAccount().getSettings().isDebug() );
+			                    (gOutOfOfficeSieveServer.getAccount().getSettings().isKeepAlive() ?
+			                    	gOutOfOfficeSieveServer.getAccount().getSettings().getKeepAliveInterval():null));
+
+			gSieve.setDebugLevel( gOutOfOfficeSieveServer.getAccount().getSettings().getDebugFlags(), null );                
 			gOutOfOfficeSieveServer.sieve = gSieve;
 
 			var request = new SieveInitRequest();
@@ -782,7 +788,7 @@ OutOfOfficeSieveServer.prototype.loadScript	= function (parent)
 	
 	// script load
 	// gSieve = this.connect();
-	gCompile = this.getAccount().getSettings().isCompile();
+	gCompile = this.getAccount().getSettings().hasCompileDelay();
 	gCompileDelay = this.getAccount().getSettings().getCompileDelay();
 	this.getServices().logSrv( this.toString() + "loadScript Compile =" + gCompile + " delay=" + gCompileDelay );
 

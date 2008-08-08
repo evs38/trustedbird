@@ -1,4 +1,3 @@
-// Retrieve preference service...
 var gPref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 
 // Load all the Libraries we need...
@@ -10,7 +9,6 @@ jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
 var globalServices=new Services();
 
 var CONST_PREFERENCE_KEY_ = new String("extensions.sieve.account.");
-
 
 // Sieve No Authentication Class
 // This class is used when no authentication is needed
@@ -29,12 +27,6 @@ SieveNoAuth.prototype.getUsername
 	return null;
 }
 
-SieveNoAuth.prototype.hasPassword
-    = function ()
-{
-	return false;
-}
-
 SieveNoAuth.prototype.hasUsername
     = function ()
 {
@@ -46,24 +38,36 @@ SieveNoAuth.prototype.getType
 {
 	return 0;
 }
-// Sieve Imap Auth Class
-// This class uses the Settings from the IMAP account
-function SieveImapAuth(account)
-{
-    if (account == null)
-        throw "SieveImapHost: Account can't be null"; 
 
-	this.account = account;
+/**
+ * The SieveImapAuth class uses the Authentication settings of the associated 
+ * IMAP account. Any Settings are loaded dynamically when needed. This means 
+ * any changes to the imap Account apply imediately to this class.
+ *  
+ * @param {String} imapKey 
+ *   The imapKey of the associated IMAP account.
+ */
+function SieveImapAuth(imapKey)
+{
+  if (imapKey == null)
+    throw "SieveImapHost: IMAP account key can't be null"; 
+
+	this.imapKey = imapKey;
 }
 
 SieveImapAuth.prototype.getPassword
     = function ()
 {
+  // use the IMAP Key to load the Account...
+	var account = Components.classes['@mozilla.org/messenger/account-manager;1']
+	                .getService(Components.interfaces.nsIMsgAccountManager)
+	                .getIncomingServer(this.imapKey);
+  	
   // in case the passwordPromptRequired attribute is true...
   // ... thunderbird will take care on retrieving a valid password...
   //       
-  if (this.account.passwordPromptRequired == false)
-    return this.account.password;
+  if (account.passwordPromptRequired == false)
+    return account.password;
     
   // ... otherwise we it is our job...
   var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
@@ -87,7 +91,12 @@ SieveImapAuth.prototype.getPassword
 SieveImapAuth.prototype.getUsername
     = function ()
 {
-	return this.account.username;
+  // use the IMAP Key to load the Account...
+	var account = Components.classes['@mozilla.org/messenger/account-manager;1']
+	                .getService(Components.interfaces.nsIMsgAccountManager)
+	                .getIncomingServer(this.imapKey);
+	                
+	return account.realUsername;
 }
 
 SieveImapAuth.prototype.hasUsername
@@ -105,70 +114,103 @@ SieveImapAuth.prototype.getType
 // The Sieve account needs a different login than the IMAP Account
 function SieveCustomAuth(uri)
 {
-    if (uri == null)
-        throw "SieveCustomAuth: URI can't be null"; 
-        
-	this.uri = uri;
-	// @TODO use the name from out of office Services class
-	this.prefURI = globalServices.extensionKey; 
-    this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
+  if (uri == null)
+    throw "SieveCustomAuth: URI can't be null"; 
+    
+  this.uri = uri;
+  this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
 }
 
-SieveCustomAuth.prototype.setLogin
-    = function (username,password)
-{   
-    if ((username == null) || (username == ""))
-    	throw "SieveCustomAuth: Username is empty or null";
-    	
-    // remove the existing user    
+SieveCustomAuth.prototype.setUsername
+    = function (username)
+{
+  if ((username == null) || (username == ""))
+    throw "SieveCustomAuth: Username is empty or null";
+
+  // drop any existing password, if the username changed...
+  if (this.hasPassword())
+  {    	
     var pwMgr = Components.classes["@mozilla.org/passwordmanager;1"]
-                    .getService(Components.interfaces.nsIPasswordManager);
+                  .getService(Components.interfaces.nsIPasswordManager);
     try
     {
-	    pwMgr.removeUser(new String("sieve://"+this.uri) , this.getUsername());    
-	}
-	catch (e)
-	{
-		// do nothing 
-	}    
-    
-    if ((password == null) || (password == ""))
-    {
-        gPref.setCharPref(this.prefURI+".login.username",username);    
-	    gPref.setBoolPref(this.prefURI+".login.hasPassword",false);
-    	return;
-    }
-	
-    pwMgr.addUser(new String("sieve://"+this.uri),username, password);    
-    gPref.setBoolPref(this.prefURI+".login.hasPassword",true);   
+      pwMgr.removeUser(new String("sieve://"+this.uri) , this.getUsername());
+	  }
+	  catch (e)
+	  { /* do nothing */ }
+	  
+	  // make XPCOM happy...
+	  pwMgr = null;
+  }    
+
+  // set new username...  
+  gPref.setBoolPref(this.prefURI+".login.hasPassword",false);
+  gPref.setCharPref(this.prefURI+".login.username",username);  
 }    
 
 SieveCustomAuth.prototype.getPassword
     = function ()
 {
-	if (this.hasPassword() == false)
-		return null;
-		
+  if (this.hasPassword() == true)
+  {
+    // the password is remembered...
     var pwMgr = Components.classes["@mozilla.org/passwordmanager;1"]
-                    .getService(Components.interfaces.nsIPasswordManager);
+                  .getService(Components.interfaces.nsIPasswordManager);
     var e = pwMgr.enumerator;
     
     var username = this.getUsername();    
     while (e.hasMoreElements()) 
     {        
-        var passwd = e.getNext().QueryInterface(Components.interfaces.nsIPassword);
-        
-        
-        if (passwd.host != new String("sieve://"+this.uri))
-            continue;
+      var passwd = e.getNext().QueryInterface(Components.interfaces.nsIPassword);
             
-        if (passwd.user != username)
-            continue;
-        
-        return passwd.password;
+      if (passwd.host != new String("sieve://"+this.uri))
+        continue;
+            
+      if (passwd.user != username)
+        continue;
+
+      return passwd.password;
     }
-    
+    // no password stored...
+  }
+  
+  // ... prompt for password
+  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Components.interfaces.nsIPromptService);
+                        
+  var input = {value:null};
+  var check = {value:false};
+     
+  var result = 
+    prompts.promptPassword(//window,
+        null,
+        "Password", 
+        "Please enter the password for your Sieve account", 
+        input, 
+        "Remember Password", 
+        check);
+  
+  // make XPCOM happy...
+  prompts = null;
+  
+  // user aborts password dialog...
+  if (result == false)
     return null;
+    
+  // user wants the password to be remembered...
+  if (check.value == true)
+  {
+    var pwMgr =
+      Components.classes["@mozilla.org/passwordmanager;1"]
+                .getService(Components.interfaces.nsIPasswordManager);
+
+    pwMgr.addUser(new String("sieve://"+this.uri),this.getUsername(), input.value);    
+    gPref.setBoolPref(this.prefURI+".login.hasPassword",true);
+    
+    pwMgr = null;
+  }
+    
+  return input.value;
 }
 
 SieveCustomAuth.prototype.getUsername
@@ -183,8 +225,8 @@ SieveCustomAuth.prototype.getUsername
 SieveCustomAuth.prototype.hasPassword
     = function ()
 {
-    if (gPref.prefHasUserValue(this.prefURI+".login.hasPassword"))
-        return gPref.getBoolPref(this.prefURI+".login.hasPassword");
+  if (gPref.prefHasUserValue(this.prefURI+".login.hasPassword"))
+    return gPref.getBoolPref(this.prefURI+".login.hasPassword");
 
 	return false;
 }
@@ -200,20 +242,31 @@ SieveCustomAuth.prototype.getType
 {
 	return 2;
 }
-
-// Loads the account related Imap settings
-function SieveImapHost(account)
+/**
+ * This class loads the host settings from an IMAP account. The settings are
+ * read dynamically when needed. This ensures the always the most recent 
+ * settings are used.
+ * 
+ * @param {String} imapKey
+ *   The IMAP Key which host settings should be used. 
+ */
+function SieveImapHost(imapKey)
 {
-    if (account == null)
-        throw "SieveImapHost: Account can't be null"; 
-    this.account = account;
+  if (imapKey == null)
+    throw "SieveImapHost: IMAP account key can't be null"; 
+  
+  this.imapKey = imapKey;
 }
 
 SieveImapHost.prototype.getHostname
     = function ()
 {
-	// return this.account.hostName; not the @IP of the server
-	return this.account.realHostName;
+  // use the IMAP Key to load the Account...
+  var account = Components.classes['@mozilla.org/messenger/account-manager;1']
+                    .getService(Components.interfaces.nsIMsgAccountManager)
+                    .getIncomingServer(this.imapKey);
+
+  return account.realHostName;
 }
 
 SieveImapHost.prototype.getPort
@@ -225,24 +278,36 @@ SieveImapHost.prototype.getPort
 SieveImapHost.prototype.isTLS
     = function ()
 {
-	if ( this.account.socketType == 0)
-		return false;
+  // use the IMAP Key to load the Account...
+  var account = Components.classes['@mozilla.org/messenger/account-manager;1']
+                  .getService(Components.interfaces.nsIMsgAccountManager)
+                  .getIncomingServer(this.imapKey);
+
+  if ( account.socketType == 0)
+    return false;
 		
-	return true;
+  return true;
 }
 
 SieveImapHost.prototype.getType
     = function ()
 {
-	return 0;
+  return 0;
 }
 
-// Diese klasse verwaltet die benutzerdefinierten hosteinstellungen eines Sieve Accounts
+/**
+ * This Class manages a custom host setting for a Sieve Account. Sieve Accounts 
+ * are identified by URIs.
+ * 
+ * @param {String} uri 
+ * @throws Exception 
+ */
 function SieveCustomHost(uri)
 {
-    if (uri == null)
-        throw "SieveCustomHost: URI can't be null"; 
-	this.uri = uri;
+  if (uri == null)
+    throw "SieveCustomHost: URI can't be null";
+    
+  this.uri = uri;
     this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
 }
 
@@ -319,16 +384,31 @@ function SieveAccountSettings(uri)
   this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
 }
 
+SieveAccountSettings.prototype.isCyrusBugCompatible
+    = function ()
+{
+  if (gPref.prefHasUserValue(this.prefURI+".cyrusBugCompatibility"))
+    return gPref.getBoolPref(this.prefURI+".cyrusBugCompatibility");
+        
+  return false;
+}
+
+SieveAccountSettings.prototype.enableCyrusBugCompatibility
+    = function (enabled)
+{
+  gPref.setBoolPref(this.prefURI+".cyrusBugCompatibility",enabled);
+}
+
 SieveAccountSettings.prototype.isKeepAlive
     = function () 
 {
-    if (gPref.prefHasUserValue(this.prefURI+".keepalive"))
-        return gPref.getBoolPref(this.prefURI+".keepalive");
+  if (gPref.prefHasUserValue(this.prefURI+".keepalive"))
+    return gPref.getBoolPref(this.prefURI+".keepalive");
         
-    return true;
+  return true;
 }
 
-SieveAccountSettings.prototype.setKeepAlive
+SieveAccountSettings.prototype.enableKeepAlive
     = function (enabled) 
 {
     gPref.setBoolPref(this.prefURI+".keepalive",enabled);
@@ -340,7 +420,7 @@ SieveAccountSettings.prototype.getKeepAliveInterval
     if (gPref.prefHasUserValue(this.prefURI+".keepalive.interval"))
         return gPref.getCharPref(this.prefURI+".keepalive.interval");
 
-    return "1200000"; //30*60*1000 = 30 Minuten
+    return "1800000"; //30*60*1000 = 30 Minuten
 }
 
 SieveAccountSettings.prototype.setKeepAliveInterval
@@ -349,7 +429,7 @@ SieveAccountSettings.prototype.setKeepAliveInterval
     gPref.setCharPref(this.prefURI+".keepalive.interval",ms);
 }
 
-SieveAccountSettings.prototype.isCompile
+SieveAccountSettings.prototype.hasCompileDelay
     = function ()
 {
     if (gPref.prefHasUserValue(this.prefURI+".compile"))
@@ -358,7 +438,7 @@ SieveAccountSettings.prototype.isCompile
     return true;
 }
 
-SieveAccountSettings.prototype.setCompile
+SieveAccountSettings.prototype.enableCompileDelay
     = function (enabled)
 {
   gPref.setBoolPref(this.prefURI+".compile",enabled);
@@ -380,73 +460,241 @@ SieveAccountSettings.prototype.setCompileDelay
     gPref.setIntPref(this.prefURI+".compile.delay",ms);
 }
 
-SieveAccountSettings.prototype.isDebug
+SieveAccountSettings.prototype.getDebugFlags
     = function ()
 {
-    if (gPref.prefHasUserValue(this.prefURI+".debug"))
-        return gPref.getBoolPref(this.prefURI+".debug");
+    if (gPref.prefHasUserValue(this.prefURI+".debug.flags"))
+        return gPref.getIntPref(this.prefURI+".debug.flags");
         
-    return false;
+    return 0;
 }
 
-SieveAccountSettings.prototype.setDebug
-    = function (enabled)
+SieveAccountSettings.prototype.hasDebugFlag
+    = function (flag)
 {
-  gPref.setBoolPref(this.prefURI+".debug",enabled);
+  if (this.getDebugFlags() & (1 << flag))
+    return true;
+  
+  return false;
+}
+
+SieveAccountSettings.prototype.setDebugFlag
+    = function (flag, value)
+{
+  if (value)
+    gPref.setIntPref(this.prefURI+".debug.flags",this.getDebugFlags()| (1 << flag)  );
+  else
+    gPref.setIntPref(this.prefURI+".debug.flags",this.getDebugFlags() & ~(1 << flag) );
+}
+
+SieveAccountSettings.prototype.hasForcedAuthMechanism
+    = function ()
+{
+  if (gPref.prefHasUserValue(this.prefURI+".sasl.forced"))
+    return gPref.getBoolPref(this.prefURI+".sasl.forced");
+        
+  return false;
+}
+
+SieveAccountSettings.prototype.enableForcedAuthMechanism
+    = function(enabled)
+{
+  gPref.setBoolPref(this.prefURI+".sasl.forced",enabled);
+}
+
+SieveAccountSettings.prototype.setForcedAuthMechanism
+    = function(method)
+{
+  gPref.setCharPref(this.prefURI+".sasl.mechanism",method);
+}
+SieveAccountSettings.prototype.getForcedAuthMechanism
+    = function ()
+{
+    if (gPref.prefHasUserValue(this.prefURI+".sasl.mechanism"))
+      return gPref.getCharPref(this.prefURI+".sasl.mechanism");
+        
+    return "plain";
+}
+
+/******************************************************************************/
+
+function SieveNoAuthorization()
+{
+  
+}
+
+SieveNoAuthorization.prototype.getType
+    = function ()
+{
+  return 0;
+}
+
+SieveNoAuthorization.prototype.getAuthorization
+    = function ()
+{
+  return "";
+}
+
+/******************************************************************************/
+
+function SievePromptAuthorization()
+{  
+}
+
+SievePromptAuthorization.prototype.getType
+    = function ()
+{
+  return 2;
+}
+
+SievePromptAuthorization.prototype.getAuthorization
+    = function ()
+{
+  var check = {value: false}; 
+  var input = {value: ""};
+  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                        .getService(Components.interfaces.nsIPromptService);
+  
+  var result = 
+    prompts.prompt(
+       null, 
+       "Authorization", 
+       "Please enter the username you want to be authorized as", 
+       input, 
+       null, 
+       check);
+   
+  if (result == false)
+    return null;
+  
+  return input.value;
+}
+
+/******************************************************************************/
+
+function SieveCustomAuthorization(uri)
+{
+  if (uri == null)
+    throw "SieveCustomAuthorization: URI can't be null"; 
+    
+  this.uri = uri;
+  this.prefURI = "extensions.sieve.account."+this.uri;  
+}
+
+SieveCustomAuthorization.prototype.getType
+    = function ()
+{
+  return 3;
+}
+
+SieveCustomAuthorization.prototype.getAuthorization
+    = function ()
+{
+  if (gPref.prefHasUserValue(this.prefURI+".sasl.authorization.username"))
+    return gPref.getCharPref(this.prefURI+".sasl.authorization.username");
+  
+  return null;
+}
+
+SieveCustomAuthorization.prototype.setAuthorization
+    = function (authorization)
+{
+  if ((authorization == null) || (authorization == ""))
+    throw "Authorization can't be empty or null";
+
+  gPref.setCharPref(this.prefURI+".sasl.authorization.username",authorization);
 }
 
 
-
-//*******************
-
-function SieveAccount(account)
+/******************************************************************************/
+    
+function SieveDefaultAuthorization(authorization)
 {
-    if (account == null)
-        throw "SieveAccount: Account can't be null"; 
+  this.authorization = authorization;
+} 
 
-    this.URI = account.rootMsgFolder.baseMessageURI.slice(15);
-    this.prefURI = CONST_PREFERENCE_KEY_ + this.URI;
+SieveDefaultAuthorization.prototype.getType
+    = function ()
+{
+  return 1;
+}
 
-    globalServices.logSrv("SieveAccount: Created for URI=" + this.URI + " Real host name=" + account.realHostName + " port=" + account.port + "." );
+SieveDefaultAuthorization.prototype.getAuthorization
+    = function ()
+{
+  return this.authorization;
+}
 
-    // Identifiaction of the object server
-    this.keyID = account.key;    
-    // Use pretty name attribut as a description
-    this.description = account.prettyName;    
-	// initalize the host settings
-	this.host = new Array(new SieveImapHost(account),new SieveCustomHost(this.URI));
-	// Initalize Logins setings
-	this.login = new Array(new SieveNoAuth(),new SieveImapAuth(account),new SieveCustomAuth(this.URI))
-	// Initalize the general settings
-	this.settings = new SieveAccountSettings(this.URI);
+//****************************************************************************//
+
+/**
+ * Sieve depends on IMAP, so every Sieve Accounts is directly bound to an IMAP 
+ * accounts. IMAP accounts are idenfified by the "internal pref key", which is 
+ * guaranteed to be unique across all servers in a Thunderbird profile.
+ * 
+ * @param {String} sieveUri 
+ *   Identifies this account, has to be unique.
+ * @param {String} imapKey 
+ *   The unique internal pref key of the IMAP account. 
+ * @param {String} description 
+ *   A human readable description for this account.  
+ */
+function SieveAccount(sieveUri,imapKey,description)
+{
+	// Check parameters...
+  if ((sieveUri == null) || (imapKey == null) || (description == null))
+    throw "SieveAccount: Parameter missing...";
+    
+  this.Uri = sieveUri;
+  this.prefURI = CONST_PREFERENCE_KEY_ + this.Uri;
+  
+  this.imapKey = imapKey;
+  this.description = description;	
+
 	// Default is false while the connection has not be requested.
 	this.bConnectRequest = false;
 }
 
+SieveAccount.prototype.getUri
+    = function () { return this.Uri; }
+
+/**
+ * As Uris are not very user friendly, Thunderbird uses for every IMAP account 
+ * a "PrettyName". It is either an an userdefined string or the hostname of the 
+ * IMAP account.
+ * 
+ * @return {String} 
+ *   The description for this account.
+ */
 SieveAccount.prototype.getDescription
     = function () { return this.description; }
 
-SieveAccount.prototype.getKeyID
-    = function () { return this.keyID; }
+SieveAccount.prototype.getImapKey
+    = function () { return this.imapKey; }
 
+/**
+ * Retrieves the Authentication Settings for this SieveAccount.
+ * 
+ * @param {Int} type 
+ *   defines which Authentication Settings ({@link SieveNoAuth}, 
+ *   {@link SieveCustomAuth}, {@link SieveImapAuth}) should be loaded. If this 
+ *   parameter is skipped the default Authentication settings will be returned. 
+ * @return {SieveImapAuth,SieveNoAuth,SieveCustomAuth}
+ *   Returns the Authentication Settings for this SieveAccount
+ */
 SieveAccount.prototype.getLogin
     = function (type) 
 {
-	// wenn kein bestimmter Logintyp angegeben ist ...
-	// ... nehmen wir die Standardeinstellung
-	if (type == null)
-	{
-	    // Login Related Prefs
-        if (gPref.prefHasUserValue(this.prefURI+".activeLogin"))
-            return this.getLogin(gPref.getIntPref(this.prefURI+".activeLogin"));
-        
-    	return this.login[1]; 	
-	}
+	if ((type == null) && gPref.prefHasUserValue(this.prefURI+".activeLogin")) 
+	  type = gPref.getIntPref(this.prefURI+".activeLogin");
 
-	if ((type < 0) || (type > 2))
-		throw "invalid login type";
-	
-	return this.login[type];
+  switch (type)
+  {
+    case 0  : return new SieveNoAuth();
+    case 2  : return new SieveCustomAuth(this.Uri);
+    
+    default : return new SieveImapAuth(this.imapKey);
+  }
 }
 
 SieveAccount.prototype.setActiveLogin
@@ -463,20 +711,13 @@ SieveAccount.prototype.setActiveLogin
 SieveAccount.prototype.getHost
     = function (type)
 {
+	if ((type == null ) && gPref.prefHasUserValue(this.prefURI+".activeHost"))
+	  type = gPref.getIntPref(this.prefURI+".activeHost");
 
-	if (type == null)
-	{
-	    // Login Related Prefs
-	    if (gPref.prefHasUserValue(this.prefURI+".activeHost"))
-            return this.getHost(gPref.getIntPref(this.prefURI+".activeHost"));
-        
-    	return this.host[0]; 
-    }
-
-	if ((type < 0) || (type > 1))
-		throw "invalid host type";
-	
-	return this.host[type];
+  if (type == 1)
+    return new SieveCustomHost(this.Uri)
+  else
+    return new SieveImapHost(this.imapKey)
 }
 
 SieveAccount.prototype.setActiveHost
@@ -502,7 +743,7 @@ SieveAccount.prototype.getAuthorization
   {
     case 0  : return new SieveNoAuthorization();
     case 2  : return new SievePromptAuthorization();
-    case 3  : return new SieveCustomAuthorization(this.URI);
+    case 3  : return new SieveCustomAuthorization(this.Uri);
     
     default : return new SieveDefaultAuthorization(this.getLogin().getUsername()); 
   }
@@ -518,7 +759,6 @@ SieveAccount.prototype.setActiveAuthorization
 
   gPref.setIntPref(this.prefURI+".activeAuthorization",type);
 }
-
 
 SieveAccount.prototype.isEnabled
     = function ()
@@ -538,9 +778,10 @@ SieveAccount.prototype.setEnabled
 SieveAccount.prototype.getSettings
     = function ()
 {
-  return this.settings;
+  return new SieveAccountSettings(this.Uri);
 }
 
+//****************************************************************************//
 
 
 
@@ -587,28 +828,36 @@ SieveAccount.prototype.setEnabledOutOfOffice
 /******************************************************************************/
 function SieveAccounts()
 {
-	// Retrieve account list from account manager
-	var accountManager = Components.classes['@mozilla.org/messenger/account-manager;1'].getService(Components.interfaces.nsIMsgAccountManager);
-	
-	// Allocate accounts array to fill it
+	var accountManager = Components.classes['@mozilla.org/messenger/account-manager;1']
+	                        .getService(Components.interfaces.nsIMsgAccountManager);
+                          
 	this.accounts = new Array();
 	
-	for (var i = 0; i < accountManager.allServers.Count(); i++)
-	{
-		// Retrieve each incoming server to create new account entry
-		var account = accountManager.allServers.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
-		
-		// DumpIncommingServer( account ) ;
-        if (account.type != "imap")
-          continue;
+  for (var i = 0; i < accountManager.allServers.Count(); i++)
+  {
+    var account = accountManager.allServers.GetElementAt(i)
+                      .QueryInterface(Components.interfaces.nsIMsgIncomingServer);
+		      
+    if (account.type != "imap")
+      continue;
 
-		// Create an account and add it in accounts array
-        this.accounts.push(new SieveAccount(account));
-	}
+    // pass the key if the imap account, not the account! This ensures, that... 
+    // ... we always use the most recent settings.
+    this.accounts.push(
+      new SieveAccount(
+        account.rootMsgFolder.baseMessageURI.slice(15),
+        account.key,
+        account.prettyName));
+  }
 }
 
+/**
+ * Returns all SieveAccounts of the currently active Thunderbrid profile.  
+ * @return {SieveAccount[]}
+ *   Array containing SieveAccounts
+ */
 SieveAccounts.prototype.getAccounts
     = function () 
 {   
-    return this.accounts;
+  return this.accounts;
 }

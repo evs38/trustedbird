@@ -70,7 +70,7 @@ function SieveServerUserInterface(account)
 	// Login field.
 	this.userName = account.getLogin(2).getUsername();
 	this.userPassword = account.getLogin(2).getPassword();
-	this.userPasswordCheck = account.getLogin(2).hasPassword();
+	// this.userPasswordCheck = account.getLogin(2).hasPassword();
 	       
 	this.rgLoginIndex = account.getLogin().getType();
 	
@@ -78,7 +78,7 @@ function SieveServerUserInterface(account)
 	this.keepAliveCheck = account.getSettings().isKeepAlive();
 	
 	this.compileDelay = account.getSettings().getCompileDelay();
-	this.compileCheck = account.getSettings().isCompile();
+	this.compileCheck = account.getSettings().hasCompileDelay();
 	
 	this.debugMode = account.getSettings().isDebug();
 }
@@ -139,17 +139,17 @@ SieveServerUserInterface.prototype.setLoginIndex = function (rgLoginIndex) {
 	this.rgLoginIndex = rgLoginIndex; 
 }
 	  
-SieveServerUserInterface.prototype.getKeepAlive = function () {
+SieveServerUserInterface.prototype.getKeepAliveInterval = function () {
 	return this.keepAlive; 
 }
-SieveServerUserInterface.prototype.setKeepAlive = function (keepAlive) {
+SieveServerUserInterface.prototype.setKeepAliveInterval = function (keepAlive) {
 	this.keepAlive = keepAlive; 
 }
 
-SieveServerUserInterface.prototype.getKeepAliveCheck = function () {
+SieveServerUserInterface.prototype.isKeepAlive = function () {
 	return this.keepAliveCheck; 
 }
-SieveServerUserInterface.prototype.setKeepAliveCheck = function (keepAliveCheck) {
+SieveServerUserInterface.prototype.enableKeepAlive = function (keepAliveCheck) {
 	this.keepAliveCheck = keepAliveCheck; 
 }
 	
@@ -186,7 +186,7 @@ function onDialogLoad(sender)
 	// Enable dialog control
 	enableHost(gSieveServerToConfigure.getHostType());
 	enableLogin(gSieveServerToConfigure.getLoginIndex());
-	enableKeepAlive(gSieveServerToConfigure.getKeepAliveCheck());
+	enableKeepAlive(gSieveServerToConfigure.isKeepAlive());
 	enableCompile(gSieveServerToConfigure.getCompileCheck());	
 }
 
@@ -245,7 +245,7 @@ function onLoginChange(sender)
 	var cbxPassword = document.getElementById('cbxPassword');
 	gSieveServerToConfigure.setUserPasswordCheck(cbxPassword.checked);
 	gSieveServerToConfigure.setUserName(document.getElementById('txtUsername').value);
-	gSieveServerToConfigure.getUserPassword( ( (cbxPassword.checked == true) ? document.getElementById('txtPassword').value : null ) );
+	gSieveServerToConfigure.setUserPassword( ( (cbxPassword.checked == true) ? document.getElementById('txtPassword').value : null ) );
 }
 
 function onPasswordFocus(sender)
@@ -297,7 +297,7 @@ function onTLSCommand(sender)
 // Function for the general Settings...
 function onKeepAliveCommand(sender)
 {
-	gSieveServerToConfigure.setKeepAliveCheck(sender.checked);
+	gSieveServerToConfigure.enableKeepAlive(sender.checked);
 	enableKeepAlive(sender.checked);    
 }
 
@@ -313,7 +313,7 @@ function enableKeepAlive(enabled)
 
 function onKeepAliveChange(sender)
 {
-	gSieveServerToConfigure.setKeepAlive(sender.value);    
+	gSieveServerToConfigure.setKeepAliveInterval(sender.value);    
 }
 
 function onCompileCommand(sender)
@@ -397,7 +397,7 @@ function LoadData()
 	document.getElementById('txtKeepAlive').value = gSieveServerToConfigure.getKeepAlive();
 	  
 	var cbxKeepAlive = document.getElementById('cbxKeepAlive');
-	cbxKeepAlive.checked = gSieveServerToConfigure.getKeepAliveCheck();
+	cbxKeepAlive.checked = gSieveServerToConfigure.isKeepAlive();
 	
 	document.getElementById('txtCompile').value = gSieveServerToConfigure.getCompileDelay();
 	          
@@ -482,9 +482,9 @@ function SaveData()
 	}
 	gAccount.getHost(1).setPort( gSieveServerToConfigure.getHostPort() );
 	gAccount.getHost(1).setTLS( gSieveServerToConfigure.getHostTLS() );
-	gAccount.getSettings().setKeepAlive( gSieveServerToConfigure.getKeepAliveCheck() );
-	gAccount.getSettings().setKeepAliveInterval( gSieveServerToConfigure.getKeepAlive() );
-	gAccount.getSettings().setCompile( gSieveServerToConfigure.getCompileCheck() );
+	gAccount.getSettings().enableKeepAlive( gSieveServerToConfigure.isKeepAlive() );
+	gAccount.getSettings().setKeepAliveInterval( gSieveServerToConfigure.getKeepAliveInterval() );
+	gAccount.getSettings().enableCompileDelay( gSieveServerToConfigure.getCompileCheck() );
 	gAccount.getSettings().setCompileDelay( gSieveServerToConfigure.getCompileDelay() );
 	gAccount.getSettings().setDebug( gSieveServerToConfigure.getDebugMode() );
 }

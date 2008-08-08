@@ -65,7 +65,13 @@ function onDialogLoad(sender)
 	window.arguments[0]["OutOfOfficeSieveAccountReturnCode"] = false;
 	if( gOutOfOfficeManager == null ){
 		// @TODO Error
+		throw "The object Out Of Office manager cannot be null.";
 	}
+	// Add account name in the window title
+	window.title += " '";
+	window.title += gOutOfOfficeManager.account.getDescription();
+	window.title += "'";
+	
 	gOutOfOfficeManager.loadSettings(this);	
 }
 
@@ -129,10 +135,7 @@ function enableOutOfOfficeRedirectionCtrl(enabled)
 */
 function onOutOfOfficeDestinationAddressInput(sender)
 {
-	globalServices.displayFieldOnError( 'addressCol2#1', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
-	globalServices.displayFieldOnError( 'textcol-addressingWidget', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
-//	globalServices.displayFieldOnError( 'txtOutOfOfficeDestinationAddress', !globalServices.isAddressMailValid( globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ) );
-	globalServices.logSrv("Destination address have changed.");
+	onDestinationAddressChange(sender);
 }
 
 /**
@@ -140,10 +143,21 @@ function onOutOfOfficeDestinationAddressInput(sender)
 */
 function onOutOfOfficeDestinationAddressChange(sender)
 {
-	globalServices.displayFieldOnError( 'addressCol2#1', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
-	globalServices.displayFieldOnError( 'textcol-addressingWidget', !globalServices.isAddressMailValid( globalServices.getStringValue('addressCol2#1') ) );
-//	globalServices.displayFieldOnError( 'txtOutOfOfficeDestinationAddress', !globalServices.isAddressMailValid( globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ) );
-	globalServices.logSrv("Destination address have changed.");
+	onDestinationAddressChange(sender);
+}
+
+/*
+ * Function called when the destination address fields has changed.
+ */
+function onDestinationAddressChange(sender)
+{
+	var newEmailAddress = globalServices.getStringValue('addressCol2#1');
+	globalServices.displayFieldOnError( 'addressCol2#1', !globalServices.isAddressMailValid( newEmailAddress ) );
+	/*
+	 * Old code to get Email address without auto-completion
+	 * globalServices.displayFieldOnError( 'txtOutOfOfficeDestinationAddress', !globalServices.isAddressMailValid( globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ) );
+	 */
+	globalServices.logSrv("Destination address have changed=" + newEmailAddress );
 }
 
 /**
@@ -228,7 +242,6 @@ function updateData(bSaveAndValidate)
 		switch( gOutOfOfficeManager.getSettings().checkDataValidity() ) { // Check Data validity
 		case 1 :	// Data for address mail are invalid
 			globalServices.setFocusCtrlID( 'addressCol2#1' );
-			globalServices.setFocusCtrlID( 'textcol-addressingWidget' );
 	//		globalServices.setFocusCtrlID( 'txtOutOfOfficeDestinationAddress' );
 			globalServices.warningSrv( "Invalid address " + globalServices.getStringValue('addressCol2#1') );
 			return false;

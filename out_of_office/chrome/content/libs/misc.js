@@ -64,13 +64,13 @@ function Services() {
 	/** @type string */
 	this.extensionNameDisplayable="Out Of Office extension";
 	/** @type string */
-	this.extensionKey="extensions."+this.extensionName;
+	this.extensionKey="extensions."+this.extensionName+".";
 	/**
 	 * define current version for this extension
 	 * 
 	 * @type string
 	 */
-	this.extensionVersion="0.0.1";
+	this.extensionVersion="0.0.5";
 	/**
 	 * preferences
 	 * 
@@ -82,7 +82,7 @@ function Services() {
 	 * 
 	 * @type boolean
 	 */
-	this.modeDebug=this.preferences.getBoolPref(this.extensionKey+".debug");
+	this.modeDebug=this.preferences.getBoolPref(this.getExtensionKey()+"debug");
 	/** @type nsIConsoleService */
 	this.consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 }
@@ -109,6 +109,16 @@ Services.prototype = {
 		return this.extensionNameDisplayable;
 	},
 	
+	/**
+	 * Retrieve the extension key to access to preference definition.
+	 * 
+	 * @return (string) The extension key. The string is terminated by dot.
+	 */
+	getExtensionKey : function()
+	{
+		return this.extensionKey;
+	},
+
 	/**
 	 * log message to console (only if debug mode is enabled)
 	 * 
@@ -166,10 +176,12 @@ Services.prototype = {
 	 * 
 	 * @param (string)
 	 *            Label of the UI control id.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	setFocusCtrlID : function( ctrlID )
 	{
-		document.getElementById(ctrlID).setSelectionRange ( 0 , document.getElementById(ctrlID).textLength ) 
+		document.getElementById(ctrlID).setSelectionRange( 0 , document.getElementById(ctrlID).textLength );
 		document.getElementById(ctrlID).focus();
 	},
 	
@@ -180,6 +192,8 @@ Services.prototype = {
 	 *            ctrlID Label of the UI control id.
 	 * @param (boolean)
 	 *            enabled Enabled or disabled (true/false)
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	showCtrlID : function( ctrlID, enabled )
 	{
@@ -196,6 +210,8 @@ Services.prototype = {
 	 *            Label of the UI control id.
 	 * @param (boolean)
 	 *            Enabled or disabled (true/false)
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	enableCtrlID : function( ctrlID, enabled )
 	{
@@ -211,6 +227,8 @@ Services.prototype = {
 	 * @param (string)
 	 *            Label of the UI control id.
 	 * @return (string) Label of the control as a string.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	getStringLabel : function( ctrlID )
 	{
@@ -227,6 +245,8 @@ Services.prototype = {
 	 * @param (string)
 	 *            Label of the UI control id.
 	 * @return (string) Value of the control as a string.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	getStringValue : function( ctrlID )
 	{
@@ -239,6 +259,8 @@ Services.prototype = {
 	 * @param (string)
 	 *            Label of the UI control id.
 	 * @return (boolean) Value of the control false/true.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	getBooleanValue : function( ctrlID )
 	{
@@ -253,6 +275,8 @@ Services.prototype = {
 	 *            Label of the UI control id.
 	 * @param (string)
 	 *            Value to set to the control as a string.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	setStringValue : function( ctrlID, value )
 	{
@@ -266,6 +290,8 @@ Services.prototype = {
 	 *            Label of the UI control id.
 	 * @param (string)
 	 *            label to set to the control as a string.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	setStringLabel : function( ctrlID, label )
 	{
@@ -302,6 +328,8 @@ Services.prototype = {
 	 *            arrayValue Array of the value to replace in string. Value in
 	 *            string are defined with tag %x where x is the value index.
 	 * @return (string) Localized string message to use by the caller.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	localizeString : function( localeFileName, message, arrayValue )
 	{
@@ -355,6 +383,8 @@ Services.prototype = {
 	 *            log Indicate if the log message will be displayed in the
 	 *            console
 	 * @return (boolean) result of the validity false/true.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	isAddressMailValid : function( email, log )
 	{
@@ -367,10 +397,21 @@ Services.prototype = {
 			}
 			return false;
 		}
-/*
- * if(this.echeck(email) == false) { if( log == true ) { this.warningSrv( "The
- * Email Address is invalid (" + email + ")."); } return false; }
- */		return true;
+		if( emailCheck2(email) == false ){
+			if( log == true ) { 
+				this.warningSrv( "The Email Address is invalid (" + email + ")."); 
+			}
+			return false; 
+		}
+		return true; 
+
+		if(emailCheck(email) == false) { 
+			if( log == true ) { 
+				this.warningSrv( "The Email Address is invalid (" + email + ")."); 
+			}
+			return false; 
+		}
+ 		return true;
 		// TODO Put this line 'return true;' to bypass mail check
    		var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 		if(reg.test(email) == false) {
@@ -380,45 +421,6 @@ Services.prototype = {
 			return false;
 		}
 		return true;
-	},
-	
-
-	echeck : function(str)
-	{
-		var at="@"
-		var dot="."
-		var lat=str.indexOf(at)
-		var lstr=str.length
-		var ldot=str.indexOf(dot)
-		if (str.indexOf(at)==-1){
-		   return false
-		}
-
-		if (str.indexOf(at)==-1 || str.indexOf(at)==0 || str.indexOf(at)==lstr){
-		   return false
-		}
-
-		if (str.indexOf(dot)==-1 || str.indexOf(dot)==0 || str.indexOf(dot)==lstr){
-		    return false
-		}
-
-		 if (str.indexOf(at,(lat+1))!=-1){
-		    return false
-		 }
-
-		 if (str.substring(lat-1,lat)==dot || str.substring(lat+1,lat+2)==dot){
-		    return false
-		 }
-
-		 if (str.indexOf(dot,(lat+2))==-1){
-		    return false
-		 }
-		
-		 if (str.indexOf(" ")!=-1){
-		    return false
-		 }
-
- 		 return true					
 	},
 
 	
@@ -432,6 +434,8 @@ Services.prototype = {
 	 *            log Indicate if the log message will be displayed in the
 	 *            console
 	 * @return (boolean) result of the validity false/true.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	isNotificationMessageValid : function( notification, log )
 	{
@@ -456,6 +460,8 @@ Services.prototype = {
 	 *            Label of the UI control id.
 	 * @param (boolean)
 	 *            True if the field has an error.
+	 *            
+	 * @author Olivier Brun / BT France
 	 */
 	displayFieldOnError : function( ctrlID, error )
 	{
@@ -469,8 +475,175 @@ Services.prototype = {
 }
 
 
-/**
+function emailCheck2 (emailStr) {
+var reg = /^((\"[^\"\f\n\r\t\v\b]+\")|([\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+(\.[\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+)*))@((\[(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))\])|(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))|((([A-Za-z0-9\-])+\.)+[A-Za-z\-]+))$/
+	if(reg.test(emailStr) == false) {
+		return false;
+	}
+	return true;
+}
+
+/*
  * 
+<!-- Original author:  Sandeep V. Tamhankar (stamhankar@hotmail.com) -->
+<!-- Code source from http://www.siliconglen.com/software/e-mail-validation.html
+<!-- old Source on http://www.jsmadeeasy.com/javascripts/Forms/Email%20Address%20Validation/template.htm -->
+
+<!-- The above address bounces and no current valid address  -->
+<!-- can be found. This version has changes by Craig Cockburn -->
+<!-- to accommodate top level domains .museum and .name      -->
+<!-- plus various other minor corrections and changes -->
+*/
+/* 1.1.3: Amended error messages and allowed script to deal with new TLDs
+   1.1.2: Fixed a bug where trailing . in e-mail address was passing
+            (the bug is actually in the weak regexp engine of the browser; I
+            simplified the regexps to make it work).
+   1.1.1: Removed restriction that countries must be preceded by a domain,
+            so abc@host.uk is now legal.  
+     1.1: Rewrote most of the function to conform more closely to RFC 822.
+     1.0: Original  */
+
+// <!-- Begin
+function emailCheck (emailStr) {
+	/* The following pattern is used to check if the entered e-mail address
+	 * fits the user@domain format.  It also is used to separate the username
+	 * from the domain.
+	 */
+	var emailPat=/^(.+)@(.+)$/
+	/*
+	 * The following string represents the pattern for matching all special
+	 * characters.  We don't want to allow special characters in the address. 
+	 * These characters include ( ) < @ , ; : \ " . [ ]
+	 */
+	var specialChars="\\(\\)<>@,;:\\\\\\\"\\.\\[\\]";
+	/*
+	 * The following string represents the range of characters allowed in a 
+	 * username or domainname.  It really states which chars aren't allowed.
+	 */
+	var validChars="\[^\\s" + specialChars + "\]";
+	/*
+	 * The following pattern applies if the "user" is a quoted string (in
+	 * which case, there are no rules about which characters are allowed
+	 * and which aren't; anything goes).  E.g. "jiminy cricket"@disney.com
+	 * is a legal e-mail address.
+	 */
+	var quotedUser="(\"[^\"]*\")";
+	/*
+	 * The following pattern applies for domains that are IP addresses,
+	 * rather than symbolic names.  E.g. joe@[123.124.233.4] is a legal
+	 * e-mail address. NOTE: The square brackets are required.
+	 */
+	var ipDomainPat=/^\[(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\]$/
+	/*
+	 * The following string represents an atom (basically a series of non-special characters.) 
+	 */
+	var atom=validChars + '+';
+	/*
+	 * The following string represents one word in the typical username.
+	 * For example, in john.doe@somewhere.com, john and doe are words.
+	 * Basically, a word is either an atom or quoted string. 
+	 */
+	var word="(" + atom + "|" + quotedUser + ")"
+	// The following pattern describes the structure of the user
+	var userPat=new RegExp("^" + word + "(\\." + word + ")*$")
+	/*
+	 * The following pattern describes the structure of a normal symbolic
+	 * domain, as opposed to ipDomainPat, shown above.
+	 */
+	var domainPat=new RegExp("^" + atom + "(\\." + atom +")*$")
+
+
+	/*
+	 * Finally, let's start trying to figure out if the supplied address is valid.
+	 */
+
+	/*
+	 * Begin with the coarse pattern to simply break up user@domain into
+	 * different pieces that are easy to analyze.
+	 */
+	var matchArray=emailStr.match(emailPat)
+	if (matchArray==null) {
+		/* 
+		 * Too many/few @'s or something; basically, this address doesn't
+		 * even fit the general mould of a valid e-mail address.
+		 */
+		globalServices.warningSrv("Email address seems incorrect (check @ and .'s)");
+		return false;
+	}
+	var user=matchArray[1];
+	var domain=matchArray[2];
+	globalServices.logSrv("user='" + user + "' userPat='" + userPat +"'");
+
+	// See if "user" is valid 
+	if (user.match(userPat)==null) {
+		// user is not valid
+		globalServices.warningSrv("The part of your email address before the '@' doesn't seem to be valid.");
+		return false;
+	}
+
+	/* 
+	 * if the e-mail address is at an IP address (as opposed to a symbolic
+	 * host name) make sure the IP address is valid. 
+	 */
+	var IPArray=domain.match(ipDomainPat);
+	globalServices.logSrv("domain='" + domain +"' ipDomainPat" + ipDomainPat + "'");
+	if (IPArray!=null) {
+		// this is an IP address
+		for (var i=1;i<=4;i++) {
+			if (IPArray[i]>255) {
+				globalServices.warningSrv("Destination IP address is invalid!");
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// Domain is symbolic name
+	var domainArray=domain.match(domainPat)
+	globalServices.logSrv("domain='" + domain +"' domainPat" + domainPat + "'");
+	if (domainArray==null) {
+		globalServices.warningSrv("Part of your email address after the '@' doesn't seem to be valid");
+		return false;
+	}
+
+	/* 
+	 * domain name seems valid, but now make sure that it ends in a
+	 * three-letter word (like com, edu, gov) or a two-letter word,
+	 * representing country (uk, nl), and that there's a hostname preceding
+	 * the domain or country. 
+	 */
+
+	/*
+	 * Now we need to break up the domain to get a count of how many atoms
+	 * it consists of. 
+	 */
+	var atomPat=new RegExp(atom,"g");
+	var domArr=domain.match(atomPat);
+	var len=domArr.length;
+	if (domArr[domArr.length-1].length<2 || 
+		domArr[domArr.length-1].length>6) {
+		// the address must end in a two letter or other TLD including museum
+		globalServices.warningSrv("The address must end in a top level domain (e.g. .com), or two letter country.");
+		return false;
+	}
+
+	// Make sure there's a host name preceding the domain.
+	if (len<2) {
+		var errStr="This address is missing a hostname!";
+		globalServices.warningSrv(errStr);
+		return false;
+	}
+
+	// If we've got this far, everything's valid!
+	return true;
+}
+//  End -->
+
+
+
+/**
+ * Encoding/Decoding tools
+ *  
  * UTF-8 data encode / decode Function provide by http://www.webtoolkit.info/
  * 
  */
@@ -534,12 +707,7 @@ var Utf8 = {
 
 		return string;
 	}
-
 }
-
-
-
-
 
 /*******************************************************************************
  * place the metacharacter \ (backslash) in front of the metacharacter that we
@@ -560,7 +728,6 @@ function escapeRegExp(str) {
 	return str;
 }
 
-
 /**
  * Preferences Dialog Box
  * 
@@ -575,12 +742,12 @@ var prefDialogBox = {
 	initPrefDialog : function () {
 		if (!this.services)
 			this.services= new Services();
-		document.getElementById("considerTimeout").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
-		document.getElementById("timeOut").value = this.services.preferences.getIntPref(this.services.extensionKey+".timeout");
+		document.getElementById("considerTimeout").checked = this.services.preferences.getBoolPref(this.services.getExtensionKey()+"enabled_timeout");
+		document.getElementById("timeOut").value = this.services.preferences.getIntPref(this.services.getExtensionKey()+"timeout");
 		this.enableTimeOut();
-		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
-		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
-		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
+		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.getExtensionKey()+"mark_notifications_as_read");
+		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.getExtensionKey()+"thread_on_original_message");
+		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.getExtensionKey()+"display_text_and_icons"))-1;
 	},
 
 	/**
@@ -601,11 +768,11 @@ var prefDialogBox = {
 			return false;
 		}
 
-		this.services.preferences.setBoolPref(this.services.extensionKey+".enabled_timeout",document.getElementById("considerTimeout").checked);
-		this.services.preferences.setIntPref(this.services.extensionKey+".timeout",timeOutValue);
-		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_notifications_as_read",document.getElementById("markRead").checked);
-		this.services.preferences.setBoolPref(this.services.extensionKey+".thread_on_original_message",document.getElementById("moveNotification").checked);
-		this.services.preferences.setIntPref(this.services.extensionKey+".display_text_and_icons",(document.getElementById("notificationsDisplayTextAndIcons").selectedIndex)+1);
+		this.services.preferences.setBoolPref(this.services.getExtensionKey()+"enabled_timeout",document.getElementById("considerTimeout").checked);
+		this.services.preferences.setIntPref(this.services.getExtensionKey()+"timeout",timeOutValue);
+		this.services.preferences.setBoolPref(this.services.getExtensionKey()+"mark_notifications_as_read",document.getElementById("markRead").checked);
+		this.services.preferences.setBoolPref(this.services.getExtensionKey()+"thread_on_original_message",document.getElementById("moveNotification").checked);
+		this.services.preferences.setIntPref(this.services.getExtensionKey()+"display_text_and_icons",(document.getElementById("notificationsDisplayTextAndIcons").selectedIndex)+1);
 		return true;
 	},
 
@@ -616,7 +783,6 @@ var prefDialogBox = {
 		document.getElementById("timeOut").disabled= !document.getElementById("considerTimeout").checked;
 	}
 }
-
 
 /**
  * Move message

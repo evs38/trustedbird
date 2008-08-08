@@ -246,16 +246,16 @@ function getAccountByName(searchAccount)
 
 	globalServices.logSrv( "getAccountByName started : search " + gServer.key + "." ) ;
 
-	// Use the SievePrefTreeView object to retrieve the account list (Only account kindof imap
-	// @TODO Optimisation will be to retrieve only the account used (not important).
+	// Use the SievePrefTreeView object to retrieve the account list (Only account kind of imap)
+	// @TODO Optimization will be to retrieve only the account used (not important).
 	var sieveAccountTreeView = new SievePrefTreeView(this);
 	for (var i = 0; i < sieveAccountTreeView.rowCount; i++)
   	{
 		var account = sieveAccountTreeView.getAccount(i);
 
-		globalServices.logSrv( "Account key=" + account.getKeyID() + " description=" + account.getDescription() );
+		globalServices.logSrv( "Account key=" + account.getImapKey() + " description=" + account.getDescription() );
 		// Retrieve each incoming server to find the right account to configure
-		if( account.getKeyID() == gServer.key )
+		if( account.getImapKey() == gServer.key )
 		{
 			globalServices.logSrv( "    Account found=" + account + " ended." ) ;
 			return account;

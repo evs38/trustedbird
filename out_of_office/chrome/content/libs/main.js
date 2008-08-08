@@ -53,7 +53,7 @@ var globalServices=new Services();
 	Check Preferences
 */
 function checkPref() {
-	globalServices.preferences.setCharPref(globalServices.extensionKey+".version",globalServices.extensionVersion);
+	globalServices.preferences.setCharPref(globalServices.getExtensionKey()+"version",globalServices.extensionVersion);
 	globalServices.logSrv("main:checkPref()");
 }
 
@@ -71,7 +71,7 @@ function main() {
 	/* 
 	 * Not used at this in this extension
 	 *
-	 *	if (globalServices.preferences.getCharPref(globalServices.extensionKey+".version")=="")
+	 *	if (globalServices.preferences.getCharPref(globalServices.getExtensionKey()+"version")=="")
 	 *		window.openDialog("chrome://out_of_office/content/preferences.xul","out_of_officePrefsDialog","chrome,modal");
 	 */
 

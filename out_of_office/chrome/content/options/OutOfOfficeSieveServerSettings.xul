@@ -116,8 +116,8 @@
 					</row>
 				</rows>
 			</grid>
-			<checkbox id="cbxDebug" label="&options.misc.debug;"
-				accesskey="&options.misc.debug.key;" oncommand="onDebugCommand(this)" />
+			<checkbox id="cbxDebug" label="Debug options"
+				accesskey="D" oncommand="onDebugCommand(this)" />
 		</groupbox>
 	-->
 

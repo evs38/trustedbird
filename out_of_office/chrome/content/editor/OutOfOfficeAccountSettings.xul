@@ -87,10 +87,10 @@
 											minResultsForPopup="3" ignoreBlurWhileSearching="true"
 											ontextentered="awRecipientTextCommand(eventParam, this)"
 											onerrorcommand="awRecipientErrorCommand(eventParam, this)"
-											oninput="gContentChanged=true; setupAutocomplete();" disableonsend="true"
-											onkeypress="awRecipientKeyPress(event, this); onOutOfOfficeDestinationAddressInput(this);"
-											onkeydown="awRecipientKeyDown(event, this); onOutOfOfficeDestinationAddressInput(this);">
-										<image class="person-icon" onclick="this.parentNode.select();"/>
+											oninput="gContentChanged=true; setupAutocomplete(); onOutOfOfficeDestinationAddressInput(this);" 
+											onchange="onOutOfOfficeDestinationAddressChange(this);"
+											onkeypress="awRecipientKeyPress(event, this);"
+											onkeydown="awRecipientKeyDown(event, this);">
 									</textbox>
 								</listcell>
 							</listitem>
@@ -135,7 +135,7 @@
 		<groupbox id="gbError" hidden="true">
 			<caption>
 				<image src="chrome://sieve/content/images/syntaxError.png" width="16" height="16"/>
-				<label value="&edit.errors;"/>
+				<label value="&edit.errorbar.title;"/>
 			</caption>
 			<textbox flex="1" id="lblError" multiline="true" rows="3" readonly="true" class="plain"/>
 		</groupbox>  
