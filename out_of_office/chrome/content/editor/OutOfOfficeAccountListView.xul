@@ -46,10 +46,11 @@
 %outofofficeDTD;
 ]>
 
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept"
         onload="onWindowLoad();"
         persist="screenX screenY"
-        style="width: 45em; height: 25em;"
+        style="width: 45em; height: 30em;"
         title="&outofoffice.list.title;">
       
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/preferences.js" />
@@ -70,7 +71,7 @@
 				<vbox>
 					<tree  id="treeAccounts" flex="1" hidecolumnpicker="true" seltype="single" onselect="onTreeSelect(this)">
 						<treecols>
-							<treecol id="namecol" label="&options.tree.name;" flex="1" />
+							<treecol id="namecol" label="&accounts.column.name;" flex="1" />
 							<treecol id="active" label="&outofoffice.tree.sieve.status;" cycler="true" />      
 						</treecols>
 						<treechildren />
@@ -127,4 +128,4 @@
 		   	<progressmeter id="out_of_office_connection_progressmeter" mode="undetermined" hidden="true" />
     	</hbox>
     <spacer style="height:1em"/>
-</window>
+</dialog>
