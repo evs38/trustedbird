@@ -59,6 +59,15 @@
   tooltiptext="&check_recipients.header.title;"
   style="list-style-image: url(chrome://check_recipients/content/icons/checkRecipients.png);-moz-image-region: rect(0px 24px 24px 0px);"
   orient="vertical"
-  oncommand="window.openDialog('chrome://check_recipients/content/check_recipientsDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=350,height=225');"/>
+  oncommand="window.openDialog('chrome://check_recipients/content/check_recipientsDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=550,height=225');"/>
+
+<!-- Add a menu item -->
+<menupopup id="taskPopup">
+	<menuseparator />
+	<menuitem id="menuitem-check_recipients"
+	          label="&check_recipients.header.title;"
+	          oncommand="window.openDialog('chrome://check_recipients/content/check_recipientsDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=550,height=225');"
+	          accesskey="&check_recipients.menu.accesskey;" />
+</menupopup>
 
 </overlay>

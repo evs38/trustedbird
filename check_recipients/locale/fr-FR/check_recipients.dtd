@@ -36,7 +36,8 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY check_recipients.header.title      "Vérification des destinataires">
+<!ENTITY check_recipients.header.title       "Vérification des destinataires">
 <!ENTITY check_recipients.header.short.title "Validation">
-<!ENTITY check_recipients.recipient.label   "Destinataire">
-<!ENTITY check_recipients.addrbook.label    "Carnet d'adresse">
+<!ENTITY check_recipients.recipient.label    "Destinataires">
+<!ENTITY check_recipients.addrbook.label     "Carnets d'adresses">
+<!ENTITY check_recipients.menu.accesskey     "V">

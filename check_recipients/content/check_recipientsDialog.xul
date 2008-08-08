@@ -35,7 +35,8 @@
    - the provisions above, a recipient may use your version of this file under
    - the terms of any one of the MPL, the GPL or the LGPL.
    -
-   - ***** END LICENSE BLOCK ***** -->
+   - ***** END LICENSE BLOCK *****
+-->
 
 <?xml-stylesheet href="chrome://messenger/skin/addressbook/cardDialog.css" type="text/css"?>
 <?xml-stylesheet href="chrome://check_recipients/content/css/check_recipients.css" type="text/css"?>
@@ -46,27 +47,27 @@
         xmlns:nc="http://home.netscape.com/NC-rdf#"
         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 		id="checkRecipients"
+		buttons="accept"
 		onload="check_recipients_onLoadDialog();"
-        ondialogcancel="check_recipients_onDialogCancelFetchingStatuts();"
 		title="&check_recipients.header.title;"
-        ondialogaccept="">
+        ondialogaccept="check_recipients_onDialogCancelFetchingStatuts();">
 
 	<script type="application/x-javascript" src="chrome://check_recipients/content/check_recipientsDialog.js"/>
 	 
 	<stringbundle id="check_recipients_stringbundle" src="chrome://check_recipients/locale/check_recipients.properties"/>	
 
-    <listbox id="check_recipients_recipientsList" flex="1">
+    <listbox id="check_recipients_recipientsList" flex="3">
         <listhead>
             <listheader label="&check_recipients.recipient.label;"/>
             <listheader label="&check_recipients.addrbook.label;"/>
         </listhead>
         <listcols>
+            <listcol flex="2"/>
             <listcol flex="1"/>
-            <listcol flex="1" style="width: 100px"/>
         </listcols>
     </listbox>
 
     <spacer style="height:1em"/>
-    <progressmeter id="check_recipient_extended_progressmeter"/>
+    <progressmeter id="check_recipient_extended_progressmeter" mode="undetermined"/>
     <spacer style="height:1em"/>
 </dialog>

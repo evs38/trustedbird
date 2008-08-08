@@ -36,7 +36,8 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY check_recipients.header.title      "Check recipients">
+<!ENTITY check_recipients.header.title       "Check Recipients">
 <!ENTITY check_recipients.header.short.title "Validate">
-<!ENTITY check_recipients.recipient.label   "Recipient">
-<!ENTITY check_recipients.addrbook.label    "Address Book">
+<!ENTITY check_recipients.recipient.label    "Recipients">
+<!ENTITY check_recipients.addrbook.label     "Address Books">
+<!ENTITY check_recipients.menu.accesskey     "H">

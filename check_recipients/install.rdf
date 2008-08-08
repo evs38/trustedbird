@@ -43,7 +43,7 @@
     <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
     <em:id>check_recipients@milimail.org</em:id>
-    <em:name>Check recipients</em:name>
+    <em:name>Check Recipients</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Eric BALLET BAZ</em:creator>
 

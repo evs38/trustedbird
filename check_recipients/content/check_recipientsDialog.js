@@ -125,20 +125,24 @@ function check_recipients_onLoadDialog() {
 				bListEmpty = false;
             }
         }
-
+        
 		//Disable progressmeter if no contact to check
 		var progressmeter = document.getElementById("check_recipient_extended_progressmeter");
 		if (progressmeter && bListEmpty == true) {
 			progressmeter.setAttribute("hidden", "true");
 		}
+		
 		//Retrieve ldap server list
-        var ldapServersPref = prefs.getCharPref(CHECK_RECIPIENTS_PREF_LDAP_SERVERS);
-        if (ldapServersPref) {
-            check_recipients_ldapServersArray = ldapServersPref.split(',');
-        }
-        
-        // Init and process the LDAP search (Delay execution to allow UI to refresh)
-        setTimeout(check_recipients_initLDAPAndSearch, 1);
+		try {
+			var ldapServersPref = prefs.getCharPref(CHECK_RECIPIENTS_PREF_LDAP_SERVERS);
+			if (ldapServersPref) {
+				check_recipients_ldapServersArray = ldapServersPref.split(',');
+			}
+		} catch (e) {
+		}
+
+		// Init and process the LDAP search
+        if (!bListEmpty) setTimeout(check_recipients_initLDAPAndSearch, 1);
     }
 	displayTrace("check_recipients_onLoadDialog ended." );
 }
@@ -185,7 +189,17 @@ var check_recipients_LDAPMessageListener = {
             check_recipients_LdapOperation.simpleBind(check_recipients_getPassword());
 			displayTrace("onLDAPInit ended.");
         } catch (e) {
-            alert("Exception when binding to ldap: " + e);
+            //alert("Exception when binding to ldap: " + e);
+        	
+        	check_recipients_stringbundle = document.getElementById('check_recipients_stringbundle');
+        	alert(check_recipients_stringbundle.getString("ldap_connect_error")+" "+check_recipients_LdapServerName);
+        	
+        	// Continue the search on other LDAP servers/Local
+            if (check_recipients_ldapServersArray.length > 0) {
+                check_recipients_initLDAPAndSearch();
+            } else {
+            	check_recipients_local_updateUI();
+            }
         }
     },
 
@@ -199,45 +213,11 @@ var check_recipients_LDAPMessageListener = {
             // Is there any other ldap to search on ?
             if (check_recipients_ldapServersArray.length > 0) {
                 check_recipients_initLDAPAndSearch();
-            // Search is finish
             } else {
-                var progressmeter = document.getElementById("check_recipient_extended_progressmeter");
-                if (progressmeter) {
-                    progressmeter.setAttribute("hidden", "true");
-                }
-                var images = document.getElementsByTagName("image");
-                var textlabel = document.getElementsByTagName("label");
-                for (var i = 0; i < images.length; i++) {
-					displayTrace("\tImage attribute class =" + images[i].getAttribute("class") );
-                    if (images[i].getAttribute("class") == "check_recipients_searching") {
-						var email = images[i].getAttribute("id");
-						if (check_recipients_IsEmailInDataBase(email)){
-							images[i].setAttribute("class", "check_recipients_found");
-		                    images[i].setAttribute("id", email);
-							
-							var	finalLabel = "Local";
-							var label = textlabel[i].getAttribute("value");
-				            if (label != "Searching") {
-								finalLabel = finalLabel + ", " + label;
-							}
-							textlabel[i].setAttribute("value", finalLabel );
-		                    textlabel[i].setAttribute("id", "textlabel_" + email);
- 						}
-						else{
-							images[i].setAttribute("class", "check_recipients_notfound");
-							textlabel[i].setAttribute("value", "----" );
-						}
-                    } else {
-	                    if (images[i].getAttribute("class") == "check_recipients_found") {
-							var email = images[i].getAttribute("id");
-							if (check_recipients_IsEmailInDataBase(email)){
-								textlabel[i].setAttribute("value", "Local, " + textlabel[i].getAttribute("value") );
-			                    textlabel[i].setAttribute("id", "textlabel_" + email);
-	 						}
-	                    }
-					}
-                }
 				displayTrace("\tNo more LDAP server to check." );
+
+				check_recipients_local_updateUI();
+				
 				displayTrace("onLDAPMessage ended.");
             }
             return;
@@ -268,6 +248,45 @@ var check_recipients_LDAPMessageListener = {
 		displayTrace("\tmessage =" + aMessage.type);
 
 		displayTrace("onLDAPMessage ended.");
+    }
+}
+
+function check_recipients_local_updateUI() {
+    var progressmeter = document.getElementById("check_recipient_extended_progressmeter");
+    if (progressmeter) {
+        progressmeter.setAttribute("hidden", "true");
+    }
+    var images = document.getElementsByTagName("image");
+    var textlabel = document.getElementsByTagName("label");
+    for (var i = 0; i < images.length; i++) {
+		displayTrace("\tImage attribute class =" + images[i].getAttribute("class") );
+        if (images[i].getAttribute("class") == "check_recipients_searching") {
+			var email = images[i].getAttribute("id");
+			if (check_recipients_IsEmailInDataBase(email)){
+				images[i].setAttribute("class", "check_recipients_found");
+                images[i].setAttribute("id", email);
+				
+				var	finalLabel = "Local";
+				var label = textlabel[i].getAttribute("value");
+	            if (label != "Searching") {
+					finalLabel = finalLabel + ", " + label;
+				}
+				textlabel[i].setAttribute("value", finalLabel );
+                textlabel[i].setAttribute("id", "textlabel_" + email);
+				}
+			else{
+				images[i].setAttribute("class", "check_recipients_notfound");
+				textlabel[i].setAttribute("value", "----" );
+			}
+        } else {
+            if (images[i].getAttribute("class") == "check_recipients_found") {
+				var email = images[i].getAttribute("id");
+				if (check_recipients_IsEmailInDataBase(email)){
+					textlabel[i].setAttribute("value", "Local, " + textlabel[i].getAttribute("value") );
+                    textlabel[i].setAttribute("id", "textlabel_" + email);
+					}
+            }
+		}
     }
 }
 
