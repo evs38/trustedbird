@@ -42,7 +42,7 @@ var CARDVEXT_PREF_LDAP_SERVER = "ldap_2.autoComplete.directoryServer";
 //LDAP attribute to look for retrieving the certificate
 var CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE = "userCertificate;binary";
 
-// String bundle resource
+//String bundle resource
 var cardvext_stringBundle;
 //The following variables are needed by the LDAP asynchronous calls.
 var cardvext_LdapServerURL;
@@ -62,52 +62,52 @@ var certificate_length = 0;
 //Implements XPCOM nsILDAPMessageListener.
 var cardvext_LDAPMessageListener = {
 
- QueryInterface: function(iid) {
-     if (iid.equals(Components.interfaces.nsISupports) || iid.equals(Components.interfaces.nsILDAPMessageListener)) {
-         return this;
-     }
-
-     Components.returnCode = Components.results.NS_ERROR_NO_INTERFACE;
-     return null;
- },
-
- // Init has completed
- onLDAPInit: function(aConn, aStatus) {
-     // Bind to LDAP
-     try {
-         cardvext_initNewLDAPOperation();
-         cardvext_LdapOperation.simpleBind(cardvext_getPassword());
-     } catch (e) {
-         dump(e + " exception when binding to ldap\n");
-     	 cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
-     }
- },
-
- // LDAP message has been received
- onLDAPMessage: function(aMessage) {
- 	// Search is done
-	if (Components.interfaces.nsILDAPMessage.RES_SEARCH_RESULT == aMessage.type) {
-		cardvext_showCurrentCertificateResult();
-		return;
-	}
-	
-	// Binding is done
-	if (Components.interfaces.nsILDAPMessage.RES_BIND == aMessage.type) {
-		if (Components.interfaces.nsILDAPErrors.SUCCESS != aMessage.errorCode) {
-			dump("Error with code " + aMessage.errorCode + " when binding to ldap\n");
-	    	cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
-		} else { // Kick off search ...
-			cardvext_kickOffSearch();
+	QueryInterface: function(iid) {
+		if (iid.equals(Components.interfaces.nsISupports) || iid.equals(Components.interfaces.nsILDAPMessageListener)) {
+			return this;
 		}
-		return;
-	}
 	
-	// One search result has been received
-	if (Components.interfaces.nsILDAPMessage.RES_SEARCH_ENTRY == aMessage.type) {
-		cardvext_handleSearchResultMessage(aMessage);
-		return;
+		Components.returnCode = Components.results.NS_ERROR_NO_INTERFACE;
+		return null;
+	},
+	
+	// Init has completed
+	onLDAPInit: function(aConn, aStatus) {
+		// Bind to LDAP
+		try {
+			cardvext_initNewLDAPOperation();
+			cardvext_LdapOperation.simpleBind(cardvext_getPassword());
+		} catch (e) {
+			dump(e + " exception when binding to ldap\n");
+			cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
+		}
+	},
+	
+	// LDAP message has been received
+	onLDAPMessage: function(aMessage) {
+		// Search is done
+		if (Components.interfaces.nsILDAPMessage.RES_SEARCH_RESULT == aMessage.type) {
+			cardvext_showCurrentCertificateResult();
+			return;
+		}
+	
+		// Binding is done
+		if (Components.interfaces.nsILDAPMessage.RES_BIND == aMessage.type) {
+			if (Components.interfaces.nsILDAPErrors.SUCCESS != aMessage.errorCode) {
+				dump("Error with code " + aMessage.errorCode + " when binding to ldap\n");
+				cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
+			} else { // Kick off search ...
+				cardvext_kickOffSearch();
+			}
+			return;
+		}
+	
+		// One search result has been received
+		if (Components.interfaces.nsILDAPMessage.RES_SEARCH_ENTRY == aMessage.type) {
+			cardvext_handleSearchResultMessage(aMessage);
+			return;
+		}
 	}
- }
 }
 
 /**
@@ -117,8 +117,8 @@ var cardvext_LDAPMessageListener = {
  */
 function cardvext_showCurrentCertificate() {
 
-    // Initialize the string bundle resource
-    cardvext_stringBundle = document.getElementById('card_viewer_extended_stringbundle');
+	// Initialize the string bundle resource
+	cardvext_stringBundle = document.getElementById('card_viewer_extended_stringbundle');
 
 	// TODO Stop it now if the progress meter running probably the connection is too long
 	// Test hidden attribute if false then stop 
@@ -127,46 +127,46 @@ function cardvext_showCurrentCertificate() {
 		return;
 	}
 
-    // Get the email of the selected user's card
-    var email = cardvext_getEmail();
-    if (!email) {
-     	cardvext_showCurrentCertificateInWindow("card_viewer.no_email_found");
-    	return;
-    }
-    
-    // Start progress meter control and change the button label's
+	// Get the email of the selected user's card
+	var email = cardvext_getEmail();
+	if (!email) {
+		cardvext_showCurrentCertificateInWindow("card_viewer.no_email_found");
+		return;
+	}
+
+	// Start progress meter control and change the button label's
 	document.getElementById("card_viewer_extended_button_id").label = cardvext_stringBundle.getString("card_viewer.button.cancelSearchCertificate.label");
 	document.getElementById('card_viewer_extended_progressmeter').removeAttribute('hidden');
 
 	var ldapUrlPrefix = "moz-abldapdirectory://";
-    var directoryUrl = null;
-    var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
-    
-    if(gEditCard){// Parameters from selected item in the tree from the address book window
-    	directoryUrl = gEditCard.abURI;
-    }
+	var directoryUrl = null;
+	var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
+
+	if(gEditCard){// Parameters from selected item in the tree from the address book window
+		directoryUrl = gEditCard.abURI;
+	}
 	if ( directoryUrl != null && directoryUrl != "" && (directoryUrl.indexOf(ldapUrlPrefix, 0) == 0)) { // LDAP url found then search to LDAP server
 		directoryUrl = directoryUrl.substr(ldapUrlPrefix.length, directoryUrl.length);
 
-        // Retrieve and remind window argument
-        cardvext_EmailToLookFor = email;
-        // Retrieve directory server selected
-        cardvext_DirectoryToLookFor = directoryUrl;
+		// Retrieve and remind window argument
+		cardvext_EmailToLookFor = email;
+		// Retrieve directory server selected
+		cardvext_DirectoryToLookFor = directoryUrl;
 
-    	// Use global variable for parameters
-        cardvext_onStartCertificateFetchingStatuts();
-	
+		// Use global variable for parameters
+		cardvext_onStartCertificateFetchingStatuts();
+
 	} else { // Search to local address book
-        directoryUrl = null; // ensure the search is only from local storage
-	    // try to retrieve the certificate from local storage
-	    try {
-	        cardvext_Certificate = certDB.findCertByEmailAddress(null, email);
-	    } catch (e) {
-	        // No certificate found : silently ignore this exception
-	    }
+		directoryUrl = null; // ensure the search is only from local storage
+		// try to retrieve the certificate from local storage
+		try {
+			cardvext_Certificate = certDB.findCertByEmailAddress(null, email);
+		} catch (e) {
+			// No certificate found : silently ignore this exception
+		}
 		// No messageID the default value will be used (certificate not found)
-    	cardvext_showCurrentCertificateInWindow();
-    }
+		cardvext_showCurrentCertificateInWindow();
+	}
 }  
 
 /**
@@ -203,30 +203,30 @@ function cardvext_showCurrentCertificateInWindow(messageID) {
 	// Stop progress meter bar 
 	document.getElementById('card_viewer_extended_progressmeter').setAttribute('hidden','true');
 	document.getElementById("card_viewer_extended_button_id").label = cardvext_stringBundle.getString("card_viewer.button.showCurrentCertificate.label");
-    if (cardvext_Certificate) {
-        cardvext_viewCertHelper(cardvext_Certificate);
-    } else { // an error occurs or the certificate has been not found
-    	var messageToDisplay = cardvext_stringBundle.getString("card_viewer.no_certificate_found"); // Default value
-    	if(messageID != null && messageID != "" ){
-    		messageToDisplay = cardvext_stringBundle.getString(messageID);
-    	}
-        alert(messageToDisplay);
-    }
+	if (cardvext_Certificate) {
+		cardvext_viewCertHelper(cardvext_Certificate);
+	} else { // an error occurs or the certificate has been not found
+		var messageToDisplay = cardvext_stringBundle.getString("card_viewer.no_certificate_found"); // Default value
+		if(messageID != null && messageID != "" ){
+			messageToDisplay = cardvext_stringBundle.getString(messageID);
+		}
+		alert(messageToDisplay);
+	}
 }
 
-// Helper to show to the user the specified certificate
+//Helper to show to the user the specified certificate
 function cardvext_viewCertHelper() {
-    if (!cardvext_Certificate)
-        return;
+	if (!cardvext_Certificate)
+		return;
 
-    var cd = Components.classes["@mozilla.org/nsCertificateDialogs;1"].getService(Components.interfaces.nsICertificateDialogs);
-    cd.viewCert(window, cardvext_Certificate);
+	var cd = Components.classes["@mozilla.org/nsCertificateDialogs;1"].getService(Components.interfaces.nsICertificateDialogs);
+	cd.viewCert(window, cardvext_Certificate);
 }
 
-// Retrieve the email of the selected user's card
+//Retrieve the email of the selected user's card
 function cardvext_getEmail() {
-    var primaryEmail = document.getElementById("PrimaryEmail");
-    return primaryEmail.value;
+	var primaryEmail = document.getElementById("PrimaryEmail");
+	return primaryEmail.value;
 }
 
 /**
@@ -238,7 +238,7 @@ function cardvext_onStartCertificateFetchingStatuts() {
 
 	// If argument is ok
 	if (cardvext_EmailToLookFor != null && cardvext_EmailToLookFor != "" &&
-		cardvext_DirectoryToLookFor != null	&& cardvext_DirectoryToLookFor != "") {
+			cardvext_DirectoryToLookFor != null	&& cardvext_DirectoryToLookFor != "") {
 		// Initialization and process the LDAP search (Delay execution to allow UI to refresh)
 		setTimeout(cardvext_initLDAPAndSearch, 1);
 	} else {
@@ -251,7 +251,7 @@ function cardvext_onStartCertificateFetchingStatuts() {
  * 
  * @author Olivier Brun
  */
-// Window Dialog has been canceled by the user.
+//Window Dialog has been canceled by the user.
 function cardvext_onStopCertificateFetchingStatuts() {
 	if (cardvext_LdapOperation) {
 		try {
@@ -261,7 +261,7 @@ function cardvext_onStopCertificateFetchingStatuts() {
 			// Silently ignore this exception, since we can't do anything
 		}
 	}
-	
+
 	cardvext_Certificate = null;
 
 	// Stop progress meter bar 
@@ -270,54 +270,54 @@ function cardvext_onStopCertificateFetchingStatuts() {
 	return true;
 }
 
-// Init and process the LDAP search.
+//Init and process the LDAP search.
 function cardvext_initLDAPAndSearch() {
 
- // Retrieve LDAP attributes from user preferences
- var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
- var prefs = prefService.getBranch(null);
+	// Retrieve LDAP attributes from user preferences
+	var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+	var prefs = prefService.getBranch(null);
 
- // Get the login to authenticate as, if there is one.
- var directoryPref = cardvext_DirectoryToLookFor;
- if(directoryPref == null || directoryPref == ""){ // No directory from user card then search to the default directory server.
- 	directoryPref = prefs.getCharPref(CARDVEXT_PREF_LDAP_SERVER);
- }
- prefs = prefService.getBranch(directoryPref);
+	// Get the login to authenticate as, if there is one.
+	var directoryPref = cardvext_DirectoryToLookFor;
+	if(directoryPref == null || directoryPref == ""){ // No directory from user card then search to the default directory server.
+		directoryPref = prefs.getCharPref(CARDVEXT_PREF_LDAP_SERVER);
+	}
+	prefs = prefService.getBranch(directoryPref);
 
- try {
-     cardvext_Login = prefs.getComplexValue(".auth.dn", Components.interfaces.nsISupportsString).data;
- } catch (e) {
-     // if we don't have this pref, no big deal
- }
+	try {
+		cardvext_Login = prefs.getComplexValue(".auth.dn", Components.interfaces.nsISupportsString).data;
+	} catch (e) {
+		// if we don't have this pref, no big deal
+	}
 
- // Init and process the LDAP search
- cardvext_LdapServerURL = 
-     Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
- try {
-     cardvext_LdapServerURL.spec = prefs.getCharPref(".uri");
+	// Init and process the LDAP search
+	cardvext_LdapServerURL = 
+		Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
+	try {
+		cardvext_LdapServerURL.spec = prefs.getCharPref(".uri");
 
-     cardvext_LdapConnection = 
-         Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
+		cardvext_LdapConnection = 
+			Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
 
-     cardvext_LdapConnection.init(
-         cardvext_LdapServerURL.asciiHost,
-         cardvext_LdapServerURL.port,
-         cardvext_LdapServerURL.options & cardvext_LdapServerURL.OPT_SECURE,
-         cardvext_Login,
-         cardvext_getProxyOnUIThread(cardvext_LDAPMessageListener, Components.interfaces.nsILDAPMessageListener),
-         null,
-         Components.interfaces.nsILDAPConnection.VERSION3);
+		cardvext_LdapConnection.init(
+				cardvext_LdapServerURL.asciiHost,
+				cardvext_LdapServerURL.port,
+				cardvext_LdapServerURL.options & cardvext_LdapServerURL.OPT_SECURE,
+				cardvext_Login,
+				cardvext_getProxyOnUIThread(cardvext_LDAPMessageListener, Components.interfaces.nsILDAPMessageListener),
+				null,
+				Components.interfaces.nsILDAPConnection.VERSION3);
 
-     } catch (e) {
-         dump(e + " exception when creating ldap connection\n");
-     	cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
- }
+	} catch (e) {
+		dump(e + " exception when creating ldap connection\n");
+		cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
+	}
 }
 
 //Init a new LDAP operation Object
 function cardvext_initNewLDAPOperation() {
 	cardvext_LdapOperation = Components.classes["@mozilla.org/network/ldap-operation;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPOperation);
-	
+
 	cardvext_LdapOperation.init( cardvext_LdapConnection, 
 			cardvext_getProxyOnUIThread(cardvext_LDAPMessageListener, Components.interfaces.nsILDAPMessageListener), null);
 }
@@ -330,7 +330,7 @@ function cardvext_getPassword() {
 		var authPrompter = windowWatcherSvc.getNewAuthPrompter(window.QueryInterface(Components.interfaces.nsIDOMWindow));
 		var strBundle = document.getElementById('bundle_ldap');
 		var password = { value: "" };
-		
+
 		// nsLDAPAutocompleteSession uses asciiHost instead of host for the prompt text, I think we should be consistent.
 		if (authPrompter.promptPassword(
 				strBundle.getString("authPromptTitle"),
@@ -345,8 +345,8 @@ function cardvext_getPassword() {
 	return null;
 }
 
-// Utils to get a proxy on UI thread : don't freeze the UI will performing the
-// search
+//Utils to get a proxy on UI thread : don't freeze the UI will performing the
+//search
 function cardvext_getProxyOnUIThread(aObject, aInterface) {
 	var eventQSvc = Components.classes["@mozilla.org/event-queue-service;1"].getService(Components.interfaces.nsIEventQueueService);
 	var uiQueue = eventQSvc.getSpecialEventQueue(Components.interfaces.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
@@ -357,46 +357,46 @@ function cardvext_getProxyOnUIThread(aObject, aInterface) {
 
 //Launch the LDAP search
 function cardvext_kickOffSearch() {
- try {
-     // Build the search query
-     var prefix1 = "";
-     var suffix1 = "";
+	try {
+		// Build the search query
+		var prefix1 = "";
+		var suffix1 = "";
 
-     // Build the optionnal URL filter
-     var urlFilter = cardvext_LdapServerURL.filter;
-     if (urlFilter != null && urlFilter.length > 0 && urlFilter != "(objectclass=*)") {
-         if (urlFilter[0] == '(') {
-             prefix1 = "(&" + urlFilter;
-         } else {
-             prefix1 = "(&(" + urlFilter + ")";
-         }
-         suffix1 = ")";
-     }
+		// Build the optionnal URL filter
+		var urlFilter = cardvext_LdapServerURL.filter;
+		if (urlFilter != null && urlFilter.length > 0 && urlFilter != "(objectclass=*)") {
+			if (urlFilter[0] == '(') {
+				prefix1 = "(&" + urlFilter;
+			} else {
+				prefix1 = "(&(" + urlFilter + ")";
+			}
+			suffix1 = ")";
+		}
 
-      // Build the mail criterion
-     var mailFilter = "(mail=" + cardvext_EmailToLookFor + ")";
+		// Build the mail criterion
+		var mailFilter = "(mail=" + cardvext_EmailToLookFor + ")";
 
-     // Concat the search query
-     var filter = prefix1 + mailFilter + suffix1;
+		// Concat the search query
+		var filter = prefix1 + mailFilter + suffix1;
 
-     // Launch the LDAP search
-     cardvext_initNewLDAPOperation();
-     cardvext_LdapOperation.searchExt(
-         cardvext_LdapServerURL.dn,
-         cardvext_LdapServerURL.scope,
-         filter,
-         1,
-         [CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE],
-         0,		// TODO Timeout parameter 
-         1); 	// Max search results
-         
- } catch (e) {
-     dump(e + " exception when searching on ldap\n");
-  	 cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_search");
- }
+		// Launch the LDAP search
+		cardvext_initNewLDAPOperation();
+		cardvext_LdapOperation.searchExt(
+				cardvext_LdapServerURL.dn,
+				cardvext_LdapServerURL.scope,
+				filter,
+				1,
+				[CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE],
+				0,		// TODO Timeout parameter 
+				1); 	// Max search results
+
+	} catch (e) {
+		dump(e + " exception when searching on ldap\n");
+		cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_search");
+	}
 }
 
-// Handle the search result LDAP message.
+//Handle the search result LDAP message.
 function cardvext_handleSearchResultMessage(aMessage) {
 
 	var outSize = new Object();
@@ -404,7 +404,7 @@ function cardvext_handleSearchResultMessage(aMessage) {
 	try {
 		attributesFound = aMessage.getAttributes(outSize);
 	} catch (e) {
-	     dump(e + " exception when retrieving attributes of message from LDAP server\n");
+		dump(e + " exception when retrieving attributes of message from LDAP server\n");
 	}
 	if(attributesFound == null ) {
 		return; // Attribute not found
