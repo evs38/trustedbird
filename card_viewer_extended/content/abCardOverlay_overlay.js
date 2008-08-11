@@ -79,7 +79,7 @@ var cardvext_LDAPMessageListener = {
          cardvext_LdapOperation.simpleBind(cardvext_getPassword());
      } catch (e) {
          dump(e + " exception when binding to ldap\n");
-     	 cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_operation_init");
+     	 cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
      }
  },
 
@@ -95,7 +95,7 @@ var cardvext_LDAPMessageListener = {
 	if (Components.interfaces.nsILDAPMessage.RES_BIND == aMessage.type) {
 		if (Components.interfaces.nsILDAPErrors.SUCCESS != aMessage.errorCode) {
 			dump("Error with code " + aMessage.errorCode + " when binding to ldap\n");
-	    	cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_operation_binding");
+	    	cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
 		} else { // Kick off search ...
 			cardvext_kickOffSearch();
 		}
@@ -175,29 +175,20 @@ function cardvext_showCurrentCertificate() {
  * @author Olivier Brun 
  */
 function cardvext_showCurrentCertificateResult() {
+	var errorMessage = "card_viewer.no_certificate_found";
+	var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
 
-    var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
-    // Certificate has been found in LDAP, import it in local storage
-    if (certificate_bytes) {
-        // Import certificate
-        // Reload the certificate as a X509 object
-        try {
-        	certDB.importEmailCertificate(certificate_bytes, certificate_length.value, null);
-        } catch (e) {
-            dump(e + " exception while importing certificate by email address\n");
-            // No certificate found : silently ignore this exception
-            // This could happen for example if certificate doesn't contains the same email as the one defined in LDAP !
-        }
-        // Reload the certificate as a X509 object
-        try {
-            cardvext_Certificate = certDB.findCertByEmailAddress(null, cardvext_EmailToLookFor);
-        } catch (e) {
-            dump(e + " exception while finding certificate by email address\n");
-            // No certificate found : silently ignore this exception
-            // This could happen for example if certificate doesn't contains the same email as the one defined in LDAP !
-        }
-    }
-	cardvext_showCurrentCertificateInWindow("card_viewer.error.import_find_certificate");
+	if (certificate_bytes) {
+		try {
+			// Convert certificate to nsIX509Cert
+			cardvext_Certificate = certDB.constructX509FromBase64(cardvext_base64encode(certificate_bytes));
+		} catch (e) {
+			dump(e + " exception while constructing certificate with constructX509FromBase64\n");
+			errorMessage = "card_viewer.error.incorrect_certificate";
+		}
+	}
+
+	cardvext_showCurrentCertificateInWindow(errorMessage);
 }
 
 /**
@@ -270,8 +261,12 @@ function cardvext_onStopCertificateFetchingStatuts() {
 			// Silently ignore this exception, since we can't do anything
 		}
 	}
-	cardvext_Certificate = null; // Ensure nothing will display
-	cardvext_showCurrentCertificateInWindow("card_viewer.search_aborted_by_user");
+	
+	cardvext_Certificate = null;
+
+	// Stop progress meter bar 
+	document.getElementById('card_viewer_extended_progressmeter').setAttribute('hidden','true');
+	document.getElementById("card_viewer_extended_button_id").label = cardvext_stringBundle.getString("card_viewer.button.showCurrentCertificate.label");
 	return true;
 }
 
@@ -315,7 +310,7 @@ function cardvext_initLDAPAndSearch() {
 
      } catch (e) {
          dump(e + " exception when creating ldap connection\n");
-     	cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_connection_init");
+     	cardvext_showCurrentCertificateInWindow("card_viewer.error.ldap_server");
  }
 }
 
@@ -409,7 +404,7 @@ function cardvext_handleSearchResultMessage(aMessage) {
 	try {
 		attributesFound = aMessage.getAttributes(outSize);
 	} catch (e) {
-	     dump(e + " exception when retrieve attribute of message from LDAP server\n");
+	     dump(e + " exception when retrieving attributes of message from LDAP server\n");
 	}
 	if(attributesFound == null ) {
 		return; // Attribute not found
@@ -425,4 +420,37 @@ function cardvext_handleSearchResultMessage(aMessage) {
 		certificate_length = new Object();
 		certificate_bytes = certificates_ber_encoded[0].get(certificate_length);
 	}
+}
+
+/**
+ * Encode an array of bytes into base64
+ * @param arrayBytes Array of bytes to encode
+ * @return Base64 encoded string
+ */
+function cardvext_base64encode(arrayBytes) {
+	const B64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	var out = "", bits, i;
+
+	while (arrayBytes.length >= 3) {
+		bits = 0;
+		for (i = 0; i < 3; i++) {
+			bits <<= 8;
+			bits |= arrayBytes[i];
+		}
+		for (i = 18; i >= 0; i -= 6) out += B64_CHARS[(bits>>i) & 0x3F];
+		arrayBytes.splice(0, 3);
+	}
+
+	if (arrayBytes.length == 2) {
+		out += B64_CHARS[(arrayBytes[0]>>2) & 0x3F];
+		out += B64_CHARS[((arrayBytes[0] & 0x03) << 4) | ((arrayBytes[1] >> 4) & 0x0F)];
+		out += B64_CHARS[((arrayBytes[1] & 0x0F) << 2)];
+		out += "=";
+	} else if (arrayBytes.length == 1) {
+		out += B64_CHARS[(arrayBytes[0]>>2) & 0x3F];
+		out += B64_CHARS[(arrayBytes[0] & 0x03) << 4];
+		out += "==";
+	}
+
+	return out;
 }
