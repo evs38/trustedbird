@@ -36,4 +36,4 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!ENTITY ldapAutocomplete.label "Autocomplete with">
-<!ENTITY usedirectories.label "Use Selected Directories">
+<!ENTITY usedirectories.label "Selected Directories">

@@ -36,4 +36,4 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!ENTITY ldapAutocomplete.label "Autocomplétion avec">
-<!ENTITY usedirectories.label "Utiliser les Annuaires Sélectionnés">
+<!ENTITY usedirectories.label "Annuaires sélectionnés">
