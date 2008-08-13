@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
@@ -12,14 +12,15 @@
    - for the specific language governing rights and limitations under the
    - License.
    -
-   - The Original Code is Mozilla Communicator
+   - The Original Code is the Thunderbird Preferences System.
    -
    - The Initial Developer of the Original Code is
-   -   BT Global Services / Etat francais Ministere de la Defense
-   - Portions created by the Initial Developer are Copyright (C) 2002
+   - Scott MacGregor.
+   - Portions created by the Initial Developer are Copyright (C) 2005
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
+   -   Scott MacGregor <mscott@mozilla.org>
    -   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
    -   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
    -
@@ -53,7 +54,7 @@
          xmlns:nc="http://home.netscape.com/NC-rdf#"
          xmlns:html="http://www.w3.org/1999/xhtml"
          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-
+           
   <prefpane id="paneCompose" onpaneload="gComposePane.init();">
     <script type="application/x-javascript" src="chrome://milimail-multi-ldap/content/preferences/composeLDAPOverlay.js"/>
 
@@ -125,7 +126,7 @@
               <label value="&char.label;"/>
             </hbox>
           </groupbox>
-
+  
           <groupbox>
             <caption label="&htmlComposeHeader.label;"/>
             <hbox align="center">
@@ -168,78 +169,64 @@
                       oncommand="gComposePane.restoreHTMLDefaults();"/>
             </hbox>
           </groupbox>
-
+           
             <hbox align="center">
             <description flex="1">&sendOptionsDescription.label;</description>
-            <button label="&sendOptions.label;"
+            <button label="&sendOptions.label;" 
                     accesskey="&sendOptions.accesskey;"
                     oncommand="gComposePane.sendOptionsDialog();"/>
-            </hbox>
+            </hbox> 
          </tabpanel>
 
          <tabpanel orient="vertical">
-             <groupbox>
-                 <!-- Address Autocomplete -->
-                 <caption label="&addressingTitle.label;" />
+           <groupbox>
+              <!-- Address Autocomplete -->
+              <caption label="&addressingTitle.label;"/>
 
-                 <description>
-                     &autocompleteText.label;
-                 </description>
+              <description>&autocompleteText.label;</description>
 
-				<hbox id="controlLocalDirectoriesCheckBox" align="center">
-					<checkbox id="addressingLocalDirectoriesAutocomplete" label="&addressingEnable.label;"
-					preference="mail.enable_autocomplete"
-					accesskey="&addressingEnable.accesskey;"/>
-				</hbox>
-				<hbox id="controlUseDirectoryCheckBox" align="center">
-					<checkbox id="autocompleteLDAP" label="&usedirectories.label;" 
-                        preference="ldap_2.autoComplete.useDirectory" 
-                        oncommand="gComposePane.enableAutocomplete();"
-                        accesskey="&directories.accesskey;"/>
-				</hbox>
-                 <listbox
-					id="LDAPList"
-					rows="4"
-					preference="ldap_2.autoComplete.ldapServers"
-					onsynctopreference="return gComposePane.updateLDAPServerListPreference(event.target);">
-                     <listhead>
-                         <listheader label="&ldapAutocomplete.label;" />
-                     </listhead>
-                     <listcols>
-                         <listcol flex="1"/>
-                     </listcols>
-					<!-- 
-						listitem inserted dynamicaly see createMultiLDAPDirectoriesList function from composeLDAPOverlay.js 
-					 -->
-                 </listbox>
+              <hbox align="center">
+                <checkbox id="addressingAutocomplete" label="&addressingEnable2.label;"
+                          preference="mail.enable_autocomplete"
+                          accesskey="&addressingEnable.accesskey;"/>
+              </hbox>
+    
+              <hbox align="center">
+                <checkbox id="autocompleteLDAP" label="&usedirectories.label;" 
+                          preference="ldap_2.autoComplete.useDirectory" 
+                          oncommand="gComposePane.enableAutocomplete();"
+                          accesskey="&directories.accesskey;"/>
+              </hbox>
+              <listbox
+				id="LDAPList"
+				rows="4"
+				preference="ldap_2.autoComplete.ldapServers"
+				onsynctopreference="return gComposePane.updateLDAPServerListPreference(event.target);">
+                <listhead>
+                  <listheader label="&ldapAutocomplete.label;" />
+                </listhead>
+                <listcols>
+                  <listcol flex="1"/>
+                </listcols>
+				<!-- listitem inserted dynamically. See createMultiLDAPDirectoriesList function in composeLDAPOverlay.js -->
+              </listbox>
+              <hbox align="center">
+                <button id="editButton" label="&editDirectories.label;" 
+                        oncommand="gComposePane.editDirectories();"
+                        accesskey="&editDirectories.accesskey;"/>
+              </hbox>
+            </groupbox>
+            
+            <separator class="thin"/>
 
-                 <hbox align="center">
-
-                     <button
-                         id="editButton"
-                         label="&editDirectories.label;"
-                         oncommand="gComposePane.editDirectories();"
-                         accesskey="&editDirectories.accesskey;" />
-                 </hbox>
-             </groupbox>
-
-             <separator class="thin" />
-
-             <hbox
-                 align="center"
-                 pack="start">
-                 <checkbox
-                     id="emailCollectionOutgoing"
-                     label="&emailCollectionPicker.label;"
-                     accesskey="&emailCollectionPicker.accesskey;"
-                     preference="mail.collect_email_address_outgoing" />
-                 <menulist
-                     id="localDirectoriesList"
-                     flex="1"
-                     preference="mail.collect_addressbook">
-                     <menupopup id="abPopup-menupopup"></menupopup>
-                 </menulist>
-             </hbox>
+            <hbox align="center" pack="start">
+              <checkbox id="emailCollectionOutgoing" label="&emailCollectionPicker.label;" 
+                        accesskey="&emailCollectionPicker.accesskey;" preference="mail.collect_email_address_outgoing"/>
+                <menulist id="localDirectoriesList" flex="1" preference="mail.collect_addressbook">
+                  <menupopup id="abPopup-menupopup">
+                  </menupopup>
+                </menulist>
+            </hbox>   
          </tabpanel>
 
          <tabpanel orient="vertical">
@@ -255,7 +242,7 @@
 
             <hbox align="center" pack="start">
               <label value ="&languagePopup.label;" control="languageMenuList" accesskey="&languagePopup.accessKey;"/>
-              <menulist id="languageMenuList" preference="spellchecker.dictionary">
+              <menulist id="languageMenuList" preference="spellchecker.dictionary" flex="1">
                 <menupopup onpopupshowing="gComposePane.initLanguageMenu();">
                   <!-- dynamic content populated by JS -->
                 </menupopup>

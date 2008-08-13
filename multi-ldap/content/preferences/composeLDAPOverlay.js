@@ -1,60 +1,61 @@
-﻿/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org Code.
- *
- * The Initial Developer of the Original Code is
- *   BT Global Services / Etat francais Ministere de la Defense
- * Portions created by the Initial Developer are Copyright (C) 1998-2001
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
- *   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* - ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is the Thunderbird Preferences System.
+   -
+   - The Initial Developer of the Original Code is
+   - Scott MacGregor.
+   - Portions created by the Initial Developer are Copyright (C) 2005
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -   Scott MacGregor <mscott@mozilla.org>
+   -   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
+   -   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK ***** */
 
 const kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
 const MULTI_LDAP_PREF_LDAP_SERVERS = "ldap_2.autoComplete.ldapServers";
 
 var gRefresh = false; // leftover hack from the old preferences dialog
 
-// Set to true to activate traces in console
+//Set to true to activate traces in console
 var bActiveDump = false;
 
 var gComposePane = {
-	mInitialized: false,
-	mDirectories: null,
-	mLDAPPrefsService: null,
-	mSpellChecker: null,
-	// Original preference to save preference with only the valid server
-	mOriginalPreference: null,
-	// OBr 18/07/07 correction of the entry ID 484
-	mAutoCompletePref: null,
-	mDictCount : 0,
+  mInitialized: false,
+  mDirectories: null,
+  mLDAPPrefsService: null,
+  mSpellChecker: null,
+  mDictCount : 0,
+  // Original preference to save preference with only the valid server
+  mOriginalPreference: null,
+  // OBr 18/07/07 correction of the entry ID 484
+  mAutoCompletePref: null,
+  invalidDirectories: new Array(),
 
   init: function ()
   {
@@ -68,19 +69,21 @@ var gComposePane = {
 	bActiveDump = prefs.getBoolPref("javascript.options.showInConsole");
 
     this.createDirectoriesList();
-    
+
     // build the local address book menu list. We do this by hand instead of using the xul template
-    // builder because of Bug #285076, 
+    // builder because of Bug #285076,
     this.createLocalDirectoriesList();
-    
+
     // build the LDAP address book server list box. We do this by hand instead of using the xul template
  	this.initMultiLDAPDirectoriesList();
+
+    //this.enableAutocomplete();
 
     this.initLanguageMenu();
 
     this.populateFonts();
 
-    document.getElementById('downloadDictionaries').setAttribute('href', this.getDictionaryURL());  
+    document.getElementById('downloadDictionaries').setAttribute('href', this.getDictionaryURL());
 
     var preference = document.getElementById("mail.preferences.compose.selectedTabIndex");
     if (preference.value)
@@ -92,7 +95,7 @@ var gComposePane = {
   {
     var formatter = Components.classes["@mozilla.org/toolkit/URLFormatterService;1"]
                     .getService(Components.interfaces.nsIURLFormatter);
-                    
+
     return formatter.formatURLPref("spellchecker.dictionaries.download.url");
   },
 
@@ -107,19 +110,32 @@ var gComposePane = {
 
   sendOptionsDialog: function()
   {
-    document.documentElement.openSubDialog("chrome://messenger/content/preferences/sendoptions.xul","", null);    
+    document.documentElement.openSubDialog("chrome://messenger/content/preferences/sendoptions.xul","", null);
   },
 
   htmlComposeDialog: function()
   {
-    document.documentElement.openSubDialog("chrome://messenger/content/preferences/htmlcompose.xul","", null);  
+    document.documentElement.openSubDialog("chrome://messenger/content/preferences/htmlcompose.xul","", null);
   },
 
-  createLocalDirectoriesList: function () 
+  enableAutocomplete: function()
+  {
+	var list = document.getElementById("LDAPList");
+	if (document.getElementById("autocompleteLDAP").checked == false)
+	{
+		disableListBox(list, true);
+	}
+	else
+	{
+		disableListBox(list, false);
+	}
+  },
+
+  createLocalDirectoriesList: function ()
   {
     var abPopup = document.getElementById("abPopup-menupopup");
 
-    if (abPopup) 
+    if (abPopup)
       this.loadLocalDirectories(abPopup);
   },
 
@@ -143,7 +159,7 @@ var gComposePane = {
           item = document.createElement("menuitem");
           item.setAttribute("label", addrbook.dirName);
           item.setAttribute("value", abURI);
-          aPopup.appendChild(item);   
+          aPopup.appendChild(item);
           if (preference.value == abURI)
           {
             aPopup.parentNode.value = abURI;
@@ -158,7 +174,7 @@ var gComposePane = {
   {
     var directoriesListPopup = document.getElementById("directoriesListPopup");
 
-    if (directoriesListPopup) 
+    if (directoriesListPopup)
       this.loadDirectories(directoriesListPopup);
   },
 
@@ -171,28 +187,29 @@ var gComposePane = {
     var arrayOfDirectories;
     var position;
     var dirType;
-    
-    var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+    var prefService;
+
+    prefService = Components.classes["@mozilla.org/preferences-service;1"]
                             .getService(Components.interfaces.nsIPrefBranch);
-    
-    if (!this.mDirectories) 
+
+    if (!this.mDirectories)
     {
-      try 
+      try
       {
         if (this.mLDAPPrefsService)
           arrayOfDirectories = this.mLDAPPrefsService.getServerList(prefService, prefCount);
       }
       catch (ex) {}
 
-      if (arrayOfDirectories) 
+      if (arrayOfDirectories)
       {
         this.mDirectories = new Array();
         for (var i = 0; i < prefCount.value; i++)
         {
-          if ((arrayOfDirectories[i] != "ldap_2.servers.pab") && 
-            (arrayOfDirectories[i] != "ldap_2.servers.history")) 
+          if ((arrayOfDirectories[i] != "ldap_2.servers.pab") &&
+            (arrayOfDirectories[i] != "ldap_2.servers.history"))
           {
-            try 
+            try
             {
               position = prefService.getIntPref(arrayOfDirectories[i]+".position");
             }
@@ -200,7 +217,7 @@ var gComposePane = {
             {
               position = 1;
             }
-          
+
             try
             {
               dirType = prefService.getIntPref(arrayOfDirectories[i]+".dirType");
@@ -210,7 +227,7 @@ var gComposePane = {
               dirType = 1;
             }
 
-            if ((position != 0) && (dirType == 1)) 
+            if ((position != 0) && (dirType == 1))
             {
               try
               {
@@ -221,24 +238,24 @@ var gComposePane = {
               {
                 description="";
               }
-              
-              if (description != "") 
+
+              if (description != "")
               {
-                if (aPopup) 
+                if (aPopup)
                 {
                   item = document.createElement("menuitem");
                   item.setAttribute("label", description);
                   item.setAttribute("value", arrayOfDirectories[i]);
                   aPopup.appendChild(item);
                 }
-              
+
                 this.mDirectories[j++] = {value:arrayOfDirectories[i], label:description};
               }
             }
           }
         }
-      
-        if (aPopup) 
+
+        if (aPopup)
         {
           // we are in mail/news Account settings
           item = document.createElement("menuitem");
@@ -253,7 +270,7 @@ var gComposePane = {
           var value = directoriesList.value;
           directoriesList.selectedItem = null;
           directoriesList.value = value;
-          if (!directoriesList.selectedItem) 
+          if (!directoriesList.selectedItem)
           {
             directoriesList.value = "";
             // If we have no other directories, also disable the popup.
@@ -275,10 +292,12 @@ var gComposePane = {
     if (gRefresh)
     {
       var popup = document.getElementById("directoriesListPopup");
-      if (popup) 
+      if (popup)
         while (popup.hasChildNodes())
           popup.removeChild(popup.lastChild);
+
     }
+
     this.mDirectories = null;
     this.loadDirectories(popup);
     
@@ -286,12 +305,13 @@ var gComposePane = {
 	this.removeMultiLDAPDirectoriesList();
 	// Create LDAP server list with new list
 	this.createMultiLDAPDirectoriesList();
-
+	
     gRefresh = false;
   },
 
   initLanguageMenu: function ()
   {
+    var languageMenuList = document.getElementById("languageMenuList");
     this.mSpellChecker = Components.classes['@mozilla.org/spellchecker/myspell;1'].getService(Components.interfaces.mozISpellCheckingEngine);
     var o1 = {};
     var o2 = {};
@@ -303,6 +323,9 @@ var gComposePane = {
 
     var dictList = o1.value;
     var count    = o2.value;
+
+    // if we don't have any dictionaries installed, disable the menu list
+    languageMenuList.disabled = !count;
 
     // If dictionary count hasn't changed then no need to update the menu.
     if (this.mDictCount == count)
@@ -320,7 +343,7 @@ var gComposePane = {
     // If we have a language string bundle, load the region string bundle.
     if (languageBundle)
       regionBundle = document.getElementById("regionBundle");
-  
+
     var menuStr2;
     var isoStrArray;
     var langId;
@@ -355,7 +378,7 @@ var gComposePane = {
       }
       dictList[i] = [langLabel, langId];
     }
-  
+
     // sort by locale-aware collation
     dictList.sort(
       function compareFn(a, b)
@@ -364,45 +387,36 @@ var gComposePane = {
       }
     );
 
-    var languageMenuList = document.getElementById("languageMenuList");
     // Remove any languages from the list.
     var languageMenuPopup = languageMenuList.firstChild;
     while (languageMenuPopup.hasChildNodes())
       languageMenuPopup.removeChild(languageMenuPopup.firstChild);
 
-    var curLang  = languageMenuList.value;
-    var defaultItem = null;
-
+    // append the dictionaries to the menu list...
     for (i = 0; i < count; i++)
-    {
-      var item = languageMenuList.appendItem(dictList[i][0], dictList[i][1]);
-      if (curLang && dictList[i][1] == curLang)
-        defaultItem = item;
-    }
+      languageMenuList.appendItem(dictList[i][0], dictList[i][1]);
 
-    // Now make sure the correct item in the menu list is selected.
-    if (defaultItem)
-      languageMenuList.selectedItem = defaultItem;
+    languageMenuList.setInitialSelection();
   },
-  
-  populateFonts: function() 
+
+  populateFonts: function()
   {
     var fontsList = document.getElementById("FontSelect");
-    try 
+    try
     {
       var enumerator = Components.classes["@mozilla.org/gfx/fontenumerator;1"]
                                  .getService(Components.interfaces.nsIFontEnumerator);
       var localFontCount = { value: 0 }
       var localFonts = enumerator.EnumerateAllFonts(localFontCount);
-      for (var i = 0; i < localFonts.length; ++i) 
+      for (var i = 0; i < localFonts.length; ++i)
       {
-        if (localFonts[i] != "") 
+        if (localFonts[i] != "")
           fontsList.appendItem(localFonts[i], localFonts[i]);
       }
     }
     catch(e) { }
    },
-   
+
    restoreHTMLDefaults: function()
    {
      // reset throws an exception if the pref value is already the default so
@@ -422,9 +436,9 @@ var gComposePane = {
      try {
        document.getElementById('msgcompose.background_color').reset();
      } catch (ex) {}
-    },
-	
-	//Init prefernce string to Create list of the LDAP server in the list box LDAPList
+   },  
+
+	//Init preference string to Create list of the LDAP server in the list box LDAPList
 	initMultiLDAPDirectoriesList: function()
 	{
 		var uri;
@@ -452,14 +466,22 @@ var gComposePane = {
 		var prefLDAPURI = MULTI_LDAP_PREF_LDAP_SERVERS;
 		var prefService = Components.classes["@mozilla.org/preferences-service;1"]
 				.getService(Components.interfaces.nsIPrefBranch);
-		// Update the preferences string when a server has been deleted
-		prefService.setCharPref(prefLDAPURI, mOriginalPreference);
+		// Update the preferences string and mAutoCompletePref when a server has been deleted
+		var tempPref = getSafeCharPref(prefService, prefLDAPURI);
+		var tempPrefArray = tempPref.split(',');
+		var tempAutoCompletePrefArray = mAutoCompletePref.split(',');
+		for (var i = 0; i < invalidDirectories.length; i++) {
+			tempPrefArray = removeFromArray(invalidDirectories[i], tempPrefArray);
+			//tempAutoCompletePrefArray = removeFromArray(invalidDirectories[i], tempAutoCompletePrefArray);
+		}
+		prefService.setCharPref(prefLDAPURI, tempPrefArray.join(","));
+		mAutoCompletePref = tempAutoCompletePrefArray.join(",");
 
 		//Enable LDAP list control
 		this.enableAutocomplete();
 		displayTrace("createMultiLDAPDirectoriesList ended.");
 	},
- 
+
 	createCheckBoxList: function(aPopup)
 	{
 		var prefCount = {value:0};
@@ -471,6 +493,8 @@ var gComposePane = {
 		var dirType;
 		var prefService;
 
+		invalidDirectories = new Array();
+		
 		displayTrace("\tloadDirectoriesCheckBox started.");
 		displayTrace("\t\tInitialize check box with preferences '"+ mAutoCompletePref + "'.");
 		if (!this.mDirectories)
@@ -529,7 +553,7 @@ var gComposePane = {
 							{
 								if (aPopup) 
 								{
-									var checked = isInPreferenceSeverList(arrayOfDirectories[i], arrayPreferences);
+									var checked = isInPreferenceServerList(arrayOfDirectories[i], arrayPreferences);
 
 									item = this.createCheckBoxItem( i, description, arrayOfDirectories[i], checked );
 									if ( item ) 
@@ -540,6 +564,7 @@ var gComposePane = {
 						else
 						{
 							mOriginalPreference = this.checkPreferenceServerValidity(arrayOfDirectories[i]);
+							invalidDirectories.push(arrayOfDirectories[i]);
 						}
 					}
 				}
@@ -635,29 +660,12 @@ var gComposePane = {
 		return tabs;
 	},
 	
-	// Enable or disable the LDAPList control
-	enableAutocomplete: function() 
-	{
-		var list = document.getElementById("LDAPList");
-		if (document.getElementById("autocompleteLDAP").checked == false) 
-		{
-			disableListBox(list, true);
-		}
-		else
-		{
-			disableListBox(list, false);
-		}
-		// if we do not have any directories disable the dropdown list box
-		if (!this.mDirectories || (this.mDirectories < 1))
-			directoriesList.setAttribute("disabled", true);  
-	},
- 
 	/*
 	* Rebuild the LDAP list prefernce selected by the user.
 	* Return : string that contain all LDAP name separated by coma. This is saved in the 
 	* Added for correction of the entry ID 484
 	*/
-    updateLDAPServerListPreference : function(target)
+   updateLDAPServerListPreference : function(target)
 	{
 		displayTrace("Update preference temporary.");
 		return buildPreferenceValue(target);
@@ -669,9 +677,9 @@ var gComposePane = {
 	 */
 	checkPreferenceServerValidity : function(serverToCheck)
 	{
-	    var arraySeverPreference = mOriginalPreference.split(',');
-		arraySeverPreference = removeFromArray(serverToCheck, arraySeverPreference);
-		return convertPrefArrayToString(arraySeverPreference);
+	    var arrayServerPreference = mOriginalPreference.split(',');
+		arrayServerPreference = removeFromArray(serverToCheck, arrayServerPreference);
+		return convertPrefArrayToString(arrayServerPreference);
 	},
 	
 	dumpWithTabs : function( tabs, message )
@@ -704,19 +712,19 @@ function buildPreferenceValue(target){
 function buildLDAPlistString(LDAPUri, checked){
 	displayTrace("\tbuildLDAPlistString() started");
 
-    displayTrace("\t\tCurrent selected item : '" + LDAPUri + "'.");
-    // OBr 18/07/07 correction of the entry ID 484
+   displayTrace("\t\tCurrent selected item : '" + LDAPUri + "'.");
+   // OBr 18/07/07 correction of the entry ID 484
 	var autoCompletePref = mAutoCompletePref;
-    displayTrace("\t\tOld preference : '" + mAutoCompletePref + "'.");
-    
-    var allPrefs = autoCompletePref.split(',');
-    
-    var prefsFiltered = removeFromArray(LDAPUri, allPrefs);
+   displayTrace("\t\tOld preference : '" + mAutoCompletePref + "'.");
    
-   	if (checked)
-   		prefsFiltered.push(LDAPUri);
-   	
-   	mAutoCompletePref = convertPrefArrayToString(prefsFiltered);
+   var allPrefs = autoCompletePref.split(',');
+   
+   var prefsFiltered = removeFromArray(LDAPUri, allPrefs);
+  
+  	if (checked)
+  		prefsFiltered.push(LDAPUri);
+  	
+  	mAutoCompletePref = convertPrefArrayToString(prefsFiltered);
 	displayTrace("\t\tNew preference : '" + mAutoCompletePref + "'.");
 	displayTrace("\tbuildLDAPlistString() ended.");
 	return mAutoCompletePref;
@@ -746,8 +754,8 @@ function convertPrefArrayToString(array){
 	return s.slice(0,-1);
 }
 
-// Check the name of server if it was found in the preference
-function isInPreferenceSeverList(nameToCheck, array){
+//Check the name of server if it was found in the preference
+function isInPreferenceServerList(nameToCheck, array){
 	displayTrace("Check " + nameToCheck );
 	for (var i = 0; i < array.length; i++){
 		if (array[i] == nameToCheck){
@@ -760,8 +768,8 @@ function isInPreferenceSeverList(nameToCheck, array){
 }
 
 /*
- * Get preference safety, if preference does not exist it returns empty string
- */
+* Get preference safety, if preference does not exist it returns empty string
+*/
 function getSafeCharPref(prefService, uri){
 	var value = "";
 	try {
@@ -771,8 +779,8 @@ function getSafeCharPref(prefService, uri){
 }
 
 /*
- * Get preference safety, if preference does not exist it returns true boolean
- */
+* Get preference safety, if preference does not exist it returns true boolean
+*/
 function getSafeBoolPref(prefService, uri){
 	var value = true;
 	try {
@@ -787,25 +795,25 @@ function disableListBox(list, bool){
 		return;	
 
 	for (var i = 0 ; i< childs.length; i++)
-  	{
-  		 if ( (childs[i].localName == "listitem") ){
-  			if (bool == true){
-  				var c = childs[i].childNodes;
-  				c[0].setAttribute("disabled", "true");
-  				var checkbox = c[0].childNodes;
-  				checkbox[0].setAttribute("disabled", "true");
-  			}
-  		 	else{
-  		 		var c = childs[i].childNodes;
-  				c[0].removeAttribute("disabled");
-  				var checkbox = c[0].childNodes;
-  				checkbox[0].removeAttribute("disabled");
-  		 	}
-  		 }
-  	}
+ 	{
+ 		 if ( (childs[i].localName == "listitem") ){
+ 			if (bool == true){
+ 				var c = childs[i].childNodes;
+ 				c[0].setAttribute("disabled", "true");
+ 				var checkbox = c[0].childNodes;
+ 				checkbox[0].setAttribute("disabled", "true");
+ 			}
+ 		 	else{
+ 		 		var c = childs[i].childNodes;
+ 				c[0].removeAttribute("disabled");
+ 				var checkbox = c[0].childNodes;
+ 				checkbox[0].removeAttribute("disabled");
+ 		 	}
+ 		 }
+ 	}
 }
 
-// Display trace in console if bActiveDump is set to true
+//Display trace in console if bActiveDump is set to true
 function displayTrace(pMessage) {
 	if( bActiveDump == false )
 		return;

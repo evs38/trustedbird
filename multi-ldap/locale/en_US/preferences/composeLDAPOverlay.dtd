@@ -35,5 +35,6 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
+<!ENTITY addressingEnable2.label "Local Address Books">
 <!ENTITY ldapAutocomplete.label "Autocomplete with">
 <!ENTITY usedirectories.label "Selected Directories">
