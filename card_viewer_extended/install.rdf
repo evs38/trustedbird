@@ -58,6 +58,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>This extension, extends the 'Edit Card' to allow the user to get and show the certificate of a selected user. The certificate can be retrieved from the local address books or from directory servers.</em:description>
+    <em:description>Adds a button to address book cards to display the certificate of a contact from local address books or LDAP directories.</em:description>
   </rdf:Description>
 </rdf:RDF>
