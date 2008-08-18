@@ -52,9 +52,6 @@
     <em:contributor>Olivier BRUN</em:contributor>
     <em:homepageURL>http://www.milimail.org/</em:homepageURL>
 
-    <!-- type=extension -->
-    <em:type>2</em:type>
-
     <em:targetApplication>
       <rdf:Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
@@ -63,6 +60,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Enable multi LDAP for autocomplete.</em:description>
+    <em:description>Adds the possibility to use several LDAP directories simultaneously for address autocompletion.</em:description>
   </rdf:Description>
 </rdf:RDF>
