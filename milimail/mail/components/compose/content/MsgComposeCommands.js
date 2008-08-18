@@ -247,6 +247,7 @@ var gComposeRecyclingListener = {
     //Reset menu options
     document.getElementById("format_auto").setAttribute("checked", "true");
     document.getElementById("priority_normal").setAttribute("checked", "true");
+    document.getElementById("deliveringPriority_none").setAttribute("checked", "true");
 
     //Reset toolbars that could be hidden
     if (gHideMenus) {
