@@ -514,13 +514,13 @@ function check_recipients_handleSearchResultMessage(aMessage) {
 
     // Remove recipient's mail from recipients list
     var mailValue = aMessage.getValues("mail", outSize);
-    if (mailValue && outSize.value > 0) {
-        var image = document.getElementById(mailValue);
+    for (i in mailValue) {
+        var image = document.getElementById(mailValue[i]);
         if (image) {
             image.setAttribute("class", "check_recipients_found");
-			displayTrace( "\t" + mailValue + " found in ldap " + check_recipients_LdapServerName );
+			displayTrace( "\t" + mailValue[i] + " found in ldap " + check_recipients_LdapServerName );
         }
-        var textlabel = document.getElementById("textlabel_" + mailValue);
+        var textlabel = document.getElementById("textlabel_" + mailValue[i]);
         if (textlabel) {
 			var label = textlabel.getAttribute("value");
             if (label == "Searching") {
