@@ -44,7 +44,7 @@
     <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
     <em:id>multildap@milimail.org</em:id>
-    <em:name>Multi LDAP</em:name>
+    <em:name>Multi-LDAP</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Olivier PARNIERE</em:creator>
 
@@ -60,6 +60,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Adds the possibility to use several LDAP directories simultaneously for address autocompletion.</em:description>
+    <em:description>Permits to use several LDAP directories simultaneously for address autocompletion.</em:description>
   </rdf:Description>
 </rdf:RDF>
