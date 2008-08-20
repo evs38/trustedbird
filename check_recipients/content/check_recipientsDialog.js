@@ -43,9 +43,33 @@
 const kPersonalAddressbookUri        = "moz-abmdbdirectory://abook.mab";
 const kRDFServiceContractID          = "@mozilla.org/rdf/rdf-service;1";
 
-// User preference defining LDAP servers.
-const CHECK_RECIPIENTS_PREF_LDAP_SERVERS = "ldap_2.autoComplete.ldapServers";
+
+// User preferences for autocompletion
+const CHECK_RECIPIENTS_PREF_USE_LOCAL_AB = "mail.enable_autocomplete";
+
+const CHECK_RECIPIENTS_PREF_USE_LDAP = "ldap_2.autoComplete.useDirectory";
+
+const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_BEGIN = "ldap_2.identity.";
+const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_END = ".autoComplete.overrideGlobalPref";
+
+const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_BEGIN = "mail.identity.";
+const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_END = ".overrideGlobal_Pref";
+
+const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP = "ldap_2.autoComplete.ldapServers";
+
+const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP = "ldap_2.autoComplete.directoryServer";
+
+const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_BEGIN = "ldap_2.identity.";
+const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_END = ".autoComplete.ldapServers";
+
+const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_BEGIN = "mail.identity.";
+const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_END = ".directoryServer";
+
+
 var check_recipients_ldapServersArray = new Array();
+
+// Should we search in local address books
+var checkRecipientsUseLocalAB = false;
 
 // The following variables are needed by the LDAP asynchronous calls.
 var check_recipients_LdapServerURL;
@@ -64,16 +88,61 @@ var check_recipients_listEmails = new Array();
 
 // Initialize fields on onload 
 function check_recipients_onLoadDialog() {
+	displayTrace("check_recipients_onLoadDialog begin." );
 
-	// Retrieve LDAP attributes from user preferences
-	var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-	var prefs = prefService.getBranch(null);
 	//Initialize console traces
-	bActiveDump = prefs.getBoolPref("javascript.options.showInConsole");
+	bActiveDump = check_recipients_prefService_getBoolPref("javascript.options.showInConsole");
 
+	
+	/* Check if Multi-LDAP add-on is installed */
+	/* BUG: we should check if Multi-LDAP add-on is disabled */
+	var multiLDAPIsInstalled = false;
+	var extensionsManager = Components.classes["@mozilla.org/extensions/manager;1"].getService(Components.interfaces.nsIExtensionManager);
+	var item = extensionsManager.getItemForID("multildap@milimail.org");
+	if (item.version != "") multiLDAPIsInstalled = true;
+	
+	/* Check if local address books should be used */
+	checkRecipientsUseLocalAB = false;
+	if (check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_USE_LOCAL_AB)) checkRecipientsUseLocalAB = true;
+
+	/* Check if LDAP directories should be used */
+	var ldapServersPref = "";
+	var currentIdentity = window.opener.gCurrentIdentity;
+	if (multiLDAPIsInstalled) {
+		/* With Multi-LDAP */
+		var override = false;
+		override = check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_END);
+		if (override) {
+			/* Specific account settings */
+			ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_END);
+		} else {
+			/* Global settings */
+			if (check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_USE_LDAP)) {
+				ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP);
+			}
+		}
+	} else {
+		/* Without Multi-LDAP */
+		var override = false;
+		override = check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_END);
+		if (override) {
+			/* Specific account settings */
+			ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_END);
+		} else {
+			/* Global settings */
+			if (check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_USE_LDAP)) {
+				ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP);
+			}
+		}
+	}
+	
+	/* Load LDAP directory list */
+	check_recipients_ldapServersArray = new Array();
+	if (ldapServersPref != "") check_recipients_ldapServersArray = ldapServersPref.split(',');
+	
+	
     var recipientsList = document.getElementById('check_recipients_recipientsList');
     
-	displayTrace("check_recipients_onLoadDialog begin." );
     var msgCompFields = window.opener.gMsgCompose.compFields;
     if (msgCompFields) {
         window.opener.Recipients2CompFields(msgCompFields);
@@ -132,15 +201,6 @@ function check_recipients_onLoadDialog() {
 			progressmeter.setAttribute("hidden", "true");
 		}
 		
-		//Retrieve ldap server list
-		try {
-			var ldapServersPref = prefs.getCharPref(CHECK_RECIPIENTS_PREF_LDAP_SERVERS);
-			if (ldapServersPref) {
-				check_recipients_ldapServersArray = ldapServersPref.split(',');
-			}
-		} catch (e) {
-		}
-
 		// Init and process the LDAP search
         if (!bListEmpty) setTimeout(check_recipients_initLDAPAndSearch, 1);
     }
@@ -382,6 +442,8 @@ function check_recipients_initLDAPAndSearch() {
 
 function check_recipients_IsEmailInDataBase(email)
 {
+	if (!checkRecipientsUseLocalAB) return false;
+
 	displayTrace("\tcheck_recipients_IsEmailInDataBase begin.");
 	if (!gPersonalAddressBookDirectory)
 	{
@@ -541,4 +603,32 @@ function displayTrace(pMessage) {
 	if( bActiveDump == false )
 		return;
 	dump(pMessage + "\n");
+}
+
+
+var prefService = null;
+function check_recipients_prefService_load() {
+	prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
+}
+
+function check_recipients_prefService_getBoolPref(prefName) {
+	if (prefService == null) check_recipients_prefService_load();
+	
+	var value = false;
+	try {
+		value = prefService.getBoolPref(prefName);
+	} catch(e) {}
+	
+	return value;
+}
+
+function check_recipients_prefService_getCharPref(prefName) {
+	if (prefService == null) check_recipients_prefService_load();
+	
+	var value = "";
+	try {
+		value = prefService.getCharPref(prefName);
+	} catch(e) {}
+	
+	return value;
 }

@@ -59,15 +59,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Checks for the existence of email addresses of all the recipients in Compose message window through local address books and LDAP directories. Requirement: Multi-LDAP add-on from Milimail project.</em:description>
+    <em:description>Checks for the existence of email addresses of all recipients in Compose message window through local address books and LDAP directories.</em:description>
     
-    <em:requires>
-      <rdf:Description>
-        <em:id>multildap@milimail.org</em:id>
-        <em:name>Multi LDAP</em:name>
-        <em:minVersion>0.2.0.0</em:minVersion>
-        <em:maxVersion>0.2.*</em:maxVersion>
-      </rdf:Description>
-    </em:requires>
   </rdf:Description>
 </rdf:RDF>
