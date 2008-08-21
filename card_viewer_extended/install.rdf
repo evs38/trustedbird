@@ -58,6 +58,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Adds a button to address book cards to display the certificate of a contact from local address books or LDAP directories.</em:description>
+    <em:description>Adds a button in address book cards to fetch and display the certificate of a contact from local certificate store or LDAP directories.</em:description>
   </rdf:Description>
 </rdf:RDF>
