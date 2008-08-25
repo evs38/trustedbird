@@ -76,6 +76,7 @@
       <preference id="ldap_2.autoComplete.useDirectory" name="ldap_2.autoComplete.useDirectory" type="bool"/>
       <preference id="ldap_2.autoComplete.directoryServer" name="ldap_2.autoComplete.directoryServer" type="string"/>
       <preference id="ldap_2.autoComplete.ldapServers" name="ldap_2.autoComplete.ldapServers" type="string"/>
+      <preference id="ldap_2.autoComplete.minStringLength" name="ldap_2.autoComplete.minStringLength" type="int"/>
       <preference id="mail.collect_email_address_outgoing" name="mail.collect_email_address_outgoing" type="bool"/>
       <preference id="mail.collect_addressbook" name="mail.collect_addressbook" type="string"/>
       <preference id="spellchecker.dictionary"  name="spellchecker.dictionary"   type="unichar"/>
@@ -210,6 +211,14 @@
                 </listcols>
 				<!-- listitem inserted dynamically. See createMultiLDAPDirectoriesList function in composeLDAPOverlay.js -->
               </listbox>
+              
+              <hbox align="center">
+                <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
+                <textbox id="autocompleteMinStringLength" size="3" maxlength="2" preference="ldap_2.autoComplete.minStringLength"
+                         onsyncfrompreference="return multildap_loadAutocompleteMinStringLength('ldap_2.autoComplete.minStringLength');" />
+                <label value="&char.label;" control="autocompleteMinStringLength" />
+              </hbox>
+          
               <hbox align="center">
                 <button id="editButton" label="&editDirectories.label;" 
                         oncommand="gComposePane.editDirectories();"

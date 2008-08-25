@@ -36,5 +36,6 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!ENTITY addressingEnable2.label "Carnets d'adresses locaux">
-<!ENTITY ldapAutocomplete.label "Autocomplétion avec">
+<!ENTITY ldapAutocomplete.label "Auto-complétion avec">
 <!ENTITY usedirectories.label "Annuaires sélectionnés">
+<!ENTITY autocompleteMinStringLength.label "Auto-complétion depuis les annuaires après">

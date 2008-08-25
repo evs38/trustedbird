@@ -48,6 +48,7 @@ var onInitOriginal = onInit;
 var onLoadOriginal = onLoad;
 var onSaveOriginal = onSave;
 var useCustomPref;
+var minStringLength = 2;
 var gPreferenceService = null;
 var gDirectories = null;
 var gLDAPPrefsService = null;
@@ -90,14 +91,10 @@ onSave = function onSaveHook(){
 
 //Load Preferences
 function loadPreferences(){
-	gPreferenceService = Components.classes["@mozilla.org/preferences-service;1"].
-                getService(Components.interfaces.nsIPrefBranch);
+	gPreferenceService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 	try  {
-        var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-        var prefs = prefService.getBranch(null);
-
 		//Initialize console traces
-		bActiveDump = prefs.getBoolPref("javascript.options.showInConsole");
+		bActiveDump = gPreferenceService.getBoolPref("javascript.options.showInConsole");
 
         // Retrieve LDAP attributes from user preferences
 		useCustomPref = gPreferenceService.getBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences");
@@ -107,15 +104,24 @@ function loadPreferences(){
 		gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences",false);
 		useCustomPref = false;
 	}
+	
+	try {
+		minStringLength = gPreferenceService.getIntPref("ldap_2.identity." + gIdentity.key + ".autoComplete.minStringLength");
+	} catch (e) {}
 }
 
 function savePreferences(){
 	//Save use Custom Preference choice to preference
 	var checkBoxUseCustomPref = document.getElementById("ldap_2.identity.id.multi_ldap_use_custom_preferences");
-	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".autoComplete.overrideGlobalPref",checkBoxUseCustomPref.checked);
-	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences",checkBoxUseCustomPref.checked);
-    gPreferenceService.setCharPref("ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers", gAutoCompletePref );
-	displayTrace("savePreferences for user " + gIdentity.key +".");
+	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".autoComplete.overrideGlobalPref", checkBoxUseCustomPref.checked);
+	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences", checkBoxUseCustomPref.checked);
+    gPreferenceService.setCharPref("ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers", gAutoCompletePref);
+
+    minStringLength = document.getElementById("autocompleteMinStringLength").value;
+    if (!(minStringLength >=1 && minStringLength <= 9)) minStringLength = 2;
+    gPreferenceService.setIntPref("ldap_2.identity." + gIdentity.key + ".autoComplete.minStringLength", minStringLength);
+
+    displayTrace("savePreferences for user " + gIdentity.key +".");
 }
 
 //Setup UI Control From Preferences
@@ -124,6 +130,8 @@ function setupUI(){
 	checkBoxUseCustomPref.checked = useCustomPref;
 	enableCustomPreferences(checkBoxUseCustomPref);
 	displayTrace("setupUI for user " + gIdentity.key +" value=" + useCustomPref + ".");
+	
+	document.getElementById("autocompleteMinStringLength").value = minStringLength;
 }
 
 function editDirectories()
@@ -438,10 +446,14 @@ function enableCustomPreferences(target)
 	if (document.getElementById("ldap_2.identity.id.multi_ldap_use_custom_preferences").checked == false) 
 	{
 		disableListBox(list, true);
+		document.getElementById("autocompleteMinStringLength").disabled = true;
+		document.getElementById("editButton.account").disabled = true;
 	}
 	else
 	{
 		disableListBox(list, false);
+		document.getElementById("autocompleteMinStringLength").disabled = false;
+		document.getElementById("editButton.account").disabled = false;
 	}
 }
 

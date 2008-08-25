@@ -161,6 +161,37 @@ function setupLdapAutocompleteSession()
 
 	directoryNb = autocompleteDirectoryList.length;
 
+	
+	// Get autoComplete.minStringLength and autoComplete.cjkMinStringLength
+	var minStringLength = 0;
+	var cjkMinStringLength = 0;
+
+    // don't search on non-CJK strings shorter than this
+    try {
+    	var tempMinStringLength = sPrefs.getIntPref("ldap_2.autoComplete.minStringLength");
+    	if (tempMinStringLength >=1 && tempMinStringLength <= 9) minStringLength = tempMinStringLength;
+    } catch (ex) {}
+
+    if (isGlobalPrefOverrided) {
+        try {
+        	var tempMinStringLength = sPrefs.getIntPref("ldap_2.identity."+gCurrentIdentity.key+".autoComplete.minStringLength");
+        	if (tempMinStringLength >=1 && tempMinStringLength <= 9) minStringLength = tempMinStringLength;
+        } catch (ex) {}
+    }
+    
+    // don't search on CJK strings shorter than this
+    try {
+    	var tempCjkMinStringLength = sPrefs.getIntPref("ldap_2.autoComplete.cjkMinStringLength");
+    	if (tempCjkMinStringLength >=1 && tempCjkMinStringLength <= 9) cjkMinStringLength = tempCjkMinStringLength;
+    } catch (ex) {}
+
+    if (isGlobalPrefOverrided) {
+        try {
+        	var tempCjkMinStringLength = sPrefs.getIntPref("ldap_2.identity."+gCurrentIdentity.key+".autoComplete.cjkMinStringLength");
+        	if (tempCjkMinStringLength >=1 && tempCjkMinStringLength <= 9) cjkMinStringLength = tempCjkMinStringLength;
+        } catch (ex) {}
+    }
+    
     // use a temporary to do the setup so that we don't overwrite the
     // global, then have some problem and throw an exception, and leave the
     // global with a partially setup session.  we'll assign the temp
@@ -258,24 +289,10 @@ function setupLdapAutocompleteSession()
             }
 
             // don't search on non-CJK strings shorter than this
-            //
-            try { 
-                LDAPSession.minStringLength = sPrefs.getIntPref(
-                    autocompleteDirectory + ".autoComplete.minStringLength");
-            } catch (ex) {
-                // if this pref isn't there, no big deal.  just let
-                // nsLDAPAutoCompleteSession use its default.
-            }
-
+            if (minStringLength > 0) LDAPSession.minStringLength = minStringLength;
+            
             // don't search on CJK strings shorter than this
-            //
-            try { 
-                LDAPSession.cjkMinStringLength = sPrefs.getIntPref(
-                  autocompleteDirectory + ".autoComplete.cjkMinStringLength");
-            } catch (ex) {
-                // if this pref isn't there, no big deal.  just let
-                // nsLDAPAutoCompleteSession use its default.
-            }
+            if (cjkMinStringLength > 0) LDAPSession.cjkMinStringLength = cjkMinStringLength;
 
             // we don't try/catch here, because if this fails, we're outta luck
             //
@@ -288,7 +305,7 @@ function setupLdapAutocompleteSession()
             //
             try {
                 ldapFormatter.nameFormat = 
-                    sPrefs.getComplexValue(autocompleteDirectory + 
+                    sPrefs.getComplexValue(autocompleteDirectoryList[k] + 
                                       ".autoComplete.nameFormat",
                                       Components.interfaces.nsISupportsString).data;
             } catch (ex) {
@@ -300,7 +317,7 @@ function setupLdapAutocompleteSession()
             //
             try {
                 ldapFormatter.addressFormat = 
-                    sPrefs.getComplexValue(autocompleteDirectory + 
+                    sPrefs.getComplexValue(autocompleteDirectoryList[k] + 
                                       ".autoComplete.addressFormat",
                                       Components.interfaces.nsISupportsString).data;
             } catch (ex) {

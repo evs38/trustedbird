@@ -38,3 +38,4 @@
 <!ENTITY addressingTitle.label "Addressing">
 <!ENTITY addressingAutocomplete.label "Autocomplete with">
 <!ENTITY useCustomPreferences.label "Personalize LDAP Preferences for this Account">
+<!ENTITY autocompleteMinStringLength.label "Autocomplete from directories after">

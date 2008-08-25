@@ -36,5 +36,6 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!ENTITY addressingTitle.label "Gestion des serveurs d'adresses">
-<!ENTITY addressingAutocomplete.label "Autocomplétion avec">
-<!ENTITY useCustomPreferences.label "Personaliser les Préférences pour ce Compte">
+<!ENTITY addressingAutocomplete.label "Auto-complétion avec">
+<!ENTITY useCustomPreferences.label "Personnaliser les préférences pour ce compte">
+<!ENTITY autocompleteMinStringLength.label "Auto-complétion depuis les annuaires après">

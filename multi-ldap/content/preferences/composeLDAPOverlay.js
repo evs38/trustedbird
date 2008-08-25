@@ -124,10 +124,14 @@ var gComposePane = {
 	if (document.getElementById("autocompleteLDAP").checked == false)
 	{
 		disableListBox(list, true);
+		document.getElementById("autocompleteMinStringLength").disabled = true;
+		document.getElementById("editButton").disabled = true;
 	}
 	else
 	{
 		disableListBox(list, false);
+		document.getElementById("autocompleteMinStringLength").disabled = false;
+		document.getElementById("editButton").disabled = false;
 	}
   },
 
@@ -818,4 +822,16 @@ function displayTrace(pMessage) {
 	if( bActiveDump == false )
 		return;
 	dump(pMessage + "\n");
+}
+
+/* Get current value of minStringLength from preferences - text box "autocompleteMinStringLength" */
+function multildap_loadAutocompleteMinStringLength(preferenceName) {
+	var minStringLength = 2;
+	try {
+	    var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
+	    minStringLength = prefService.getIntPref(preferenceName);
+	    if (!(minStringLength >=1 && minStringLength <= 9)) minStringLength = 2;
+	} catch(e) {}
+	
+	return minStringLength;
 }

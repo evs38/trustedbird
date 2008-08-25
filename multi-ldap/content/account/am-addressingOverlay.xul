@@ -83,13 +83,19 @@
 					<listcol flex="1"/>
 				</listcols>
 				<!-- 
-					listitem inserted dynamicaly see createMultiLDAPDirectoriesList function from am-addressingOverlay.js 
+					listitem inserted dynamically see createMultiLDAPDirectoriesList function from am-addressingOverlay.js 
 				 -->
             </listbox>
+            
+            <hbox align="center">
+              <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
+              <textbox id="autocompleteMinStringLength" size="3" maxlength="2" />
+              <label value="&char.label;" control="autocompleteMinStringLength" />
+            </hbox>
 
 			<hbox align="center">
 				<button
-					id="editButton"
+					id="editButton.account"
 					label="&editDirectories.label;"
 					oncommand="editDirectories();"
 					accesskey="&editDirectories.accesskey;" />
