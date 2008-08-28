@@ -63,12 +63,10 @@
 			</description>
 
             <checkbox
-                id="ldap_2.identity.id.multi_ldap_use_custom_preferences"
+                id="multi_ldap_use_custom_preferences"
                 label="&useCustomPreferences.label;"
 				accesskey="&directories.accesskey;"
                 oncommand="enableCustomPreferences(event.target)"
-				pref="true" preftype="bool" prefattribute="value"
-                prefstring="ldap_2.identity.%identitykey%.multi_ldap_use_custom_preferences"
 				/>
 
 			<listbox
@@ -89,7 +87,7 @@
             
             <hbox align="center">
               <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
-              <textbox id="autocompleteMinStringLength" size="3" maxlength="2" />
+              <textbox id="autocompleteMinStringLength" size="3" maxlength="3" />
               <label value="&char.label;" control="autocompleteMinStringLength" />
             </hbox>
 

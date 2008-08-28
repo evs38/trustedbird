@@ -38,6 +38,7 @@
 
 <overlay id="milimail-multi-ldap_messengercompose_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+    <script type="application/x-javascript" src="chrome://milimail-multi-ldap/content/libtrustedbird.js"/>
     <script type="application/x-javascript" src="chrome://milimail-multi-ldap/content/messengercompose/MsgComposeCommands_overlay.js"/>
 
     <textbox id="addressCol2#1" autoFill="false" autoFillAfterMatch="false"/>

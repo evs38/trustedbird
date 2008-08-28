@@ -38,7 +38,7 @@
    - ***** END LICENSE BLOCK ***** */
 
 const kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
-const MULTI_LDAP_PREF_LDAP_SERVERS = "ldap_2.autoComplete.ldapServers";
+const MULTI_LDAP_PREF_LDAP_SERVERS = "ldap_2.autoComplete.directoryServers";
 
 var gRefresh = false; // leftover hack from the old preferences dialog
 
@@ -830,7 +830,7 @@ function multildap_loadAutocompleteMinStringLength(preferenceName) {
 	try {
 	    var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
 	    minStringLength = prefService.getIntPref(preferenceName);
-	    if (!(minStringLength >=1 && minStringLength <= 9)) minStringLength = 2;
+	    if (!(minStringLength >= 1 && minStringLength <= 99)) minStringLength = 2;
 	} catch(e) {}
 	
 	return minStringLength;

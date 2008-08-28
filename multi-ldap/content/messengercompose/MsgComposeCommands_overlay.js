@@ -41,28 +41,18 @@ var gCurrentAutocompleteDirectoryList;
 var gLDAPSessions;
 var gLDAPSessionList;
 var gSessionsAdded;
-var bActiveDump = true;
+var bActiveDump;
 
 // Replace the built in ComposeLoad function with our own...
 var multildap_OriginalComposeLoad = ComposeLoad;
 ComposeLoad = function multildap_ComposeLoad() {
+	// Enable display of source address book in autocomplete popup
+	trustedBird_prefService_setIntPref("mail.autoComplete.commentColumn", 1);
 
-    // Set preference mail.autoComplete.commentColumn to show name of addressbook LDAP results came from
-    try {
-        var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-        sPrefs = prefService.getBranch(null);
-        sPrefBranchInternal = sPrefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
-        sPrefs.setIntPref("mail.autoComplete.commentColumn", 1);
+	// Call built in ComposeLoad function
+	multildap_OriginalComposeLoad();
 
-		//Initialize console traces
-		bActiveDump = prefs.getBoolPref("javascript.options.showInConsole");
-    } catch (ex) {
-        dump("Failed to get preferences service\n");
-    }
-
-    // Call built in ComposeLoad function
-    multildap_OriginalComposeLoad();
-	displayTrace("ComposeLoad Multi-LDAP done.");
+	trustedBird_dump("ComposeLoad Multi-LDAP done.");
 }
 
 // Replace the built in InitializeGlobalVariables function with our own...
@@ -91,105 +81,53 @@ ReleaseGlobalVariables = function multildap_ReleaseGlobalVariables() {
     gSessionsAdded = null;
 }
 
-function AddDirectorySettingsObserver(autocompleteDirectoryList)
-{
-	for(var i=0; i<autocompleteDirectoryList.length; i++){
-		sPrefBranchInternal.addObserver(autocompleteDirectoryList[i], directoryServerObserver, false);
-		displayTrace("\tAddDirectorySettingsObserver='" + autocompleteDirectoryList[i] + "'." );
+function AddDirectorySettingsObserver(autocompleteDirectoryList) {
+	for(var i = 0; i < autocompleteDirectoryList.length; i++){
+		trustedBird_prefService_addObserver(autocompleteDirectoryList[i], directoryServerObserver, false);
+		trustedBird_dump("\tAddDirectorySettingsObserver='" + autocompleteDirectoryList[i] + "'.");
 	}
 }
 
-function RemoveDirectorySettingsObserver(autocompleteDirectoryList)
-{
-	for(var i=0; i<autocompleteDirectoryList.length; i++){
-		sPrefBranchInternal.removeObserver(autocompleteDirectoryList[i], directoryServerObserver);
-		displayTrace("\tRemoveDirectorySettingsObserver='" + autocompleteDirectoryList[i] + "'." );
+function RemoveDirectorySettingsObserver(autocompleteDirectoryList) {
+	for(var i = 0; i < autocompleteDirectoryList.length; i++){
+		trustedBird_prefService_removeObserver(autocompleteDirectoryList[i], directoryServerObserver);
+		trustedBird_dump("\tRemoveDirectorySettingsObserver='" + autocompleteDirectoryList[i] + "'.");
 	}
 }
 
-function multildap_getSafeBoolPref(prefService, uri, defaultValue){
-    var value = defaultValue;
-
-    try{
-        value = prefService.getBoolPref(uri);
-    } catch (e) {
-    }
-
-    return value;
-}
-
-function multildap_getSafeCharPref(prefService, uri, defaultValue){
-    var value = defaultValue;
-
-    try{
-        value = prefService.getCharPref(uri);
-    } catch (e) {
-    }
-
-    return value;
-}
-
-function setupLdapAutocompleteSession()
-{
-    var autocompleteLdapList = false;
-    var autocompleteDirectoryList = null;
+function setupLdapAutocompleteSession() {
     var prevAutocompleteDirectoryList = gCurrentAutocompleteDirectoryList;
     var directoryNb = 0;
-    var i;
+
+  	var autocompleteDirectoryList = trustedBird_LDAP_getDirectoryList(gCurrentIdentity.key);
+  	trustedBird_dump("\tautocompleteDirectoryList = " + autocompleteDirectoryList);
 	
-    autocompleteLdapList = sPrefs.getBoolPref("ldap_2.autoComplete.useDirectory");
-	displayTrace("\tautocompleteLdapList="+autocompleteLdapList);
-
-  	var isGlobalPrefOverrided = multildap_getSafeBoolPref(sPrefs, "ldap_2.identity."+gCurrentIdentity.key+".autoComplete.overrideGlobalPref", false);
-  	if (isGlobalPrefOverrided){
-		autocompleteDirectoryList = multildap_getSafeCharPref(sPrefs,
-			"ldap_2.identity."+gCurrentIdentity.key+".autoComplete.ldapServers",
-			"");
-		dump("identity ldap list : "+autocompleteDirectoryList+"\n");
-  	} else
-        if (autocompleteLdapList)
-        autocompleteDirectoryList = sPrefs.getCharPref(
-            "ldap_2.autoComplete.ldapServers");
-
-	displayTrace("\tautocompleteDirectoryList="+autocompleteDirectoryList);
-
-     //case there is no LDAP to loop on.
-     if (autocompleteDirectoryList.length > 0)
-    	 autocompleteDirectoryList = autocompleteDirectoryList.split(',');
-     else 
-     	return;
+    // Stop if there is no directory
+    if (autocompleteDirectoryList.length == 0) return;
 
 	directoryNb = autocompleteDirectoryList.length;
 
 	
 	// Get autoComplete.minStringLength and autoComplete.cjkMinStringLength
-	var minStringLength = 0;
-	var cjkMinStringLength = 0;
 
     // don't search on non-CJK strings shorter than this
-    try {
-    	var tempMinStringLength = sPrefs.getIntPref("ldap_2.autoComplete.minStringLength");
-    	if (tempMinStringLength >=1 && tempMinStringLength <= 9) minStringLength = tempMinStringLength;
-    } catch (ex) {}
+	var minStringLength = 0;
+   	var tempMinStringLength = trustedBird_prefService_getIntPref("ldap_2.autoComplete.minStringLength");
+   	if (tempMinStringLength >= 1 && tempMinStringLength <= 99) minStringLength = tempMinStringLength;
 
-    if (isGlobalPrefOverrided) {
-        try {
-        	var tempMinStringLength = sPrefs.getIntPref("ldap_2.identity."+gCurrentIdentity.key+".autoComplete.minStringLength");
-        	if (tempMinStringLength >=1 && tempMinStringLength <= 9) minStringLength = tempMinStringLength;
-        } catch (ex) {}
+    if (trustedBird_prefService_getBoolPref("mail.identity." + gCurrentIdentity.key + ".overrideGlobal_Pref.multi-ldap")) {
+       	var tempMinStringLength = trustedBird_prefService_getIntPref("mail.identity." + gCurrentIdentity.key + ".autoComplete.minStringLength");
+       	if (tempMinStringLength >= 1 && tempMinStringLength <= 99) minStringLength = tempMinStringLength;
     }
     
     // don't search on CJK strings shorter than this
-    try {
-    	var tempCjkMinStringLength = sPrefs.getIntPref("ldap_2.autoComplete.cjkMinStringLength");
-    	if (tempCjkMinStringLength >=1 && tempCjkMinStringLength <= 9) cjkMinStringLength = tempCjkMinStringLength;
-    } catch (ex) {}
+	var cjkMinStringLength = 0;
+   	var tempCjkMinStringLength = trustedBird_prefService_getIntPref("ldap_2.autoComplete.cjkMinStringLength");
+   	if (tempCjkMinStringLength >= 1 && tempCjkMinStringLength <= 99) cjkMinStringLength = tempCjkMinStringLength;
 
-    if (isGlobalPrefOverrided) {
-        try {
-        	var tempCjkMinStringLength = sPrefs.getIntPref("ldap_2.identity."+gCurrentIdentity.key+".autoComplete.cjkMinStringLength");
-        	if (tempCjkMinStringLength >=1 && tempCjkMinStringLength <= 9) cjkMinStringLength = tempCjkMinStringLength;
-        } catch (ex) {}
+    if (trustedBird_prefService_getBoolPref("mail.identity." + gCurrentIdentity.key + ".overrideGlobal_Pref.multi-ldap")) {
+       	var tempCjkMinStringLength = trustedBird_prefService_getIntPref("mail.identity." + gCurrentIdentity.key + ".autoComplete.cjkMinStringLength");
+       	if (tempCjkMinStringLength >= 1 && tempCjkMinStringLength <= 99) cjkMinStringLength = tempCjkMinStringLength;
     }
     
     // use a temporary to do the setup so that we don't overwrite the
@@ -239,37 +177,15 @@ function setupLdapAutocompleteSession()
                 createInstance().QueryInterface(
                     Components.interfaces.nsILDAPURL);
 
-            try {
-                serverURL.spec = sPrefs.getComplexValue(autocompleteDirectoryList[k] +".uri",
-                                           Components.interfaces.nsISupportsString).data;
-            } catch (ex) {
-                dump("ERROR: " + ex + "\n");
-            }
+            serverURL.spec = trustedBird_prefService_getComplexPref(autocompleteDirectoryList[k] + ".uri", Components.interfaces.nsISupportsString);
             LDAPSession.serverURL = serverURL;
 
             // get the login to authenticate as, if there is one
-            //
-            var login = "";
-            try {
-                login = sPrefs.getComplexValue(
-                    autocompleteDirectoryList[k] + ".auth.dn",
-                    Components.interfaces.nsISupportsString).data;
-            } catch (ex) {
-                // if we don't have this pref, no big deal
-            }
+            var login = trustedBird_prefService_getComplexPref(autocompleteDirectoryList[k] + ".auth.dn", Components.interfaces.nsISupportsString);
 
-            // set the LDAP protocol version correctly
-            var protocolVersion;
-            try { 
-                protocolVersion = sPrefs.getCharPref(autocompleteDirectoryList[k] + 
-                                                      ".protocolVersion");
-            } catch (ex) {
-                // if we don't have this pref, no big deal
-            }
-            if (protocolVersion == "2") {
-                LDAPSession.version = 
-                    Components.interfaces.nsILDAPConnection.VERSION2;
-            }
+            // set the LDAP protocol version
+            var protocolVersion = trustedBird_prefService_getCharPref(autocompleteDirectoryList[k] + ".protocolVersion");
+            if (protocolVersion == "2") LDAPSession.version = Components.interfaces.nsILDAPConnection.VERSION2;
 
             // find out if we need to authenticate, and if so, tell the LDAP
             // autocomplete session how to prompt for a password.  This window
@@ -302,29 +218,16 @@ function setupLdapAutocompleteSession()
                     Components.interfaces.nsIAbLDAPAutoCompFormatter);
 
             // override autocomplete name format?
-            //
-            try {
-                ldapFormatter.nameFormat = 
-                    sPrefs.getComplexValue(autocompleteDirectoryList[k] + 
-                                      ".autoComplete.nameFormat",
-                                      Components.interfaces.nsISupportsString).data;
-            } catch (ex) {
-                // if this pref isn't there, no big deal.  just let
-                // nsAbLDAPAutoCompFormatter use its default.
-            }
-
+            var nameFormat = trustedBird_prefService_getComplexPref(autocompleteDirectoryList[k] + ".autoComplete.nameFormat", Components.interfaces.nsISupportsString);
+            if (nameFormat != "") ldapFormatter.nameFormat = nameFormat;
+            
             // override autocomplete mail address format?
-            //
-            try {
-                ldapFormatter.addressFormat = 
-                    sPrefs.getComplexValue(autocompleteDirectoryList[k] + 
-                                      ".autoComplete.addressFormat",
-                                      Components.interfaces.nsISupportsString).data;
-            } catch (ex) {
-                // if this pref isn't there, no big deal.  just let
-                // nsAbLDAPAutoCompFormatter use its default.
-            }
+           	var addressFormat = trustedBird_prefService_getComplexPref(autocompleteDirectoryList[k] + ".autoComplete.addressFormat", Components.interfaces.nsISupportsString);
+           	if (addressFormat != "") ldapFormatter.addressFormat = addressFormat;
 
+           	
+           	var sPrefs = trustedBird_prefService_getBranch();
+           	
             try {
                 // figure out what goes in the comment column, if anything
                 //
@@ -333,8 +236,7 @@ function setupLdapAutocompleteSession()
                 // 2 = other per-addressbook format
                 //
                 var showComments = 0;
-                showComments = sPrefs.getIntPref(
-                    "mail.autoComplete.commentColumn");
+                showComments = sPrefs.getIntPref("mail.autoComplete.commentColumn");
 
                 switch (showComments) {
 
@@ -420,7 +322,7 @@ function setupLdapAutocompleteSession()
                 // succeeded; add the session for all recipients, and 
                 // remember that we've done so
                 var autoCompleteWidget;
-                for (i=1; i <= awGetMaxRecipients(); i++)
+                for (var i = 1; i <= awGetMaxRecipients(); i++)
                 {
                     autoCompleteWidget = document.getElementById("addressCol2#" + i);
                     if (autoCompleteWidget)
@@ -445,9 +347,9 @@ function setupLdapAutocompleteSession()
       }
       if (gLDAPSessions) {
         
-        for (var k=0; k<gLDAPSessions.Length;k++){  
+        for (var k = 0; k < gLDAPSessions.Length; k++){  
             if (gSessionsAdded[k]){
-                  for (i=1; i <= awGetMaxRecipients(); i++) 
+                  for (var i = 1; i <= awGetMaxRecipients(); i++) 
                         document.getElementById("addressCol2#" + i).
                         removeSession(gLDAPSessions[k]);
                         gSessionsAdded[k] = false;
@@ -458,10 +360,4 @@ function setupLdapAutocompleteSession()
 
     gLDAPSessions = LDAPSessions;
     gSetupLdapAutocomplete = true;
-}
-// Display trace in console if bActiveDump is set to true
-function displayTrace(pMessage) {
-	if( bActiveDump == false )
-		return;
-	dump(pMessage + "\n");
 }

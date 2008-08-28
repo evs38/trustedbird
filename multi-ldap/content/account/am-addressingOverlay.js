@@ -97,36 +97,35 @@ function loadPreferences(){
 		bActiveDump = gPreferenceService.getBoolPref("javascript.options.showInConsole");
 
         // Retrieve LDAP attributes from user preferences
-		useCustomPref = gPreferenceService.getBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences");
+		useCustomPref = gPreferenceService.getBoolPref("mail.identity." + gIdentity.key + ".overrideGlobal_Pref.multi-ldap");
 		displayTrace("loadPreferences for user " + gIdentity.key +" value=" + useCustomPref + ".");
 	} catch (e){
 		dump("loadPreferences() -> Setting default useCustomPref\n");
-		gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences",false);
+		gPreferenceService.setBoolPref("mail.identity." + gIdentity.key + ".overrideGlobal_Pref.multi-ldap",false);
 		useCustomPref = false;
 	}
 	
 	try {
-		minStringLength = gPreferenceService.getIntPref("ldap_2.identity." + gIdentity.key + ".autoComplete.minStringLength");
+		minStringLength = gPreferenceService.getIntPref("mail.identity." + gIdentity.key + ".autoComplete.minStringLength");
 	} catch (e) {}
 }
 
 function savePreferences(){
 	//Save use Custom Preference choice to preference
-	var checkBoxUseCustomPref = document.getElementById("ldap_2.identity.id.multi_ldap_use_custom_preferences");
-	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".autoComplete.overrideGlobalPref", checkBoxUseCustomPref.checked);
-	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences", checkBoxUseCustomPref.checked);
-    gPreferenceService.setCharPref("ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers", gAutoCompletePref);
+	var checkBoxUseCustomPref = document.getElementById("multi_ldap_use_custom_preferences");
+	gPreferenceService.setBoolPref("mail.identity." + gIdentity.key + ".overrideGlobal_Pref.multi-ldap", checkBoxUseCustomPref.checked);
+    gPreferenceService.setCharPref("mail.identity." + gIdentity.key + ".directoryServers", gAutoCompletePref);
 
     minStringLength = document.getElementById("autocompleteMinStringLength").value;
-    if (!(minStringLength >=1 && minStringLength <= 9)) minStringLength = 2;
-    gPreferenceService.setIntPref("ldap_2.identity." + gIdentity.key + ".autoComplete.minStringLength", minStringLength);
+    if (!(minStringLength >=1 && minStringLength <= 99)) minStringLength = 2;
+    gPreferenceService.setIntPref("mail.identity." + gIdentity.key + ".autoComplete.minStringLength", minStringLength);
 
     displayTrace("savePreferences for user " + gIdentity.key +".");
 }
 
 //Setup UI Control From Preferences
 function setupUI(){
-	var checkBoxUseCustomPref = document.getElementById("ldap_2.identity.id.multi_ldap_use_custom_preferences");
+	var checkBoxUseCustomPref = document.getElementById("multi_ldap_use_custom_preferences");
 	checkBoxUseCustomPref.checked = useCustomPref;
 	enableCustomPreferences(checkBoxUseCustomPref);
 	displayTrace("setupUI for user " + gIdentity.key +" value=" + useCustomPref + ".");
@@ -180,7 +179,7 @@ function initMultiLDAPDirectoriesList()
 	gPreferenceService = Components.classes["@mozilla.org/preferences-service;1"]
 		.getService(Components.interfaces.nsIPrefBranch);
 	//URI of All Autocomplete repositories
-	var prefLDAPURI = "ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers";
+	var prefLDAPURI = "mail.identity." + gIdentity.key + ".directoryServers";
 	// Initialize global variable. Used to update preference of the LDAP list
 	gOriginalPreference = gAutoCompletePref = getSafeCharPref(gPreferenceService, prefLDAPURI);
 	displayTrace("initMultiLDAPDirectoriesList="+ prefLDAPURI +"='" + gAutoCompletePref + "'.");
@@ -195,7 +194,7 @@ function createMultiLDAPDirectoriesList()
 		createCheckBoxList( directoriesListBox);
 	}
 	// Save the preference to update the string when a server has been deleted
-    gPreferenceService.setCharPref("ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers", gOriginalPreference );
+    gPreferenceService.setCharPref("mail.identity." + gIdentity.key + ".directoryServers", gOriginalPreference );
 
 	//Enable LDAP list control
 	enableCustomPreferences();
@@ -349,7 +348,7 @@ function updateCheckBoxList(aPopup)
 		.getService(Components.interfaces.nsIPrefBranch);
 	
 	//URI of All Autocomplete repositories
-	var prefLDAPURI = "ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers";
+	var prefLDAPURI = "mail.identity." + gIdentity.key + ".directoryServers";
 	//Get all LDAP where AutoComplete is set from User Prefs
 	var prefLDAP = getSafeCharPref(gPreferenceService, prefLDAPURI);
 	// Initialize global variable. Used to update preference of the LDAP list
@@ -443,7 +442,7 @@ function removeChilds( tabs, child){
 function enableCustomPreferences(target) 
 {
 	var list = document.getElementById("LDAPList");
-	if (document.getElementById("ldap_2.identity.id.multi_ldap_use_custom_preferences").checked == false) 
+	if (document.getElementById("multi_ldap_use_custom_preferences").checked == false) 
 	{
 		disableListBox(list, true);
 		document.getElementById("autocompleteMinStringLength").disabled = true;

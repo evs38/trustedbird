@@ -75,7 +75,7 @@
       <preference id="mail.enable_autocomplete" name="mail.enable_autocomplete" type="bool"/>
       <preference id="ldap_2.autoComplete.useDirectory" name="ldap_2.autoComplete.useDirectory" type="bool"/>
       <preference id="ldap_2.autoComplete.directoryServer" name="ldap_2.autoComplete.directoryServer" type="string"/>
-      <preference id="ldap_2.autoComplete.ldapServers" name="ldap_2.autoComplete.ldapServers" type="string"/>
+      <preference id="ldap_2.autoComplete.directoryServers" name="ldap_2.autoComplete.directoryServers" type="string"/>
       <preference id="ldap_2.autoComplete.minStringLength" name="ldap_2.autoComplete.minStringLength" type="int"/>
       <preference id="mail.collect_email_address_outgoing" name="mail.collect_email_address_outgoing" type="bool"/>
       <preference id="mail.collect_addressbook" name="mail.collect_addressbook" type="string"/>
@@ -201,7 +201,7 @@
               <listbox
 				id="LDAPList"
 				rows="4"
-				preference="ldap_2.autoComplete.ldapServers"
+				preference="ldap_2.autoComplete.directoryServers"
 				onsynctopreference="return gComposePane.updateLDAPServerListPreference(event.target);">
                 <listhead>
                   <listheader label="&ldapAutocomplete.label;" />
@@ -214,7 +214,7 @@
               
               <hbox align="center">
                 <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
-                <textbox id="autocompleteMinStringLength" size="3" maxlength="2" preference="ldap_2.autoComplete.minStringLength"
+                <textbox id="autocompleteMinStringLength" size="3" maxlength="3" preference="ldap_2.autoComplete.minStringLength"
                          onsyncfrompreference="return multildap_loadAutocompleteMinStringLength('ldap_2.autoComplete.minStringLength');" />
                 <label value="&char.label;" control="autocompleteMinStringLength" />
               </hbox>
