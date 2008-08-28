@@ -665,8 +665,8 @@ var gComposePane = {
 	},
 	
 	/*
-	* Rebuild the LDAP list prefernce selected by the user.
-	* Return : string that contain all LDAP name separated by coma. This is saved in the 
+	* Rebuild the LDAP list preference selected by the user.
+	* Return : string that contain all LDAP name separated by comma. This is saved in the 
 	* Added for correction of the entry ID 484
 	*/
    updateLDAPServerListPreference : function(target)
@@ -676,7 +676,7 @@ var gComposePane = {
 	},
 	
 	/*
-	 * Check the validity of the server list prefernece after an edit of the LDAP server list.
+	 * Check the validity of the server list preference after an edit of the LDAP server list.
 	 * Remove the deleted server in the preference string.
 	 */
 	checkPreferenceServerValidity : function(serverToCheck)
@@ -699,16 +699,24 @@ var gComposePane = {
 }
 
 //Function which deal user event on LDAP AutoComplete List
-function buildPreferenceValue(target){
+function buildPreferenceValue(target) {
 	displayTrace("buildPreferenceValue() started.");
 	var list = document.getElementById("LDAPList");
 	var item = list.currentItem;
 	var nameCell = 	item.childNodes.item(0);
 	var checkbox = nameCell.firstChild;
 	var sMessage = "\t" + nameCell.tagName+" > ";
-	sMessage += checkbox.getAttribute("label")+" : ";
-	displayTrace(sMessage + nameCell.getAttribute("value")+" is " +checkbox.checked+ ".");
-	var newPreference = buildLDAPlistString(nameCell.getAttribute("value"), checkbox.checked);
+
+	var newPreference;
+	
+	if (checkbox != null) {
+		sMessage += checkbox.getAttribute("label") + " : ";
+		displayTrace(sMessage + nameCell.getAttribute("value") + " is " + checkbox.checked + ".");
+		newPreference = buildLDAPlistString(nameCell.getAttribute("value"), checkbox.checked);
+	} else {
+		newPreference = buildLDAPlistString("", false);
+	}
+	
 	displayTrace("buildPreferenceValue() ended.");
 	return newPreference;
 }
