@@ -38,6 +38,7 @@
 
 <overlay id="send_format_ldap_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+    <script type="application/x-javascript" src="chrome://send_format_ldap/content/libtrustedbird.js"/>
     <script type="application/x-javascript" src="chrome://send_format_ldap/content/send_format_ldap.js"/>
     
 </overlay>

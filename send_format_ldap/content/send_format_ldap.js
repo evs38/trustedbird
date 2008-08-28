@@ -41,9 +41,6 @@
 // User preference defining LDAP attributes to look for finding if one recipient supports HTML format.
 const SNDFMTLDAP_PREF_LDAP_ATTRIBUTE_PREFER_MAIL_FORMAT = "ldap_2.servers.default.attrmap.PreferMailFormat";
 
-// User preference defining LDAP server.
-const SNDFMTLDAP_PREF_LDAP_SERVER = "ldap_2.autoComplete.directoryServer";
-
 // URL of the window dialog to call
 const SNDFMTLDAP_DIALOG_WINDOW_URL = 'chrome://send_format_ldap/content/formatFetchingStatuts.xul';
 
@@ -60,6 +57,7 @@ var sndfmtldap_ArrayOfAttributes_IsHTMLSupported;
 // Holder for the list of recipients to filter.
 var sndfmtldap_FilteredRecipients;
 
+var sndfmtldap_directoryListArray;
 
 // Extension Hook : replace the built in DetermineHTMLAction function defined in MsgComposeCommands.js with our own ...
 // The only update done to the built in function is the call of our extension (see the tag "hook for send_format_ldap" inside the body).
@@ -150,16 +148,16 @@ function DetermineHTMLAction(convertible)
 // Filter the given recipients, excluding ones that supports HTML mail format.
 // We look up in the LDAP directory to retrieve the mail format.
 function sndfmtldap_FilterHtmlRecipientsFromLDAP(recipients) {
-    if (recipients != null) {
+    if (recipients != null && recipients != "") {
 
         // Log call of our extension
-        dump("SEND_FORMAT_LDAP: Looking into LDAP supported mail formats for " + recipients + "\n");
+    	trustedBird_dump("sndfmtldap_FilterHtmlRecipientsFromLDAP: noHtmlRecipients = " + recipients);
         
         // Use an array to pass the argument to the dialog window
         // in order to be able to return a modified value
         var argHolder = [recipients];
         
-        // Open the dialog window that will block the user until fectching from LDAP is done
+        // Open the dialog window that will block the user until fetching from LDAP is done
         window.openDialog(
             SNDFMTLDAP_DIALOG_WINDOW_URL,
             'send_format_ldap_formatFetchingStatuts', // Dummy name
@@ -171,7 +169,11 @@ function sndfmtldap_FilterHtmlRecipientsFromLDAP(recipients) {
         recipients = argHolder[0];
         
         // Log result of our extension
-        dump("SEND_FORMAT_LDAP: mail formats not found into LDAP for " + recipients + "\n");
+        if (recipients != "") {
+        	trustedBird_dump("sndfmtldap_FilterHtmlRecipientsFromLDAP: noHtmlRecipients = " + recipients);
+        } else {
+        	trustedBird_dump("sndfmtldap_FilterHtmlRecipientsFromLDAP: all recipients accept HTML");
+        }
     }
     return recipients;
 }
@@ -206,7 +208,11 @@ var sndfmtldap_LDAPMessageListener = {
         
         // Search is done
         if (Components.interfaces.nsILDAPMessage.RES_SEARCH_RESULT == aMessage.type) {
-          window.close();
+        	if (sndfmtldap_directoryListArray.length > 0 && sndfmtldap_FilteredRecipients != '') {
+        		sndfmtldap_initLDAPAndSearch();
+        	} else {
+        		window.close();
+        	}
           return;
         }
 
@@ -232,11 +238,14 @@ var sndfmtldap_LDAPMessageListener = {
 // Window Dialog has been loaded.
 function sndfmtldap_onLoadFormatFetchingStatuts() {
 
-    // Retrieve and remind window arguments
+	// Get directory list
+	sndfmtldap_directoryListArray = trustedBird_LDAP_getDirectoryList(window.opener.gCurrentIdentity.key);
+	
+    // Retrieve window arguments
     sndfmtldap_FilteredRecipients = window.arguments[0][0];
     
     // If arguments are ok
-    if (sndfmtldap_FilteredRecipients != null && sndfmtldap_FilteredRecipients != '') {
+    if (sndfmtldap_directoryListArray.length > 0 && sndfmtldap_FilteredRecipients != null && sndfmtldap_FilteredRecipients != '') {
 
         // Init and process the LDAP search (Delay execution to allow UI to refresh)
         setTimeout(sndfmtldap_initLDAPAndSearch, 1);
@@ -260,42 +269,44 @@ function sndfmtldap_onDialogCancelFetchingStatuts() {
 
 // Init and process the LDAP search.
 function sndfmtldap_initLDAPAndSearch() {
-
-    // Retrieve LDAP attributes to look for finding if one recipient supports HTML format from user preferences
-    var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-    var prefs = prefService.getBranch(null);
-    sndfmtldap_ArrayOfAttributes_IsHTMLSupported = prefs.getCharPref(SNDFMTLDAP_PREF_LDAP_ATTRIBUTE_PREFER_MAIL_FORMAT).split(',');
-          
-    // Get the login to authenticate as, if there is one
-    var directoryPref = prefs.getCharPref(SNDFMTLDAP_PREF_LDAP_SERVER);
-    prefs = prefService.getBranch(directoryPref);
-    try {
-        sndfmtldap_Login = prefs.getComplexValue(".auth.dn", Components.interfaces.nsISupportsString).data;
-    } catch (e) {
-        // if we don't have this pref, no big deal
-    }
-
-    // Init and process the LDAP search
-    sndfmtldap_LdapServerURL = 
-        Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
-    try {
-        sndfmtldap_LdapServerURL.spec = prefs.getCharPref(".uri");
-
-        sndfmtldap_LdapConnection = 
-            Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
-
-        sndfmtldap_LdapConnection.init(
-            sndfmtldap_LdapServerURL.asciiHost,
-            sndfmtldap_LdapServerURL.port,
-            sndfmtldap_LdapServerURL.options & sndfmtldap_LdapServerURL.OPT_SECURE,
-            sndfmtldap_Login,
-            sndfmtldap_getProxyOnUIThread(sndfmtldap_LDAPMessageListener, Components.interfaces.nsILDAPMessageListener),
-            null,
-            Components.interfaces.nsILDAPConnection.VERSION3);
-
-        } catch (e) {
-            dump(e + " exception when creating ldap connection\n");
-            window.close();
+    // Retrieve LDAP attributes which define if HTML format is supported
+    sndfmtldap_ArrayOfAttributes_IsHTMLSupported = trustedBird_prefService_getCharPref(SNDFMTLDAP_PREF_LDAP_ATTRIBUTE_PREFER_MAIL_FORMAT).split(',');
+    
+    var directoryPref = "";
+    if (sndfmtldap_directoryListArray.length > 0) directoryPref = sndfmtldap_directoryListArray.pop();
+    if (directoryPref != "") {
+    	
+    	trustedBird_dump("Searching directory " + trustedBird_prefService_getCharPref(directoryPref + ".description") + "...");
+    	
+	    // Get the login to authenticate as, if there is one
+	    try {
+	        sndfmtldap_Login = trustedBird_prefService_getComplexPref(directoryPref + ".auth.dn", Components.interfaces.nsISupportsString);
+	    } catch (e) {
+	        // if we don't have this pref, no big deal
+	    }
+	
+	    // Init and process the LDAP search
+	    sndfmtldap_LdapServerURL = 
+	        Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
+	    try {
+	        sndfmtldap_LdapServerURL.spec = trustedBird_prefService_getCharPref(directoryPref + ".uri");
+	
+	        sndfmtldap_LdapConnection = 
+	            Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
+	
+	        sndfmtldap_LdapConnection.init(
+	            sndfmtldap_LdapServerURL.asciiHost,
+	            sndfmtldap_LdapServerURL.port,
+	            sndfmtldap_LdapServerURL.options & sndfmtldap_LdapServerURL.OPT_SECURE,
+	            sndfmtldap_Login,
+	            sndfmtldap_getProxyOnUIThread(sndfmtldap_LDAPMessageListener, Components.interfaces.nsILDAPMessageListener),
+	            null,
+	            Components.interfaces.nsILDAPConnection.VERSION3);
+	
+	        } catch (e) {
+	            dump(e + " exception when creating ldap connection\n");
+	            window.close();
+	    }
     }
 }
 
@@ -350,7 +361,7 @@ function sndfmtldap_kickOffSearch() {
         var prefix2 = "";
         var suffix2 = "";
         
-        // Build the optionnal URL filter
+        // Build the optional URL filter
         var urlFilter = sndfmtldap_LdapServerURL.filter;
         if (urlFilter != null && urlFilter.length > 0 && urlFilter != "(objectclass=*)") {
             if (urlFilter[0] == '(') {
@@ -420,18 +431,24 @@ function sndfmtldap_handleSearchResultMessage(aMessage) {
             // Remove recipient's mail from recipients list
             var mailValue = aMessage.getValues("mail", outSize);
             if (mailValue && outSize.value > 0) {
-                var arrayOfRecipients = window.arguments[0][0].split(",");
-                window.arguments[0][0] = "";
+                var arrayOfRecipients = sndfmtldap_FilteredRecipients.split(",");
+                sndfmtldap_FilteredRecipients = "";
                 
                 var nbRecipients = arrayOfRecipients.length;
                 for (var i = 0; i < nbRecipients; i++) {
                     if (arrayOfRecipients[i] != mailValue[0]) {
-                        if (window.arguments[0][0] != "") {
-                            window.arguments[0][0] += ",";
+                        if (sndfmtldap_FilteredRecipients != "") {
+                        	sndfmtldap_FilteredRecipients += ",";
                         }
-                        window.arguments[0][0] += arrayOfRecipients[i];
+                        sndfmtldap_FilteredRecipients += arrayOfRecipients[i];
                     }
                 }
+
+                // Return list
+                window.arguments[0][0] = sndfmtldap_FilteredRecipients;
+                
+                trustedBird_dump("sndfmtldap_handleSearchResultMessage: noHtmlRecipients = " + sndfmtldap_FilteredRecipients);
+                
                 // Exit loop because recipient has been found
                 break;
             }

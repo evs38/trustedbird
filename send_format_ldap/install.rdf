@@ -43,7 +43,7 @@
     <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
     <em:id>send_format_ldap@milimail.org</em:id>
-    <em:name>send_format_ldap</em:name>
+    <em:name>Send Format LDAP</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Eric BALLET BAZ</em:creator>
 
@@ -60,6 +60,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Allows, when sending a message, to find supported email formats for the recipients (Text, HTML) by looking up these informations into a LDAP directory.</em:description>
+    <em:description>Get supported email formats (text/HTML) of the recipients from LDAP directories.</em:description>
   </rdf:Description>
 </rdf:RDF>

@@ -35,6 +35,6 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY title.label "Downloading formats">
-<!ENTITY info.message "Searching the directory for recipients' formats. This may take a few minutes.">
+<!ENTITY title.label "Checking supported formats">
+<!ENTITY info.message "Searching directories for supported formats...">
 <!ENTITY stop.label "Stop Searching">

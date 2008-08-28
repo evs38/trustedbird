@@ -35,6 +35,6 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY title.label "Téléchargement des formats">
-<!ENTITY info.message "Recherche dans l'annuaire des formats des destinataires. Cette opération peut prendre quelques minutes.">
+<!ENTITY title.label "Vérification des formats supportés">
+<!ENTITY info.message "Recherche dans les annuaires des formats supportés...">
 <!ENTITY stop.label "Arrêter la recherche">
