@@ -52,6 +52,7 @@
 		title="&check_recipients.header.title;"
         ondialogaccept="check_recipients_onDialogCancelFetchingStatuts();">
 
+	<script type="application/x-javascript" src="chrome://check_recipients/content/libtrustedbird.js"/>
 	<script type="application/x-javascript" src="chrome://check_recipients/content/check_recipientsDialog.js"/>
 	 
 	<stringbundle id="check_recipients_stringbundle" src="chrome://check_recipients/locale/check_recipients.properties"/>	

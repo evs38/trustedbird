@@ -44,31 +44,10 @@ const kPersonalAddressbookUri        = "moz-abmdbdirectory://abook.mab";
 const kRDFServiceContractID          = "@mozilla.org/rdf/rdf-service;1";
 
 
-// User preferences for autocompletion
-const CHECK_RECIPIENTS_PREF_USE_LOCAL_AB = "mail.enable_autocomplete";
-
-const CHECK_RECIPIENTS_PREF_USE_LDAP = "ldap_2.autoComplete.useDirectory";
-
-const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_BEGIN = "ldap_2.identity.";
-const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_END = ".autoComplete.overrideGlobalPref";
-
-const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_BEGIN = "mail.identity.";
-const CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_END = ".overrideGlobal_Pref";
-
-const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP = "ldap_2.autoComplete.ldapServers";
-
-const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP = "ldap_2.autoComplete.directoryServer";
-
-const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_BEGIN = "ldap_2.identity.";
-const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_END = ".autoComplete.ldapServers";
-
-const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_BEGIN = "mail.identity.";
-const CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_END = ".directoryServer";
-
-
-var check_recipients_ldapServersArray = new Array();
+var checkRecipients_directoryListArray;
 
 // Should we search in local address books
+const CHECK_RECIPIENTS_PREF_USE_LOCAL_AB = "mail.enable_autocomplete";
 var checkRecipientsUseLocalAB = false;
 
 // The following variables are needed by the LDAP asynchronous calls.
@@ -80,66 +59,18 @@ var check_recipients_Login;
 
 var gPersonalAddressBookDirectory; // used for determining if we want to show just the display name in email address nodes
 
-// Set to true to activate traces in console
-var bActiveDump = false;
-
 // List of emails
 var check_recipients_listEmails = new Array();
 
 // Initialize fields on onload 
 function check_recipients_onLoadDialog() {
-	displayTrace("check_recipients_onLoadDialog begin." );
+	trustedBird_dump("check_recipients_onLoadDialog begin." );
 
-	//Initialize console traces
-	bActiveDump = check_recipients_prefService_getBoolPref("javascript.options.showInConsole");
-
-	
-	/* Check if Multi-LDAP add-on is installed */
-	/* BUG: we should check if Multi-LDAP add-on is disabled */
-	var multiLDAPIsInstalled = false;
-	var extensionsManager = Components.classes["@mozilla.org/extensions/manager;1"].getService(Components.interfaces.nsIExtensionManager);
-	var item = extensionsManager.getItemForID("multildap@milimail.org");
-	if (item.version != "") multiLDAPIsInstalled = true;
-	
 	/* Check if local address books should be used */
-	checkRecipientsUseLocalAB = false;
-	if (check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_USE_LOCAL_AB)) checkRecipientsUseLocalAB = true;
+	checkRecipientsUseLocalAB = trustedBird_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_USE_LOCAL_AB);
 
-	/* Check if LDAP directories should be used */
-	var ldapServersPref = "";
-	var currentIdentity = window.opener.gCurrentIdentity;
-	if (multiLDAPIsInstalled) {
-		/* With Multi-LDAP */
-		var override = false;
-		override = check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITH_MULTILDAP_END);
-		if (override) {
-			/* Specific account settings */
-			ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP_ACCOUNT_END);
-		} else {
-			/* Global settings */
-			if (check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_USE_LDAP)) {
-				ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITH_MULTILDAP);
-			}
-		}
-	} else {
-		/* Without Multi-LDAP */
-		var override = false;
-		override = check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_OVERRIDE_LDAP_ACCOUNT_WITHOUT_MULTILDAP_END);
-		if (override) {
-			/* Specific account settings */
-			ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_BEGIN + currentIdentity.key + CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP_ACCOUNT_END);
-		} else {
-			/* Global settings */
-			if (check_recipients_prefService_getBoolPref(CHECK_RECIPIENTS_PREF_USE_LDAP)) {
-				ldapServersPref = check_recipients_prefService_getCharPref(CHECK_RECIPIENTS_PREF_LDAP_LIST_WITHOUT_MULTILDAP);
-			}
-		}
-	}
-	
 	/* Load LDAP directory list */
-	check_recipients_ldapServersArray = new Array();
-	if (ldapServersPref != "") check_recipients_ldapServersArray = ldapServersPref.split(',');
-	
+	checkRecipients_directoryListArray = trustedBird_LDAP_getDirectoryList(window.opener.gCurrentIdentity.key);
 	
     var recipientsList = document.getElementById('check_recipients_recipientsList');
     
@@ -152,7 +83,7 @@ function check_recipients_onLoadDialog() {
         for (var i = 0; i < recipientsArray.length; i++) {
             if (recipientsArray[i]) {
                 var email = check_recipients_substring(recipientsArray[i], "<", ">");
-				displayTrace("\tAdd recipient '" + email + "'." );
+				trustedBird_dump("\tAdd recipient '" + email + "'." );
                 if (check_recipients_listEmails.indexOf(email) != -1) {
                     continue;
                 }
@@ -170,7 +101,7 @@ function check_recipients_onLoadDialog() {
                 var row = document.createElement("listitem");
                 var cell1 = document.createElement("listcell");
                 cell1.setAttribute("label", recipientsArray[i]);
-				displayTrace("\tSet cellule label '" + recipientsArray[i] + "'." );
+				trustedBird_dump("\tSet cellule label '" + recipientsArray[i] + "'." );
                 row.appendChild(cell1);
 
                 var cell2 = document.createElement("listcell");		
@@ -204,7 +135,7 @@ function check_recipients_onLoadDialog() {
 		// Init and process the LDAP search
         if (!bListEmpty) setTimeout(check_recipients_initLDAPAndSearch, 1);
     }
-	displayTrace("check_recipients_onLoadDialog ended." );
+	trustedBird_dump("check_recipients_onLoadDialog ended.");
 }
 
 // Test if the argument is an email
@@ -243,11 +174,11 @@ var check_recipients_LDAPMessageListener = {
     onLDAPInit: function(aConn, aStatus) {
         // Bind to LDAP
         try {
-			displayTrace("onLDAPInit begin");
+			trustedBird_dump("onLDAPInit begin");
             check_recipients_initNewLDAPOperation();
-			displayTrace("\tConnection=" + check_recipients_LdapOperation.connection);
+			trustedBird_dump("\tConnection=" + check_recipients_LdapOperation.connection);
             check_recipients_LdapOperation.simpleBind(check_recipients_getPassword());
-			displayTrace("onLDAPInit ended.");
+			trustedBird_dump("onLDAPInit ended.");
         } catch (e) {
             //alert("Exception when binding to ldap: " + e);
         	
@@ -255,7 +186,7 @@ var check_recipients_LDAPMessageListener = {
         	alert(check_recipients_stringbundle.getString("ldap_connect_error")+" "+check_recipients_LdapServerName);
         	
         	// Continue the search on other LDAP servers/Local
-            if (check_recipients_ldapServersArray.length > 0) {
+            if (checkRecipients_directoryListArray.length > 0) {
                 check_recipients_initLDAPAndSearch();
             } else {
             	check_recipients_local_updateUI();
@@ -266,48 +197,48 @@ var check_recipients_LDAPMessageListener = {
     // LDAP message has been received
     onLDAPMessage: function(aMessage) {
         
-		displayTrace("onLDAPMessage begin message = " + aMessage );
+		trustedBird_dump("onLDAPMessage begin message = " + aMessage );
          // Search is done
         if (Components.interfaces.nsILDAPMessage.RES_SEARCH_RESULT == aMessage.type) {
-			displayTrace("\tmessage =RES_SEARCH_RESULT" );
+			trustedBird_dump("\tmessage =RES_SEARCH_RESULT" );
             // Is there any other ldap to search on ?
-            if (check_recipients_ldapServersArray.length > 0) {
+            if (checkRecipients_directoryListArray.length > 0) {
                 check_recipients_initLDAPAndSearch();
             } else {
-				displayTrace("\tNo more LDAP server to check." );
+				trustedBird_dump("\tNo more LDAP server to check." );
 
 				check_recipients_local_updateUI();
 				
-				displayTrace("onLDAPMessage ended.");
+				trustedBird_dump("onLDAPMessage ended.");
             }
             return;
         }
 
         // Binding is done
         if (Components.interfaces.nsILDAPMessage.RES_BIND == aMessage.type) {
-			displayTrace("\tmessage =RES_BIND" );
+			trustedBird_dump("\tmessage =RES_BIND");
             if (Components.interfaces.nsILDAPErrors.SUCCESS != aMessage.errorCode) {
                 alert("Error with code " + aMessage.errorCode + " when binding to ldap");
             } else {
                 // Kick off search ...
                 check_recipients_kickOffSearch();
             }
-			displayTrace("onLDAPMessage ended.");
+			trustedBird_dump("onLDAPMessage ended.");
             return;
         }
 
         // One search result has been received
         if (Components.interfaces.nsILDAPMessage.RES_SEARCH_ENTRY == aMessage.type) {
-			displayTrace("\tmessage =RES_SEARCH_ENTRY" );
+			trustedBird_dump("\tmessage =RES_SEARCH_ENTRY" );
 
             check_recipients_handleSearchResultMessage(aMessage);
-			displayTrace("onLDAPMessage ended.");
+			trustedBird_dump("onLDAPMessage ended.");
 
             return;
         }
-		displayTrace("\tmessage =" + aMessage.type);
+		trustedBird_dump("\tmessage =" + aMessage.type);
 
-		displayTrace("onLDAPMessage ended.");
+		trustedBird_dump("onLDAPMessage ended.");
     }
 }
 
@@ -319,7 +250,7 @@ function check_recipients_local_updateUI() {
     var images = document.getElementsByTagName("image");
     var textlabel = document.getElementsByTagName("label");
     for (var i = 0; i < images.length; i++) {
-		displayTrace("\tImage attribute class =" + images[i].getAttribute("class") );
+		trustedBird_dump("\tImage attribute class =" + images[i].getAttribute("class") );
         if (images[i].getAttribute("class") == "check_recipients_searching") {
 			var email = images[i].getAttribute("id");
 			if (check_recipients_IsEmailInDataBase(email)){
@@ -366,10 +297,10 @@ function check_recipients_onDialogCancelFetchingStatuts() {
 // Init and process the LDAP search.
 function check_recipients_initLDAPAndSearch() {
 
-	displayTrace( "check_recipients_initLDAPAndSearch begin.");
+	trustedBird_dump("check_recipients_initLDAPAndSearch begin.");
 
     // Get the login to authenticate as, if there is one
-    var directoryPref = check_recipients_ldapServersArray.pop();
+    var directoryPref = checkRecipients_directoryListArray.pop();
 
     if (!directoryPref) {
 	
@@ -387,41 +318,30 @@ function check_recipients_initLDAPAndSearch() {
 					images[i].setAttribute("id", email);
 					textlabel[i].setAttribute("value", "Local" );
 					textlabel[i].setAttribute("id", "textlabel_" + email);
-				}else{
+				} else {
 					images[i].setAttribute("class", "check_recipients_notfound");
 					textlabel[i].setAttribute("value", "----" );
 				}
 			}
 		}
 	
-		displayTrace( "check_recipients_initLDAPAndSearch ended : No directory found.");
+		trustedBird_dump("check_recipients_initLDAPAndSearch ended: No directory found.");
         return;
     }
 
-    // Retrieve LDAP attributes from user preferences
-    var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-    var prefs = prefService.getBranch(null);
-
-    prefs = prefService.getBranch(directoryPref);
-    try {
-        check_recipients_Login = prefs.getComplexValue(".auth.dn", Components.interfaces.nsISupportsString).data;
-    } catch (e) {
-        // if we don't have this pref, no big deal
-    }
+    check_recipients_Login = trustedBird_prefService_getComplexPref(directoryPref + ".auth.dn", Components.interfaces.nsISupportsString);
 
     // Init and process the LDAP search
-    check_recipients_LdapServerURL = 
-        Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
+    check_recipients_LdapServerURL = Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
 
     try {
-        check_recipients_LdapServerURL.spec = prefs.getCharPref(".uri");
-		check_recipients_LdapServerName = prefs.getCharPref(".description");
-		displayTrace( 	"\tCheck recipient on LDAP=" + check_recipients_LdapServerName + 
-						" Host=" + check_recipients_LdapServerURL.asciiHost +
-						" URL=" + check_recipients_LdapServerURL.spec);
+        check_recipients_LdapServerURL.spec = trustedBird_prefService_getCharPref(directoryPref + ".uri");
+		check_recipients_LdapServerName = trustedBird_prefService_getCharPref(directoryPref + ".description");
+		trustedBird_dump("\tCheck recipient on LDAP=" + check_recipients_LdapServerName + 
+						 " Host=" + check_recipients_LdapServerURL.asciiHost +
+						 " URL=" + check_recipients_LdapServerURL.spec);
 		
-        check_recipients_LdapConnection = 
-            Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
+        check_recipients_LdapConnection = Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
 
         check_recipients_LdapConnection.init(
             check_recipients_LdapServerURL.asciiHost,
@@ -432,53 +352,50 @@ function check_recipients_initLDAPAndSearch() {
             null,
             Components.interfaces.nsILDAPConnection.VERSION3);
 		if( check_recipients_LdapConnection.errorString ){
-			displayTrace( "\t\tERROR ==> nsILDAPConnection=" + check_recipients_LdapConnection.errorString);
+			trustedBird_dump( "\t\tERROR ==> nsILDAPConnection=" + check_recipients_LdapConnection.errorString);
 		}	
 	} catch (e) {
-		alert("Exception when creating ldap connection:" + e);
+		trustedBird_dump("Exception when creating ldap connection:" + e);
     }
-	displayTrace( "check_recipients_initLDAPAndSearch ended.");
+	trustedBird_dump("check_recipients_initLDAPAndSearch ended.");
 }
 
-function check_recipients_IsEmailInDataBase(email)
-{
+function check_recipients_IsEmailInDataBase(email) {
 	if (!checkRecipientsUseLocalAB) return false;
 
-	displayTrace("\tcheck_recipients_IsEmailInDataBase begin.");
+	trustedBird_dump("\tcheck_recipients_IsEmailInDataBase begin.");
 	if (!gPersonalAddressBookDirectory)
 	{
 		var RDFService = Components.classes[kRDFServiceContractID].getService(Components.interfaces.nsIRDFService); 
 		gPersonalAddressBookDirectory = RDFService.GetResource(kPersonalAddressbookUri).QueryInterface(Components.interfaces.nsIAbMDBDirectory);
 
 		if (!gPersonalAddressBookDirectory){
-			displayTrace("\tcheck_recipients_IsEmailInDataBase ended with ERROR gPersonalAddressBookDirectory = " + gPersonalAddressBookDirectory);
+			trustedBird_dump("\tcheck_recipients_IsEmailInDataBase ended with ERROR gPersonalAddressBookDirectory = " + gPersonalAddressBookDirectory);
 			return false;
 		}
 	}
 	// look up the email address in the database
 	var bIsPresent = gPersonalAddressBookDirectory.hasCardForEmailAddress(email);
-	displayTrace("\t\tIsEmailInDataBase '" + email + "' in local address book = " + bIsPresent +".");
-	displayTrace("\tcheck_recipients_IsEmailInDataBase ended.");
+	trustedBird_dump("\t\tIsEmailInDataBase '" + email + "' in local address book = " + bIsPresent +".");
+	trustedBird_dump("\tcheck_recipients_IsEmailInDataBase ended.");
 	return bIsPresent;
 }
 
 // Init a new LDAP operation Object
-function check_recipients_initNewLDAPOperation()
-{
-	displayTrace("\tcheck_recipients_initNewLDAPOperation begin.");
-    check_recipients_LdapOperation = 
-        Components.classes["@mozilla.org/network/ldap-operation;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPOperation);
+function check_recipients_initNewLDAPOperation() {
+	trustedBird_dump("\tcheck_recipients_initNewLDAPOperation begin.");
+    check_recipients_LdapOperation = Components.classes["@mozilla.org/network/ldap-operation;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPOperation);
 
     check_recipients_LdapOperation.init(
         check_recipients_LdapConnection,
         check_recipients_getProxyOnUIThread(check_recipients_LDAPMessageListener, Components.interfaces.nsILDAPMessageListener), null);
-	displayTrace("\tcheck_recipients_initNewLDAPOperation ended.");
+	trustedBird_dump("\tcheck_recipients_initNewLDAPOperation ended.");
 }
 
 // Retrieve user password from preferences or ask him if not found
 function check_recipients_getPassword() {
     // We only need a password if we are using credentials
-    if (check_recipients_Login) {
+    if (check_recipients_Login != "") {
         var windowWatcherSvc = Components.classes["@mozilla.org/embedcomp/window-watcher;1"].getService(Components.interfaces.nsIWindowWatcher);
         var authPrompter = windowWatcherSvc.getNewAuthPrompter(window.QueryInterface(Components.interfaces.nsIDOMWindow));    
         var strBundle = document.getElementById('bundle_ldap');
@@ -514,7 +431,7 @@ function check_recipients_kickOffSearch() {
         var prefix2 = "";
         var suffix2 = "";
 
-		displayTrace("check_recipients_kickOffSearch begin.");
+		trustedBird_dump("check_recipients_kickOffSearch begin.");
 		
         // Build the optionnal URL filter
         var urlFilter = check_recipients_LdapServerURL.filter;
@@ -556,7 +473,7 @@ function check_recipients_kickOffSearch() {
             0,
             nbRecipients); // Max search results
 
-		displayTrace("check_recipients_kickOffSearch ended.");        
+		trustedBird_dump("check_recipients_kickOffSearch ended.");        
     } catch (e) {
         alert("Exception when searching on ldap: " + e);
     }
@@ -565,14 +482,12 @@ function check_recipients_kickOffSearch() {
 // Handle the search result LDAP message.
 function check_recipients_handleSearchResultMessage(aMessage) {
 
-	displayTrace("check_recipients_handleSearchResultMessage begin.");
+	trustedBird_dump("check_recipients_handleSearchResultMessage begin.");
     var outSize = new Object();
     var attributesFound = aMessage.getAttributes(outSize);
 
     // If attribute has not been returned
-    if (attributesFound.indexOf("mail") == -1) {
-        return;
-    }
+    if (attributesFound.indexOf("mail") == -1) return;
 
     // Remove recipient's mail from recipients list
     var mailValue = aMessage.getValues("mail", outSize);
@@ -580,7 +495,7 @@ function check_recipients_handleSearchResultMessage(aMessage) {
         var image = document.getElementById(mailValue[i]);
         if (image) {
             image.setAttribute("class", "check_recipients_found");
-			displayTrace( "\t" + mailValue[i] + " found in ldap " + check_recipients_LdapServerName );
+			trustedBird_dump( "\t" + mailValue[i] + " found in ldap " + check_recipients_LdapServerName );
         }
         var textlabel = document.getElementById("textlabel_" + mailValue[i]);
         if (textlabel) {
@@ -591,44 +506,9 @@ function check_recipients_handleSearchResultMessage(aMessage) {
 				label = label + ", ";
 			}
 			label = label + check_recipients_LdapServerName;
-			displayTrace( "\tLDAP name=" + check_recipients_LdapServerName );
+			trustedBird_dump( "\tLDAP name=" + check_recipients_LdapServerName );
 			textlabel.setAttribute("value", label );
         }
     }
-	displayTrace("check_recipients_handleSearchResultMessage ended.");
-}
-
-// Display trace in console if bActiveDump is set to true
-function displayTrace(pMessage) {
-	if( bActiveDump == false )
-		return;
-	dump(pMessage + "\n");
-}
-
-
-var prefService = null;
-function check_recipients_prefService_load() {
-	prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
-}
-
-function check_recipients_prefService_getBoolPref(prefName) {
-	if (prefService == null) check_recipients_prefService_load();
-	
-	var value = false;
-	try {
-		value = prefService.getBoolPref(prefName);
-	} catch(e) {}
-	
-	return value;
-}
-
-function check_recipients_prefService_getCharPref(prefName) {
-	if (prefService == null) check_recipients_prefService_load();
-	
-	var value = "";
-	try {
-		value = prefService.getCharPref(prefName);
-	} catch(e) {}
-	
-	return value;
+	trustedBird_dump("check_recipients_handleSearchResultMessage ended.");
 }
