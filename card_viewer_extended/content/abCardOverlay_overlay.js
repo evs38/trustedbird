@@ -37,8 +37,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-//User preference defining LDAP server.
-var CARDVEXT_PREF_LDAP_SERVER = "ldap_2.autoComplete.directoryServer";
 //LDAP attribute to look for retrieving the certificate
 var CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE = "userCertificate;binary";
 
@@ -53,7 +51,6 @@ var cardvext_EmailToLookFor;
 var cardvext_DirectoryToLookFor;
 
 var cardvext_Certificate = null;
-
 
 var certificate_bytes = null;
 var certificate_length = 0;
@@ -140,12 +137,11 @@ function cardvext_showCurrentCertificate() {
 
 	var ldapUrlPrefix = "moz-abldapdirectory://";
 	var directoryUrl = null;
-	var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
 
-	if(gEditCard){// Parameters from selected item in the tree from the address book window
+	if (gEditCard) {// Parameters from selected item in the tree from the address book window
 		directoryUrl = gEditCard.abURI;
 	}
-	if ( directoryUrl != null && directoryUrl != "" && (directoryUrl.indexOf(ldapUrlPrefix, 0) == 0)) { // LDAP url found then search to LDAP server
+	if (directoryUrl != null && directoryUrl != "" && (directoryUrl.indexOf(ldapUrlPrefix, 0) == 0)) { // LDAP url found then search to LDAP server
 		directoryUrl = directoryUrl.substr(ldapUrlPrefix.length, directoryUrl.length);
 
 		// Retrieve and remind window argument
@@ -160,6 +156,7 @@ function cardvext_showCurrentCertificate() {
 		directoryUrl = null; // ensure the search is only from local storage
 		// try to retrieve the certificate from local storage
 		try {
+			var certDB = Components.classes["@mozilla.org/security/x509certdb;1"].getService(Components.interfaces.nsIX509CertDB);
 			cardvext_Certificate = certDB.findCertByEmailAddress(null, email);
 		} catch (e) {
 			// No certificate found : silently ignore this exception
@@ -181,7 +178,7 @@ function cardvext_showCurrentCertificateResult() {
 	if (certificate_bytes) {
 		try {
 			// Convert certificate to nsIX509Cert
-			cardvext_Certificate = certDB.constructX509FromBase64(cardvext_base64encode(certificate_bytes));
+			cardvext_Certificate = certDB.constructX509FromBase64(trustedBird_base64encode(certificate_bytes));
 		} catch (e) {
 			dump(e + " exception while constructing certificate with constructX509FromBase64\n");
 			errorMessage = "card_viewer.error.incorrect_certificate";
@@ -238,7 +235,7 @@ function cardvext_onStartCertificateFetchingStatuts() {
 
 	// If argument is ok
 	if (cardvext_EmailToLookFor != null && cardvext_EmailToLookFor != "" &&
-			cardvext_DirectoryToLookFor != null	&& cardvext_DirectoryToLookFor != "") {
+		cardvext_DirectoryToLookFor != null	&& cardvext_DirectoryToLookFor != "") {
 		// Initialization and process the LDAP search (Delay execution to allow UI to refresh)
 		setTimeout(cardvext_initLDAPAndSearch, 1);
 	} else {
@@ -273,28 +270,16 @@ function cardvext_onStopCertificateFetchingStatuts() {
 //Init and process the LDAP search.
 function cardvext_initLDAPAndSearch() {
 
-	// Retrieve LDAP attributes from user preferences
-	var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-	var prefs = prefService.getBranch(null);
-
+	if (cardvext_DirectoryToLookFor == null || cardvext_DirectoryToLookFor == "") return;
+	
 	// Get the login to authenticate as, if there is one.
-	var directoryPref = cardvext_DirectoryToLookFor;
-	if(directoryPref == null || directoryPref == ""){ // No directory from user card then search to the default directory server.
-		directoryPref = prefs.getCharPref(CARDVEXT_PREF_LDAP_SERVER);
-	}
-	prefs = prefService.getBranch(directoryPref);
-
-	try {
-		cardvext_Login = prefs.getComplexValue(".auth.dn", Components.interfaces.nsISupportsString).data;
-	} catch (e) {
-		// if we don't have this pref, no big deal
-	}
+	cardvext_Login = trustedBird_prefService_getComplexPref(cardvext_DirectoryToLookFor + ".auth.dn", Components.interfaces.nsISupportsString);
 
 	// Init and process the LDAP search
 	cardvext_LdapServerURL = 
 		Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
 	try {
-		cardvext_LdapServerURL.spec = prefs.getCharPref(".uri");
+		cardvext_LdapServerURL.spec = trustedBird_prefService_getCharPref(cardvext_DirectoryToLookFor + ".uri");
 
 		cardvext_LdapConnection = 
 			Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
@@ -403,54 +388,18 @@ function cardvext_handleSearchResultMessage(aMessage) {
 	var attributesFound = null;
 	try {
 		attributesFound = aMessage.getAttributes(outSize);
-	} catch (e) {
-		dump(e + " exception when retrieving attributes of message from LDAP server\n");
-	}
+	} catch (e) {}
+	
 	if(attributesFound == null ) {
 		return; // Attribute not found
 	}
 	// If attribute has not been returned, exit ...
-	if (attributesFound.indexOf(CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE) == -1) {
-		return;
-	}
+	if (attributesFound.indexOf(CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE) == -1) return;
+	
 	// Handle certificate
-	var certificates_ber_encoded = aMessage.getBinaryValues(
-			CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE, outSize);
+	var certificates_ber_encoded = aMessage.getBinaryValues(CARDVEXT_LDAP_ATTRIBUTE_CERTIFICATE, outSize);
 	if (certificates_ber_encoded && outSize.value > 0 && certificates_ber_encoded[0] != null) {
 		certificate_length = new Object();
 		certificate_bytes = certificates_ber_encoded[0].get(certificate_length);
 	}
-}
-
-/**
- * Encode an array of bytes into base64
- * @param arrayBytes Array of bytes to encode
- * @return Base64 encoded string
- */
-function cardvext_base64encode(arrayBytes) {
-	const B64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	var out = "", bits, i;
-
-	while (arrayBytes.length >= 3) {
-		bits = 0;
-		for (i = 0; i < 3; i++) {
-			bits <<= 8;
-			bits |= arrayBytes[i];
-		}
-		for (i = 18; i >= 0; i -= 6) out += B64_CHARS[(bits>>i) & 0x3F];
-		arrayBytes.splice(0, 3);
-	}
-
-	if (arrayBytes.length == 2) {
-		out += B64_CHARS[(arrayBytes[0]>>2) & 0x3F];
-		out += B64_CHARS[((arrayBytes[0] & 0x03) << 4) | ((arrayBytes[1] >> 4) & 0x0F)];
-		out += B64_CHARS[((arrayBytes[1] & 0x0F) << 2)];
-		out += "=";
-	} else if (arrayBytes.length == 1) {
-		out += B64_CHARS[(arrayBytes[0]>>2) & 0x3F];
-		out += B64_CHARS[(arrayBytes[0] & 0x03) << 4];
-		out += "==";
-	}
-
-	return out;
 }

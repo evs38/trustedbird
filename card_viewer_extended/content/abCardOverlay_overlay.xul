@@ -41,6 +41,7 @@
 
 <overlay id="card_viewer_extended_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+    <script type="application/x-javascript" src="chrome://card_viewer_extended/content/libtrustedbird.js"/>
     <script type="application/x-javascript" src="chrome://card_viewer_extended/content/abCardOverlay_overlay.js"/>
 
 	<vbox id="editcard">

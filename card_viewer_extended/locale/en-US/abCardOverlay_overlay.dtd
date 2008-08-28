@@ -36,5 +36,5 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!ENTITY card_viewer.button.showCurrentCertificate.label "Show certificate">
+<!ENTITY card_viewer.button.showCurrentCertificate.label "Show Certificate">
 <!ENTITY card_viewer.button.showCurrentCertificate.accesskey "S">
