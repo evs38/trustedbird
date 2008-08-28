@@ -527,6 +527,18 @@
 			</else>
 		</if>
 
+		<!-- Copy libtrustedbird.js if file libtrustedbird.js-path exists -->
+		<if>
+			<available file="${local.build.dir}/${local.extension.name}/libtrustedbird.js-path" />
+			<then>
+				<exec executable="sh"
+				      failonerror="true">
+					<arg value="${local.tools.dir}/copyLibtrustedbird.sh" />
+					<arg value="${local.build.dir}/${local.extension.name}" />
+				</exec>
+			</then>
+		</if>
+
 		<!-- XPI file name -->
 		<property name="local.extension.filename"
 		          value="${local.extension.name}_${local.extension.version}.xpi" />
