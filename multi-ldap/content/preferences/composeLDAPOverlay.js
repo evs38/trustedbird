@@ -831,15 +831,3 @@ function displayTrace(pMessage) {
 		return;
 	dump(pMessage + "\n");
 }
-
-/* Get current value of minStringLength from preferences - text box "autocompleteMinStringLength" */
-function multildap_loadAutocompleteMinStringLength(preferenceName) {
-	var minStringLength = 2;
-	try {
-	    var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
-	    minStringLength = prefService.getIntPref(preferenceName);
-	    if (!(minStringLength >= 1 && minStringLength <= 99)) minStringLength = 2;
-	} catch(e) {}
-	
-	return minStringLength;
-}

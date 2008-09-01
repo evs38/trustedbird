@@ -214,8 +214,8 @@
               
               <hbox align="center">
                 <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
-                <textbox id="autocompleteMinStringLength" size="3" maxlength="3" preference="ldap_2.autoComplete.minStringLength"
-                         onsyncfrompreference="return multildap_loadAutocompleteMinStringLength('ldap_2.autoComplete.minStringLength');" />
+                <textbox id="autocompleteMinStringLength" size="3" maxlength="3" preference="ldap_2.autoComplete.minStringLength" />
+                <label value="(1-99)" control="autocompleteMinStringLength" />
                 <label value="&char.label;" control="autocompleteMinStringLength" />
               </hbox>
           
