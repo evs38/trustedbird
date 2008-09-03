@@ -80,7 +80,10 @@ function SieveServerUserInterface(account)
 	this.compileDelay = account.getSettings().getCompileDelay();
 	this.compileCheck = account.getSettings().hasCompileDelay();
 	
-	this.debugMode = account.getSettings().isDebug();
+	// TODO Not used in the user interface when it will used check code validity 
+	// this.debugMode = account.getSettings().hasDebugFlag(0);
+	// this.debugMode = account.getSettings().hasDebugFlag(1);
+	// this.debugMode = account.getSettings().hasDebugFlag(2);
 }
 
 SieveServerUserInterface.prototype.getHostName = function () {
