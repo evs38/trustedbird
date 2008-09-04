@@ -56,7 +56,7 @@ public abstract class AbstractMessageServiceTest extends TestCase {
 	protected MessageSendListener messageListener;
 	protected Account account;
 	protected String testPath;
-
+    protected String[] to = { "user2@test.milimail.org" };
 	protected void setUp() throws Exception {
 		ServiceCreator serviceCreator = API.init();
 		composeService = serviceCreator.createMessageComposeService();

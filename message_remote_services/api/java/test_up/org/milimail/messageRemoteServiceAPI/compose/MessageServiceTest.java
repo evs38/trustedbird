@@ -48,7 +48,6 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		message.setSubject("Subject from API");
 		message.setBody("body from API");
 
-		String[] to = { "user2@test.milimail.org" };
 		message.setTo(to);
 		
 		composeService.sendMessage(account, message, messageListener);	
@@ -58,12 +57,10 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		Message message = new Message();
 		message.setSubject("Subject from API + é");
 		message.setBody("body from API + é");
-
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 		
 		composeService.sendMessage(account, message, messageListener);	
-
 	}
 	
 	public void testSendMessageSigned() throws Exception{
@@ -76,7 +73,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		message.setSubject("Subject from API : Signed");
 		message.setBody("body from API Signed");
 		
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 
 		composeService.sendMessage(account, message, messageListener);
@@ -92,7 +89,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		message.setSubject("Subject from API: Crypted");
 		message.setBody("body from API Crypted");
 		
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 
 		composeService.sendMessage(account, message, messageListener);
@@ -110,7 +107,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		message.setSubject("Subject from API: Crypted & Signed");
 		message.setBody("body from API Crypted & Signed");
 		
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 
 		composeService.sendMessage(account, message, messageListener);		
@@ -134,7 +131,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		message.setBody("body from API");
 		message.setHeaders(headers);
 		
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 	
 		composeService.sendMessage(account, message, messageListener);
@@ -145,7 +142,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		Message message = new Message();
 		message.setSubject("Subject from API, With MDN Requested");
 		message.setBody("body from API");	
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 		
 		Notification notification = new Notification();
@@ -157,9 +154,9 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 	
 	public void testSendMessageWithDSNRequested() throws Exception {
 		Message message = new Message();
-		message.setSubject("Subject from API, With MDN Requested");
+		message.setSubject("Subject from API, With DSN Requested");
 		message.setBody("body from API");	
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 		
 		Notification notification = new Notification();
@@ -172,7 +169,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 	public void testSendMessageWithAttachment() throws InternalServerException  {
 		Message message = new Message();
 		message.setSubject("From Api With 1 Attachment");
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 		
 		List<Attachment> attachments = new ArrayList<Attachment>();
@@ -192,7 +189,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 	public void testSendMessageWith2Attachments() throws InternalServerException  {
 		Message message = new Message();
 		message.setSubject("From Api With 2 Attachment");
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 		
 		List<Attachment> attachments = new ArrayList<Attachment>();
@@ -218,7 +215,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 	
 	public void testSendMessageWithoutSubjectAndBody() throws Exception {
 		Message message = new Message();
-		String[] to = { "user2@test.milimail.org" };
+		
 		message.setTo(to);
 		composeService.sendMessage(account, message, messageListener);
 	}
