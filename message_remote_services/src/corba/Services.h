@@ -581,11 +581,37 @@ typedef CSecurity::_var_type CSecurity_var;
 
 typedef CSecurity& CSecurity_out;
 
+struct CDSNType {
+  typedef _CORBA_ConstrType_Fix_Var<CDSNType> _var_type;
+
+  
+  ::CORBA::Boolean isReturnFullHDRRequested;
+
+  ::CORBA::Boolean isOnSuccessRequested;
+
+  ::CORBA::Boolean isOnFailureRequested;
+
+  ::CORBA::Boolean isOnDelayRequested;
+
+  ::CORBA::Boolean isNeverRequested;
+
+
+
+  void operator>>= (cdrStream &) const;
+  void operator<<= (cdrStream &);
+};
+
+typedef CDSNType::_var_type CDSNType_var;
+
+typedef CDSNType& CDSNType_out;
+
 struct CNotification {
   typedef _CORBA_ConstrType_Fix_Var<CNotification> _var_type;
 
   
   ::CORBA::Boolean isDSNRequested;
+
+  CDSNType DSNType;
 
   ::CORBA::Boolean isMDNReadRequested;
 

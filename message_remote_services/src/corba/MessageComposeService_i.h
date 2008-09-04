@@ -89,6 +89,8 @@ private:
 
   PRBool IsFile(const CAttachment& attachment);
 
+  PRBool SetDSNProperties(const CDSNType& type);
+
   nsCOMPtr<nsIServiceManager> svcMgr;
 
   MRSLogger logger;

@@ -50,9 +50,14 @@
 #include "nsIMsgSMIMECompFields.h"
 #include "nsMsgSMIMECID.h"
 #include "nsIMsgAttachment.h"
+#include "nsIPrefService.h"
+#include "nsIPrefBranch.h"
 #include <iostream>
 
 #define CHAR_NOT_FOUND -1
+
+#define NS_PREFSERVICE_CONTRACTID "@mozilla.org/preferences-service;1"
+
 
 #ifdef MRS_LOG
 
@@ -138,8 +143,10 @@ void MessageComposeService_i::FillMsgComposeParams(
 
 #ifdef DSN
   //DSN
-  if (p_message.notification.isDSNRequested)
+  if (p_message.notification.isDSNRequested) {
     pMsgCompFields->SetDSN(PR_TRUE);
+    SetDSNProperties(p_message.notification.DSNType);
+  }
 #endif
 
   this->AddAttachment(pMsgCompFields, p_message.p_attachments);
@@ -356,4 +363,45 @@ PRBool MessageComposeService_i::IsFile(const CAttachment& attachment){
     rv = pLocalFile->Exists(&exists);
     ENSURE_SUCCESS(rv, "Cannot call Exists");
     return exists;
+}
+
+PRBool MessageComposeService_i::SetDSNProperties(const CDSNType& type){
+	 nsresult rv;
+	 nsCOMPtr <nsIPrefService> prefs = do_GetService(NS_PREFSERVICE_CONTRACTID, &rv);
+	 NS_ENSURE_SUCCESS(rv,rv);
+
+	 nsCOMPtr<nsIPrefBranch> prefBranch;
+	 rv = prefs->GetBranch(nsnull, getter_AddRefs(prefBranch));
+	 NS_ENSURE_SUCCESS(rv,rv);
+
+	 rv = prefBranch->SetBoolPref("mail.dsn.ret_full_on", type.isReturnFullHDRRequested);
+	 NS_ENSURE_SUCCESS(rv,rv);
+
+	 if (!type.isOnSuccessRequested &&
+			 !type.isOnFailureRequested &&
+			 !type.isOnDelayRequested &&
+			 !type.isNeverRequested)
+		 throw InternalServerException("one of the following DSN Notify Option must be choose : SUCCESS, FAILURE, DELAY or NEVER must be set");
+
+	 if ((type.isOnSuccessRequested ||
+	 			 type.isOnFailureRequested ||
+	 			 type.isOnDelayRequested) &&
+	 			 type.isNeverRequested)
+	 	 throw InternalServerException("one of the following DSN Notify Option : SUCCESS, FAILURE, DELAY must not be set at the same time with NEVER option");
+
+	 rv = prefBranch->SetBoolPref("mail.dsn.request_on_success_on",
+			type.isOnSuccessRequested);
+	 NS_ENSURE_SUCCESS(rv,rv);
+
+	 rv = prefBranch->SetBoolPref("mail.dsn.request_on_failure_on",
+			type.isOnFailureRequested);
+	 NS_ENSURE_SUCCESS(rv,rv);
+
+	 rv = prefBranch->SetBoolPref("mail.dsn.request_on_delay_on",
+			type.isOnDelayRequested);
+	 NS_ENSURE_SUCCESS(rv,rv);
+
+	 rv = prefBranch->SetBoolPref("mail.dsn.request_never_on",
+			 type.isNeverRequested);
+	 NS_ENSURE_SUCCESS(rv,rv);
 }

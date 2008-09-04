@@ -395,9 +395,32 @@ CSecurity::operator<<= (cdrStream &_n)
 }
 
 void
+CDSNType::operator>>= (cdrStream &_n) const
+{
+  _n.marshalBoolean(isReturnFullHDRRequested);
+  _n.marshalBoolean(isOnSuccessRequested);
+  _n.marshalBoolean(isOnFailureRequested);
+  _n.marshalBoolean(isOnDelayRequested);
+  _n.marshalBoolean(isNeverRequested);
+
+}
+
+void
+CDSNType::operator<<= (cdrStream &_n)
+{
+  isReturnFullHDRRequested = _n.unmarshalBoolean();
+  isOnSuccessRequested = _n.unmarshalBoolean();
+  isOnFailureRequested = _n.unmarshalBoolean();
+  isOnDelayRequested = _n.unmarshalBoolean();
+  isNeverRequested = _n.unmarshalBoolean();
+
+}
+
+void
 CNotification::operator>>= (cdrStream &_n) const
 {
   _n.marshalBoolean(isDSNRequested);
+  (const CDSNType&) DSNType >>= _n;
   _n.marshalBoolean(isMDNReadRequested);
 
 }
@@ -406,6 +429,7 @@ void
 CNotification::operator<<= (cdrStream &_n)
 {
   isDSNRequested = _n.unmarshalBoolean();
+  (CDSNType&)DSNType <<= _n;
   isMDNReadRequested = _n.unmarshalBoolean();
 
 }

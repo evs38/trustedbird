@@ -72,8 +72,18 @@ struct CSecurity {
 	boolean isCrypted;
 };
 
+struct CDSNType {
+	boolean isReturnFullHDRRequested;
+	boolean isOnSuccessRequested;
+	boolean isOnFailureRequested;
+	boolean isOnDelayRequested;
+	boolean isNeverRequested;
+
+};
+
 struct CNotification {
 	boolean isDSNRequested;
+	CDSNType DSNType;
 	boolean isMDNReadRequested;
 };
 
