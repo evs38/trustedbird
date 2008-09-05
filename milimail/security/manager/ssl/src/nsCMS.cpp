@@ -182,25 +182,49 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
     // securityPolicyIdentifier
     int len = securityLabel->securityPolicyIdentifier.len;
 
-    *aSecurityPolicyIdentifier = (char *) PORT_Alloc(len * 4);
-    if (*aSecurityPolicyIdentifier == NULL) {
-      return NS_ERROR_OUT_OF_MEMORY;
+    /* Convert OID to an array of integers (number of values is less than 'len') */
+    unsigned int outputStringSize = 0;
+    unsigned int* oid = (unsigned int*) PORT_Alloc(len * sizeof(unsigned int));
+    unsigned int k = 0;
+
+    oid[k++] = securityLabel->securityPolicyIdentifier.data[0] / 40;
+    oid[k++] = securityLabel->securityPolicyIdentifier.data[0] % 40;
+
+    unsigned int n = 0;
+    for (int i = 1; i < len; i++) {
+        n = n * 128 + (securityLabel->securityPolicyIdentifier.data[i] & 0x7F);
+        if ((securityLabel->securityPolicyIdentifier.data[i] & 0x80) != 0x80) {
+            oid[k++] = n;
+            n = 0;
+        }
     }
+
+    /* Allocate output string: max 7 characters by number */
+    *aSecurityPolicyIdentifier = (char *) PORT_Alloc(k * (7 + 1) * sizeof(char));
+    if (*aSecurityPolicyIdentifier == NULL) return NS_ERROR_OUT_OF_MEMORY;
+
     int nbCharsWritten = 0;
-    for (int i = 0; i < len; i++) {
-      nbCharsWritten += sprintf(&((*aSecurityPolicyIdentifier)[nbCharsWritten]), "%u%c", securityLabel->securityPolicyIdentifier.data[i], '.');
+    for (unsigned int i = 0; i < k; i++) {
+        if (i > 0) {
+            (*aSecurityPolicyIdentifier)[nbCharsWritten] = '.';
+            nbCharsWritten++;
+        }
+        if (oid[i] < 10000000) nbCharsWritten += sprintf(&((*aSecurityPolicyIdentifier)[nbCharsWritten]), "%d", oid[i]);
     }
-    (*aSecurityPolicyIdentifier)[nbCharsWritten - 1] = '\0';
+    (*aSecurityPolicyIdentifier)[nbCharsWritten] = '\0';
+
+    PORT_Free(oid);
+
 
     // securityClassification
     len = securityLabel->securityClassification.len;
-    char *buf = (char *) PORT_Alloc(len + 1);
+    unsigned char *buf = (unsigned char *) PORT_Alloc(len * sizeof(unsigned char));
     if (buf == NULL) {
       return NS_ERROR_OUT_OF_MEMORY;
     }
     PORT_Memcpy(buf, securityLabel->securityClassification.data, len);
-    buf[len] = '\0';
-    *aSecurityClassification = atoi(buf);
+    *aSecurityClassification = 0;
+    for (unsigned char i = 0; i < len; i++) *aSecurityClassification = ((*aSecurityClassification) << (i*8)) + buf[i];
     PORT_Free(buf);
   }
 

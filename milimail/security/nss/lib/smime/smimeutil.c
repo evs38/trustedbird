@@ -756,14 +756,13 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, PRInt32 sec
     securityLabel.securityPolicyIdentifier.len = (&oidData->oid)->len;
 
     /* securityClassification */
-    securityLabel.securityClassification.data = (char *) PORT_Alloc(sizeof(PRInt32) + 1);
-    /* 
-     *  Olivier Brun BT
-     *  Change itoa to sprintf convertion because it doesn't compile under linux
-     *  itoa(securityClassification, securityLabel.securityClassification.data, 10); 
-     */
-    sprintf(securityLabel.securityClassification.data, "%d", securityClassification);
-    securityLabel.securityClassification.len = PORT_Strlen(securityLabel.securityClassification.data);
+    securityLabel.securityClassification.data = (char *) PORT_Alloc(5 * sizeof(char));
+    securityLabel.securityClassification.data[0] = 0;
+    securityLabel.securityClassification.data[1] = 0;
+    securityLabel.securityClassification.data[2] = (unsigned char) (securityClassification>>8 & 0xFF);
+    securityLabel.securityClassification.data[3] = (unsigned char) (securityClassification & 0xFF);
+    securityLabel.securityClassification.data[4] = '\0';
+    securityLabel.securityClassification.len = 4;
 
     /* Now encode */
     dummy = SEC_ASN1EncodeItem(poolp, dest, &securityLabel, NSSCMSSecurityLabelTemplate);

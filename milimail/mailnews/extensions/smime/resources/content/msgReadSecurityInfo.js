@@ -37,9 +37,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/*
 const DEFAULT_SECURITY_POLICY_IDENTIFIER_OID = "96.134.72.1.134.248.66.7.3";
 const DEFAULT_SECURITY_POLICY_IDENTIFIER_LABEL = "Default";
 const UNKNOWN_SECURITY_POLICY_IDENTIFIER_LABEL = "Unknown";
+*/
 
 const nsIPKIParamBlock = Components.interfaces.nsIPKIParamBlock;
 const nsIDialogParamBlock = Components.interfaces.nsIDialogParamBlock;
@@ -296,11 +298,13 @@ function onLoad()
 
   if (gSecurityPolicyIdentifier) {
     document.getElementById("securityLabels").collapsed = false;
+    document.getElementById("securityPolicyIdentifier").value = gSecurityPolicyIdentifier;
+    /*
     if (DEFAULT_SECURITY_POLICY_IDENTIFIER_OID == gSecurityPolicyIdentifier)
       document.getElementById("securityPolicyIdentifier").value = DEFAULT_SECURITY_POLICY_IDENTIFIER_LABEL;
     else
       document.getElementById("securityPolicyIdentifier").value = UNKNOWN_SECURITY_POLICY_IDENTIFIER_LABEL;
-
+	*/
     document.getElementById("securityClassification").value = gSecurityClassification;
   }
 }
