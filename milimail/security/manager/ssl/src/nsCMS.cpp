@@ -186,12 +186,14 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
     unsigned int outputStringSize = 0;
     unsigned int* oid = (unsigned int*) PORT_Alloc(len * sizeof(unsigned int));
     unsigned int k = 0;
+    
+    unsigned int i;
 
     oid[k++] = securityLabel->securityPolicyIdentifier.data[0] / 40;
     oid[k++] = securityLabel->securityPolicyIdentifier.data[0] % 40;
 
     unsigned int n = 0;
-    for (int i = 1; i < len; i++) {
+    for (i = 1; i < len; i++) {
         n = n * 128 + (securityLabel->securityPolicyIdentifier.data[i] & 0x7F);
         if ((securityLabel->securityPolicyIdentifier.data[i] & 0x80) != 0x80) {
             oid[k++] = n;
@@ -204,7 +206,7 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
     if (*aSecurityPolicyIdentifier == NULL) return NS_ERROR_OUT_OF_MEMORY;
 
     int nbCharsWritten = 0;
-    for (unsigned int i = 0; i < k; i++) {
+    for (i = 0; i < k; i++) {
         if (i > 0) {
             (*aSecurityPolicyIdentifier)[nbCharsWritten] = '.';
             nbCharsWritten++;
@@ -224,7 +226,7 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
     }
     PORT_Memcpy(buf, securityLabel->securityClassification.data, len);
     *aSecurityClassification = 0;
-    for (unsigned char i = 0; i < len; i++) *aSecurityClassification = ((*aSecurityClassification) << (i*8)) + buf[i];
+    for (unsigned char j = 0; j < len; j++) *aSecurityClassification = ((*aSecurityClassification) << (j*8)) + buf[j];
     PORT_Free(buf);
   }
 
