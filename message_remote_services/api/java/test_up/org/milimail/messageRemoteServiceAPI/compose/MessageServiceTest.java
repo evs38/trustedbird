@@ -198,7 +198,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 	public void testSendMessageWithDSNRequestedHDROnDelay() throws Exception {
 		Message message = new Message();
 		message.setSubject("Subject from API, With DSN Requested");
-		message.setBody("testSendMessageWithDSNRequestedHDROnFailure");	
+		message.setBody("testSendMessageWithDSNRequestedHDROnDelay");	
 		
 		message.setTo(to);
 		
@@ -263,7 +263,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 	public void testSendMessageWithDSNRequestedHDROnSuccessDelayFailure() throws Exception {
 		Message message = new Message();
 		message.setSubject("Subject from API, With DSN Requested");
-		message.setBody("testSendMessageWithDSNRequestedHDRNever");	
+		message.setBody("testSendMessageWithDSNRequestedHDROnSuccessDelayFailure");	
 		
 		message.setTo(to);
 		
