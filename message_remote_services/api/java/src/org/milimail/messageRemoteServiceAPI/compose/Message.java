@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CAttachment;
+import org.milimail.messageRemoteServiceAPI.stubs.CDSNType;
 import org.milimail.messageRemoteServiceAPI.stubs.CHeader;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessage;
 import org.milimail.messageRemoteServiceAPI.stubs.CNotification;
@@ -59,6 +60,7 @@ public class Message {
 		message.uuid = UUID.randomUUID().toString();
 		message.security = new CSecurity();
 		message.notification = new CNotification();
+		message.notification.DSNType = new CDSNType();
 		message.security.isCrypted = false;
 		message.security.isSigned = false;
 		message.p_headers = new CHeader[0];
@@ -161,14 +163,11 @@ public class Message {
 	}
 
 	public void setNotification(Notification notification) {
-		message.notification.isMDNReadRequested = notification
-				.isMDNReadRequested();
-		message.notification.isDSNRequested = notification.isDSNRequested();
+		message.notification = notification.getCorbaObject();
 	}
 
 	public Notification getNotification() {
-		return new Notification(message.notification.isMDNReadRequested,
-				message.notification.isMDNReadRequested);
+		return new Notification(message.notification);
 	}
 
 	public void setAttachments(List<Attachment> attachments) {

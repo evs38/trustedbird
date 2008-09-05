@@ -152,15 +152,132 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		composeService.sendMessage(account, message, messageListener);
 	}
 	
-	public void testSendMessageWithDSNRequested() throws Exception {
+	
+	public void testSendMessageWithDSNRequestedFullHDROnSuccess() throws Exception {
 		Message message = new Message();
 		message.setSubject("Subject from API, With DSN Requested");
-		message.setBody("body from API");	
+		message.setBody("testSendMessageWithDSNRequestedFullHDROnSuccess");	
 		
 		message.setTo(to);
 		
 		Notification notification = new Notification();
 		notification.setDSNRequested(true);
+		
+		DSNType type = new DSNType();
+		type.setReturnFullHDRRequested(true);
+		type.setOnSuccessRequested(true);
+		
+		notification.setDsnType(type);
+		
+		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	public void testSendMessageWithDSNRequestedHDROnSuccess() throws Exception {
+		Message message = new Message();
+		message.setSubject("Subject from API, With DSN Requested");
+		message.setBody("testSendMessageWithDSNRequestedHDROnSuccess");	
+		
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		
+		DSNType type = new DSNType();
+		type.setReturnFullHDRRequested(false);
+		type.setOnSuccessRequested(true);
+		
+		notification.setDsnType(type);
+		
+		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	public void testSendMessageWithDSNRequestedHDROnDelay() throws Exception {
+		Message message = new Message();
+		message.setSubject("Subject from API, With DSN Requested");
+		message.setBody("testSendMessageWithDSNRequestedHDROnFailure");	
+		
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		
+		DSNType type = new DSNType();
+		type.setReturnFullHDRRequested(false);
+		type.setOnDelayRequested(true);
+		
+		notification.setDsnType(type);
+		
+		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	public void testSendMessageWithDSNRequestedHDROnFailure() throws Exception {
+		Message message = new Message();
+		message.setSubject("Subject from API, With DSN Requested");
+		message.setBody("testSendMessageWithDSNRequestedHDROnFailure");	
+		
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		
+		DSNType type = new DSNType();
+		type.setReturnFullHDRRequested(false);
+		type.setOnFailureRequested(true);
+		
+		notification.setDsnType(type);
+		
+		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	public void testSendMessageWithDSNRequestedHDRNever() throws Exception {
+		Message message = new Message();
+		message.setSubject("Subject from API, With DSN Requested");
+		message.setBody("testSendMessageWithDSNRequestedHDRNever");	
+		
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		
+		DSNType type = new DSNType();
+		type.setReturnFullHDRRequested(false);
+		type.setNeverRequested(true);
+		
+		notification.setDsnType(type);
+		
+		message.setNotification(notification);
+		
+		composeService.sendMessage(account, message, messageListener);
+	}
+	
+	
+	
+	public void testSendMessageWithDSNRequestedHDROnSuccessDelayFailure() throws Exception {
+		Message message = new Message();
+		message.setSubject("Subject from API, With DSN Requested");
+		message.setBody("testSendMessageWithDSNRequestedHDRNever");	
+		
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		
+		DSNType type = new DSNType();
+		type.setReturnFullHDRRequested(false);
+		type.setOnSuccessRequested(true);
+		type.setOnFailureRequested(true);
+		type.setOnDelayRequested(true);
+		
+		notification.setDsnType(type);
+		
 		message.setNotification(notification);
 		
 		composeService.sendMessage(account, message, messageListener);

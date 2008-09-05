@@ -34,45 +34,55 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
 package org.milimail.messageRemoteServiceAPI.compose;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CDSNType;
-import org.milimail.messageRemoteServiceAPI.stubs.CNotification;
 
-public class Notification {
-	private CNotification notification;
+public class DSNType {
+	private CDSNType type;
 	
-	public Notification(CNotification notification) {
-		this.notification = notification;
-	}
-	
-	public Notification(){
-	     this.notification = new CNotification();
-	     this.notification.DSNType = new CDSNType();
+	public DSNType(CDSNType type) {
+		this.type = type;
 	}
 	
-	public boolean isMDNReadRequested() {
-		return notification.isMDNReadRequested;
+	public DSNType() {
+		this.type = new CDSNType();
 	}
-	public void setMDNReadRequested(boolean isMDNReadRequested) {
-		notification.isMDNReadRequested = isMDNReadRequested;
+	
+	public boolean isReturnFullHDRRequested() {
+		return type.isReturnFullHDRRequested;
 	}
-	public boolean isDSNRequested() {
-		return notification.isDSNRequested;
+	public void setReturnFullHDRRequested(boolean isReturnFullHDRRequested) {
+		type.isReturnFullHDRRequested = isReturnFullHDRRequested;
 	}
-	public void setDSNRequested(boolean isDSNRequested) {
-		notification.isDSNRequested = isDSNRequested;
+	public boolean isOnSuccessRequested() {
+		return type.isOnSuccessRequested;
+	}
+	public void setOnSuccessRequested(boolean isOnSuccessRequested) {
+		type.isOnSuccessRequested = isOnSuccessRequested;
+	}
+	public boolean isOnFailureRequested() {
+		return type.isOnFailureRequested;
+	}
+	public void setOnFailureRequested(boolean isOnFailureRequested) {
+		type.isOnFailureRequested = isOnFailureRequested;
+	}
+	public boolean isOnDelayRequested() {
+		return type.isOnDelayRequested;
+	}
+	public void setOnDelayRequested(boolean isOnDelayRequested) {
+		type.isOnDelayRequested = isOnDelayRequested;
+	}
+	public boolean isNeverRequested() {
+		return type.isNeverRequested;
+	}
+	public void setNeverRequested(boolean isNeverRequested) {
+		type.isNeverRequested = isNeverRequested;
+	}
+	public CDSNType getCorbaObject() {
+		return type;
 	}
 
-	public void setDsnType(DSNType dsnType) {
-		notification.DSNType = dsnType.getCorbaObject();
-	}
 
-	public DSNType getDsnType() {
-		return new DSNType(notification.DSNType);
-	}
-
-	public CNotification getCorbaObject() {
-		return notification;
-	}
 }

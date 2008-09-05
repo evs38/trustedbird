@@ -130,4 +130,58 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 
 		assertTrue(exceptionThrowed);
 	}
+	
+	public void testSendMessageWithDSNRequestedWithNoType()  {
+		Message message = new Message();
+		message.setSubject("Subject from API, With DSN Requested");
+		message.setBody("testSendMessageWithDSNRequestedFullHDROnSuccess");	
+		
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		
+		message.setNotification(notification);
+		
+		boolean exceptionThrowed = false;
+
+		try {
+			composeService.sendMessage(account, message, messageListener);
+		} catch (InternalServerException e) {
+			System.out.println(e.cause);
+			exceptionThrowed = true;
+		}
+
+		assertTrue(exceptionThrowed);
+	}
+	
+	public void testSendMessageWithDSNRequestedWithNeverAndSuccess()  {
+		Message message = new Message();
+		message.setSubject("Subject from API, With DSN Requested");
+		message.setBody("testSendMessageWithDSNRequestedFullHDROnSuccess");	
+		
+		message.setTo(to);
+		
+		Notification notification = new Notification();
+		notification.setDSNRequested(true);
+		
+		DSNType type = new DSNType();
+		type.setReturnFullHDRRequested(false);
+		type.setNeverRequested(true);
+		type.setOnSuccessRequested(true);
+		notification.setDsnType(type);
+		
+		message.setNotification(notification);
+		
+		boolean exceptionThrowed = false;
+
+		try {
+			composeService.sendMessage(account, message, messageListener);
+		} catch (InternalServerException e) {
+			System.out.println(e.cause);
+			exceptionThrowed = true;
+		}
+
+		assertTrue(exceptionThrowed);
+	}
 }
