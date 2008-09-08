@@ -121,6 +121,10 @@ void MessageComposeService_i::FillMsgComposeParams(
   pMsgCompFields->SetBody(body);
   ENSURE_SUCCESS(rv,"Cannot SetBody");
 
+  pMsgCompFields->SetCharacterSet("UTF-8");
+  ENSURE_SUCCESS(rv,"Cannot SetSetCharacterSetBody");
+
+
   //Add headers
   this->AddCustomHeaders(pMsgCompFields, p_message.p_headers);
 
