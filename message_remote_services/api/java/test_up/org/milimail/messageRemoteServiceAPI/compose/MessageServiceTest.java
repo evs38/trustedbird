@@ -63,6 +63,17 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		composeService.sendMessage(account, message, messageListener);	
 	}
 	
+	public void testSendMessageWithSpecialCharactersChinese() throws Exception{
+		Message message = new Message();
+		message.setSubject("Subject from API Chinese+ 是什么");
+		message.setBody("body from API Chinese+ 是什么");
+		
+		message.setTo(to);
+		
+		composeService.sendMessage(account, message, messageListener);	
+	}
+	
+	
 	public void testSendMessageSigned() throws Exception{
 		Message message = new Message();
 		
