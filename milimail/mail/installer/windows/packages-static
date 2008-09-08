@@ -121,6 +121,8 @@ bin\components\mdn-service.js
 bin\components\smime-service.js
 bin\components\msgsmime.xpt
 
+bin\components\dsn-service.js
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Chrome Files
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
