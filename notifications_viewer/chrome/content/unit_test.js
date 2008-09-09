@@ -69,7 +69,7 @@ var tc_custom_properties_MDN= new TestCase('customProperties MDN');
 	@param {array} array1
 	@param {array} array2
 	@private
-	@return {boolean} true if arrays are egals
+	@return {boolean} true if arrays are equals
 */
 function compareArrays(array1,array2) {
 		// if is not an Array
