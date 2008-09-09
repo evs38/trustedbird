@@ -40,9 +40,10 @@ import junit.framework.TestCase;
 
 import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
 import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
+import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
-import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
+
 
 public class AccountServiceTestDown extends TestCase {
 	private AccountServiceProxy accountService;

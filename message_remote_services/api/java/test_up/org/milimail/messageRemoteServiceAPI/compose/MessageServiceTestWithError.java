@@ -39,7 +39,8 @@ package org.milimail.messageRemoteServiceAPI.compose;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
+import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
+
 
 public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 
@@ -52,7 +53,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		try {
 			composeService.sendMessage(account, message, messageListener);
 		} catch (InternalServerException e) {
-			System.out.println(e.cause);
+			System.out.println(e);
 			exceptionThrown = true;
 		}
 
@@ -97,7 +98,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 					openComposeWindowOnError);
 		} catch (InternalServerException e) {
 			exceptionThrown = true;
-			System.out.println(e.cause);
+			System.out.println(e);
 		}
 
 		assertTrue(exceptionThrown);
@@ -124,7 +125,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		try {
 			composeService.sendMessage(account, message, messageListener);
 		} catch (InternalServerException e) {
-			System.out.println(e.cause);
+			System.out.println(e);
 			exceptionThrowed = true;
 		}
 
@@ -148,7 +149,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		try {
 			composeService.sendMessage(account, message, messageListener);
 		} catch (InternalServerException e) {
-			System.out.println(e.cause);
+			System.out.println(e);
 			exceptionThrowed = true;
 		}
 
@@ -178,7 +179,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		try {
 			composeService.sendMessage(account, message, messageListener);
 		} catch (InternalServerException e) {
-			System.out.println(e.cause);
+			System.out.println(e);
 			exceptionThrowed = true;
 		}
 

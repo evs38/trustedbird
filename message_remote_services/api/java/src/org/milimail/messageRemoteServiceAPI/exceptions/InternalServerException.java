@@ -34,46 +34,20 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package org.milimail.messageRemoteServiceAPI.account;
+package org.milimail.messageRemoteServiceAPI.exceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
-import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
-import org.milimail.messageRemoteServiceAPI.stubs.AccountService;
-import org.milimail.messageRemoteServiceAPI.stubs.CAccount;
 import org.milimail.messageRemoteServiceAPI.stubs.CInternalServerException;
 
-import org.omg.CORBA.COMM_FAILURE;
+public class InternalServerException extends Exception {
+	private CInternalServerException e;
 
-public class AccountServiceProxy {
-	private AccountService accountService;
-
-	public AccountServiceProxy(AccountService accountService) {
-		super();
-		this.accountService = accountService;
+	public InternalServerException(CInternalServerException e) {
+		this.e = e;
 	}
 
-	public List<Account> GetAllAccounts() throws CommunicationException,
-			InternalServerException {
-		CAccount[] caccounts = null;
-		try {
-			caccounts = accountService.GetAllAccounts();
-		} catch (COMM_FAILURE e) {
-			throw new CommunicationException(
-					"Communication Failure with Server", e);
-		} catch (CInternalServerException internalServerException) {
-			throw new InternalServerException(internalServerException);
-		}
-		
-		List<Account> accounts = new ArrayList<Account>();
-		
-		for (int i = 0; i < caccounts.length; i++) {
-			accounts.add(new Account(caccounts[i]));
-		}
-		
-		return accounts;
-	}
-
+	@Override
+	public String getMessage() {
+		return e.cause;
+	}	
+	
 }

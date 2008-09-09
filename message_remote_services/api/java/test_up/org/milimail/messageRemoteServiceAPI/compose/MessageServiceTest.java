@@ -39,7 +39,7 @@ package org.milimail.messageRemoteServiceAPI.compose;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
+import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 
 public class MessageServiceTest extends AbstractMessageServiceTest {
 	

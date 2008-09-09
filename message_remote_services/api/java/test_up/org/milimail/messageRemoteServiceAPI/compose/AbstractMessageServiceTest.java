@@ -44,10 +44,10 @@ import junit.framework.TestCase;
 import org.milimail.messageRemoteServiceAPI.account.Account;
 import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
 import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
+import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
 import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServantConsole;
-import org.milimail.messageRemoteServiceAPI.stubs.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 
 public abstract class AbstractMessageServiceTest extends TestCase {
