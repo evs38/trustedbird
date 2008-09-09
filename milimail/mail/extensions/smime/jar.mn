@@ -20,3 +20,4 @@ messenger.jar:
    content/messenger-smime/msgReadSecurityInfo.js                   (/mailnews/extensions/smime/resources/content/msgReadSecurityInfo.js)
    content/messenger-smime/certFetchingStatus.xul                   (/mailnews/extensions/smime/resources/content/certFetchingStatus.xul)
    content/messenger-smime/certFetchingStatus.js                    (/mailnews/extensions/smime/resources/content/certFetchingStatus.js)
+   content/messenger-smime/securityLabel.js                         (/mailnews/extensions/smime/resources/content/securityLabel.js)

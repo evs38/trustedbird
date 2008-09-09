@@ -51,6 +51,7 @@
 
   <script type="application/x-javascript" src="chrome://help/content/contextHelp.js"/>
   <script type="application/x-javascript" src="chrome://messenger-smime/content/msgReadSecurityInfo.js"/>
+  <script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabel.js"/>
 
   <stringbundle id="bundle_smime_read_info" src="chrome://messenger-smime/locale/msgSecurityInfo.properties"/> 
 
@@ -101,15 +102,15 @@
       </hbox>
     </vbox>
 
-    <vbox id="securityLabels" collapsed="true">
+    <vbox id="securityLabelBox" collapsed="true">
       <separator/>
-      <label id="securityLabel" value="Security Label"/>
+      <label id="securityLabel">&securityLabel.name;</label>
       <hbox>
-        <label value="Security Policy Identifier:" />
+        <label id="securityLabelSecurityPolicyIdentifierLabel">&securityLabel.securityPolicyIdentifier.name;</label>
         <description id="securityPolicyIdentifier"/>
       </hbox>
       <hbox>
-        <label value="Security Classification:" />
+        <label id="securityLabelSecurityClassificationLabel">&securityLabel.securityClassification.name;</label>
         <description id="securityClassification"/>
       </hbox>
     </vbox>

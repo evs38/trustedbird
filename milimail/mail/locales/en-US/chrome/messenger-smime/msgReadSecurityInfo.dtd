@@ -8,3 +8,7 @@
 <!ENTITY recipient.name "Encrypted for:">
 <!ENTITY email.address "Email address:">
 <!ENTITY issuer.name "Certificate issued by:">
+
+<!ENTITY securityLabel.name "Security Label">
+<!ENTITY securityLabel.securityPolicyIdentifier.name "Security Policy Identifier:">
+<!ENTITY securityLabel.securityClassification.name "Security Classification:">

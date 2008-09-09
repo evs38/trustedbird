@@ -191,6 +191,7 @@ function onLoad()
     var encrypted_element = document.getElementById("encrypted");
     var signedReceiptRequest_element = document.getElementById("signedReceiptRequest");
     var tripleWrapped_element = document.getElementById("tripleWrapped");
+    var securityLabel_element = document.getElementById("securityLabel");
 
     if (params.smFields.requireEncryptMessage)
     {
@@ -248,6 +249,14 @@ function onLoad()
     else
     {
       tripleWrapped_element.value = no_string;
+    }
+    
+    /* Security Label */
+    if (params.smFields.securityClassification != -1) {
+    	securityLabel_element.value = getSecurityLabelSecurityClassificationName("2.16.840.1.113730.7.3", params.smFields.securityClassification)
+    								+ " [" + getSecurityLabelSecurityPolicyIdentifierName("2.16.840.1.113730.7.3") + "]";
+    } else {
+    	securityLabel_element.value = no_string;;
     }
   }
 

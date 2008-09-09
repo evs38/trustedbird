@@ -291,23 +291,10 @@ function onLoad()
   }
 
   if (gSecurityPolicyIdentifier) {
-    document.getElementById("securityLabels").collapsed = false;
-    document.getElementById("securityPolicyIdentifier").value = gSecurityPolicyIdentifier;
+    document.getElementById("securityLabelBox").collapsed = false;
+    document.getElementById("securityPolicyIdentifier").value = getSecurityLabelSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
     document.getElementById("securityClassification").value = getSecurityLabelSecurityClassificationName(gSecurityPolicyIdentifier, gSecurityClassification);
   }
-}
-
-function getSecurityLabelSecurityClassificationName(securityPolicyIdentifier, securityClassification) {
-	switch (securityClassification) {
-	case 0:	return "unmarked (0)";
-	case 1:	return "unclassified (1)";
-	case 2:	return "restricted (2)";
-	case 3:	return "confidential (3)";
-	case 4:	return "secret (4)";
-	case 5:	return "top-secret (5)";
-	}
-	
-	return "unknown (" + securityClassification + ")";
 }
 
 function viewCertHelper(parent, cert) {
