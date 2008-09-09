@@ -40,7 +40,7 @@
 *
 */
 
-exception InternalServerException {
+exception CInternalServerException {
 	string cause;
 };
 
@@ -54,7 +54,7 @@ typedef sequence<CAccount> CAccounts;
 
 interface AccountService {
 	
-	CAccounts GetAllAccounts() raises (InternalServerException);
+	CAccounts GetAllAccounts() raises (CInternalServerException);
 	
 };
 
@@ -114,5 +114,5 @@ interface MessageSendListener {
 
 interface MessageComposeService {
 
-	void SendMessage(in CAccount p_account, in CMessage p_message, in MessageSendListener p_listener, in boolean openComposeWindowOnBadFormat) raises (InternalServerException);
+	void SendMessage(in CAccount p_account, in CMessage p_message, in MessageSendListener p_listener, in boolean openComposeWindowOnBadFormat) raises (CInternalServerException);
 };

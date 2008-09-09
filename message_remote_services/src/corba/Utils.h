@@ -39,5 +39,5 @@
 #define UTILS_H_
 
 #define ENSURE_SUCCESS(rv, x)   if (NS_FAILED(rv)) \
-   throw InternalServerException(#x);
+   throw CInternalServerException(#x);
 #endif /*UTILS_H_*/

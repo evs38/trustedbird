@@ -197,7 +197,7 @@ void MessageComposeService_i::SendMessage(const CAccount& p_account,
   if (!this->ControlFormat(p_message.recipients_to)) {
     if (openComposeWindowOnBadFormat == true)
       ShowMessageCompositionWindow(pMsgComposeParams);
-    throw InternalServerException("Bad Format in 'to' field");
+    throw CInternalServerException("Bad Format in 'to' field");
   }
 
   //Get account
@@ -328,7 +328,7 @@ void MessageComposeService_i::AddAttachment(nsIMsgCompFields * pMsgCompFields, c
   for (uint i = 0; i < attachments.length(); ++i) {
 
     if (IsFile(attachments[i]) == PR_FALSE)
-      throw InternalServerException("Path error in attachment, maybe file does not exist");
+      throw CInternalServerException("Path error in attachment, maybe file does not exist");
 
     nsCOMPtr<nsIMsgAttachment> pMsgAttachment = do_CreateInstance(NS_MSGATTACHMENT_CONTRACTID, &rv);
     ENSURE_SUCCESS(rv, "Cannot create pMsgAttachment");
@@ -385,13 +385,13 @@ PRBool MessageComposeService_i::SetDSNProperties(const CDSNType& type){
 			 !type.isOnFailureRequested &&
 			 !type.isOnDelayRequested &&
 			 !type.isNeverRequested)
-		 throw InternalServerException("one of the following DSN Notify Option must be choose : SUCCESS, FAILURE, DELAY or NEVER must be set");
+		 throw CInternalServerException("one of the following DSN Notify Option must be choose : SUCCESS, FAILURE, DELAY or NEVER must be set");
 
 	 if ((type.isOnSuccessRequested ||
 	 			 type.isOnFailureRequested ||
 	 			 type.isOnDelayRequested) &&
 	 			 type.isNeverRequested)
-	 	 throw InternalServerException("one of the following DSN Notify Option : SUCCESS, FAILURE, DELAY must not be set at the same time with NEVER option");
+	 	 throw CInternalServerException("one of the following DSN Notify Option : SUCCESS, FAILURE, DELAY must not be set at the same time with NEVER option");
 
 	 rv = prefBranch->SetBoolPref("mail.dsn.request_on_success_on",
 			type.isOnSuccessRequested);

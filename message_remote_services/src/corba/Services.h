@@ -54,25 +54,25 @@
 
 
 
-class InternalServerException : public ::CORBA::UserException {
+class CInternalServerException : public ::CORBA::UserException {
 public:
   
   ::CORBA::String_member cause;
 
 
 
-  inline InternalServerException() {
+  inline CInternalServerException() {
     pd_insertToAnyFn    = insertToAnyFn;
     pd_insertToAnyFnNCP = insertToAnyFnNCP;
   }
-  InternalServerException(const InternalServerException&);
-  InternalServerException(const char* i_cause);
-  InternalServerException& operator=(const InternalServerException&);
-  virtual ~InternalServerException();
+  CInternalServerException(const CInternalServerException&);
+  CInternalServerException(const char* i_cause);
+  CInternalServerException& operator=(const CInternalServerException&);
+  virtual ~CInternalServerException();
   virtual void _raise() const;
-  static InternalServerException* _downcast(::CORBA::Exception*);
-  static const InternalServerException* _downcast(const ::CORBA::Exception*);
-  static inline InternalServerException* _narrow(::CORBA::Exception* _e) {
+  static CInternalServerException* _downcast(::CORBA::Exception*);
+  static const CInternalServerException* _downcast(const ::CORBA::Exception*);
+  static inline CInternalServerException* _narrow(::CORBA::Exception* _e) {
     return _downcast(_e);
   }
   

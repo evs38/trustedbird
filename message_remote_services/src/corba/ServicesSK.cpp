@@ -14,26 +14,26 @@ static const char* _0RL_library_version = omniORB_4_1;
 
 
 
-::CORBA::Exception::insertExceptionToAny InternalServerException::insertToAnyFn = 0;
-::CORBA::Exception::insertExceptionToAnyNCP InternalServerException::insertToAnyFnNCP = 0;
+::CORBA::Exception::insertExceptionToAny CInternalServerException::insertToAnyFn = 0;
+::CORBA::Exception::insertExceptionToAnyNCP CInternalServerException::insertToAnyFnNCP = 0;
 
-InternalServerException::InternalServerException(const InternalServerException& _s) : ::CORBA::UserException(_s)
+CInternalServerException::CInternalServerException(const CInternalServerException& _s) : ::CORBA::UserException(_s)
 {
   cause = _s.cause;
 
 }
 
-InternalServerException::InternalServerException(const char* _cause)
+CInternalServerException::CInternalServerException(const char* _cause)
 {
-  pd_insertToAnyFn    = InternalServerException::insertToAnyFn;
-  pd_insertToAnyFnNCP = InternalServerException::insertToAnyFnNCP;
+  pd_insertToAnyFn    = CInternalServerException::insertToAnyFn;
+  pd_insertToAnyFnNCP = CInternalServerException::insertToAnyFnNCP;
   cause = _cause;
 
 }
 
 
 
-InternalServerException& InternalServerException::operator=(const InternalServerException& _s)
+CInternalServerException& CInternalServerException::operator=(const CInternalServerException& _s)
 {
   ((::CORBA::UserException*) this)->operator=(_s);
   cause = _s.cause;
@@ -41,47 +41,47 @@ InternalServerException& InternalServerException::operator=(const InternalServer
   return *this;
 }
 
-InternalServerException::~InternalServerException() {}
+CInternalServerException::~CInternalServerException() {}
 
-void InternalServerException::_raise() const { throw *this; }
+void CInternalServerException::_raise() const { throw *this; }
 
-const char* InternalServerException::_PD_repoId = "IDL:InternalServerException:1.0";
-const char* InternalServerException::_PD_typeId = "Exception/UserException/InternalServerException";
+const char* CInternalServerException::_PD_repoId = "IDL:CInternalServerException:1.0";
+const char* CInternalServerException::_PD_typeId = "Exception/UserException/CInternalServerException";
 
-InternalServerException* InternalServerException::_downcast(::CORBA::Exception* _e) {
-  return (InternalServerException*) _NP_is_a(_e, _PD_typeId);
+CInternalServerException* CInternalServerException::_downcast(::CORBA::Exception* _e) {
+  return (CInternalServerException*) _NP_is_a(_e, _PD_typeId);
 }
 
-const InternalServerException* InternalServerException::_downcast(const ::CORBA::Exception* _e) {
-  return (const InternalServerException*) _NP_is_a(_e, _PD_typeId);
+const CInternalServerException* CInternalServerException::_downcast(const ::CORBA::Exception* _e) {
+  return (const CInternalServerException*) _NP_is_a(_e, _PD_typeId);
 }
 
-::CORBA::Exception* InternalServerException::_NP_duplicate() const {
-  return new InternalServerException(*this);
+::CORBA::Exception* CInternalServerException::_NP_duplicate() const {
+  return new CInternalServerException(*this);
 }
 
-const char* InternalServerException::_NP_typeId() const {
+const char* CInternalServerException::_NP_typeId() const {
   return _PD_typeId;
 }
 
-const char* InternalServerException::_NP_repoId(int* _size) const {
-  *_size = sizeof("IDL:InternalServerException:1.0");
+const char* CInternalServerException::_NP_repoId(int* _size) const {
+  *_size = sizeof("IDL:CInternalServerException:1.0");
   return _PD_repoId;
 }
  
-void InternalServerException::_NP_marshal(cdrStream& _s) const {
+void CInternalServerException::_NP_marshal(cdrStream& _s) const {
   *this >>= _s;
 }
 
 void
-InternalServerException::operator>>= (cdrStream& _n) const
+CInternalServerException::operator>>= (cdrStream& _n) const
 {
   _n.marshalString(cause,0);
 
 }
 
 void
-InternalServerException::operator<<= (cdrStream& _n)
+CInternalServerException::operator<<= (cdrStream& _n)
 {
   cause = _n.unmarshalString(0);
 
@@ -207,7 +207,7 @@ _objref_AccountService::_ptrToObjRef(const char* id)
 }
 
 // Proxy call descriptor class. Mangled signature:
-//  _cCAccounts_e_cInternalServerException
+//  _cCAccounts_e_cCInternalServerException
 class _0RL_cd_14edc9663ea08cf8_00000000
   : public omniCallDescriptor
 {
@@ -242,13 +242,13 @@ void _0RL_cd_14edc9663ea08cf8_00000000::unmarshalReturnedValues(cdrStream& _n)
 }
 
 const char* const _0RL_cd_14edc9663ea08cf8_00000000::_user_exns[] = {
-  InternalServerException::_PD_repoId
+  CInternalServerException::_PD_repoId
 };
 
 void _0RL_cd_14edc9663ea08cf8_00000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
 {
-  if ( omni::strMatch(repoId, InternalServerException::_PD_repoId) ) {
-    InternalServerException _ex;
+  if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
+    CInternalServerException _ex;
     _ex <<= s;
     if (iop_client) iop_client->RequestCompleted();
     throw _ex;
@@ -277,7 +277,7 @@ _0RL_lcfn_14edc9663ea08cf8_10000000(omniCallDescriptor* cd, omniServant* svnt)
     try {
       tcd->result = impl->GetAllAccounts();
     }
-    catch(InternalServerException& ex) {
+    catch(CInternalServerException& ex) {
       throw omniORB::StubUserException(ex._NP_duplicate());
     }
 
@@ -814,7 +814,7 @@ _objref_MessageComposeService::_ptrToObjRef(const char* id)
 }
 
 // Proxy call descriptor class. Mangled signature:
-//  void_i_cCAccount_i_cCMessage_i_cMessageSendListener_i_cboolean_e_cInternalServerException
+//  void_i_cCAccount_i_cCMessage_i_cMessageSendListener_i_cboolean_e_cCInternalServerException
 class _0RL_cd_14edc9663ea08cf8_40000000
   : public omniCallDescriptor
 {
@@ -865,13 +865,13 @@ void _0RL_cd_14edc9663ea08cf8_40000000::unmarshalArguments(cdrStream& _n)
 }
 
 const char* const _0RL_cd_14edc9663ea08cf8_40000000::_user_exns[] = {
-  InternalServerException::_PD_repoId
+  CInternalServerException::_PD_repoId
 };
 
 void _0RL_cd_14edc9663ea08cf8_40000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
 {
-  if ( omni::strMatch(repoId, InternalServerException::_PD_repoId) ) {
-    InternalServerException _ex;
+  if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
+    CInternalServerException _ex;
     _ex <<= s;
     if (iop_client) iop_client->RequestCompleted();
     throw _ex;
@@ -900,7 +900,7 @@ _0RL_lcfn_14edc9663ea08cf8_50000000(omniCallDescriptor* cd, omniServant* svnt)
     try {
       impl->SendMessage(*tcd->arg_0, *tcd->arg_1, tcd->arg_2, tcd->arg_3);
     }
-    catch(InternalServerException& ex) {
+    catch(CInternalServerException& ex) {
       throw omniORB::StubUserException(ex._NP_duplicate());
     }
 
