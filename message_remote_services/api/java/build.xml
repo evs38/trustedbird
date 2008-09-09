@@ -70,7 +70,7 @@
 
   <target name="compile" depends="clean">
     <mkdir dir="classes" />
-    <javac srcdir="src" destdir="classes">
+    <javac srcdir="src" destdir="classes" encoding="UTF-8">
       <classpath>
         <fileset dir="lib"/>
       </classpath>
@@ -82,7 +82,7 @@
          ================================= -->
   <target name="compile-tests" depends="dist" description="--> compile all tests">
     <mkdir dir="classes_test_up" />
-    <javac srcdir="test_up" destdir="classes_test_up">
+    <javac srcdir="test_up" destdir="classes_test_up" encoding="UTF-8">
       <classpath>
         <fileset dir="lib"/>
         <fileset dir="tools"/>
@@ -91,7 +91,7 @@
     </javac>
 
     <mkdir dir="classes_test_down" />
-    <javac srcdir="test_down" destdir="classes_test_down">
+    <javac srcdir="test_down" destdir="classes_test_down"  encoding="UTF-8">
       <classpath>
         <fileset dir="lib"/>
         <fileset dir="tools"/>
