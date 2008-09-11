@@ -5,11 +5,12 @@
 REMOTE_SERVER=dga@62.193.246.126
 REMOTE_DIRECTORY=/var/www/vhosts/packages.milimail.org/httpdocs
 DIRECTORY_NAME=`date +"%Y%m%d"`
+LOG=buildlog
 
-cd /home/dga/milimail
+[ -e build.xml ] || { echo "Can't find build.xml"; exit; }
 
 # Build
-ant -Dnightly=1 >/dev/null 2>&1 || echo "building failed"
+ant -Dnightly=1 >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
 
 # Prepare files
 [ -d dist ] || exit
