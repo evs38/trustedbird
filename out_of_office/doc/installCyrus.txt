@@ -1,6 +1,13 @@
 Serveur recette milimail
 ------------------------
 
+Liens:
+http://www.ibiblio.org/pub/linux/docs/howto/translations/fr/html-1page/Cyrus-IMAP.html
+http://www.luxpopuli.fr/internet/postfix_cyrus_imap_ssl_ldap/cyrus_imap_installer_cyrus_imap
+
+
+Procédure d'installation:
+
 /etc/apt/sources.list:
 main contrib non-free
 
@@ -40,4 +47,13 @@ cyradm> dm user.user1
 
 Test login IMAP:
 imtest -a user1 localhost
+
+== Sieve ==
+Configuration dans le fichier /etc/cyrus.conf
+Activer l'accés distant au serveur SIEVE (autre que localhost)
+changer la ligne : 
+	sieve  cmd="timsieved" listen"sieve" prefork=0 maxchild=100
+à la place de 
+	sieve  cmd="timsieved" listen"localhost:sieve" prefork=0 maxchild=100
+
 
