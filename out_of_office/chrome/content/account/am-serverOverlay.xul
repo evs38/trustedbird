@@ -41,10 +41,8 @@
 <!DOCTYPE overlay [
 <!ENTITY % amServerTopDTD SYSTEM "chrome://messenger/locale/am-server-top.dtd">
 <!ENTITY % composeDTD SYSTEM "chrome://messenger/locale/preferences/compose.dtd">
-<!ENTITY % serverOverlay SYSTEM "chrome://out_of_office/locale/account/am-serverOverlay.dtd">
 %amServerTopDTD;
 %composeDTD;
-%serverOverlay;
 ]>
 
 <overlay
@@ -59,7 +57,7 @@
 	<script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
 	<script type="application/x-javascript" src="chrome://messenger/content/am-prefs.js"/>
 
-	<script type="application/x-javascript" src="chrome://out_of_office/content/options/OutOfOfficeSieveServerSettings.js"/> 
+	<script type="application/x-javascript" src="chrome://out_of_office/content/options/OutOfOfficeSieveServerUserInterface.js"/> 
 	<script type="application/x-javascript" src="chrome://out_of_office/content/account/am-serverOverlay.js" />
 
 	<stringbundle id="bundle_messenger" src="chrome://messenger/locale/messenger.properties"/>
