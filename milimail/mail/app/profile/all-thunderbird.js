@@ -48,12 +48,12 @@ pref("mail.biff.animate_dock_icon", false);
 // App-specific update preferences
 
 // Whether or not app updates are enabled
-pref("app.update.enabled", true);               
+pref("app.update.enabled", false);               
 
 // This preference turns on app.update.mode and allows automatic download and
 // install to take place. We use a separate boolean toggle for this to make     
 // the UI easier to construct.
-pref("app.update.auto", true);
+pref("app.update.auto", false);
 
 // Defines how the Application Update Service notifies the user about updates:
 //
@@ -342,7 +342,7 @@ pref("wallet.miscPanel.hide",               false);
 pref("mail.signature_file",             "");
 pref("mail.directory",                  "");
 pref("news.directory",                  "");
-pref("autoupdate.enabled",              true);
+pref("autoupdate.enabled",              false);
 pref("browser.editor.disabled", false);
 pref("spellchecker.dictionary", "");
 // Dictionary download preference
