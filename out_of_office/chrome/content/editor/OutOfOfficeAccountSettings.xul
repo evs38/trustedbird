@@ -39,11 +39,12 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
 <!DOCTYPE dialog [
-<!ENTITY % sieveDTD SYSTEM "chrome://out_of_office/locale/locale.dtd">
-%sieveDTD;
+<!ENTITY % amSieveServerDTD SYSTEM "chrome://out_of_office/locale/locale.dtd">
 <!ENTITY % outofofficeDTD SYSTEM "chrome://out_of_office/locale/out_of_office_locale.dtd">
+%amSieveServerDTD;
 %outofofficeDTD;
 ]>
+
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept,cancel"
 				onload="onDialogLoad(this);"
