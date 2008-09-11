@@ -38,7 +38,7 @@
 
 /*
  * @fileoverview
- * Library to manage UI to configure sieve server settings
+ * Manage user interface to configure sieve server settings
  * @author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
  */
 
@@ -56,134 +56,19 @@ var globalServices=new Services();
 var gSieveServerToConfigure = null;
 var gAccount = null;
 
-function SieveServerUserInterface(account)
-{
-    if (account == null){
-        throw "SieveAccount: Sieve Account can't be null"; 
-	}
-	// get the custom Host settings
-	this.hostName = account.getHost(1).getHostname();
-	this.hostPort = account.getHost(1).getPort();
-	this.hostTLS = account.getHost(1).isTLS();
-	this.hostType = ( (account.getHost().getType() == 1) ? true : false );
-   
-	// Login field.
-	this.userName = account.getLogin(2).getUsername();
-	this.userPassword = account.getLogin(2).getPassword();
-	// this.userPasswordCheck = account.getLogin(2).hasPassword();
-	       
-	this.rgLoginIndex = account.getLogin().getType();
-	
-	this.keepAlive = account.getSettings().getKeepAliveInterval();
-	this.keepAliveCheck = account.getSettings().isKeepAlive();
-	
-	this.compileDelay = account.getSettings().getCompileDelay();
-	this.compileCheck = account.getSettings().hasCompileDelay();
-	
-	// TODO Not used in the user interface when it will used check code validity 
-	// this.debugMode = account.getSettings().hasDebugFlag(0);
-	// this.debugMode = account.getSettings().hasDebugFlag(1);
-	// this.debugMode = account.getSettings().hasDebugFlag(2);
-}
-
-SieveServerUserInterface.prototype.getHostName = function () {
-	return this.hostName; 
-}
-SieveServerUserInterface.prototype.setHostName = function (hostName) {
-	this.hostName = hostName; 
-}
-
-SieveServerUserInterface.prototype.getHostPort = function () {
-	return this.hostPort; 
-}
-SieveServerUserInterface.prototype.setHostPort = function (hostPort) {
-	this.hostPort = hostPort; 
-}
-
-SieveServerUserInterface.prototype.getHostTLS = function () {
-	return this.hostTLS; 
-}
-SieveServerUserInterface.prototype.setHostTLS = function (hostTLS) {
-	this.hostTLS = hostTLS; 
-}
-
-SieveServerUserInterface.prototype.getHostType = function () {
-	return this.hostType; 
-}
-SieveServerUserInterface.prototype.setHostType = function (hostType) {
-	this.hostType = hostType; 
-}
-
-SieveServerUserInterface.prototype.getUserName = function () {
-	return this.userName; 
-}
-SieveServerUserInterface.prototype.setUserName = function (userName) {
-	this.userName = userName; 
-}
-
-SieveServerUserInterface.prototype.getUserPassword = function () {
-	return this.userPassword; 
-}
-SieveServerUserInterface.prototype.setUserPassword = function (userPassword) {
-	this.userPassword = userPassword; 
-}
-
-SieveServerUserInterface.prototype.getUserPasswordCheck = function () {
-	return this.userPasswordCheck; 
-}
-SieveServerUserInterface.prototype.setUserPasswordCheck = function (userPasswordCheck) {
-	this.userPasswordCheck = userPasswordCheck; 
-}
-
-SieveServerUserInterface.prototype.getLoginIndex = function () {
-	return this.rgLoginIndex; 
-}
-SieveServerUserInterface.prototype.setLoginIndex = function (rgLoginIndex) {
-	this.rgLoginIndex = rgLoginIndex; 
-}
-	  
-SieveServerUserInterface.prototype.getKeepAliveInterval = function () {
-	return this.keepAlive; 
-}
-SieveServerUserInterface.prototype.setKeepAliveInterval = function (keepAlive) {
-	this.keepAlive = keepAlive; 
-}
-
-SieveServerUserInterface.prototype.isKeepAlive = function () {
-	return this.keepAliveCheck; 
-}
-SieveServerUserInterface.prototype.enableKeepAlive = function (keepAliveCheck) {
-	this.keepAliveCheck = keepAliveCheck; 
-}
-	
-SieveServerUserInterface.prototype.getCompileDelay = function () {
-	return this.compileDelay; 
-}
-SieveServerUserInterface.prototype.setCompileDelay = function (compileDelay) {
-	this.compileDelay = compileDelay; 
-}
-
-SieveServerUserInterface.prototype.getCompileCheck = function () {
-	return this.compileCheck; 
-}
-SieveServerUserInterface.prototype.setCompileCheck = function (compileCheck) {
-	this.compileCheck = compileCheck; 
-}
-	
-SieveServerUserInterface.prototype.getDebugMode = function () {
-	return this.debugMode; 
-}
-SieveServerUserInterface.prototype.setDebugMode = function (debugMode) {
-	this.debugMode = debugMode; 
-}
-
-   
+/**
+ * Called while dialog box to configure is loading to initialize user interface parameters with
+ * Sieve server settings data.
+ * @param sender Context from caller
+ */
 function onDialogLoad(sender)
 {
 	gAccount = window.arguments[0]["SieveAccount"];
+	jsLoader.loadSubScript("chrome://out_of_office/content/account/OutOfOfficeSieveServerSettingsData.js");
+//	jsLoader.loadSubScript("chrome://out_of_office/content/account/OutOfOfficeSieveServerUserInterfaceControl.js");
 	
 	// Initialize UI parameters
-	gSieveServerToConfigure = new SieveServerUserInterface(gAccount);
+	gSieveServerToConfigure = new SieveServerSettingsData(gAccount);
 	updateData(false); // Set data to user interface control
 
 	// Enable dialog control
@@ -474,20 +359,5 @@ function SaveData()
 	/*
 	 * Update gAccount settings
 	 */
-	gAccount.setActiveLogin( gSieveServerToConfigure.getLoginIndex() );
-	if( gSieveServerToConfigure.getLoginIndex() == 2 ){
-		gAccount.getLogin(2).setLogin( gSieveServerToConfigure.getUserName(), ( (gSieveServerToConfigure.getUserPasswordCheck()==true)?gSieveServerToConfigure.getUserPassword() : null ) );
-	}
-
-	gAccount.setActiveHost( gSieveServerToConfigure.getHostType() );	
-	if( gSieveServerToConfigure.getHostType() == 1 ){ // Host name used
-		gAccount.getHost(1).setHostname( gSieveServerToConfigure.getHostName() );
-	}
-	gAccount.getHost(1).setPort( gSieveServerToConfigure.getHostPort() );
-	gAccount.getHost(1).setTLS( gSieveServerToConfigure.getHostTLS() );
-	gAccount.getSettings().enableKeepAlive( gSieveServerToConfigure.isKeepAlive() );
-	gAccount.getSettings().setKeepAliveInterval( gSieveServerToConfigure.getKeepAliveInterval() );
-	gAccount.getSettings().enableCompileDelay( gSieveServerToConfigure.getCompileCheck() );
-	gAccount.getSettings().setCompileDelay( gSieveServerToConfigure.getCompileDelay() );
-	gAccount.getSettings().setDebug( gSieveServerToConfigure.getDebugMode() );
+	gSieveServerToConfigure.updateAccount(gAccount);
 }
