@@ -37,43 +37,32 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
-	@fileoverview
-	This file overlay the am-server.xul and am-server.js to add a Sieve settings button in the server properties
-	This file implements functions to overlay the am-server.xul and am-server.js
-	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
-*/
+ * 	@fileoverview
+ * 	This file overlay the am-server.xul and am-server.js to add a Sieve settings button in the server properties
+ * 	This file implements functions to overlay the am-server.xul and am-server.js
+ * 	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+ */
 
-
-const kLDAPPrefContractID="@mozilla.org/ldapprefs-service;1";
-var gRefresh = false; // leftover hack from the old preferences dialog
-// Original preference to save preference with only the valid server
-var gOriginalPreference = null;
-// OBr 18/07/07 correction of the entry ID 484
-var	gAutoCompletePref = null;
 var gIdentity = null;
 var gServer = null;
 
 var onInitOriginal = onInit;
-var onLoadOriginal = onLoad;
 var onSaveOriginal = onSave;
-var useCustomPref;
-var gPreferenceService = null;
-var gDirectories = null;
-var gLDAPPrefsService = null;
-
 
 var globalServices=new Services();
 
 /**
-		Hook function to overload the the onPreInit function.
-		This function has been hooked to initialize the gIdentity variable.
+	Hook function to overload the the onPreInit function.
+	This function has been hooked to initialize the gIdentity variable.
 */
 function onPreInit(account, accountValues)
 {
 	gIdentity = account.defaultIdentity;
 	globalServices.logSrv( "onPreInit=" + gIdentity ) ;
 
-
+/**
+ * Original code from file am-server.js
+ */
   // Bug 134238
   // Make sure server.isSecure will be saved before server.port preference
   parent.getAccountValue(account, accountValues, "server", "isSecure", null, false);
@@ -110,35 +99,46 @@ function onPreInit(account, accountValues)
 
 
 /**
-		Hook function to overload the the onInit function.
-		The original function of onInit is called inside with the onInitOriginal function.
-*/
+ * 	Hook function to overload the the onInit function.
+ * 	The original function of onInit is called inside with the onInitOriginal function.
+ */
 onInit = function onInitHook(aPageId, aServerId) 
 {
-//	loadPreferences();
-	globalServices.logSrv("onInitHook for Identity='" + gIdentity.key + "' started.");
-	globalServices.logSrv("onInitHook for Server='" + gServer.key + "' started.");
+	globalServices.logSrv("onInitHook for Server='" + gServer.key + "' and for Identity='" + gIdentity.key + "' started.");
 	onInitOriginal();
 	addSieveSettingsButton();
 	globalServices.logSrv("onInitHook ended.");
 }
 
 /**
-		Add a new user button to configure Sieve connection parameters. It insert the button after the username field.
-		This function generate dynamically the following XUL code to the am-server.xul UI file.
-			<hbox align="center" >
-				<button id="server.sieve.settings" 
-						label="ButtonLabel"
-						accesskey="ShortKey"
-						oncommand="OnClickFunction()"
-						wsm_persist="true" />
-			</hbox>
-*/
+ * 
+ * 	Hook function to overload the the onInit function.
+ * 	The original function of onInit is called inside with the onSaveOriginal function.
+ */
+onSave = function onSaveHook(){
+	onSaveOriginal();
+	globalServices.logSrv("onSaveHook ended.");
+}
+
+
+/**
+ * 		Add a new user button to configure Sieve connection parameters. It insert the button after the username field.
+ * 		This function generate dynamically the following XUL code to the am-server.xul UI file.
+ * 			<hbox align="center" >
+ * 				<button id="server.sieve.settings"
+ *						label="ButtonLabel"
+ *						accesskey="ShortKey"
+ *						oncommand="OnClickFunction()"
+ *						wsm_persist="true" />
+ *			</hbox>
+ *
+ */
+var CONST_SIEVE_SETTINGS_BUTTON_ID = "server.sieve.settings";
 function addSieveSettingsButton()
 {
 	try{
 
-		var btn = document.getElementById("server.sieve.settings");  
+		var btn = document.getElementById(CONST_SIEVE_SETTINGS_BUTTON_ID);  
 		if( btn != null ){
 			globalServices.logSrv("addSieveSettingsButton button already installed.");
 			return;
@@ -174,59 +174,29 @@ function addSieveSettingsButton()
         }
 		
 		btn.setAttribute("label", buttonLabel );
-		btn.setAttribute("id","server.sieve.settings");
+		btn.setAttribute("id",CONST_SIEVE_SETTINGS_BUTTON_ID);
 		btn.setAttribute("accesskey","S");
 		btn.setAttribute("oncommand",'onAccountEditClick();');
 
 		rows.appendChild(row);
 		globalServices.logSrv("addSieveSettingsButton ended.");
-		return rows;
 	}
 	catch(e){
 		alert("Exception: " + e);
 	}
 }
 
-
-//Hook original OnLoad function
-onLoad = function onLoadHook(){
-	if (kLDAPPrefContractID in Components.classes)
-		gLDAPPrefsService = Components.classes[kLDAPPrefContractID].getService(Components.interfaces.nsILDAPPrefsService);
-
-	onLoadOriginal();
-	removeOldAddressing();
-  }
-
-
-onSave = function onSaveHook(){
-//	savePreferences();
-	onSaveOriginal();
-  }
-
-//Load Preferences
-function loadPreferences(){
-	gPreferenceService = Components.classes["@mozilla.org/preferences-service;1"].
-                getService(Components.interfaces.nsIPrefBranch);
-	try  {
-        var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-        var prefs = prefService.getBranch(null);
-
-        // Retrieve LDAP attributes from user preferences
-		useCustomPref = gPreferenceService.getBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences");
-		globalServices.logSrv("loadPreferences for user " + gIdentity.key +" value=" + useCustomPref + ".");
-	} catch (e){
-		dump("loadPreferences() -> Setting default useCustomPref\n");
-		useCustomPref = false;
-	}
-}
-
+/**
+ * Access to sieve server settings on button pressed
+ * @param sender Object with context of the caller
+ */
 function onAccountEditClick(sender)
 {
 	globalServices.logSrv( "onAccountEditClick=" + gIdentity + " started." ) ;
 
 	// DumpIdentity( gIdentity );
 	var args = new Array();
-	args["SieveAccount"] = getAccountByName(gIdentity);
+	args["SieveAccount"] = getAccountByKey(gIdentity);
 	if(args["SieveAccount"] == null) 
 	{
 		globalServices.warningSrv( "    Account "+ gIdentity.fullName +" not found!");
@@ -234,17 +204,22 @@ function onAccountEditClick(sender)
 		return;
 	}
     
-	window.openDialog("chrome://out_of_office/content/options/OutOfOfficeSieveServerSettings.xul", "FilterEditor", "chrome,modal,titlebar,centerscreen", args);	        
+	window.openDialog("chrome://out_of_office/content/options/OutOfOfficeSieveServerUserInterface.xul", "FilterEditor", "chrome,modal,titlebar,centerscreen", args);	        
 	globalServices.logSrv( "onAccountEditClick=" + gIdentity + " ended." ) ;
 }
 
-function getAccountByName(searchAccount) 
+/**
+ * Retrieve sieve server account parameters from account list built with OutOfOfficeSieveServerTreeView
+ * @param searchAccount Account parameter to search from account list
+ * @return account found in the sieve server list.
+ */
+function getAccountByKey(searchAccount) 
 { 
 	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 
 	jsLoader.loadSubScript("chrome://out_of_office/content/options/OutOfOfficeSieveServerTreeView.js");
 
-	globalServices.logSrv( "getAccountByName started : search " + gServer.key + "." ) ;
+	globalServices.logSrv( "getAccountByKey started : search " + gServer.key + "." ) ;
 
 	// Use the SievePrefTreeView object to retrieve the account list (Only account kind of imap)
 	// @TODO Optimization will be to retrieve only the account used (not important).
@@ -253,141 +228,32 @@ function getAccountByName(searchAccount)
   	{
 		var account = sieveAccountTreeView.getAccount(i);
 
-		globalServices.logSrv( "Account key=" + account.getImapKey() + " description=" + account.getDescription() );
+		globalServices.logSrv( "    Account key=" + account.getImapKey() + " description=" + account.getDescription() );
 		// Retrieve each incoming server to find the right account to configure
 		if( account.getImapKey() == gServer.key )
 		{
-			globalServices.logSrv( "    Account found=" + account + " ended." ) ;
+			globalServices.logSrv( "getAccountByKey ended: Account found=" + account + "." ) ;
 			return account;
 		}
 	}
-	globalServices.logSrv( "getAccountByName: account not found. Function ended." ) ;
+	globalServices.logSrv( "getAccountByKey ended: account not found.." ) ;
 	return null; // Not found
 }
-	
 
+/**
+ * Function to debug selected identity
+ * @param gIdentity
+ */
 function DumpIdentity( gIdentity )
 {
-return ; //don't use
-
-globalServices.logSrv( "DumpIdentity " + gIdentity + " Started..." );
-
-globalServices.logSrv( "    gIdentity.directoryServer =" + gIdentity.directoryServer );
-
-globalServices.logSrv( "    gIdentity.email =" + gIdentity.email );
-
-globalServices.logSrv( "    gIdentity.fullName =" + gIdentity.fullName );
-
-globalServices.logSrv( "    gIdentity.identityName =" + gIdentity.identityName );
-
-globalServices.logSrv( "    gIdentity.key =" + gIdentity.key );
-
-globalServices.logSrv( "    gIdentity.signature =" + gIdentity.signature );
-
-globalServices.logSrv( "    gIdentity.smtpServerKey =" + gIdentity.smtpServerKey );
-
-globalServices.logSrv( "DumpIdentity " + gIdentity + " Ended" );
+	globalServices.logSrv( "DumpIdentity " + gIdentity + " Started..." );
+	globalServices.logSrv( "    gIdentity.directoryServer =" + gIdentity.directoryServer );
+	globalServices.logSrv( "    gIdentity.email =" + gIdentity.email );
+	globalServices.logSrv( "    gIdentity.fullName =" + gIdentity.fullName );
+	globalServices.logSrv( "    gIdentity.identityName =" + gIdentity.identityName );
+	globalServices.logSrv( "    gIdentity.key =" + gIdentity.key );
+	globalServices.logSrv( "    gIdentity.signature =" + gIdentity.signature );
+	globalServices.logSrv( "    gIdentity.smtpServerKey =" + gIdentity.smtpServerKey );
+	globalServices.logSrv( "DumpIdentity " + gIdentity + " Ended" );
 }
 
-function savePreferences(){
-	//Save use Custom Preference choice to preference
-	var checkBoxUseCustomPref = document.getElementById("ldap_2.identity.id.multi_ldap_use_custom_preferences");
-	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".autoComplete.overrideGlobalPref",checkBoxUseCustomPref.checked);
-	gPreferenceService.setBoolPref("ldap_2.identity." + gIdentity.key + ".multi_ldap_use_custom_preferences",checkBoxUseCustomPref.checked);
-    gPreferenceService.setCharPref("ldap_2.identity." + gIdentity.key + ".autoComplete.ldapServers", gAutoCompletePref );
-	globalServices.logSrv("savePreferences for user " + gIdentity.key +".");
-}
-
-function editDirectories()
-{
-	var args = {fromGlobalPref: true};
-	window.openDialog("chrome://messenger/content/addressbook/pref-editdirectories.xul",
-						"editDirectories", "chrome,modal=yes,resizable=no", args);
-	if (gRefresh)
-	{
-		var popup = document.getElementById("directoriesListPopup");
-		if (popup) 
-			while (popup.hasChildNodes())
-				popup.removeChild(popup.lastChild);
-	}
-	gDirectories = null;
-	//loadDirectories(popup);
-	if (gRefresh)
-	{	// Remove LDAP server list to update list box
-		removeMultiLDAPDirectoriesList();
-		// Create LDAP server list with new list
-		createMultiLDAPDirectoriesList();
-	}
-	gRefresh = false;
-}
-
-//Set old compositionAndAddressing UI to hidden
-function removeOldAddressing(){
-var element = document.getElementById("compositionAndAddressing");
- 	var childs = element.childNodes;
-
-	var n = 0;
-  	for (var i = 0 ; i< childs.length; i++)
-  	{
-  		if (childs[i].tagName == "groupbox")
-  			n++;
-  		if (n == 2){
-  			childs[i].setAttribute("hidden","true");
-  		}
-  	}
-}
-
-
-//Helper function return an array minus an value
-function removeFromArray(value, allPrefs){
-	var prefs = new Array();
-	
-	for (var i = 0; i < allPrefs.length; i++){
-		if (allPrefs[i] != value)
-			prefs.push(allPrefs[i]);
-	}
-	return prefs;
-}
-
-//Convert an Array to an String with coma
-function convertPrefArrayToString(array){
-	var s = "";
-	
-	for (var i = 0 ; i < array.length ; i++){
-		if (array[i].length != 0){
-			s+=array[i];
-			s +=',';
-		}
-	}
-	return s.slice(0,-1);
-}
-
-// Check the name of server if it was found in the preference
-function isInPreferenceSeverList(nameToCheck, array){
-	for (var i = 0; i < array.length; i++){
-		if (array[i] == nameToCheck)
-			return true;
-	}
-	return false;
-}
-
-/*
- * Check the validity of the server list prefernece after an edit of the LDAP server list.
- * Remove the deleted server in the preference string.
- */
-function checkPreferenceServerValidity(serverToCheck){
-	var arraySeverPreference = gOriginalPreference.split(',');
-	arraySeverPreference = removeFromArray(serverToCheck, arraySeverPreference);
-	return convertPrefArrayToString(arraySeverPreference);
-}
-
-/*
- * Get preference safety, if preference does not exist it returns empty string
- */
-function getSafeCharPref(prefService, uri){
-	var value = "";
-	try {
-		value = prefService.getCharPref(uri);
-	} catch(e){}
-	return value;
-}
