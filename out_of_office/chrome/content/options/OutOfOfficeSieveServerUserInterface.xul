@@ -48,7 +48,45 @@
 	<vbox>
 		<hbox>
 			<groupbox flex="1">
-				<caption id="labelLogin" label="&options.login;" />
+				<caption>
+					<checkbox id="cbxHost" label="&options.host.label;" accesskey="&options.host.key;"
+						oncommand="onHostCommand(this)" />
+				</caption>
+				<grid>
+					<colums>
+						<column />
+						<column />
+					</colums>
+					<rows>
+						<row align="center">
+							<label id="labelHostname" value="&options.host.hostname.label;"
+								accesskey="&options.host.hostname.key;" control="txtHostname" />
+							<hbox align="center">
+								<textbox id="txtHostname" size="25" onchange="onHostnameChange(this)" />
+								<spacer />
+							</hbox>
+						</row>
+						<row align="center">
+							<label id="labelPort" value="&options.host.port.label;" accesskey="&options.host.port.key;"
+								control="txtPort" />
+							<hbox align="center">
+								<textbox id="txtPort" size="5" onchange="onPortChange(this)" />
+								<label id="labelDefaultPort" value="&options.host.port.default;" />
+							</hbox>
+						</row>
+						<row>
+							<spacer />
+							<hbox align="center">
+								<checkbox id="cbxTLS" oncommand="onTLSCommand(this)"
+									label="&options.host.tls;" accesskey="&options.host.tls.key;" />
+								<spacer />
+							</hbox>
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+			<groupbox flex="1">
+				<caption id="labelLogin" label="&options.login.label;" />
 				<radiogroup id="rgLogin" onselect="onLoginSelect(this);">
 					<radio id="rbNoAuth" label="&options.login.noAuth;" />
 					<radio id="rbImapAuth" label="&options.login.imapAuth;" />
@@ -63,12 +101,12 @@
 						</colums>
 						<rows>
 							<row align="center">
-								<label id="labelUsername" value="&options.login.username;"
+								<label id="labelUsername" value="&options.login.username.label;"
 									accesskey="&options.login.username.key;" control="txtUsername" />
 								<textbox id="txtUsername" size="20" onchange="onLoginChange(this)" />
 							</row>
 							<row align="center">
-								<label id="labelPassword" value="&options.login.password;"
+								<label id="labelPassword" value="&options.login.password.label;"
 									accesskey="&options.login.password.key;" control="txtPassword" />
 								<textbox id="txtPassword" type="password" size="20"
 									onchange="onLoginChange(this)" onfocus="onPasswordFocus(this)" />
@@ -81,44 +119,6 @@
 						</rows>
 					</grid>
 				</hbox>
-			</groupbox>
-			<groupbox flex="1">
-				<caption>
-					<checkbox id="cbxHost" label="&options.host;" accesskey="&options.host.key;"
-						oncommand="onHostCommand(this)" />
-				</caption>
-				<grid>
-					<colums>
-						<column />
-						<column />
-					</colums>
-					<rows>
-						<row align="center">
-							<label id="labelHostname" value="&options.host.hostname;"
-								accesskey="&options.host.hostname.key;" control="txtHostname" />
-							<hbox align="center">
-								<textbox id="txtHostname" size="25" onchange="onHostnameChange(this)" />
-								<spacer />
-							</hbox>
-						</row>
-						<row align="center">
-							<label value="&options.host.port;" accesskey="&options.host.port.key;"
-								control="txtPort" />
-							<hbox align="center">
-								<textbox id="txtPort" size="5" onchange="onPortChange(this)" />
-								<label value="&options.host.port.default;" />
-							</hbox>
-						</row>
-						<row>
-							<spacer />
-							<hbox align="center">
-								<checkbox id="cbxTLS" oncommand="onTLSCommand(this)"
-									label="&options.host.tls;" accesskey="&options.host.tls.key;" />
-								<spacer />
-							</hbox>
-						</row>
-					</rows>
-				</grid>
 			</groupbox>
 		</hbox>
 <!--
