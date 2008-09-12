@@ -70,8 +70,13 @@ onInit = function onInitHook(aPageId, aServerId)
 {
 	onInitOriginal(); // Execute original code from service
 
+
 	globalServices.logSrv("onInitHook for Server='" + gServer.key + "' and for Identity='" + gIdentity.key + "' started.");
-	gAccount = getAccountByKey(gIdentity);;
+	gAccount = getAccountByKey(gIdentity);
+	setInformationFields();
+	
+	// For the first version all functionalities are not used.
+	hideControlNotUsed();
 
 	if( gAccount == null ){
 		onDialogDisabled(); // Account not found or isn't an IMAP account
@@ -98,12 +103,30 @@ onSave = function onSaveHook(){
  */
 function onDialogDisabled()
 {
+	globalServices.enableCtrlID('labelHostname', false);
+	globalServices.enableCtrlID('txtHostname', false);
+	globalServices.enableCtrlID('labelPort', false);
+	globalServices.enableCtrlID('txtPort', false);
+	globalServices.enableCtrlID('labelDefaultPort', false);
+	globalServices.enableCtrlID('cbxTLS', false);
 	globalServices.enableCtrlID('txtUsername', false);
 	globalServices.enableCtrlID('txtPassword', false);
 	globalServices.enableCtrlID('cbxPassword', false);
-	globalServices.enableCtrlID('txtHostname', false);
-	globalServices.enableCtrlID('txtPort', false);
-	globalServices.enableCtrlID('cbxTLS', false);
+}
+
+/**
+ * For the first version all functionalities are not used. 
+ */
+function hideControlNotUsed()
+{
+	globalServices.showCtrlID('groupLogin', false);
+	globalServices.showCtrlID('labelLogin', false);
+	globalServices.showCtrlID('rgLogin', false);
+	globalServices.showCtrlID('labelUsername', false);
+	globalServices.showCtrlID('txtUsername', false);
+	globalServices.showCtrlID('labelPassword', false);
+	globalServices.showCtrlID('txtPassword', false);
+	globalServices.showCtrlID('cbxPassword', false);
 }
 
 /**
@@ -126,7 +149,27 @@ function onDialogLoad()
 	enableHost(gSieveServerToConfigure.getHostType());
 	enableLogin(gSieveServerToConfigure.getLoginIndex());
 	enableKeepAlive(gSieveServerToConfigure.isKeepAlive());
-	enableCompile(gSieveServerToConfigure.getCompileCheck());	
+	enableCompile(gSieveServerToConfigure.getCompileCheck());
+}
+
+/**
+ * Set information fields to show current sieve server parameters
+ */
+function setInformationFields()
+{
+	document.getElementById('txtDispHostname').value = gAccount.getHost().getHostname();
+	document.getElementById('txtDispPort').value = gAccount.getHost().getPort();
+	document.getElementById('txtDispTLS').value = gAccount.getHost().isTLS();
+   
+	var authType = ""; 	
+	switch (gAccount.getLogin().getType())
+	{
+		case 0: authType = "outofoffice.list.tree.info.login.noauth"; break;
+		case 1: authType = "outofoffice.list.tree.info.login.useimap"; break;
+		case 2: authType = "outofoffice.list.tree.info.login.custom"; break;
+	}
+	document.getElementById('txtDispAuth').value = globalServices.localizeString( "out_of_office_locale.properties", "&" + authType + ";" );
+	document.getElementById('txtDispUserName').value = gAccount.getLogin().getUsername();     	
 }
 
 /**
@@ -216,8 +259,11 @@ function onHostCommand(sender)
 
 function enableHost(enabled)
 {
+	globalServices.enableCtrlID('labelHostname', enabled);
 	globalServices.enableCtrlID('txtHostname', enabled);
+	globalServices.enableCtrlID('labelPort', enabled);
 	globalServices.enableCtrlID('txtPort', enabled);
+	globalServices.enableCtrlID('labelDefaultPort', enabled);
 	globalServices.enableCtrlID('cbxTLS', enabled);
 }
 
