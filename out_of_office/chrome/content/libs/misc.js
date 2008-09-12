@@ -43,9 +43,10 @@
  * @author Olivier Brun / Etat francais Ministere de la Defense
  */
 
-/*
+/**
  * Constructor of the sieve common class Overload toString method in each class
  * to return the class name
+ * @author Olivier Brun / Etat francais Ministere de la Defense
  */
 function SieveCommon() 
 {
@@ -70,7 +71,7 @@ function Services() {
 	 * 
 	 * @type string
 	 */
-	this.extensionVersion="0.0.5";
+	this.extensionVersion="0.0.6";
 	/**
 	 * preferences
 	 * 
@@ -707,6 +708,7 @@ function emailCheckNew(emailStr) {
 		 * Too many/few @'s or something; basically, this address doesn't
 		 * even fit the general mould of a valid e-mail address.
 		 */
+			alert("1" + globalServices);
 			globalServices.warningSrv("Email address seems incorrect (check @ and .'s)");
 			return false;
 	    }
@@ -724,6 +726,7 @@ function emailCheckNew(emailStr) {
 	var domain=matchArray[matchArray.length - 1];
 //	globalServices.logSrv("user='" + user + "' emailPat='" + emailPat+"'");
 //	globalServices.logSrv("domain='" + domain);
+	alert("2" + globalServices);
 
 	// See if "user" is valid 
 	if (user.match(userPat)==null) {
@@ -825,7 +828,7 @@ for (var i = 0; i < addrToTest.length; i++)
 
 var Utf8 = {
 
-	// public method for url encoding
+	// public method for text encoding
 	encode : function (string) {
 		string = string.replace(/\r\n/g,"\n");
 		var utftext = "";
@@ -852,7 +855,7 @@ var Utf8 = {
 		return utftext;
 	},
 
-	// public method for url decoding
+	// public method for text decoding
 	decode : function (utftext) {
 		var string = "";
 		var i = 0;
