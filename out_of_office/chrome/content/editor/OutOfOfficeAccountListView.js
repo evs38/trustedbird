@@ -106,35 +106,11 @@ function onCycleCellActivate(sender)
 	}
 	return ( gConnectionActive == -1 );
 }
-/* TODO Remove obsolete code
-function  onCycleCell(row,col,script,active)
-{
-	globalServices.logSrv( OOOALV_FILE_HEADER + "onCycleCell " + script + " script is active=" + active);
-	if( gOutOfOfficeManager == null ){
-		throw (OOOALV_FILE_HEADER + "Out of Office manager cannot be null." );
-	}
-	if( gOutOfOfficeManager.getSettings() == null ){
-		throw (OOOALV_FILE_HEADER + "Settings object from Out of Office manager cannot be null." );
-	}
-	if( script !=  gOutOfOfficeManager.getSettings().getScriptName() ){
-		return; // Don't modify symbolic link to the script that is not out of office script. 
-	}
-	var request = null;
-	if (active == true)
-		request = new SieveSetActiveRequest();
-	else
-		request = new SieveSetActiveRequest(script)
-	  
-	request.addSetScriptListener(event);
-	request.addErrorListener(event);
-	
-	sieve.addRequest(request);
-}
-*/
+
 var gInternalSelect = false;
 function onTreeSelect(tree)
 {	
-	if( gConnectionActive != -1 ){ // A connection to serveur is running
+	if( gConnectionActive != -1 ){ // A connection to server is running
 		return;
 	}
 	if( gInternalSelect == true){ // Do not retry connection, two events of select item occurs in same time. Conflict problem.
@@ -179,22 +155,18 @@ function onUpdateControl(tree)
 	}
 
 	globalServices.setStringLabel('btnEnable', buttonLabel );
-	
-/*	if (account.isEnabledOutOfOffice() == false)
-	{
-		document.getElementById('btnEdit').setAttribute('disabled','true');
-		document.getElementById('btnEnable').label = "Enable";
-		
-	}
-	else
-	{
-		document.getElementById('btnEdit').removeAttribute('disabled');
-		document.getElementById('btnEnable').label = "Disable";	
-	}
-	*/	
-	document.getElementById('txtHostname').value = account.getHost().getHostname();
-	document.getElementById('txtPort').value = account.getHost().getPort();
-	document.getElementById('txtTLS').value = account.getHost().isTLS();
+
+	setInformationFields();
+}
+
+/**
+ * Set information fields to show current sieve server parameters
+ */
+function setInformationFields()
+{
+	document.getElementById('txtDispHostname').value = account.getHost().getHostname();
+	document.getElementById('txtDispPort').value = account.getHost().getPort();
+	document.getElementById('txtDispTLS').value = account.getHost().isTLS();
    
 	var authType = ""; 	
 	switch (account.getLogin().getType())
@@ -203,8 +175,8 @@ function onUpdateControl(tree)
 		case 1: authType = "outofoffice.list.tree.info.login.useimap"; break;
 		case 2: authType = "outofoffice.list.tree.info.login.custom"; break;
 	}
-	document.getElementById('txtAuth').value = globalServices.localizeString( "out_of_office_locale.properties", "&" + authType + ";" );
-	document.getElementById('txtUserName').value = account.getLogin().getUsername();     	
+	document.getElementById('txtDispAuth').value = globalServices.localizeString( "out_of_office_locale.properties", "&" + authType + ";" );
+	document.getElementById('txtDispUserName').value = account.getLogin().getUsername();     	
 }
 
 /*
