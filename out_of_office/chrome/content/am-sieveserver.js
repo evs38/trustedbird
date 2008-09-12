@@ -40,33 +40,32 @@ var gIdentity = null;
 var gServer = null;
 
 var globalServices=new Services();
-alert("Sieve server settings");
-
-function onInit() 
-{
-	alert ("onInit Sieve Server ");
-}
-
-function onSave()
-{
-	alert ("onSave Sieve Server ");
-}
-
-function onAccept() 
-{
-	alert ("onAccept Sieve Server ");
-	return false;
-}
 
 /**
-	Hook function to overload the the onPreInit function.
-	This function has been hooked to initialize the gIdentity variable.
+Hook function to overload the the onPreInit function.
+This function has been hooked to initialize the gIdentity variable.
 */
 function onPreInit(account, accountValues)
 {
 	gServer = account.incomingServer;
 	gIdentity = account.defaultIdentity;
 	globalServices.logSrv("onPreInit Server='" + gServer.key + "' and Identity='" + gIdentity.key + "'.");
+}
+
+function onInit() 
+{
+	globalServices.logSrv("onInit Server='" + gServer.key + "' and Identity='" + gIdentity.key + "'.");
+}
+
+function onSave()
+{
+	globalServices.logSrv("onSave Server='" + gServer.key + "' and Identity='" + gIdentity.key + "'.");
+}
+
+function onAccept() 
+{
+	globalServices.logSrv("onAccept Server='" + gServer.key + "' and Identity='" + gIdentity.key + "'.");
+	return false;
 }
 
 /**
