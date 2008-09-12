@@ -27,6 +27,12 @@ SieveNoAuth.prototype.getUsername
 	return null;
 }
 
+SieveNoAuth.prototype.hasPassword
+= function ()
+{
+return false;
+}
+
 SieveNoAuth.prototype.hasUsername
     = function ()
 {
@@ -120,6 +126,34 @@ function SieveCustomAuth(uri)
   this.uri = uri;
   this.prefURI = CONST_PREFERENCE_KEY_ + this.uri;
 }
+
+SieveCustomAuth.prototype.setLogin
+	= function (username,password)
+{   
+	if ((username == null) || (username == ""))
+		throw "SieveCustomAuth: Username is empty or null";
+	
+	// remove the existing user    
+	var pwMgr = Components.classes["@mozilla.org/passwordmanager;1"].getService(Components.interfaces.nsIPasswordManager);
+	try
+	{
+		pwMgr.removeUser(new String("sieve://"+this.uri) , this.getUsername());    
+	}
+	catch (e)
+	{
+		// do nothing 
+	}    
+
+	if ((password == null) || (password == ""))
+	{
+		gPref.setCharPref(this.prefURI+".login.username",username);    
+		gPref.setBoolPref(this.prefURI+".login.hasPassword",false);
+		return;
+	}
+
+	pwMgr.addUser(new String("sieve://"+this.uri),username, password);    
+	gPref.setBoolPref(this.prefURI+".login.hasPassword",true);   
+}    
 
 SieveCustomAuth.prototype.setUsername
     = function (username)
