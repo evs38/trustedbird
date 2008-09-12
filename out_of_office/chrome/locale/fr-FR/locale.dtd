@@ -13,24 +13,24 @@
 <!ENTITY options.tab.advanced "Advanced">
 <!ENTITY options.tab.debug    "Debug">
 
-<!ENTITY options.login "Identification">
+<!ENTITY options.login.label "Identification">
 <!ENTITY options.login.key "I">
 <!ENTITY options.login.noAuth "Pas d'Identification">
 <!ENTITY options.login.imapAuth "Utiliser les Paramètres IMAP">
 <!ENTITY options.login.customAuth "Nom et mot de passe de l'utilisateur">
-<!ENTITY options.login.username "Nom utilisateur">
+<!ENTITY options.login.username.label "Nom utilisateur">
 <!ENTITY options.login.username.key "N">
 <!ENTITY options.login.show "Afficher les mots de passe...">
-<!ENTITY options.login.password "Mot de Passe">
+<!ENTITY options.login.password.label "Mot de Passe">
 <!ENTITY options.login.password.key "P">
 <!ENTITY options.login.password.remember "Se souvenir du mot de passe">
 <!ENTITY options.login.password.remember.key "s">
 
-<!ENTITY options.host "Ignorer les Paramètres IMAP">
+<!ENTITY options.host.label "Ignorer les Paramètres IMAP">
 <!ENTITY options.host.key "I">
-<!ENTITY options.host.hostname "Nom du host">
+<!ENTITY options.host.hostname.label "Nom du host">
 <!ENTITY options.host.hostname.key "h">
-<!ENTITY options.host.port "Port">
+<!ENTITY options.host.port.label "Port">
 <!ENTITY options.host.port.key "o">
 <!ENTITY options.host.port.default "Défaut: 2000">
 <!ENTITY options.host.tls.key "t">
