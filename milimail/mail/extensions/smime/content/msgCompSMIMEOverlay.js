@@ -58,6 +58,7 @@ function onComposerClose()
   setNoEncryptionUI();
   setNoSignatureUI();
   setTripleWrapUI(false);
+  setNoSecurityLabelUI();
 
   if (!gMsgCompose)
     return;
@@ -124,6 +125,8 @@ function onComposerReOpen()
 
     gSMFields.tripleWrapMessage = gCurrentIdentity.getBoolAttribute("triple_wrap_mail");
     setTripleWrapUI(gSMFields.tripleWrapMessage);
+    
+    setNoSecurityLabelUI();
   }
 }
 
@@ -256,6 +259,12 @@ function setSecurityClassification(event)
   // Set the securityClassification value for the Security Label
   gSMFields.securityClassification = event.target.getAttribute('value');
 
+  if (gSMFields.securityClassification != SECURITY_CLASSIFICATION_NONE) {
+    setSecurityLabelUI("2.16.840.1.113730.7.3", gSMFields.securityClassification);
+  } else {
+    setNoSecurityLabelUI();
+  }
+  
   // make sure we have a cert name for signing ...
   if (gSMFields.securityClassification != SECURITY_CLASSIFICATION_NONE)
   {
@@ -438,6 +447,19 @@ function setTripleWrapUI(isEnable)
 {
   top.document.getElementById("securityStatus").setAttribute("tripleWrap", (isEnable) ? "ok" : "");
   top.document.getElementById("tripleWrapping-status").collapsed = isEnable;
+}
+
+function setNoSecurityLabelUI()
+{
+  top.document.getElementById("securityLabelSecurityClassification-status").label = "";
+  top.document.getElementById("securityLabelSecurityClassification-status").collapsed = true;
+}
+
+function setSecurityLabelUI(securityPolicyIdentifier, securityClassification)
+{
+  top.document.getElementById("securityLabelSecurityClassification-status").label = getSecurityLabelSecurityClassificationName(securityPolicyIdentifier, securityClassification)
+    + " [" + getSecurityLabelSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+  top.document.getElementById("securityLabelSecurityClassification-status").collapsed = false;
 }
 
 function showMessageComposeSecurityStatus()

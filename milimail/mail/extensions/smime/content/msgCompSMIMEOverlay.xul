@@ -46,6 +46,7 @@
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript" src="chrome://messenger-smime/content/msgCompSMIMEOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabel.js"/>
   <script type="application/x-javascript"><![CDATA[
     window.addEventListener("load", smimeComposeOnLoad, true);
   ]]></script>
@@ -123,6 +124,8 @@
   <statusbar id="status-bar">
     <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
       id="signing-status" oncommand="showMessageComposeSecurityStatus();"/>
+    <statusbarpanel insertbefore="offline-status" collapsed="true"
+      id="securityLabelSecurityClassification-status" onclick="showMessageComposeSecurityStatus();"/>
     <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
       id="encryption-status" oncommand="showMessageComposeSecurityStatus();"/>
     <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
