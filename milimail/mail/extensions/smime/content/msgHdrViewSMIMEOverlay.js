@@ -193,6 +193,17 @@ var smimeHeaderSink =
   {
     gSecurityPolicyIdentifier = aSecurityPolicyIdentifier;
     gSecurityClassification = aSecurityClassification;
+    
+    var msgURI = GetLoadedMessage();
+    if (msgURI) {
+      var msgHdr = messenger.msgHdrFromURI(msgURI);
+      /* Write Security Label in message database */
+      msgHdr.setStringProperty("securityLabelSecurityPolicyIdentifier", gSecurityPolicyIdentifier);
+      msgHdr.setStringProperty("securityLabelSecurityClassification", gSecurityClassification);
+      
+      /* Refresh tree view */
+      SelectMessage(msgURI);
+    }
   },
 
   signedRequestReceiptStatus: function(aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo)
