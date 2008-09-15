@@ -55,8 +55,8 @@ OUT_OF_OFFICEService.prototype.chromePackageName = "out_of_office";
 OUT_OF_OFFICEService.prototype.showPanel =
 function (server)
 {
-  // don't show the panel for news accounts
-  return (server.type != "nntp");
+  // show the panel only for imap accounts
+  return (server.type == "imap");
 }
 
 /* factory for command line handler service (OUT_OF_OFFICEService) */
