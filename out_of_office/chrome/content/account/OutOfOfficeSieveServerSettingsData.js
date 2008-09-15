@@ -61,9 +61,11 @@ function SieveServerSettingsData(account)
    
 	// Login field.
 	this.userName = account.getLogin(2).getUsername();
-	this.userPassword = account.getLogin(2).getPassword();
+	this.userPassword = account.getLogin(2).getPassword(false); // Don't prompt for password
 	// this.userPasswordCheck = account.getLogin(2).hasPassword();
 	       
+	// Set type to use imap settings.
+	account.setActiveLogin(1);
 	this.rgLoginIndex = account.getLogin().getType();
 	
 	// Option fields.
@@ -183,13 +185,17 @@ SieveServerSettingsData.prototype.updateAccount = function ( account ) {
 	}
 
 	// Login field.
-    gAccount.setActiveLogin( gSieveServerToConfigure.getLoginIndex() );
+    // gAccount.setActiveLogin( gSieveServerToConfigure.getLoginIndex() );
+	// Force the login to use imap settings
+    gAccount.setActiveLogin( 1 );
 	if( gSieveServerToConfigure.getLoginIndex() == 2 ){
 		gAccount.getLogin(2).setLogin( gSieveServerToConfigure.getUserName(), ( (gSieveServerToConfigure.getUserPasswordCheck()==true)?gSieveServerToConfigure.getUserPassword() : null ) );
 	}
 
 	// set the custom Host settings
-	gAccount.setActiveHost( gSieveServerToConfigure.getHostType() );	
+	gAccount.setActiveHost( gSieveServerToConfigure.getHostType() );
+	
+	gAccount.setActiveLogin(1);
 	if( gSieveServerToConfigure.getHostType() == 1 ){ // Host name used
 		gAccount.getHost(1).setHostname( gSieveServerToConfigure.getHostName() );
 	}
