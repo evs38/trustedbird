@@ -183,7 +183,7 @@ SieveCustomAuth.prototype.setUsername
 }    
 
 SieveCustomAuth.prototype.getPassword
-    = function ()
+    = function (promptForPassword)
 {
   if (this.hasPassword() == true)
   {
@@ -207,7 +207,13 @@ SieveCustomAuth.prototype.getPassword
     }
     // no password stored...
   }
-  
+
+  // in case the passwordPromptRequired attribute is true...
+  // ... thunderbird will take care on retrieving a valid password...
+  //       
+  if (promptForPassword == false)
+    return "";
+
   // ... prompt for password
   var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                     .getService(Components.interfaces.nsIPromptService);
