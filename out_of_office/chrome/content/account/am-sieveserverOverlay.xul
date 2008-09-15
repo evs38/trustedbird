@@ -106,13 +106,13 @@
 							</hbox>
 							<hbox align="center">
 								<label collapsed="true" use="txtHostname"/>
-								<textbox wsm_persist="true" size="20" id="txtHostname" onchange="onHostnameChange(this)" class="uri-element"/>
+								<textbox wsm_persist="true" size="20" id="txtHostname" oninput="onHostnameChange(this)" class="uri-element"/>
 								
-								<label value="&options.host.port.label;"
+								<label id="labelPort" value="&options.host.port.label;"
 									accesskey="&options.host.port.key;" control="txtPort"/>
-								<label id="labelPort" hidefor="movemail" 
+								<label hidefor="movemail" 
 									collapsed="true" use="txtPort"/>
-								<textbox wsm_persist="true" size="3" id="txtPort" onchange="onPortChange(this)" 
+								<textbox wsm_persist="true" size="3" id="txtPort" oninput="onPortChange(this)" 
 									preftype="int"  />
 									
 								<label id="labelDefaultPort" value="&options.host.port.default;" hidefor="movemail"/>
@@ -131,7 +131,8 @@
 			</groupbox>
 		</vbox>
 	</hbox>
-	<hbox>
+	<!-- This part is hidden, to make configuration more simply -->
+	<hbox hidden="true" >
 		<vbox flex="1">
 			<groupbox id="groupLogin" flex="1">
 				<caption id="labelLogin" label="&options.login.label;" />

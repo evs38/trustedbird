@@ -73,7 +73,6 @@ onInit = function onInitHook(aPageId, aServerId)
 
 	globalServices.logSrv("onInitHook for Server='" + gServer.key + "' and for Identity='" + gIdentity.key + "' started.");
 	gAccount = getAccountByKey(gIdentity);
-	setInformationFields();
 	
 	// For the first version all functionalities are not used.
 	hideControlNotUsed();
@@ -82,6 +81,7 @@ onInit = function onInitHook(aPageId, aServerId)
 		onDialogDisabled(); // Account not found or isn't an IMAP account
 	} else {
 		onDialogLoad();
+		setInformationFields();
 	}
 	globalServices.logSrv("onInitHook ended.");
 }
@@ -93,7 +93,11 @@ onInit = function onInitHook(aPageId, aServerId)
 onSave = function onSaveHook(){
 	globalServices.logSrv("onSaveHook started.");
 	onSaveOriginal(); // Execute original code from service
-	onDialogAccept();
+	
+	// Accept user data if account is valid.
+	if( gAccount != null ){
+		onDialogAccept();
+	}
 	globalServices.logSrv("onSaveHook ended.");
 	return false;
 }
@@ -103,6 +107,7 @@ onSave = function onSaveHook(){
  */
 function onDialogDisabled()
 {
+	globalServices.enableCtrlID('cbxHost', false);
 	globalServices.enableCtrlID('labelHostname', false);
 	globalServices.enableCtrlID('txtHostname', false);
 	globalServices.enableCtrlID('labelPort', false);
@@ -115,7 +120,8 @@ function onDialogDisabled()
 }
 
 /**
- * For the first version all functionalities are not used. 
+ * For the first version all functionalities are not used.
+ * Control hidden to make configuration simply.
  */
 function hideControlNotUsed()
 {
@@ -140,7 +146,10 @@ function onDialogLoad()
 	}
 
 	jsLoader.loadSubScript("chrome://out_of_office/content/account/OutOfOfficeSieveServerSettingsData.js");
-	
+
+	// Enable global check box
+	globalServices.enableCtrlID('cbxHost', true);
+
 	// Initialize UI parameters
 	gSieveServerToConfigure = new SieveServerSettingsData(gAccount);
 	updateData(false); // Set data to user interface control
@@ -157,6 +166,9 @@ function onDialogLoad()
  */
 function setInformationFields()
 {
+	if(gAccount == null){
+		return; //Invalid account object
+	}
 	document.getElementById('txtDispHostname').value = gAccount.getHost().getHostname();
 	document.getElementById('txtDispPort').value = gAccount.getHost().getPort();
 	document.getElementById('txtDispTLS').value = gAccount.getHost().isTLS();
@@ -269,11 +281,13 @@ function enableHost(enabled)
 
 function onHostnameChange(sender)
 {
+	globalServices.logSrv( sender.value );
 	gSieveServerToConfigure.setHostName( sender.value );
 }
 
 function onPortChange(sender)
 {
+	globalServices.logSrv( sender.value );
 	gSieveServerToConfigure.setHostPort(sender.value)
 }
 
