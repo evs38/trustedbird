@@ -146,7 +146,11 @@ function onUpdateControl(tree)
 	}
 
 	var account = OutOfOfficeAccountTreeView.getAccount(tree.currentIndex);
-	
+	if( account == null ){ // invalid account
+		alert("Invalid account the Out of Office window cannot be opened!");
+		close();
+		return;
+	}
 	globalServices.enableCtrlID('btnEdit', account.isEnabledOutOfOffice());
 	globalServices.enableCtrlID('btnEnable', true);
 	var buttonLabel = globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.list.tree.button.disable;" );
@@ -156,13 +160,13 @@ function onUpdateControl(tree)
 
 	globalServices.setStringLabel('btnEnable', buttonLabel );
 
-	setInformationFields();
+	setInformationFields( account );
 }
 
 /**
  * Set information fields to show current sieve server parameters
  */
-function setInformationFields()
+function setInformationFields( account )
 {
 	document.getElementById('txtDispHostname').value = account.getHost().getHostname();
 	document.getElementById('txtDispPort').value = account.getHost().getPort();
@@ -276,7 +280,7 @@ function postStatusAndUpdateUI(active, connectionError)
 	if (index == -1 || gConnectionActive == -1 ) {
 		gConnectionActive = 0;
 	}
-	// Unselect current selection to refresh it later and update icon
+	// un-select current selection to refresh it later and update icon
 	tree.view.selection.clearSelection()
 
 	if( OutOfOfficeAccountTreeView != null ){

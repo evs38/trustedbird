@@ -173,6 +173,9 @@ OutOfOfficeAccountTreeView.prototype.cycleCell
  */
 OutOfOfficeAccountTreeView.prototype.getAccount = function(row)
 {
+	if( row < 0 || row >= this.accounts.length ){
+		return null;
+	}
 	return this.accounts[row];
 }
 
