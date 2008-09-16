@@ -916,7 +916,7 @@ NSS_CMSSignerInfo_AddCounterSignature(NSSCMSSignerInfo *signerinfo,
  * authenticated (i.e. signed) attributes of "signerinfo".
  */
 SECStatus
-NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, PRInt32 securityClassification)
+NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char* securityPolicyIdentifier, PRInt32 securityClassification)
 {
     NSSCMSAttribute *attr;
     SECItem *securityLabel = NULL;
@@ -931,7 +931,7 @@ NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, PRInt32 securit
       goto loser;
 
     /* create new SecurityLabel attribute */
-    if (NSS_SMIMEUtil_CreateSecurityLabel(poolp, securityLabel, securityClassification) != SECSuccess)
+    if (NSS_SMIMEUtil_CreateSecurityLabel(poolp, securityLabel, securityPolicyIdentifier, securityClassification) != SECSuccess)
       goto loser;
 
     if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_SECURITY_LABEL, securityLabel, PR_TRUE)) == NULL)

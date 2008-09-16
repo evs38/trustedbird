@@ -64,7 +64,7 @@ interface nsICMSMessage : nsISupports
   void verifySignature();
   void verifyDetachedSignature(in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
   void CreateEncrypted(in nsIArray aRecipientCerts);
-  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen, in long aSecurityClassification, in UnsignedCharPtr aReceiptsTo);
+  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen, in string aSecurityPolicyIdentifier, in long aSecurityClassification, in UnsignedCharPtr aReceiptsTo);
   void getSecurityLabel(out string aSecurityPolicyIdentifier, out long aSecurityClassification);
   void getSignedReceiptRequest(out string aSignedContentIdentifier, out string aReceiptsFrom, out string aReceiptsTo);
 };

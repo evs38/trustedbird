@@ -257,10 +257,11 @@ function setSecurityClassification(event)
     return;
 
   // Set the securityClassification value for the Security Label
+  gSMFields.securityPolicyIdentifier = "1.2.840.113549.1.9.16.7.1";
   gSMFields.securityClassification = event.target.getAttribute('value');
 
   if (gSMFields.securityClassification != SECURITY_CLASSIFICATION_NONE) {
-    setSecurityLabelUI("2.16.840.1.113730.7.3", gSMFields.securityClassification);
+    setSecurityLabelUI(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
   } else {
     setNoSecurityLabelUI();
   }

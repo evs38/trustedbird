@@ -316,8 +316,6 @@ CONST_OID nsKeyUsageGovtApproved[] 	= { NETSCAPE_POLICY, 0x01 };
 CONST_OID netscapeNickname[] 		= { NETSCAPE_NAME_COMPONENTS, 0x01 };
 CONST_OID netscapeAOLScreenname[] 	= { NETSCAPE_NAME_COMPONENTS, 0x02 };
 
-CONST_OID netscapeSecurityLabel_DefaultSecurityPolicyIdentifier[] = { NETSCAPE_NAME_COMPONENTS, 0x03 };
-
 /* OIDs needed for cert server */
 CONST_OID netscapeRecoveryRequest[] 	= { NETSCAPE_CERT_SERVER_CRMF, 0x01 };
 
@@ -1520,10 +1518,6 @@ const static SECOidData oids[] = {
         CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
     OD( smimeSecurityLabel, SEC_OID_SMIME_SECURITY_LABEL,
         "S/MIME Security Label",
-        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
-    OD( netscapeSecurityLabel_DefaultSecurityPolicyIdentifier,
-        SEC_OID_SMIME_SECURITY_LABEL_DEFAULT_SECURITY_POLICY_IDENTIFIER,
-        "S/MIME Security Label - Netscape Default Security Policy Identifier",
         CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
 
 };

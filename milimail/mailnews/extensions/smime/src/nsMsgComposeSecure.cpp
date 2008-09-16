@@ -224,6 +224,18 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignMessage(PRBool *_retval)
   return NS_OK;
 }
 
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityPolicyIdentifier(const nsACString &value)
+{
+  mSecurityPolicyIdentifier = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityPolicyIdentifier(nsACString &_retval)
+{
+  _retval = mSecurityPolicyIdentifier;
+  return NS_OK;
+}
+
 NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityClassification(PRInt32 value)
 {
   mSecurityClassification = value;
@@ -509,7 +521,7 @@ nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, 
   return NS_OK;
 }
 
-nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, PRInt32 * aSecurityClassification)
+nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification)
 {
   if (!aComposeFields)
     return NS_ERROR_FAILURE; // kick out...invalid args....
@@ -526,6 +538,7 @@ nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aCompo
       nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
       if (smimeCompFields)
       {
+        smimeCompFields->GetSecurityPolicyIdentifier(aSecurityPolicyIdentifier);
         smimeCompFields->GetSecurityClassification(aSecurityClassification);
         return NS_OK;
       }
@@ -580,9 +593,9 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsOutputFileStream * 
   ExtractEncryptionState(aIdentity, aCompFields, &signMessage, &encryptMessages, &tripleWrapMessage);
 
   if (!signMessage && !encryptMessages && !tripleWrapMessage) return NS_ERROR_FAILURE;
-
+  
   // Extract SecurityLabel State
-  ExtractSecurityLabelState(aCompFields, &mSecurityClassification);
+  ExtractSecurityLabelState(aCompFields, mSecurityPolicyIdentifier, &mSecurityClassification);
 
   // Extract SignedReceiptRequest State
   PRBool signedReceiptRequest = PR_FALSE;
@@ -884,7 +897,7 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
   
 
 
-  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), mSecurityClassification, (unsigned char*)mSignedReceiptRequest_ReceiptTo.get());
+  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, (unsigned char*)mSignedReceiptRequest_ReceiptTo.get());
   if (NS_FAILED(rv))  {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;

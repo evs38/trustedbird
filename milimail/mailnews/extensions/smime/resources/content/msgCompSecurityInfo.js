@@ -253,8 +253,8 @@ function onLoad()
     
     /* Security Label */
     if (params.smFields.securityClassification != -1) {
-    	securityLabel_element.value = getSecurityLabelSecurityClassificationName("2.16.840.1.113730.7.3", params.smFields.securityClassification)
-    								+ " [" + getSecurityLabelSecurityPolicyIdentifierName("2.16.840.1.113730.7.3") + "]";
+    	securityLabel_element.value = getSecurityLabelSecurityClassificationName(params.smFields.securityPolicyIdentifier, params.smFields.securityClassification)
+    								+ " [" + getSecurityLabelSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
     } else {
     	securityLabel_element.value = no_string;;
     }

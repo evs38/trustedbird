@@ -65,6 +65,7 @@ public:
 private:
   PRBool mSignMessage;
   PRBool mAlwaysEncryptMessage;
+  nsCString mSecurityPolicyIdentifier;
   PRInt32 mSecurityClassification;
   PRBool mSignedReceiptRequest;
   PRBool mTripleWrapMessage;
@@ -105,7 +106,7 @@ private:
 					   PRUint32 numParams,
 					   PRUnichar **outString);
   nsresult ExtractEncryptionState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignMessage, PRBool * aEncrypt, PRBool * aTripleWrap);
-  nsresult ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, PRInt32 * aSecurityClassification);
+  nsresult ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification);
   nsresult ExtractSignedReceiptRequestState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignedReceiptRequest);
 
   mimeDeliveryCryptoState mCryptoState;
@@ -136,6 +137,7 @@ private:
   void SetError(nsIMsgSendReport *sendReport, const PRUnichar *bundle_string);
   void SetErrorWithParam(nsIMsgSendReport *sendReport, const PRUnichar *bundle_string, const char *param);
 
+  nsCString mSecurityPolicyIdentifier;
   PRInt32 mSecurityClassification;
 
   nsXPIDLCString mSignedReceiptRequest_ReceiptTo;

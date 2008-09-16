@@ -49,6 +49,7 @@ interface nsIMsgSMIMECompFields : nsISupports
 {
   attribute boolean signMessage;
   attribute boolean requireEncryptMessage;
+  attribute ACString securityPolicyIdentifier;
   attribute PRInt32 securityClassification;
   attribute boolean signedReceiptRequest;
   attribute boolean tripleWrapMessage;

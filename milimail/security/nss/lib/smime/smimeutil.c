@@ -744,18 +744,102 @@ loser:
  * NSS_SMIMEUtil_CreateSecurityLabel - create S/MIME SecurityLabel attr value
  */
 SECStatus
-NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, PRInt32 securityClassification)
+NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char* securityPolicyIdentifier, PRInt32 securityClassification)
 {
     NSSCMSSecurityLabel securityLabel;
     SECOidData *oidData;
     SECItem *dummy;
+    unsigned int securityPolicyIdentifierLen;
+    unsigned int i;
+    unsigned int k;
+    unsigned int dotCount;
+    unsigned int itemCount;
+    unsigned int n;
+    unsigned int* oid;
+    unsigned int DERLen;
+    unsigned char tempDER[5];
+    
+    /*
+     * securityPolicyIdentifier
+     */
+	securityPolicyIdentifierLen = PORT_Strlen(securityPolicyIdentifier);
+	
+	/* Count number of dot in the string */
+	dotCount = 0;
+	for (i = 0; i < securityPolicyIdentifierLen; i++) {
+		if (securityPolicyIdentifier[i] == '.') dotCount++;
+	}
+	if (dotCount == 0) return SECFailure;
+	
+	/* Allocate OID array of integers */
+	oid = (unsigned int*) PORT_Alloc((dotCount + 1) * sizeof(unsigned int));
+	
+	/* Convert decimal, dot-separated OID string to an array of integers */
+	n = 0;
+	itemCount = 0;
+	for (i = 0; i <= securityPolicyIdentifierLen; i++) { /* Analyse all characters + 1 loop at the end */
+		if (i == securityPolicyIdentifierLen || securityPolicyIdentifier[i] == '.') {
+			/* Store number read */
+			if (n != 0) {
+				oid[itemCount++] = n;
+				n = 0;
+			} else {
+				PORT_Free(oid);
+				return SECFailure;
+			}
+		} else if (securityPolicyIdentifier[i] >= '0' && securityPolicyIdentifier[i] <= '9') {
+			/* Add digit to number */
+			n *= 10;
+			n += securityPolicyIdentifier[i] - '0';
+		} else {
+			/* Unknown character */
+			PORT_Free(oid);
+			return SECFailure;
+		}
+	}
+	
+	/* Error if less than 2 items */
+	if (itemCount < 2) {
+		PORT_Free(oid);
+		return SECFailure;
+	}
 
-    /* securityPolicyIdentifier */
-    oidData = SECOID_FindOIDByTag(SEC_OID_SMIME_SECURITY_LABEL_DEFAULT_SECURITY_POLICY_IDENTIFIER);
-    securityLabel.securityPolicyIdentifier.data = (&oidData->oid)->data;
-    securityLabel.securityPolicyIdentifier.len = (&oidData->oid)->len;
+	/* Check range of first 2 items */
+	if ((oid[0] < 2 && oid[1] > 39) ||
+		(oid[0] == 2 && oid[1] > 47) ||
+		(oid[0] > 2)) {
+		PORT_Free(oid);
+		return SECFailure;
+	}
+	
+	/* Allocate DER-encoded buffer: 5 bytes by item maximum */
+    securityLabel.securityPolicyIdentifier.data = (unsigned char *) PORT_Alloc((itemCount * 5) * sizeof(unsigned char));
+    
+	/* DER encode the array of integers */
+    DERLen = 0;
+	securityLabel.securityPolicyIdentifier.data[DERLen++] = oid[0] * 40 + oid[1];
+	for (i = 2; i < itemCount; i++) {
+		n = 0;
+		while (oid[i] > 0) {
+			tempDER[n] = oid[i] & 0x7F;
+			if (n != 0) tempDER[n] |= 0x80;
+			oid[i] >>= 7;
+			n++;
+		}
+		if (n > 0) {
+			for (k = 0; k < n; k++) {
+				securityLabel.securityPolicyIdentifier.data[DERLen++] = tempDER[n - 1 - k];
+			}
+		}
+	}
+    securityLabel.securityPolicyIdentifier.len = DERLen;
 
-    /* securityClassification */
+	PORT_Free(oid);
+
+	
+    /*
+     * securityClassification
+     */
     securityLabel.securityClassification.data = (char *) PORT_Alloc(5 * sizeof(char));
     securityLabel.securityClassification.data[0] = 0;
     securityLabel.securityClassification.data[1] = 0;
@@ -767,8 +851,9 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, PRInt32 sec
     /* Now encode */
     dummy = SEC_ASN1EncodeItem(poolp, dest, &securityLabel, NSSCMSSecurityLabelTemplate);
 
+    PORT_Free(securityLabel.securityPolicyIdentifier.data);
     PORT_Free(securityLabel.securityClassification.data);
-
+    
     return (dummy == NULL) ? SECFailure : SECSuccess;
 }
 

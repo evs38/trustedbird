@@ -60,10 +60,10 @@ function getSecurityLabelSecurityClassificationName(securityPolicyIdentifier, se
  */
 function getSecurityLabelSecurityPolicyIdentifierName(securityPolicyIdentifier) {
 	switch (securityPolicyIdentifier) {
-		case "2.16.840.1.113730.7.3": return "Default";
+		case "1.2.840.113549.1.9.16.7.1": return "default";
 	}
 	
-	return "Unknown" + ": " + securityPolicyIdentifier;
+	return "unknown (" + securityPolicyIdentifier + ")";
 }
 
 
