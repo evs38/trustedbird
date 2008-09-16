@@ -41,32 +41,44 @@
 	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
 */
 
-
+/**
+ * External object from MozLab add-ons library to perform unit test
+ */
 var TestCase = mozlab.mozunit.TestCase;
 var assert = mozlab.mozunit.assertions;
 
 
-
+/**
+ * Library loader to include objects and data to perform unit test
+ */
 var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
-
-// includes
+/**
+ * Include library files
+ */
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/preferences.js");
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/unit_test_data.js");
 
-
-var tc_Preferences = new TestCase('Preferences');
-var tc_mailValidity= new TestCase('check2822');
-
+/**
+ * Global variables
+ */
 var globalServices=new Services();
+var preferences=new Preferences();
 
 /**
-	Compare two arrays
-	@param {array} array1
-	@param {array} array2
-	@private
-	@return {boolean} true if arrays are equals
-*/
+ * Unit test variables
+ */
+var tc_Preferences = new TestCase('Preferences');
+var tc_mailAddress= new TestCase('Mail Address Validation (RFC2822)');
+
+
+/**
+ * 	Compare two arrays
+ * 	@param {array} array1
+ * 	@param {array} array2
+ * 	@private
+ * 	@return {boolean} true if arrays are equals
+ */
 function compareArrays(array1,array2) {
 		// if is not an Array
 		if (typeof(array1)!="object" || typeof(array2)!="object") return false;
@@ -79,48 +91,28 @@ function compareArrays(array1,array2) {
 		return true;
 }
 
-var addrToTest = new Array ( "user3 <user3@test.milimail.org>", " <user3@test.milimail.org>", "<user3@test.milimail.org>", "user3@test.milimail.org", "c <user3@test.milimail.org>" );
-
 /**
-	RFC2822 Check mail address unit test
-*/
-
-tc_mailValidity.tests = {
-	'mailAddressThreeParts' : function() { // DisplayName <User@DomainName>
-	alert( globalServices.getExtensionNameDisplayable() );
-	alert( addrToTest[0] );
-	alert( globalServices.isAddressMailValid(addrToTest[0]) );
-/*		for (var i = 0; i < addrToTest.length; i++)
-		{
-		    assert.isTrue( globalServices.isAddressMailValid(addrToTest[i]));
-		    if( emailCheck ( addrToTest[i] ) == false )
-		        dump("KO for >>>" + addrToTest[i]);
-		    else
-		        dump("OK for >>>" + addrToTest[i]);
-		}
-*/		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-	},
-	'mailAddressTwoPartsDomainName' : function() { // User@DomainName
-		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-	},
-	'mailAddressTwoPartsDomainIP' : function() { // User@nnn.nnn.nnn.nnn
-		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-		assert.isTrue(true); //true
-	},
+ * Global function to validate the unit test of mail address
+ * @param address Mail address to test
+ * @param result Waiting result after check of the mail address 
+ * @return nothing
+ */
+function checkAndTraceAndAssert(index, label, address, result) {
+	// alert(index + ":" +address+">>>" +globalServices.isAddressMailValid( address )+ " must be " + result);
+	
+	// prepare display trace message 
+	var message = " : array:'" + label + "' index=" + index + " result:'" + result + "' data:'" + address + "'." ;
+	
+	if( globalServices.isAddressMailValid( address ) != result ) {
+		// Dump the entry on error
+		globalServices.errorSrv( "Unit Test Error" + message );
+	} else {
+		// Dump the entry on error
+		globalServices.logSrv( "Unit Test Success" + message );
+	}
+	assert.isTrue( globalServices.isAddressMailValid( address, true ) == result );
 }
 
-var preferences=new Preferences();
-var wordList = ["erable","chaine","bouleau"];
-var keyCharTest="extensions.out_of_office.unittestchar";
-var keyBoolTest="extensions.out_of_office.unittestbool";
-var keyIntTest="extensions.out_of_office.unittestint";
 
 /**
 	Preferences unit test
@@ -213,4 +205,32 @@ tc_Preferences.tests = {
 	}
 }
 
+/**
+ * 	Mail Address Validation (RFC2822) unit test
+ */
+// Global Index in the array of address to test 
+var _ADDR_TEST = 0;
+var _RESULT = 1;
 
+tc_mailAddress.tests = {
+	'mailAddressThreePartsDomainName' : function() { // DisplayName <User@DomainName>
+		for (var index = 0; index < addrDomainThreeParts.length; index++) {
+			checkAndTraceAndAssert(index, 'mailAddressThreePartsDomainName',  addrDomainThreeParts[index][_ADDR_TEST], addrDomainThreeParts[index][_RESULT]);
+		}
+	},
+	'mailAddressThreePartsDomainIP' : function() { // DisplayName <User@DomainName>
+		for (var index = 0; index < addrIPThreeParts.length; index++) {
+			checkAndTraceAndAssert(index, 'mailAddressThreePartsDomainIP',  addrIPThreeParts[index][_ADDR_TEST], addrIPThreeParts[index][_RESULT]);
+		}
+	},
+	'mailAddressTwoPartsDomainName' : function() { // User@DomainName
+		for (var index = 0; index < addrDomainTwoParts.length; index++) {
+			checkAndTraceAndAssert(index, 'mailAddressTwoPartsDomainName', addrDomainTwoParts[index][_ADDR_TEST], addrDomainTwoParts[index][_RESULT]);
+		}
+	},
+	'mailAddressTwoPartsDomainIP' : function() { // User@nnn.nnn.nnn.nnn
+		for (var index = 0; index < addrIPTwoParts.length; index++) {
+			checkAndTraceAndAssert(index, 'mailAddressTwoPartsDomainIP', addrIPTwoParts[index][_ADDR_TEST], addrIPTwoParts[index][_RESULT]);
+		}
+	},
+}

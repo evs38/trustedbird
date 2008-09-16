@@ -389,16 +389,16 @@ Services.prototype = {
 	 */
 	isAddressMailValid : function( email, log )
 	{
-		if( log == undefined ){
+		if( log == undefined || log == null ) {
 			log = false;
 		}
-		if( email == null || email == "" ){
+		if( email == undefined || email == null || email == "" ){
 			if( log == true ) {
 				this.warningSrv( "The Email Address is null or emty.");
 			}
 			return false;
 		}
-		if( emailCheckNew(email) == false ){
+		if( this.emailCheck(email, log) == false ){
 			if( log == true ) { 
 				this.warningSrv( "The Email Address is invalid (" + email + ")."); 
 			}
@@ -423,7 +423,7 @@ Services.prototype = {
 	 */
 	isNotificationMessageValid : function( notification, log )
 	{
-		if( log == undefined ){
+		if( log == undefined || log == null ) {
 			log = false;
 		}
 		if( notification == null ){
@@ -456,368 +456,227 @@ Services.prototype = {
 		}
 	},
 	
-}
-
-
-function emailCheck2 (emailStr) {
-var reg = /^((\"[^\"\f\n\r\t\v\b]+\")|([\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+(\.[\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+)*))@((\[(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))\])|(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))|((([A-Za-z0-9\-])+\.)+[A-Za-z\-]+))$/
-	if(reg.test(emailStr) == false) {
-		return false;
-	}
-	return true;
-}
-
-/*
- * 
-<!-- Original author:  Sandeep V. Tamhankar (stamhankar@hotmail.com) -->
-<!-- Code source from http://www.siliconglen.com/software/e-mail-validation.html
-<!-- old Source on http://www.jsmadeeasy.com/javascripts/Forms/Email%20Address%20Validation/template.htm -->
-
-<!-- The above address bounces and no current valid address  -->
-<!-- can be found. This version has changes by Craig Cockburn -->
-<!-- to accommodate top level domains .museum and .name      -->
-<!-- plus various other minor corrections and changes -->
-*/
-/* 1.1.3: Amended error messages and allowed script to deal with new TLDs
-   1.1.2: Fixed a bug where trailing . in e-mail address was passing
-            (the bug is actually in the weak regexp engine of the browser; I
-            simplified the regexps to make it work).
-   1.1.1: Removed restriction that countries must be preceded by a domain,
-            so abc@host.uk is now legal.  
-     1.1: Rewrote most of the function to conform more closely to RFC 822.
-     1.0: Original  */
-
-// <!-- Begin
-function emailCheck (emailStr) {
-	/* The following pattern is used to check if the entered e-mail address
-	 * fits the user@domain format.  It also is used to separate the username
-	 * from the domain.
-	 */
-	var emailPat=/^(.+)@(.+)$/
-	/*
-	 * The following string represents the pattern for matching all special
-	 * characters.  We don't want to allow special characters in the address. 
-	 * These characters include ( ) < @ , ; : \ " . [ ]
-	 */
-	var specialChars="\\(\\)<>@,;:\\\\\\\"\\.\\[\\]";
-	/*
-	 * The following string represents the range of characters allowed in a 
-	 * username or domainname.  It really states which chars aren't allowed.
-	 */
-	var validChars="\[^\\s" + specialChars + "\]";
-	/*
-	 * The following pattern applies if the "user" is a quoted string (in
-	 * which case, there are no rules about which characters are allowed
-	 * and which aren't; anything goes).  E.g. "jiminy cricket"@disney.com
-	 * is a legal e-mail address.
-	 */
-	var quotedUser="(\"[^\"]*\")";
-	/*
-	 * The following pattern applies for domains that are IP addresses,
-	 * rather than symbolic names.  E.g. joe@[123.124.233.4] is a legal
-	 * e-mail address. NOTE: The square brackets are required.
-	 */
-	var ipDomainPat=/^\[(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\]$/
-	/*
-	 * The following string represents an atom (basically a series of non-special characters.) 
-	 */
-	var atom=validChars + '+';
-	/*
-	 * The following string represents one word in the typical username.
-	 * For example, in john.doe@somewhere.com, john and doe are words.
-	 * Basically, a word is either an atom or quoted string. 
-	 */
-	var word="(" + atom + "|" + quotedUser + ")"
-	// The following pattern describes the structure of the user
-	var userPat=new RegExp("^" + word + "(\\." + word + ")*$")
-	/*
-	 * The following pattern describes the structure of a normal symbolic
-	 * domain, as opposed to ipDomainPat, shown above.
-	 */
-	var domainPat=new RegExp("^" + atom + "(\\." + atom +")*$")
-
-
-	/*
-	 * Finally, let's start trying to figure out if the supplied address is valid.
+	/**
+	 * Check the address mail validity in regards of the RFC 2822 
+	 * @param (string) 
+	 *          Address mail to check.
+	 * @return (boolean)
+	 * 			True for a correct address else the function return false to refuse this address
+	 * @author Olivier Brun / BT France
+	 * 
+	 *
+	 * <!-- Original author:  Sandeep V. Tamhankar (stamhankar@hotmail.com) -->
+	 * 	<!-- Code source from http://www.siliconglen.com/software/e-mail-validation.html
+	 * 	<!-- old Source on http://www.jsmadeeasy.com/javascripts/Forms/Email%20Address%20Validation/template.htm -->
+	 * 	<!-- The above address bounces and no current valid address  -->
+	 * 	<!-- can be found. This version has changes by Craig Cockburn -->
+	 * 	<!-- to accommodate top level domains .museum and .name      -->
+	 * 	<!-- plus various other minor corrections and changes -->
+	 *
+	 *
+	 * 	1.1.3: Amended error messages and allowed script to deal with new TLDs
+	 * 	1.1.2: Fixed a bug where trailing . in e-mail address was passing 
+	 * 	       (the bug is actually in the weak regexp engine of the browser; I simplified the regexps to make it work).
+	 *  1.1.1: Removed restriction that countries must be preceded by a domain, so abc@host.uk is now legal.
+	 *  1.1: Rewrote most of the function to conform more closely to RFC 822.
+	 *  1.0: Original
 	 */
 
-	/*
-	 * Begin with the coarse pattern to simply break up user@domain into
-	 * different pieces that are easy to analyze.
-	 */
-	var matchArray=emailStr.match(emailPat)
-	if (matchArray==null) {
-		/* 
-		 * Too many/few @'s or something; basically, this address doesn't
-		 * even fit the general mould of a valid e-mail address.
+	//<!-- Begin
+	emailCheck : function( emailStr, log ) {
+
+		if( log == undefined || log == null ) {
+			log = false;
+		}
+
+		/* The following pattern is used to check if the entered e-mail address
+		 * fits the "DisplayName <user@domain>" format.  It also is used to separate the three parts
+		 * the Display Name, the user name and the domain.
 		 */
-		globalServices.warningSrv("Email address seems incorrect (check @ and .'s)");
-		return false;
-	}
-	var user=matchArray[1];
-	var domain=matchArray[2];
-	globalServices.logSrv("user='" + user + "' userPat='" + userPat +"'");
+		var displayNameAddressPat=/^(.+) <(.+)@(.+)>$/
+		/* The following pattern is used to check if the entered e-mail address
+		 * fits the user@domain format.  It also is used to separate the user name
+		 * from the domain.
+		 */
+		var emailPat=/^(.+)@(.+)$/
+		/*
+		 * The following string represents the pattern for matching all special
+		 * characters.  We don't want to allow special characters in the address. 
+		 * These characters include ( ) < @ , ; : \ " . [ ]
+		 */
+		var specialChars="\\(\\)<>@,;:\\\\\\\"\\.\\[\\]";
+		/*
+		 * The following string represents the range of characters allowed in a 
+		 * user name or domain name.  It really states which chars aren't allowed.
+		 */
+		var validChars="\[^\\s" + specialChars + "\]";
+		/*
+		 * The following pattern applies if the "user" is a quoted string (in
+		 * which case, there are no rules about which characters are allowed
+		 * and which aren't; anything goes).  E.g. "jiminy cricket"@disney.com
+		 * is a legal e-mail address.
+		 */
+		var quotedUser="(\"[^\"]*\")";
+		/*
+		 * The following pattern applies for domains that are IP addresses,
+		 * rather than symbolic names.  E.g. joe@[123.124.233.4] is a legal
+		 * e-mail address. NOTE: The square brackets are required.
+		 */
+		var ipDomainPat=/^\[(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\]$/
+		/*
+		 * The following string represents an atom (basically a series of non-special characters.) 
+		 */
+		var atom=validChars + '+';
+		/*
+		 * The following string represents one word in the typical username.
+		 * For example, in john.doe@somewhere.com, john and doe are words.
+		 * Basically, a word is either an atom or quoted string. 
+		 */
+		var word="(" + atom + "|" + quotedUser + ")"
+		// The following pattern describes the structure of the user
+		var userPat=new RegExp("^" + word + "(\\." + word + ")*$")
+		/*
+		 * The following pattern describes the structure of a normal symbolic
+		 * domain, as opposed to ipDomainPat, shown above.
+		 */
+		var domainPat=new RegExp("^" + atom + "(\\." + atom +")*$")
 
-	// See if "user" is valid 
-	if (user.match(userPat)==null) {
-		// user is not valid
-		globalServices.warningSrv("The part of your email address before the '@' doesn't seem to be valid.");
-		return false;
-	}
 
-	/* 
-	 * if the e-mail address is at an IP address (as opposed to a symbolic
-	 * host name) make sure the IP address is valid. 
-	 */
-	var IPArray=domain.match(ipDomainPat);
-	globalServices.logSrv("domain='" + domain +"' ipDomainPat" + ipDomainPat + "'");
-	if (IPArray!=null) {
-		// this is an IP address
-		for (var i=1;i<=4;i++) {
-			if (IPArray[i]>255) {
-				globalServices.warningSrv("Destination IP address is invalid!");
+		/*
+		 * Finally, let's start trying to figure out if the supplied address is valid.
+		 */
+	        
+		/*
+		 * Begin with the coarse pattern to break up 'DisplayName <user@domain>' into
+		 * different pieces that are easy to analyze.
+		 */
+		var value = 4;
+		var matchArray=emailStr.match(displayNameAddressPat)
+		if (matchArray==null) {
+			--value; // No display name will extract
+			/* 
+			 * Email address haven't a display name then check the address part alone
+			 * Too many/few @'s or something; basically, this address doesn't
+			 * even fit the general mould of a valid e-mail address.
+			 */
+
+			/*
+			 * Begin with the coarse pattern to simply break up 'user@domain' into
+			 * different pieces that are easy to analyze.
+			 */
+			matchArray=emailStr.match(emailPat)
+			if (matchArray==null) {
+			/* 
+			 * Too many/few @'s or something; basically, this address doesn't
+			 * even fit the general mould of a valid e-mail address.
+			 */
+				if( log == true ) {
+					this.warningSrv("Email address seems incorrect (check @ and .'s)");
+				}
+				return false;
+		    }
+		}
+
+		var displayName="";
+		if( matchArray.length > 3 ){ // Update the display name value
+			displayName = matchArray[matchArray.length - 3];
+			// See if "display name" is valid 
+			//domainPat
+			if (displayName.match(userPat)==null) {
+				// user is not valid
+				if( log == true ) {
+					this.logSrv("Dump displayName='" + displayName + "'." );
+					this.warningSrv("The display name of your email before the address doesn't seem to be valid.");
+				}
 				return false;
 			}
+
 		}
-		return true;
-	}
+		if( matchArray.length < 3 ){
+			return false; // Not enough parameter in the array then the mail address is not correct.
+		}
+		var user=matchArray[matchArray.length - 2];
+		var domain=matchArray[matchArray.length - 1];
+		if( log == true ){
+			this.logSrv("Dump displayName='" + displayName + "' user='" + user + "' domain='" + domain + "'." );
+		}
+		// See if "user" is valid 
+		if (user.match(userPat)==null) {
+			// user is not valid
+			if( log == true ) {
+				this.logSrv("Dump user='" + user + "'." );
+				this.warningSrv("The part of your email address before the '@' doesn't seem to be valid.");
+			}
+			return false;
+		}
 
-	// Domain is symbolic name
-	var domainArray=domain.match(domainPat)
-	globalServices.logSrv("domain='" + domain +"' domainPat" + domainPat + "'");
-	if (domainArray==null) {
-		globalServices.warningSrv("Part of your email address after the '@' doesn't seem to be valid");
-		return false;
-	}
-
-	/* 
-	 * domain name seems valid, but now make sure that it ends in a
-	 * three-letter word (like com, edu, gov) or a two-letter word,
-	 * representing country (uk, nl), and that there's a hostname preceding
-	 * the domain or country. 
-	 */
-
-	/*
-	 * Now we need to break up the domain to get a count of how many atoms
-	 * it consists of. 
-	 */
-	var atomPat=new RegExp(atom,"g");
-	var domArr=domain.match(atomPat);
-	var len=domArr.length;
-	if (domArr[domArr.length-1].length<2 || 
-		domArr[domArr.length-1].length>6) {
-		// the address must end in a two letter or other TLD including museum
-		globalServices.warningSrv("The address must end in a top level domain (e.g. .com), or two letter country.");
-		return false;
-	}
-
-	// Make sure there's a host name preceding the domain.
-	if (len<2) {
-		var errStr="This address is missing a hostname!";
-		globalServices.warningSrv(errStr);
-		return false;
-	}
-
-	// If we've got this far, everything's valid!
-	return true;
-}
-//  End -->
-
-//<!-- Begin
-function emailCheckNew(emailStr) {
-	/* The following pattern is used to check if the entered e-mail address
-	 * fits the user@domain format.  It also is used to separate the username
-	 * from the domain.
-	 */
-	var emailPat=/^(.+)@(.+)$/
-
-	/* TODO TEST The following pattern is used to check if the entered e-mail address
-	 * fits the user@domain format.  It also is used to separate the username
-	 * from the domain.
-	 */
-	var displayNameAddressPat=/^(.+) <(.+)@(.+)>$/
-
-	/*
-	 * The following string represents the pattern for matching all special
-	 * characters.  We don't want to allow special characters in the address. 
-	 * These characters include ( ) < @ , ; : \ " . [ ]
-	 */
-	var specialChars="\\(\\)<>@,;:\\\\\\\"\\.\\[\\]";
-	/*
-	 * The following string represents the range of characters allowed in a 
-	 * username or domainname.  It really states which chars aren't allowed.
-	 */
-	var validChars="\[^\\s" + specialChars + "\]";
-	/*
-	 * The following pattern applies if the "user" is a quoted string (in
-	 * which case, there are no rules about which characters are allowed
-	 * and which aren't; anything goes).  E.g. "jiminy cricket"@disney.com
-	 * is a legal e-mail address.
-	 */
-	var quotedUser="(\"[^\"]*\")";
-	/*
-	 * The following pattern applies for domains that are IP addresses,
-	 * rather than symbolic names.  E.g. joe@[123.124.233.4] is a legal
-	 * e-mail address. NOTE: The square brackets are required.
-	 */
-	var ipDomainPat=/^\[(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\]$/
-	/*
-	 * The following string represents an atom (basically a series of non-special characters.) 
-	 */
-	var atom=validChars + '+';
-	/*
-	 * The following string represents one word in the typical username.
-	 * For example, in john.doe@somewhere.com, john and doe are words.
-	 * Basically, a word is either an atom or quoted string. 
-	 */
-	var word="(" + atom + "|" + quotedUser + ")"
-	// The following pattern describes the structure of the user
-	var userPat=new RegExp("^" + word + "(\\." + word + ")*$")
-	/*
-	 * The following pattern describes the structure of a normal symbolic
-	 * domain, as opposed to ipDomainPat, shown above.
-	 */
-	var domainPat=new RegExp("^" + atom + "(\\." + atom +")*$")
-
-
-	/*
-	 * Finally, let's start trying to figure out if the supplied address is valid.
-	 */
-        
-	/*
-	 * Begin with the coarse pattern to break up 'DisplayName <user@domain>' into
-	 * different pieces that are easy to analyze.
-	 */
-	var value = 4;
-	var matchArray=emailStr.match(displayNameAddressPat)
-	if (matchArray==null) {
-		--value; // No display name will extract
 		/* 
-		 * Email address haven't a display name then check the address part alone
-		 * Too many/few @'s or something; basically, this address doesn't
-		 * even fit the general mould of a valid e-mail address.
+		 * if the e-mail address is at an IP address (as opposed to a symbolic
+		 * host name) make sure the IP address is valid. 
+		 */
+		var IPArray=domain.match(ipDomainPat);
+		if (IPArray!=null) {
+			// this is an IP address
+			for (var i=1;i<=4;i++) {
+				if (IPArray[i]>255) {
+					if( log == true ) {
+						this.logSrv("Dump domain='" + domain + "'." );
+						this.warningSrv("Destination IP address is invalid!");
+					}
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// Domain is symbolic name
+		var domainArray=domain.match(domainPat)
+		if (domainArray==null) {
+			if( log == true ) {
+				this.logSrv("Dump domain='" + domain + "'." );
+				this.warningSrv("Part of your email address after the '@' doesn't seem to be valid");
+			}
+			return false;
+		}
+
+		/* 
+		 * domain name seems valid, but now make sure that it ends in a
+		 * three-letter word (like com, edu, gov) or a two-letter word,
+		 * representing country (uk, nl), and that there's a hostname preceding
+		 * the domain or country. 
 		 */
 
 		/*
-		 * Begin with the coarse pattern to simply break up 'user@domain' into
-		 * different pieces that are easy to analyze.
+		 * Now we need to break up the domain to get a count of how many atoms
+		 * it consists of. 
 		 */
-		matchArray=emailStr.match(emailPat)
-		if (matchArray==null) {
-		/* 
-		 * Too many/few @'s or something; basically, this address doesn't
-		 * even fit the general mould of a valid e-mail address.
-		 */
-			alert("1" + globalServices);
-			globalServices.warningSrv("Email address seems incorrect (check @ and .'s)");
-			return false;
-	    }
-	}
-
-	// dumpArray( matchArray );
-	var displayName="";
-	if( matchArray.length > 3 ){ // Update the display name value
-		displayName = matchArray[matchArray.length - 3];
-	}
-	if( matchArray.length < 3 ){
-		return false; // Not enought parameter in the array then the mail address is not correct.
-	}
-	var user=matchArray[matchArray.length - 2];
-	var domain=matchArray[matchArray.length - 1];
-//	globalServices.logSrv("user='" + user + "' emailPat='" + emailPat+"'");
-//	globalServices.logSrv("domain='" + domain);
-	alert("2" + globalServices);
-
-	// See if "user" is valid 
-	if (user.match(userPat)==null) {
-		// user is not valid
-		globalServices.warningSrv("The part of your email address before the '@' doesn't seem to be valid.");
-		return false;
-	}
-
-	/* 
-	 * if the e-mail address is at an IP address (as opposed to a symbolic
-	 * host name) make sure the IP address is valid. 
-	 */
-	var IPArray=domain.match(ipDomainPat);
-	globalServices.logSrv("domain='" + domain +"' ipDomainPat" + ipDomainPat + "'");
-	if (IPArray!=null) {
-		// this is an IP address
-		for (var i=1;i<=4;i++) {
-			if (IPArray[i]>255) {
-				globalServices.warningSrv("Destination IP address is invalid!");
-				return false;
+		var atomPat=new RegExp(atom,"g");
+		var domArr=domain.match(atomPat);
+		var len=domArr.length;
+		if (domArr[domArr.length-1].length<2 || 
+			domArr[domArr.length-1].length>6) {
+			// the address must end in a two letter or other TLD including museum
+			if( log == true ) {
+				this.logSrv("Dump domain extension='" + domain + "'." );
+				this.warningSrv("The address must end in a top level domain (e.g. .com), or two letter country.");
 			}
+			return false;
 		}
+
+		// Make sure there's a host name preceding the domain.
+		if (len<2) {
+			if( log == true ) {
+				this.logSrv("Dump displayName='" + displayName + "' user='" + user + "' domain='" + domain + "'." );
+				this.warningSrv("This address is missing a hostname!");
+			}
+			return false;
+		}
+
+		// If we've got this far, everything's valid!
 		return true;
-	}
-
-	// Domain is symbolic name
-	var domainArray=domain.match(domainPat)
-	globalServices.logSrv("domain='" + domain +"' domainPat" + domainPat + "'");
-	if (domainArray==null) {
-		globalServices.warningSrv("Part of your email address after the '@' doesn't seem to be valid");
-		return false;
-	}
-
-	/* 
-	 * domain name seems valid, but now make sure that it ends in a
-	 * three-letter word (like com, edu, gov) or a two-letter word,
-	 * representing country (uk, nl), and that there's a hostname preceding
-	 * the domain or country. 
-	 */
-
-	/*
-	 * Now we need to break up the domain to get a count of how many atoms
-	 * it consists of. 
-	 */
-	var atomPat=new RegExp(atom,"g");
-	var domArr=domain.match(atomPat);
-	var len=domArr.length;
-	if (domArr[domArr.length-1].length<2 || 
-		domArr[domArr.length-1].length>6) {
-		// the address must end in a two letter or other TLD including museum
-		globalServices.warningSrv("The address must end in a top level domain (e.g. .com), or two letter country.");
-		return false;
-	}
-
-	// Make sure there's a host name preceding the domain.
-	if (len<2) {
-		var errStr="This address is missing a hostname!";
-		globalServices.warningSrv(errStr);
-		return false;
-	}
-
-	// If we've got this far, everything's valid!
-	return true;
+	},
+	//  End -->
 }
-//  End -->
-
-function dumpArray( dumpData )
-{
-	globalServices.logSrv( "DUMP ARRAY" );
-	globalServices.logSrv( "ArrayLength=" + dumpData.length);
-	for (var i = 0; i < dumpData.length; i++)
-		globalServices.logSrv("var" + i + "=" + dumpData[i]);
-	globalServices.logSrv( "ARRAY STOP" );
-}
-
-/*
-var addrToTest = new Array ( "user3 <user3@test.milimail.org>", " <user3@test.milimail.org>", "<user3@test.milimail.org>", "user3@test.milimail.org", "c <user3@test.milimail.org>" );
-var addrToTest = new Array ( "user3 <user3@test.milimail.org>", " <user3@test.milimail.org>", "<user3@test.milimail.org>", "user3@test.milimail.org", "c <user3@test.milimail.org>" );
-
-print("Addr List=" + addrToTest.length );
-for (var i = 0; i < addrToTest.length; i++)
-{
-    print("var" + i + "=" + addrToTest[i]);
-    if( emailCheck ( addrToTest[i] ) == false )
-        print("KO for >>>" + addrToTest[i]);
-    else
-        print("OK for >>>" + addrToTest[i]);
-}
-*/
-
-
 
 /**
  * Encoding/Decoding tools
