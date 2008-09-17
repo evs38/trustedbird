@@ -483,8 +483,11 @@ Services.prototype = {
 	 */
 
 	//<!-- Begin
-	emailCheck : function( emailStr, log ) {
+	emailCheck : function( address, log ) {
 
+		if( address == undefined || address == null ) { //Invalid data
+			throw "The mail address to check cannot  be null or undefined !";
+		}
 		if( log == undefined || log == null ) {
 			log = false;
 		}
@@ -493,12 +496,12 @@ Services.prototype = {
 		 * fits the "DisplayName <user@domain>" format.  It also is used to separate the three parts
 		 * the Display Name, the user name and the domain.
 		 */
-		var displayNameAddressPat=/^(.+) <(.+)@(.+)>$/
+		var displayNameAddressPat=/^(.+) +<*(.+)@(.+)>*$/
 		/* The following pattern is used to check if the entered e-mail address
 		 * fits the user@domain format.  It also is used to separate the user name
 		 * from the domain.
 		 */
-		var emailPat=/^(.+)@(.+)$/
+		var emailPat=/^<*(.+)@(.+)>*$/
 		/*
 		 * The following string represents the pattern for matching all special
 		 * characters.  We don't want to allow special characters in the address. 
@@ -539,19 +542,25 @@ Services.prototype = {
 		 * The following pattern describes the structure of a normal symbolic
 		 * domain, as opposed to ipDomainPat, shown above.
 		 */
-		var domainPat=new RegExp("^" + atom + "(\\." + atom +")*$")
+		//var domainPat=new RegExp("^" + atom + "(\\." + atom +")*$")
+		var domainPat=new RegExp("^" + atom + "(\\." + atom +")*>*$")
 
 
 		/*
 		 * Finally, let's start trying to figure out if the supplied address is valid.
 		 */
-	        
+		/* Remove white space before check address */
+		var addressToCheck = address.trim();
+		/* Debug code
+		if( log == true ){
+			this.logSrv("TRIM >>> address='" + address + "' trimmed='" + addressToCheck + "'." );
+		} */
 		/*
 		 * Begin with the coarse pattern to break up 'DisplayName <user@domain>' into
 		 * different pieces that are easy to analyze.
 		 */
 		var value = 4;
-		var matchArray=emailStr.match(displayNameAddressPat)
+		var matchArray=addressToCheck.match(displayNameAddressPat)
 		if (matchArray==null) {
 			--value; // No display name will extract
 			/* 
@@ -560,11 +569,12 @@ Services.prototype = {
 			 * even fit the general mould of a valid e-mail address.
 			 */
 
+			
 			/*
 			 * Begin with the coarse pattern to simply break up 'user@domain' into
 			 * different pieces that are easy to analyze.
 			 */
-			matchArray=emailStr.match(emailPat)
+			matchArray=addressToCheck.match(emailPat)
 			if (matchArray==null) {
 			/* 
 			 * Too many/few @'s or something; basically, this address doesn't
@@ -576,11 +586,13 @@ Services.prototype = {
 				return false;
 		    }
 		}
+		dumpArrays(matchArray);
 
 		var displayName="";
 		if( matchArray.length > 3 ){ // Update the display name value
 			displayName = matchArray[matchArray.length - 3];
-			// See if "display name" is valid 
+			// See if "display name" is valid
+			displayName = displayName.trim();
 			//domainPat
 			if (displayName.match(userPat)==null) {
 				// user is not valid
@@ -598,14 +610,14 @@ Services.prototype = {
 		var user=matchArray[matchArray.length - 2];
 		var domain=matchArray[matchArray.length - 1];
 		if( log == true ){
-			this.logSrv("Dump displayName='" + displayName + "' user='" + user + "' domain='" + domain + "'." );
+			this.logSrv("Variable extracted displayName='" + displayName + "' user='" + user + "' domain='" + domain + "'." );
 		}
 		// See if "user" is valid 
 		if (user.match(userPat)==null) {
 			// user is not valid
 			if( log == true ) {
 				this.logSrv("Dump user='" + user + "'." );
-				this.warningSrv("The part of your email address before the '@' doesn't seem to be valid.");
+				this.warningSrv("User part of your email address before the '@' doesn't seem to be valid.");
 			}
 			return false;
 		}
@@ -621,7 +633,7 @@ Services.prototype = {
 				if (IPArray[i]>255) {
 					if( log == true ) {
 						this.logSrv("Dump domain='" + domain + "'." );
-						this.warningSrv("Destination IP address is invalid!");
+						this.warningSrv("Destination IP address as domain after the '@' doesn't seem to be valid!");
 					}
 					return false;
 				}
@@ -634,10 +646,11 @@ Services.prototype = {
 		if (domainArray==null) {
 			if( log == true ) {
 				this.logSrv("Dump domain='" + domain + "'." );
-				this.warningSrv("Part of your email address after the '@' doesn't seem to be valid");
+				this.warningSrv("Domain part of your email address after the '@' doesn't seem to be valid!");
 			}
 			return false;
 		}
+		dumpArrays(domainArray);
 
 		/* 
 		 * domain name seems valid, but now make sure that it ends in a
@@ -666,7 +679,7 @@ Services.prototype = {
 		// Make sure there's a host name preceding the domain.
 		if (len<2) {
 			if( log == true ) {
-				this.logSrv("Dump displayName='" + displayName + "' user='" + user + "' domain='" + domain + "'." );
+				this.logSrv("Dump domain host name='" + domain + "'." );
 				this.warningSrv("This address is missing a hostname!");
 			}
 			return false;
@@ -676,6 +689,28 @@ Services.prototype = {
 		return true;
 	},
 	//  End -->
+}
+
+function dumpArrays(array) {
+	var service = new Services();
+	for (var i=0; i<array.length ; i++)
+		service.logSrv("POS" + i + "=" + array[i]);
+}
+
+//Add the function trim as a method to String object.
+String.prototype.trim = function(){
+	return this.replace(/(^\s*)|(\s*$)/g, "");
+}
+
+// Exemple d'utilisation :
+function testTrim( message ){
+	alert("testTRIM");
+	var s = "    espaces à gauche et à droite    ";
+	s = message;
+	alert("> " + s + " (" + s.length + ")");
+	// Supprime les espaces à gauche et à droite
+	s = s.trim();
+	alert("> " + s + " (" + s.length + ")");
 }
 
 /**

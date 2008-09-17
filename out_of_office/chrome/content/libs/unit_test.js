@@ -97,20 +97,25 @@ function compareArrays(array1,array2) {
  * @param result Waiting result after check of the mail address 
  * @return nothing
  */
-function checkAndTraceAndAssert(index, label, address, result) {
+function checkAndTraceAndAssert(index, label, address, waitingResult) {
 	// alert(index + ":" +address+">>>" +globalServices.isAddressMailValid( address )+ " must be " + result);
 	
-	// prepare display trace message 
-	var message = " : array:'" + label + "' index=" + index + " result:'" + result + "' data:'" + address + "'." ;
+	globalServices.logSrv( "**********************************************************************" );
+	globalServices.logSrv( "Unit Test check address:'" + address + "' index=" + index + " begin..." );
 	
-	if( globalServices.isAddressMailValid( address ) != result ) {
+	// prepare display trace message 
+	var message = " : array:'" + label + "' index=" + index + " waitingResult:'" + waitingResult + "' data:'" + address + "'." ;
+	
+	var result = globalServices.isAddressMailValid( address, true );
+	if( result != waitingResult ) {
 		// Dump the entry on error
+		globalServices.logSrv( "Unit Test Error" + message );
 		globalServices.errorSrv( "Unit Test Error" + message );
 	} else {
 		// Dump the entry on error
 		globalServices.logSrv( "Unit Test Success" + message );
 	}
-	assert.isTrue( globalServices.isAddressMailValid( address, true ) == result );
+	assert.isTrue( result == waitingResult );
 }
 
 
@@ -218,15 +223,17 @@ tc_mailAddress.tests = {
 			checkAndTraceAndAssert(index, 'mailAddressThreePartsDomainName',  addrDomainThreeParts[index][_ADDR_TEST], addrDomainThreeParts[index][_RESULT]);
 		}
 	},
-	'mailAddressThreePartsDomainIP' : function() { // DisplayName <User@DomainName>
+ 	'mailAddressThreePartsDomainIP' : function() { // DisplayName <User@DomainName>
 		for (var index = 0; index < addrIPThreeParts.length; index++) {
 			checkAndTraceAndAssert(index, 'mailAddressThreePartsDomainIP',  addrIPThreeParts[index][_ADDR_TEST], addrIPThreeParts[index][_RESULT]);
 		}
+		alert ("PAUSE")
 	},
 	'mailAddressTwoPartsDomainName' : function() { // User@DomainName
 		for (var index = 0; index < addrDomainTwoParts.length; index++) {
 			checkAndTraceAndAssert(index, 'mailAddressTwoPartsDomainName', addrDomainTwoParts[index][_ADDR_TEST], addrDomainTwoParts[index][_RESULT]);
 		}
+		alert ("PAUSE")
 	},
 	'mailAddressTwoPartsDomainIP' : function() { // User@nnn.nnn.nnn.nnn
 		for (var index = 0; index < addrIPTwoParts.length; index++) {
