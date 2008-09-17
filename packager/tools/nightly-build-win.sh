@@ -3,7 +3,7 @@
 # (Windows version)
 
 REMOTE_SERVER=dga@62.193.246.126
-REMOTE_DIRECTORY=/var/www/vhosts/packages.milimail.org/httpdocs
+REMOTE_DIRECTORY=/var/www/vhosts/packages.trustedbird.org/httpdocs
 DIRECTORY_NAME=`date +"%Y%m%d"`
 LOG=buildlog
 
