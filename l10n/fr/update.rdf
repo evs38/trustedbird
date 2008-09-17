@@ -38,7 +38,7 @@
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <em:creator>Olivier BRUN</em:creator>
-  <rdf:Description rdf:about="urn:mozilla:item:milimail_l10n_fr@milimail.org">
+  <rdf:Description rdf:about="urn:mozilla:item:trustedbird_l10n_fr@trustedbird.org">
     <em:updates>
       <rdf:Seq>
         <rdf:li>
