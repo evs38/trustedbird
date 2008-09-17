@@ -43,7 +43,7 @@
 	<property name="local.build.dir" value="work" />
 	<property name="local.dist.dir" value="dist" />
 	<property name="local.tools.dir" value="tools" />
-	<property name="local.archive.file" value="trustedbird.archive.tar.bz2" />
+	<property name="local.archive.file" value="trustedbird.archive.tar.gz" />
 
 	<!-- ant-contrib library -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -126,7 +126,7 @@
 				<!-- Extract archive -->
 				<mkdir dir="${local.build.dir}" />
 				<exec executable="tar" failonerror="true">
-					<arg value="xjf" />
+					<arg value="xzf" />
 					<arg value="${local.archive.file}" />
 					<arg value="-C" />
 					<arg value="${local.build.dir}/" />
@@ -143,7 +143,7 @@
 	        description="Create local archive of Trustedbird"
 	        depends="checkout-tb">
 		<exec executable="tar" failonerror="true">
-			<arg value="cjf" />
+			<arg value="czf" />
 			<arg value="${local.archive.file}" />
 			<arg value="-C" />
 			<arg value="${local.build.dir}/" />
