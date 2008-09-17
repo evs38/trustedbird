@@ -200,13 +200,6 @@
 				<striplinebreaks />
 			</filterchain>
 		</loadfile>
-		<!--
-		<exec executable="sh"
-		      outputproperty="local.tb.versionfile"
-		      failonerror="true">
-			<arg value="${local.tools.dir}/getVersion.sh" />
-			<arg value="${local.build.dir}/mozilla" />
-		</exec> -->
 
 		<!-- Get revision from SVN -->
 		<exec executable="sh"
@@ -505,13 +498,6 @@
 				<striplinebreaks />
 			</filterchain>
 		</loadfile>
-		<!--
-		<exec executable="sh"
-		      outputproperty="local.addon.versionfile"
-		      failonerror="true">
-			<arg value="${local.tools.dir}/getVersion.sh" />
-			<arg value="${local.build.dir}/${local.addon.name}" />
-		</exec>-->
 
 		<!-- Get revision from SVN -->
 		<exec executable="sh"
