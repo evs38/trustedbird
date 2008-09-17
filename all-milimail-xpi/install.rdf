@@ -38,12 +38,12 @@
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <rdf:Description about="urn:mozilla:install-manifest">
-    <em:id>extensions-package@milimail.org</em:id>
-    <em:name>Milimail Extensions</em:name>
+    <em:id>trustedbird-addons@trustedbird.org</em:id>
+    <em:name>Trustedbird Add-ons</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Olivier BRUN</em:creator>
 
-    <em:homepageURL>http://www.milimail.org/</em:homepageURL>
+    <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
 
     <em:type>32</em:type>
 
@@ -55,6 +55,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Install all Milimail extensions.</em:description>
+    <em:description>Install several Trustedbird add-ons.</em:description>
   </rdf:Description>
 </rdf:RDF>
