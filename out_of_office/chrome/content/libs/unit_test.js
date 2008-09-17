@@ -227,7 +227,6 @@ tc_mailAddress.tests = {
 		for (var index = 0; index < addrIPThreeParts.length; index++) {
 			checkAndTraceAndAssert(index, 'mailAddressThreePartsDomainIP',  addrIPThreeParts[index][_ADDR_TEST], addrIPThreeParts[index][_RESULT]);
 		}
-		alert ("PAUSE")
 	},
 	'mailAddressTwoPartsDomainName' : function() { // User@DomainName
 		for (var index = 0; index < addrDomainTwoParts.length; index++) {

@@ -496,7 +496,9 @@ Services.prototype = {
 		 * fits the "DisplayName <user@domain>" format.  It also is used to separate the three parts
 		 * the Display Name, the user name and the domain.
 		 */
-		var displayNameAddressPat=/^(.+) +<*(.+)@(.+)>*$/
+		var displayNameAddressPat=/^(.+) <*(.+)@(.+)>*$/
+		var displayNameAddressPatLessThan=/^(.+)<(.+)@(.+)>*$/
+
 		/* The following pattern is used to check if the entered e-mail address
 		 * fits the user@domain format.  It also is used to separate the user name
 		 * from the domain.
@@ -562,29 +564,34 @@ Services.prototype = {
 		var value = 4;
 		var matchArray=addressToCheck.match(displayNameAddressPat)
 		if (matchArray==null) {
-			--value; // No display name will extract
-			/* 
-			 * Email address haven't a display name then check the address part alone
-			 * Too many/few @'s or something; basically, this address doesn't
-			 * even fit the general mould of a valid e-mail address.
-			 */
-
-			
-			/*
-			 * Begin with the coarse pattern to simply break up 'user@domain' into
-			 * different pieces that are easy to analyze.
-			 */
-			matchArray=addressToCheck.match(emailPat)
-			if (matchArray==null) {
-			/* 
-			 * Too many/few @'s or something; basically, this address doesn't
-			 * even fit the general mould of a valid e-mail address.
-			 */
-				if( log == true ) {
-					this.warningSrv("Email address seems incorrect (check @ and .'s)");
-				}
-				return false;
-		    }
+			matchArray=addressToCheck.match(displayNameAddressPatLessThan)
+			if (matchArray!=null && matchArray.length == 4) {
+				// Address like it 'Glue<USERUSER@test.milimail.org>'
+			} else {
+				--value; // No display name will extract
+				/* 
+				 * Email address haven't a display name then check the address part alone
+				 * Too many/few @'s or something; basically, this address doesn't
+				 * even fit the general mould of a valid e-mail address.
+				 */
+	
+				
+				/*
+				 * Begin with the coarse pattern to simply break up 'user@domain' into
+				 * different pieces that are easy to analyze.
+				 */
+				matchArray=addressToCheck.match(emailPat)
+				if (matchArray==null) {
+				/* 
+				 * Too many/few @'s or something; basically, this address doesn't
+				 * even fit the general mould of a valid e-mail address.
+				 */
+					if( log == true ) {
+						this.warningSrv("Email address seems incorrect (check @ and .'s)");
+					}
+					return false;
+			    }
+			}
 		}
 		dumpArrays(matchArray);
 
@@ -593,6 +600,7 @@ Services.prototype = {
 			displayName = matchArray[matchArray.length - 3];
 			// See if "display name" is valid
 			displayName = displayName.trim();
+			
 			//domainPat
 			if (displayName.match(userPat)==null) {
 				// user is not valid
@@ -627,6 +635,7 @@ Services.prototype = {
 		 * host name) make sure the IP address is valid. 
 		 */
 		var IPArray=domain.match(ipDomainPat);
+		dumpArrays(IPArray);
 		if (IPArray!=null) {
 			// this is an IP address
 			for (var i=1;i<=4;i++) {
@@ -692,14 +701,21 @@ Services.prototype = {
 }
 
 function dumpArrays(array) {
+	if( array == null ) return;
 	var service = new Services();
 	for (var i=0; i<array.length ; i++)
 		service.logSrv("POS" + i + "=" + array[i]);
 }
 
-//Add the function trim as a method to String object.
-String.prototype.trim = function(){
-	return this.replace(/(^\s*)|(\s*$)/g, "");
+/** 
+ * Add the function trim as a method to String object.
+ * Remove white space or < at the begin and white space or > or ; at the end of the string 
+ */
+String.prototype.trim = function(regExp){
+	if( regExp == undefined || regExp == null ){
+		regExp = /(^(\s|<)*)|((\s|>|;)*$)/g
+	}
+	return this.replace(regExp, "");
 }
 
 // Exemple d'utilisation :
