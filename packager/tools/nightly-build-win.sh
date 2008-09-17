@@ -10,7 +10,7 @@ LOG=buildlog
 [ -e build.xml ] || { echo "Can't find build.xml"; exit; }
 
 # Build
-ant -Dnightly=1 -Denv.vc6sdk="C:/Program Files/Microsoft Visual Studio" distclean extract-tb update-tb build-tb package-tb package-mrs >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
+ant -Dnightly=1 -Denv.vc6sdk="C:/Program Files/Microsoft Visual Studio" distclean extract-archive-tb update-tb build-tb package-tb package-mrs >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
 
 # Prepare files
 [ -d dist ] || exit
