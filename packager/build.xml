@@ -43,7 +43,7 @@
 	<property name="local.build.dir" value="work" />
 	<property name="local.dist.dir" value="dist" />
 	<property name="local.tools.dir" value="tools" />
-	<property name="local.archive.file" value="trustedbird.archive.tar.gz" />
+	<property name="local.archive.file" value="trustedbird.svnarchive.tar.gz" />
 
 	<!-- ant-contrib library -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml">
