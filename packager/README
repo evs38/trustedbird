@@ -19,26 +19,27 @@ See http://developer.mozilla.org/en/docs/Windows_Build_Prerequisites
 
 === Get build scripts/packager ===
 ==== Read only / through SVN protocol (TCP port 3690) ====
- $ svn co svn://svn.adullact.net/svnroot/milimail/trunk/packager milimail
+ $ svn co svn://svn.adullact.net/svnroot/milimail/trunk/packager trustedbird
 
 ==== Read-write / through SSH (TCP port 22) ====
- $ svn co svn+ssh://my_username@svn.adullact.net/svnroot/milimail/trunk/packager milimail
+ $ svn co svn+ssh://my_username@svn.adullact.net/svnroot/milimail/trunk/packager trustedbird
    (replace my_username by your Adullact SSH username)
 
   // Copy the file server.properties.template to server.properties
- $ cp milimail/server.properties.template milimail/server.properties
+ $ cp trustedbird/server.properties.template trustedbird/server.properties
 
   // Set your SSH username in server.properties
- $ sed -i s/SSH_USERNAME/my_username/ milimail/server.properties
+ $ sed -i s/SSH_USERNAME/my_username/ trustedbird/server.properties
    (replace my_username by your Adullact SSH username)
 
 === Building ===
- $ cd milimail
+ $ cd trustedbird
 
-  // Build and package milimail and extensions
+  // Build and package Trustedbird and add-ons
  $ ant build-all
 
-  // OR: build and package milimail
- $ ant extract-milimail update-milimail package-milimail-src build-milimail package-milimail
-  // OR: build and package extensions
- $ ant package-extensions
+  // OR: build and package trustedbird
+ $ ant extract-tb update-tb build-tb package-tb
+
+  // OR: build and package add-ons
+ $ ant package-addons

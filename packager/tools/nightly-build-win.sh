@@ -1,15 +1,16 @@
 #!/bin/sh
-# Build milimail and extensions then upload the files to packages.milimail.org
+# Build Trustedbird and add-ons then upload the files to packages.trustedbird.org
 # (Windows version)
 
 REMOTE_SERVER=dga@62.193.246.126
 REMOTE_DIRECTORY=/var/www/vhosts/packages.milimail.org/httpdocs
 DIRECTORY_NAME=`date +"%Y%m%d"`
+LOG=buildlog
 
-cd /c/milimail
+[ -e build.xml ] || { echo "Can't find build.xml"; exit; }
 
 # Build
-ant -Dnightly=1 -Denv.vc6sdk="C:/Program Files/Microsoft Visual Studio" distclean extract-milimail update-milimail build-milimail package-milimail package-extension-mrs >/dev/null 2>&1 || echo "building failed"
+ant -Dnightly=1 -Denv.vc6sdk="C:/Program Files/Microsoft Visual Studio" distclean extract-tb update-tb build-tb package-tb package-mrs >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
 
 # Prepare files
 [ -d dist ] || exit

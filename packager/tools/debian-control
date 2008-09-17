@@ -1,11 +1,13 @@
-Package: milimail
+Package: trustedbird
 Version: __VERSION__.0
 Section: mail
 Priority: optional
 Architecture: i386
 Depends: 
+Replaces: milimail (<< 0.2.1.001079.1)
+Conflicts: milimail (<< 0.2.1.001079.1)
 Provides: mail-reader
-Maintainer: Milimail team <contact@milimail.org>
+Maintainer: Trustedbird team <contact@trustedbird.org>
 Description: Mail client based on Mozilla Thunderbird
- Milimail is a mail client based on Mozilla Thunderbird.
- See http://www.milimail.org
+ Trustedbird is a mail client based on Mozilla Thunderbird.
+ See http://www.trustedbird.org

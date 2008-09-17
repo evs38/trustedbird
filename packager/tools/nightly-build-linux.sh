@@ -1,16 +1,16 @@
 #!/bin/sh
-# Build milimail and extensions then upload the files to packages.milimail.org
+# Build Trustedbird and add-ons then upload the files to packages.trustedbird.org
 # (Linux version)
 
 REMOTE_SERVER=dga@62.193.246.126
-REMOTE_DIRECTORY=/var/www/vhosts/packages.milimail.org/httpdocs
+REMOTE_DIRECTORY=/var/www/vhosts/packages.trustedbird.org/httpdocs
 DIRECTORY_NAME=`date +"%Y%m%d"`
 LOG=buildlog
 
 [ -e build.xml ] || { echo "Can't find build.xml"; exit; }
 
 # Build
-ant -Dnightly=1 >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
+ant -Dnightly=1 distclean extract-tb update-tb package-tb-src build-tb package-tb package-addons >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
 
 # Prepare files
 [ -d dist ] || exit
@@ -26,4 +26,4 @@ ssh $REMOTE_SERVER rm $REMOTE_DIRECTORY/nightly/latest
 ssh $REMOTE_SERVER ln -s $DIRECTORY_NAME $REMOTE_DIRECTORY/nightly/latest
 
 # Clean old files
-ssh $REMOTE_SERVER /var/www/vhosts/packages.milimail.org/clean-nightly
+ssh $REMOTE_SERVER /var/www/vhosts/packages.trustedbird.org/clean-nightly

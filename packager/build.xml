@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- =================================
 
-   Milimail and extensions packager
+   Trustedbird and add-ons packager
 
 
    Olivier PARNIERE
@@ -17,14 +17,14 @@
    Build and package everything:
    $ ant build-all
 
-   Build and package Milimail:
-   $ ant extract-milimail update-milimail package-milimail-src build-milimail package-milimail
+   Build and package Trustedbird:
+   $ ant extract-archive-tb update-tb package-tb-src build-tb package-tb
 
-   Package all extensions:
-   $ ant package-extensions
+   Package all add-ons:
+   $ ant package-addons
 
-   Package only MRS extension:
-   $ ant package-extension-mrs
+   Package only MRS add-on:
+   $ ant package-mrs
 
    Get target list:
    $ ant -projecthelp
@@ -34,8 +34,8 @@
    $ ant -Dnightly=1 build-all
 
    ================================= -->
-<project name="Milimail Packager" default="build-all">
-	<description>Build Milimail and extensions</description>
+<project name="Trustedbird Packager" default="build-all">
+	<description>Build Trustedbird and add-ons</description>
 
 	<property file="server.properties" />
 	<property file="package.properties" />
@@ -43,7 +43,7 @@
 	<property name="local.build.dir" value="work" />
 	<property name="local.dist.dir" value="dist" />
 	<property name="local.tools.dir" value="tools" />
-	<property name="local.archive.file" value="milimail.tar.bz2" />
+	<property name="local.archive.file" value="trustedbird.archive.tar.bz2" />
 
 	<!-- ant-contrib library -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -57,8 +57,8 @@
        build-all
        ================================= -->
 	<target name="build-all"
-	        description="Extract, update and build Milimail and extensions"
-	        depends="distclean, extract-milimail, update-milimail, package-milimail-src, build-milimail, package-milimail, package-extensions">
+	        description="Checkout/extract from archive, update and build Trustedbird and add-ons"
+	        depends="distclean, extract-archive-tb, update-tb, build-tb, package-tb, package-addons">
 	</target>
 
 
@@ -72,17 +72,17 @@
 
 
 	<!-- =================================
-       clean-milimail
+       clean-tb
        ================================= -->
-	<target name="clean-milimail" description="Clean milimail build directory">
+	<target name="clean-tb" description="Clean Trustedbird build directory">
 		<delete dir="${local.build.dir}/mozilla" />
 	</target>
 
 
 	<!-- =================================
-       clean-extensions
+       clean-addons
        ================================= -->
-	<target name="clean-extensions" description="Clean built extensions">
+	<target name="clean-addons" description="Clean built add-ons">
 		<delete failonerror="false">
 			<fileset dir="${local.dist.dir}">
 				<include name="*.xpi" />
@@ -94,33 +94,33 @@
 
 
 	<!-- =================================
-       checkout-milimail
+       checkout-tb
        ================================= -->
-	<target name="checkout-milimail"
-	        description="Checkout Milimail from SVN"
-	        depends="clean-milimail">
+	<target name="checkout-tb"
+	        description="Checkout Trustedbird from SVN"
+	        depends="clean-tb">
 		<mkdir dir="${local.build.dir}" />
 		<exec executable="svn" dir="${local.build.dir}" failonerror="true">
 			<arg value="co" />
-			<arg value="${milimail.repository.url}" />
+			<arg value="${tb.repository.url}" />
 			<arg value="mozilla" />
 		</exec>
 	</target>
 
 
 	<!-- =================================
-       extract-milimail
+       extract-archive-tb
        ================================= -->
-	<target name="extract-milimail"
-	        description="Extract local archive of Milimail"
-	        depends="clean-milimail">
+	<target name="extract-archive-tb"
+	        description="Extract local archive of Trustedbird"
+	        depends="clean-tb">
 		<if>
 			<not>
 				<!-- Check if archive exists -->
 				<available file="${local.archive.file}" />
 			</not>
 			<then>
-				<antcall target="create-archive-milimail" />
+				<antcall target="create-archive-tb" />
 			</then>
 			<else>
 				<!-- Extract archive -->
@@ -137,11 +137,11 @@
 
 
 	<!-- =================================
-       create-archive-milimail
+       create-archive-tb
        ================================= -->
-	<target name="create-archive-milimail"
-	        description="Create local archive of Milimail"
-	        depends="checkout-milimail">
+	<target name="create-archive-tb"
+	        description="Create local archive of Trustedbird"
+	        depends="checkout-tb">
 		<exec executable="tar" failonerror="true">
 			<arg value="cjf" />
 			<arg value="${local.archive.file}" />
@@ -153,12 +153,12 @@
 
 
 	<!-- =================================
-       update-milimail
+       update-tb
        ================================= -->
-	<target name="update-milimail" description="Update Milimail from SVN">
+	<target name="update-tb" description="Update Trustedbird from SVN">
 		<available file="${local.build.dir}/mozilla"
 		           property="sources.available" />
-		<fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first."
+		<fail message="Trustedbird sources not found! Use targets 'checkout-tb' or 'extract-archive-tb' first."
 		      unless="sources.available" />
 
 		<exec executable="svn" dir="${local.build.dir}" failonerror="true">
@@ -169,12 +169,12 @@
 
 
 	<!-- =================================
-       -define-config-milimail (private)
+       -define-config-tb (private)
        ================================= -->
-	<target name="-define-config-milimail">
+	<target name="-define-config-tb">
 		<available file="${local.build.dir}/mozilla"
 		           property="sources.available" />
-		<fail message="Milimail sources not found! Use targets 'checkout-milimail' or 'extract-milimail' first."
+		<fail message="Trustedbird sources not found! Use targets 'checkout-tb' or 'extract-archive-tb' first."
 		      unless="sources.available" />
 
 		<condition property="isUnix">
@@ -194,16 +194,23 @@
 		</if>
 
 		<!-- Get version -->
+		<loadfile property="local.tb.versionfile"
+		          srcfile="${local.build.dir}/mozilla/version">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+		<!--
 		<exec executable="sh"
-		      outputproperty="local.milimail.versionfile"
+		      outputproperty="local.tb.versionfile"
 		      failonerror="true">
 			<arg value="${local.tools.dir}/getVersion.sh" />
 			<arg value="${local.build.dir}/mozilla" />
-		</exec>
+		</exec> -->
 
 		<!-- Get revision from SVN -->
 		<exec executable="sh"
-		      outputproperty="local.milimail.revision"
+		      outputproperty="local.tb.revision"
 		      failonerror="true">
 			<arg value="${local.tools.dir}/getLastChangedRev.sh" />
 			<arg value="${local.build.dir}/mozilla" />
@@ -212,12 +219,12 @@
 		<if>
 			<isset property="nightly" />
 			<then>
-				<property name="local.milimail.version"
-				          value="${local.milimail.versionfile}.${local.milimail.revision}-nightly" />
+				<property name="local.tb.version"
+				          value="${local.tb.versionfile}.${local.tb.revision}-nightly" />
 			</then>
 			<else>
-				<property name="local.milimail.version"
-				          value="${local.milimail.versionfile}.${local.milimail.revision}" />
+				<property name="local.tb.version"
+				          value="${local.tb.versionfile}.${local.tb.revision}" />
 			</else>
 		</if>
 
@@ -243,20 +250,20 @@
 				<striplinebreaks />
 			</filterchain>
 		</loadfile>
-		<echo message="${local.mozilla.version}-${milimail.name}${local.milimail.version}"
+		<echo message="${local.mozilla.version}-${tb.name}${local.tb.version}"
 		      file="${local.build.dir}/mozilla/mail/config/version.txt" />
 	</target>
 
 
 	<!-- =================================
-       package-milimail-src
+       package-tb-src
        ================================= -->
-	<target name="package-milimail-src"
-	        description="Create source Milimail package"
-	        depends="-define-config-milimail">
+	<target name="package-tb-src"
+	        description="Create source Trustedbird package"
+	        depends="-define-config-tb">
 		<available file="${local.build.dir}/mozilla/.mozconfig.out"
 		           property="not.clean" />
-		<fail message="Clean Milimail first (targets 'clean-milimail' or 'distclean')."
+		<fail message="Clean Trustedbird first (targets 'clean-tb' or 'distclean')."
 		      if="not.clean" />
 
 		<mkdir dir="${local.dist.dir}" />
@@ -282,7 +289,7 @@
 		<!-- Create source package -->
 		<exec executable="tar" failonerror="true">
 			<arg value="cjf" />
-			<arg value="${local.dist.dir}/${milimail.name}_${local.milimail.version}_src.tar.bz2" />
+			<arg value="${local.dist.dir}/${tb.name}_${local.tb.version}_src.tar.bz2" />
 			<arg value="-C" />
 			<arg value="${local.build.dir}/src-package/" />
 			<arg value="mozilla" />
@@ -291,11 +298,11 @@
 
 
 	<!-- =================================
-       build-milimail
+       build-tb
        ================================= -->
-	<target name="build-milimail"
-	        description="Build Milimail"
-	        depends="-define-config-milimail">
+	<target name="build-tb"
+	        description="Build Trustedbird"
+	        depends="-define-config-tb">
 		<exec executable="make"
 		      dir="${local.build.dir}/mozilla"
 		      failonerror="true">
@@ -307,14 +314,14 @@
 
 
 	<!-- =================================
-       package-milimail
+       package-tb
        ================================= -->
-	<target name="package-milimail"
-	        description="Create Milimail package"
-	        depends="-define-config-milimail">
+	<target name="package-tb"
+	        description="Create Trustedbird package"
+	        depends="-define-config-tb">
 		<available file="${local.build.dir}/mozilla/${local.checkbuild.file}"
 		           property="build.success" />
-		<fail message="File ${local.checkbuild.file} not found! Build Milimail first."
+		<fail message="File ${local.checkbuild.file} not found! Build Trustedbird first."
 		      unless="build.success" />
 
 		<mkdir dir="${local.dist.dir}" />
@@ -345,7 +352,7 @@
 					</fileset>
 					<mapper type="regexp"
 					        from=".*\.([^\.]+)\.tar\.gz$"
-					        to="${milimail.name}_${local.milimail.version}_\1.tar.gz" />
+					        to="${tb.name}_${local.tb.version}_\1.tar.gz" />
 				</copy>
 
 				<!-- Create Debian package -->
@@ -358,17 +365,17 @@
 							</fileset>
 							<mapper type="regexp"
 							        from="(.*)$"
-							        to="${milimail.name}_${local.milimail.version}.tar.gz" />
+							        to="${tb.name}_${local.tb.version}.tar.gz" />
 						</copy>
 						<exec executable="sh" failonerror="true">
 							<arg value="${local.tools.dir}/createDebianPackage.sh" />
 							<arg value="${local.build.dir}" />
-							<arg value="${local.build.dir}/${milimail.name}_${local.milimail.version}.tar.gz" />
-							<arg value="${local.milimail.version}" />
+							<arg value="${local.build.dir}/${tb.name}_${local.tb.version}.tar.gz" />
+							<arg value="${local.tb.version}" />
 							<arg value="${local.tools.dir}/debian-control" />
 						</exec>
-						<copy file="${local.build.dir}/milimail.deb"
-						      tofile="${local.dist.dir}/${milimail.name}_${local.milimail.version}_i686.deb" />
+						<copy file="${local.build.dir}/trustedbird.deb"
+						      tofile="${local.dist.dir}/${tb.name}_${local.tb.version}_i686.deb" />
 					</then>
 				</if>
 			</then>
@@ -389,7 +396,7 @@
 					</fileset>
 					<mapper type="regexp"
 					        from="(.*)$"
-					        to="${milimail.name}_${local.milimail.version}_win32.installer.exe" />
+					        to="${tb.name}_${local.tb.version}_win32.installer.exe" />
 				</copy>
 			</else>
 		</if>
@@ -397,33 +404,33 @@
 
 
 	<!-- =================================
-       package-extensions
+       package-addons
        ================================= -->
-	<target name="package-extensions"
-	        description="Get extensions from SVN and create packages"
-	        depends="clean-extensions">
-		<foreach list="${extension.list},all-milimail-extensions"
-		         target="-package-extension"
-		         param="local.extension.tempname" />
+	<target name="package-addons"
+	        description="Get add-ons from SVN and create packages"
+	        depends="clean-addons">
+		<foreach list="${addon.list},all-trustedbird-addons"
+		         target="-package-addon"
+		         param="local.addon.tempname" />
 	</target>
 
 
 	<!-- =================================
-       package-extension-mrs
+       package-mrs
        ================================= -->
-	<target name="package-extension-mrs"
-	        description="Get from SVN and package only MRS extension">
+	<target name="package-mrs"
+	        description="Get from SVN and package only MRS add-on">
 
-		<antcall target="-package-extension">
-			<param name="local.extension.tempname" value="mrs" />
+		<antcall target="-package-addon">
+			<param name="local.addon.tempname" value="mrs" />
 		</antcall>
 
 	</target>
 
 	<!-- =================================
-       -define-config-extensions (private)
+       -define-config-addons (private)
        ================================= -->
-	<target name="-define-config-extensions">
+	<target name="-define-config-addons">
 
 		<mkdir dir="${local.build.dir}" />
 		<mkdir dir="${local.dist.dir}" />
@@ -447,188 +454,195 @@
 
 
 	<!-- =================================
-       -package-extension (private)
+       -package-addon (private)
        ================================= -->
-	<target name="-package-extension" depends="-define-config-extensions">
+	<target name="-package-addon" depends="-define-config-addons">
 		<tstamp />
 
 		<!-- Get URL of the repository -->
-		<propertycopy name="local.extension.repository.url"
-		              from="extension.${local.extension.tempname}.repository.url" />
+		<propertycopy name="local.addon.repository.url"
+		              from="addon.${local.addon.tempname}.repository.url" />
 
-		<!-- Rename MRS extension for Linux/Windows -->
+		<!-- Rename MRS addon for Linux/Windows -->
 		<if>
-			<equals arg1="${local.extension.tempname}" arg2="mrs" />
+			<equals arg1="${local.addon.tempname}" arg2="mrs" />
 			<then>
 				<if>
 					<isset property="isUnix" />
 					<then>
-						<property name="local.extension.name"
-						          value="${local.extension.tempname}-linux-x86" />
-						<property name="local.extension.target.platform"
+						<property name="local.addon.name"
+						          value="${local.addon.tempname}-linux-x86" />
+						<property name="local.addon.target.platform"
 						          value="Linux_x86-gcc3" />
 					</then>
 					<else>
-						<property name="local.extension.name"
-						          value="${local.extension.tempname}-win" />
-						<property name="local.extension.target.platform"
+						<property name="local.addon.name"
+						          value="${local.addon.tempname}-win" />
+						<property name="local.addon.target.platform"
 						          value="WINNT_x86-msvc" />
 					</else>
 				</if>
 			</then>
 			<else>
-				<property name="local.extension.name"
-				          value="${local.extension.tempname}" />
-				<property name="local.extension.target.platform" value="" />
+				<property name="local.addon.name"
+				          value="${local.addon.tempname}" />
+				<property name="local.addon.target.platform" value="" />
 			</else>
 		</if>
 
-		<!-- Get extension from SVN -->
-		<delete dir="${local.build.dir}/${local.extension.name}" />
+		<!-- Get addon from SVN -->
+		<delete dir="${local.build.dir}/${local.addon.name}" />
 		<exec executable="svn" dir="${local.build.dir}" failonerror="true">
 			<arg value="co" />
-			<arg value="${local.extension.repository.url}" />
-			<arg value="${local.extension.name}" />
+			<arg value="${local.addon.repository.url}" />
+			<arg value="${local.addon.name}" />
 		</exec>
 
 		<!-- Get version -->
+		<loadfile property="local.addon.versionfile"
+		          srcfile="${local.build.dir}/${local.addon.name}/version">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+		<!--
 		<exec executable="sh"
-		      outputproperty="local.extension.versionfile"
+		      outputproperty="local.addon.versionfile"
 		      failonerror="true">
 			<arg value="${local.tools.dir}/getVersion.sh" />
-			<arg value="${local.build.dir}/${local.extension.name}" />
-		</exec>
+			<arg value="${local.build.dir}/${local.addon.name}" />
+		</exec>-->
 
 		<!-- Get revision from SVN -->
 		<exec executable="sh"
-		      outputproperty="local.extension.revision"
+		      outputproperty="local.addon.revision"
 		      failonerror="true">
 			<arg value="${local.tools.dir}/getLastChangedRev.sh" />
-			<arg value="${local.build.dir}/${local.extension.name}" />
+			<arg value="${local.build.dir}/${local.addon.name}" />
 		</exec>
 
 		<if>
 			<isset property="nightly" />
 			<then>
-				<property name="local.extension.version"
-				          value="${local.extension.versionfile}.${local.extension.revision}-nightly" />
-				<property name="local.extension.update.rdf.filename"
+				<property name="local.addon.version"
+				          value="${local.addon.versionfile}.${local.addon.revision}-nightly" />
+				<property name="local.addon.update.rdf.filename"
 				          value="update-nightly.rdf" />
-				<property name="local.extension.path"
-				          value="${extension.nightly.url}/${DSTAMP}" />
+				<property name="local.addon.path"
+				          value="${addon.nightly.url}/${DSTAMP}" />
 			</then>
 			<else>
-				<property name="local.extension.version"
-				          value="${local.extension.versionfile}.${local.extension.revision}" />
-				<property name="local.extension.update.rdf.filename"
+				<property name="local.addon.version"
+				          value="${local.addon.versionfile}.${local.addon.revision}" />
+				<property name="local.addon.update.rdf.filename"
 				          value="update.rdf" />
-				<property name="local.extension.path"
-				          value="${extension.releases.url}/${local.extension.name}" />
+				<property name="local.addon.path"
+				          value="${addon.releases.url}/${local.addon.name}" />
 			</else>
 		</if>
 
 		<!-- Copy libtrustedbird.js if file libtrustedbird.js-path exists -->
 		<if>
-			<available file="${local.build.dir}/${local.extension.name}/libtrustedbird.js-path" />
+			<available file="${local.build.dir}/${local.addon.name}/libtrustedbird.js-path" />
 			<then>
 				<exec executable="sh"
 				      failonerror="true">
 					<arg value="${local.tools.dir}/copyLibtrustedbird.sh" />
-					<arg value="${local.build.dir}/${local.extension.name}" />
+					<arg value="${local.build.dir}/${local.addon.name}" />
 				</exec>
 			</then>
 		</if>
 
 		<!-- XPI file name -->
-		<property name="local.extension.filename"
-		          value="${local.extension.name}_${local.extension.version}.xpi" />
+		<property name="local.addon.filename"
+		          value="${local.addon.name}_${local.addon.version}.xpi" />
 
 		<!-- Add version -->
 		<exec executable="${sed.name}" failonerror="true">
 			<arg value="-i" />
-			<arg value="s|__VERSION__|${local.extension.version}|" />
-			<arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
-			<arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
+			<arg value="s|__VERSION__|${local.addon.version}|" />
+			<arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+			<arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
 		</exec>
 
 		<!-- Add update.rdf URL -->
 		<exec executable="${sed.name}" failonerror="true">
 			<arg value="-i" />
-			<arg value="s|__UPDATE_RDF_URL__|${extension.updates.url}/${local.extension.name}/${local.extension.update.rdf.filename}|" />
-			<arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+			<arg value="s|__UPDATE_RDF_URL__|${addon.updates.url}/${local.addon.name}/${local.addon.update.rdf.filename}|" />
+			<arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
 		</exec>
 
 		<!-- Add target platform -->
 		<exec executable="${sed.name}" failonerror="true">
 			<arg value="-i" />
-			<arg value="s|__TARGET_PLATFORM__|${local.extension.target.platform}|" />
-			<arg value="${local.build.dir}/${local.extension.name}/install.rdf" />
+			<arg value="s|__TARGET_PLATFORM__|${local.addon.target.platform}|" />
+			<arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
 		</exec>
 
 		<!-- Add XPI URL -->
 		<exec executable="${sed.name}" failonerror="true">
 			<arg value="-i" />
-			<arg value="s|__XPI_URL__|${local.extension.path}/${local.extension.filename}|" />
-			<arg value="${local.build.dir}/${local.extension.name}/update.rdf" />
+			<arg value="s|__XPI_URL__|${local.addon.path}/${local.addon.filename}|" />
+			<arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
 		</exec>
 
 		<!-- Copy update.rdf -->
-		<mkdir dir="${local.dist.dir}/updates/${local.extension.name}" />
-		<copy file="${local.build.dir}/${local.extension.name}/update.rdf"
-		      tofile="${local.dist.dir}/updates/${local.extension.name}/${local.extension.update.rdf.filename}" />
+		<mkdir dir="${local.dist.dir}/updates/${local.addon.name}" />
+		<copy file="${local.build.dir}/${local.addon.name}/update.rdf"
+		      tofile="${local.dist.dir}/updates/${local.addon.name}/${local.addon.update.rdf.filename}" />
 
 		<!-- Call ant if available -->
 		<if>
-			<available file="${local.build.dir}/${local.extension.name}/build.xml" />
+			<available file="${local.build.dir}/${local.addon.name}/build.xml" />
 			<then>
 				<ant inheritall="false"
-				     dir="${local.build.dir}/${local.extension.name}" />
+				     dir="${local.build.dir}/${local.addon.name}" />
 				<property name="local.zip.basedir"
-				          value="${local.build.dir}/${local.extension.name}/xpi" />
+				          value="${local.build.dir}/${local.addon.name}/xpi" />
 			</then>
 			<else>
 				<property name="local.zip.basedir"
-				          value="${local.build.dir}/${local.extension.name}" />
+				          value="${local.build.dir}/${local.addon.name}" />
 			</else>
 		</if>
 
-		<!-- Only for 'all-milimail-extensions': copy all already built extensions -->
+		<!-- Only for add-on 'all-trustedbird-addons': copy all already built add-ons -->
 		<if>
-			<equals arg1="${local.extension.name}"
-			        arg2="all-milimail-extensions" />
+			<equals arg1="${local.addon.name}"
+			        arg2="all-trustedbird-addons" />
 			<then>
-				<copy todir="${local.build.dir}/${local.extension.name}/">
+				<copy todir="${local.build.dir}/${local.addon.name}/">
 					<fileset dir="${local.dist.dir}">
 						<include name="*.xpi" />
 					</fileset>
 				</copy>
-				<delete dir="${local.dist.dir}/updates/${local.extension.name}" />
+				<delete dir="${local.dist.dir}/updates/${local.addon.name}" />
 			</then>
 		</if>
 
 		<!-- Create package -->
 		<if>
-			<available file="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
+			<available file="${local.build.dir}/${local.addon.name}/${addon.excludesfile}" />
 			<then>
-				<zip destfile="${local.dist.dir}/${local.extension.filename}"
-				     basedir="${local.build.dir}/${local.extension.name}"
-				     excludes="${extension.excludes}"
-				     excludesfile="${local.build.dir}/${local.extension.name}/${extension.excludesfile}" />
+				<zip destfile="${local.dist.dir}/${local.addon.filename}"
+				     basedir="${local.build.dir}/${local.addon.name}"
+				     excludes="${addon.excludes}"
+				     excludesfile="${local.build.dir}/${local.addon.name}/${addon.excludesfile}" />
 			</then>
 			<else>
-				<zip destfile="${local.dist.dir}/${local.extension.filename}"
+				<zip destfile="${local.dist.dir}/${local.addon.filename}"
 				     basedir="${local.zip.basedir}"
-				     excludes="${extension.excludes}" />
+				     excludes="${addon.excludes}" />
 			</else>
 		</if>
 
 		<!-- Only for MRS: build and package client API -->
 		<if>
-			<equals arg1="${local.extension.tempname}" arg2="mrs" />
+			<equals arg1="${local.addon.tempname}" arg2="mrs" />
 			<then>
-				<ant dir="${local.build.dir}/${local.extension.name}/api/java" />
-				<move file="${local.build.dir}/${local.extension.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip"
-				      tofile="${local.dist.dir}/${local.extension.tempname}-JavaAPI_${local.extension.version}.zip" />
+				<ant dir="${local.build.dir}/${local.addon.name}/api/java" />
+				<move file="${local.build.dir}/${local.addon.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip"
+				      tofile="${local.dist.dir}/${local.addon.tempname}-JavaAPI_${local.addon.version}.zip" />
 			</then>
 		</if>
 
