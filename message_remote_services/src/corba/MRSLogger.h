@@ -40,6 +40,22 @@
 #include "nsIConsoleService.h"
 #include "nsCOMPtr.h"
 
+#ifdef MRS_LOG
+
+#ifdef XP_WIN
+#define INFO(x) \
+	logger.Info(x, "MRS");
+#else
+#define INFO(x) \
+	logger.Info(x, __PRETTY_FUNCTION__);
+#endif
+
+#else
+
+#define INFO(x)
+
+#endif
+
 class MRSLogger {
 public:
 	MRSLogger();

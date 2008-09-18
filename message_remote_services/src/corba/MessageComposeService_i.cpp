@@ -52,30 +52,10 @@
 #include "nsIMsgAttachment.h"
 #include "nsIPrefService.h"
 #include "nsIPrefBranch.h"
-#include <iostream>
 
 #define CHAR_NOT_FOUND -1
 
 #define NS_PREFSERVICE_CONTRACTID "@mozilla.org/preferences-service;1"
-
-
-#ifdef MRS_LOG
-
-#ifdef XP_WIN
-#define INFO(x) \
-	logger.Info(x, "MRS");
-#else
-#define INFO(x) \
-	logger.Info(x, __PRETTY_FUNCTION__);
-#endif
-
-#else
-
-#define INFO(x)
-
-#endif
-
-using namespace std;
 
 MessageComposeService_i::MessageComposeService_i() {
 
