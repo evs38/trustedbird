@@ -69,9 +69,9 @@ var preferences=new Preferences();
  * Unit test variables
  */
 var tc_Preferences = new TestCase('Preferences');
-var tc_arrayDataValidation= new TestCase('Array Validation');
-var tc_mailAddressValidation= new TestCase('Mail Address Validation');
-var tc_mailAddressExtraction= new TestCase('Mail Address Extraction');
+var tc_arrayDataValidation= new TestCase('Unit Test Array Validation (' + arrayAddressMail.length + ' entries)' );
+var tc_mailAddressValidation= new TestCase('Mail Address Validation (' + arrayAddressMail.length + ' entries)' );
+var tc_mailAddressExtraction= new TestCase('Mail Address Extraction (' + arrayAddressMail.length + ' entries)' );
 
 
 /**
@@ -102,13 +102,15 @@ function compareArrays(array1,array2) {
 function checkAndTraceAndAssert(index, label, address, waitingResult) {
 	// alert(index + ":" +address+">>>" +globalServices.isAddressMailValid( address )+ " must be " + result);
 	
-	globalServices.logSrv( "**********************************************************************" );
-	globalServices.logSrv( "Unit Test check address:'" + address + "' index=" + index + " begin..." );
+	// globalServices.logSrv( "**********************************************************************" );
+	// globalServices.logSrv( "Unit Test check address:'" + address + "' index=" + index + " begin..." );
 	
 	// prepare display trace message 
 	var message = " : Mail Validation '" + label + "' index=" + index + " waitingResult:'" + waitingResult + "' data:'" + address + "'." ;
 	
-	var result = globalServices.isAddressMailValid( address, true );
+	var result = globalServices.isAddressMailValid( address );
+/**
+ * Debug part remove comment to have more information
 	if( result != waitingResult ) {
 		// Dump the entry on error
 		globalServices.logSrv( "Unit Test Error" + message );
@@ -117,6 +119,8 @@ function checkAndTraceAndAssert(index, label, address, waitingResult) {
 		// Dump the entry on error
 		globalServices.logSrv( "Unit Test Success" + message );
 	}
+ */
+
 	assert.isTrue( result == waitingResult );
 }
 
@@ -248,18 +252,12 @@ tc_mailAddressValidation.tests = {
  */
 tc_mailAddressExtraction.tests = {
 	'AddressMailExtraction' : function() { // From table extract mail address if valid with format user@domain.ext
-	alert("PAUSE");
 		for (var index = 0; index < arrayAddressMail.length; index++) {
-			var address = globalServices.getAddressMail(arrayAddressMail[index][_ADDR_TEST], true );
-			globalServices.errorSrv(address);
+			var address = globalServices.getAddressMail(arrayAddressMail[index][_ADDR_TEST] );
 			// Check if mail can be valid
 			if( arrayAddressMail[index][_RESULT] == true ){
-				if(address != arrayAddressMail[index][_ADDR_EXTRACTED])
-					alert(address +"=="+ arrayAddressMail[index][_ADDR_EXTRACTED]);
 				assert.isTrue( address == arrayAddressMail[index][_ADDR_EXTRACTED] );
 			} else { // No extraction possible
-				if(address != null)
-					alert(address +"=="+ null );
 				assert.isTrue( address == null );
 			}
 		}
