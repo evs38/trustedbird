@@ -898,7 +898,8 @@ NSS_SMIMEUtil_CreateReceiptRequest(PLArenaPool *poolp, SECItem *dest, unsigned c
     receiptRequest.signedContentIdentifier.len = PORT_Strlen(uuid);
 
     /* receiptsFrom */
-    receiptRequest.receiptsFrom.data = "0"; /* TODO : handle other cases */
+    receiptRequest.receiptsFrom.data = (char *) PORT_Alloc(1 * sizeof(char));
+    receiptRequest.receiptsFrom.data[0] = 0; /* TODO : handle other cases */
     receiptRequest.receiptsFrom.len = 1;
 
     /* receiptsTo */
@@ -908,6 +909,8 @@ NSS_SMIMEUtil_CreateReceiptRequest(PLArenaPool *poolp, SECItem *dest, unsigned c
     /* Now encode */
     dummy = SEC_ASN1EncodeItem(poolp, dest, &receiptRequest, NSSCMSReceiptRequestTemplate);
 
+    PORT_Free(receiptRequest.receiptsFrom.data);
+    
     return (dummy == NULL) ? SECFailure : SECSuccess;
 }
 
