@@ -140,6 +140,7 @@ private:
   nsCString mSecurityPolicyIdentifier;
   PRInt32 mSecurityClassification;
 
+  PRBool mSignedReceiptRequest;
   nsXPIDLCString mSignedReceiptRequest_ReceiptTo;
 };
 

@@ -598,9 +598,9 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsOutputFileStream * 
   ExtractSecurityLabelState(aCompFields, mSecurityPolicyIdentifier, &mSecurityClassification);
 
   // Extract SignedReceiptRequest State
-  PRBool signedReceiptRequest = PR_FALSE;
-  ExtractSignedReceiptRequestState(aIdentity, aCompFields, &signedReceiptRequest);
-  if (signedReceiptRequest) {
+  mSignedReceiptRequest = PR_FALSE;
+  ExtractSignedReceiptRequestState(aIdentity, aCompFields, &mSignedReceiptRequest);
+  if (mSignedReceiptRequest) {
     aIdentity->GetEmail(getter_Copies(mSignedReceiptRequest_ReceiptTo));
   }
 
@@ -680,9 +680,14 @@ NS_IMETHODIMP nsMsgComposeSecure::FinishCryptoEncapsulation(PRBool aAbort, nsIMs
       rv = MimeFinishEncryption (PR_TRUE, sendReport);
       break;
     case mime_crypto_signed_encrypted_signed:
+      /* Finish inner signature */
       rv = MimeFinishEncryption (PR_TRUE, sendReport);
-      if (!NS_FAILED(rv))
-        rv = MimeFinishMultipartSigned (PR_TRUE, sendReport);
+      
+      /* Disable receipt request before generating outer signature */
+      mSignedReceiptRequest = PR_FALSE;
+      
+      /* Finish outer signature */
+      if (!NS_FAILED(rv)) rv = MimeFinishMultipartSigned (PR_TRUE, sendReport);
       break;
     case mime_crypto_encrypted:
       rv = MimeFinishEncryption (PR_FALSE, sendReport);
@@ -895,9 +900,11 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
   PR_ASSERT (mSelfSigningCert);
   PR_SetError(0,0);
   
-
-
-  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, (unsigned char*)mSignedReceiptRequest_ReceiptTo.get());
+  if (mSignedReceiptRequest) {
+	  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, (unsigned char*)mSignedReceiptRequest_ReceiptTo.get());
+  } else {
+	  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, NULL);
+  }
   if (NS_FAILED(rv))  {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;
