@@ -69,7 +69,9 @@ var preferences=new Preferences();
  * Unit test variables
  */
 var tc_Preferences = new TestCase('Preferences');
-var tc_mailAddress= new TestCase('Mail Address Validation (RFC2822)');
+var tc_arrayDataValidation= new TestCase('Array Validation');
+var tc_mailAddressValidation= new TestCase('Mail Address Validation');
+var tc_mailAddressExtraction= new TestCase('Mail Address Extraction');
 
 
 /**
@@ -104,7 +106,7 @@ function checkAndTraceAndAssert(index, label, address, waitingResult) {
 	globalServices.logSrv( "Unit Test check address:'" + address + "' index=" + index + " begin..." );
 	
 	// prepare display trace message 
-	var message = " : array:'" + label + "' index=" + index + " waitingResult:'" + waitingResult + "' data:'" + address + "'." ;
+	var message = " : Mail Validation '" + label + "' index=" + index + " waitingResult:'" + waitingResult + "' data:'" + address + "'." ;
 	
 	var result = globalServices.isAddressMailValid( address, true );
 	if( result != waitingResult ) {
@@ -210,33 +212,56 @@ tc_Preferences.tests = {
 	}
 }
 
+//Global Index in the array of address to test 
+var _RESULT = 0;
+var _ADDR_TEST = 1;
+var _ADDR_EXTRACTED = 2;
+/**
+ * Unit test to validate data from the array
+ * If this test abort then the tc_mailAddressExtraction unit test will failed
+ */
+tc_arrayDataValidation.tests = {
+	'arrayDataValidation' : function() { // Check the validity of the array that contain data to Validate and Extract mail address
+		for (var index = 0; index < arrayAddressMail.length; index++) {
+			if( arrayAddressMail[index][_RESULT] == true ){
+				assert.isTrue( arrayAddressMail[index][_ADDR_EXTRACTED] != null );
+			} else { // No extraction possible
+				assert.isTrue( arrayAddressMail[index][_ADDR_EXTRACTED] == null );
+			}
+		}
+	},
+}
+
 /**
  * 	Mail Address Validation (RFC2822) unit test
  */
-// Global Index in the array of address to test 
-var _ADDR_TEST = 0;
-var _RESULT = 1;
+tc_mailAddressValidation.tests = {
+	'AddressMailValidation' : function() { // DisplayName <User@DomainName>, User@DomainName and domaine name as an IP address
+		for (var index = 0; index < arrayAddressMail.length; index++) {
+			checkAndTraceAndAssert(index, 'arrayAddressMail for validation',  arrayAddressMail[index][_ADDR_TEST], arrayAddressMail[index][_RESULT]);
+		}
+	},
+}
 
-tc_mailAddress.tests = {
-	'mailAddressThreePartsDomainName' : function() { // DisplayName <User@DomainName>
-		for (var index = 0; index < addrDomainThreeParts.length; index++) {
-			checkAndTraceAndAssert(index, 'mailAddressThreePartsDomainName',  addrDomainThreeParts[index][_ADDR_TEST], addrDomainThreeParts[index][_RESULT]);
-		}
-	},
- 	'mailAddressThreePartsDomainIP' : function() { // DisplayName <User@DomainName>
-		for (var index = 0; index < addrIPThreeParts.length; index++) {
-			checkAndTraceAndAssert(index, 'mailAddressThreePartsDomainIP',  addrIPThreeParts[index][_ADDR_TEST], addrIPThreeParts[index][_RESULT]);
-		}
-	},
-	'mailAddressTwoPartsDomainName' : function() { // User@DomainName
-		for (var index = 0; index < addrDomainTwoParts.length; index++) {
-			checkAndTraceAndAssert(index, 'mailAddressTwoPartsDomainName', addrDomainTwoParts[index][_ADDR_TEST], addrDomainTwoParts[index][_RESULT]);
-		}
-		alert ("PAUSE")
-	},
-	'mailAddressTwoPartsDomainIP' : function() { // User@nnn.nnn.nnn.nnn
-		for (var index = 0; index < addrIPTwoParts.length; index++) {
-			checkAndTraceAndAssert(index, 'mailAddressTwoPartsDomainIP', addrIPTwoParts[index][_ADDR_TEST], addrIPTwoParts[index][_RESULT]);
+/**
+ * 	Mail Address Extraction unit test
+ */
+tc_mailAddressExtraction.tests = {
+	'AddressMailExtraction' : function() { // From table extract mail address if valid with format user@domain.ext
+	alert("PAUSE");
+		for (var index = 0; index < arrayAddressMail.length; index++) {
+			var address = globalServices.getAddressMail(arrayAddressMail[index][_ADDR_TEST], true );
+			globalServices.errorSrv(address);
+			// Check if mail can be valid
+			if( arrayAddressMail[index][_RESULT] == true ){
+				if(address != arrayAddressMail[index][_ADDR_EXTRACTED])
+					alert(address +"=="+ arrayAddressMail[index][_ADDR_EXTRACTED]);
+				assert.isTrue( address == arrayAddressMail[index][_ADDR_EXTRACTED] );
+			} else { // No extraction possible
+				if(address != null)
+					alert(address +"=="+ null );
+				assert.isTrue( address == null );
+			}
 		}
 	},
 }

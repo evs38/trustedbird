@@ -398,13 +398,46 @@ Services.prototype = {
 			}
 			return false;
 		}
-		if( this.emailCheck(email, log) == false ){
+		if( this.emailCheck(email, log) == null ){
 			if( log == true ) { 
 				this.warningSrv( "The Email Address is invalid (" + email + ")."); 
 			}
 			return false; 
 		}
 		return true; 
+	},
+
+	/**
+	 * Retrieve the short version of the valid address mail.
+	 * 
+	 * @param (string)
+	 *            email mail address to be check.
+	 * @param (boolean)
+	 *            log Indicate if the log message will be displayed in the
+	 *            console
+	 * @return (string) Short valid address mail or null if the input address is invalid 
+	 *            
+	 * @author Olivier Brun / BT France
+	 */
+	getAddressMail : function( email, log )
+	{
+		if( log == undefined || log == null ) {
+			log = false;
+		}
+		if( email == undefined || email == null || email == "" ){
+			if( log == true ) {
+				this.warningSrv( "The Email Address is null or emty.");
+			}
+			return null;
+		}
+		var address = this.emailCheck(email, log);
+		if( address == null ){
+			if( log == true ) { 
+				this.warningSrv( "The Email Address is invalid (" + email + ")."); 
+			}
+			return null; 
+		}
+		return address; 
 	},
 
 	
@@ -457,11 +490,12 @@ Services.prototype = {
 	},
 	
 	/**
-	 * Check the address mail validity in regards of the RFC 2822 
+	 * Check the address mail validity in regards of the RFC 2822
+	 * If this address is valid the function return the short address
 	 * @param (string) 
 	 *          Address mail to check.
-	 * @return (boolean)
-	 * 			True for a correct address else the function return false to refuse this address
+	 * @return (string)
+	 * 			null for an invalid address else return the short address like user@domain.ext
 	 * @author Olivier Brun / BT France
 	 * 
 	 *
@@ -589,11 +623,14 @@ Services.prototype = {
 					if( log == true ) {
 						this.warningSrv("Email address seems incorrect (check @ and .'s)");
 					}
-					return false;
+					return null;
 			    }
 			}
 		}
-		dumpArrays(matchArray);
+		/**
+		 * Debug
+		 * dumpArrays(matchArray);
+		 */
 
 		var displayName="";
 		if( matchArray.length > 3 ){ // Update the display name value
@@ -608,12 +645,12 @@ Services.prototype = {
 					this.logSrv("Dump displayName='" + displayName + "'." );
 					this.warningSrv("The display name of your email before the address doesn't seem to be valid.");
 				}
-				return false;
+				return null;
 			}
 
 		}
 		if( matchArray.length < 3 ){
-			return false; // Not enough parameter in the array then the mail address is not correct.
+			return null;	// Not enough parameter in the array then the mail address is not correct.
 		}
 		var user=matchArray[matchArray.length - 2];
 		var domain=matchArray[matchArray.length - 1];
@@ -627,7 +664,7 @@ Services.prototype = {
 				this.logSrv("Dump user='" + user + "'." );
 				this.warningSrv("User part of your email address before the '@' doesn't seem to be valid.");
 			}
-			return false;
+			return null;
 		}
 
 		/* 
@@ -635,7 +672,10 @@ Services.prototype = {
 		 * host name) make sure the IP address is valid. 
 		 */
 		var IPArray=domain.match(ipDomainPat);
-		dumpArrays(IPArray);
+		/**
+		 * Debug
+		 * dumpArrays(IPArray);
+		 */
 		if (IPArray!=null) {
 			// this is an IP address
 			for (var i=1;i<=4;i++) {
@@ -644,10 +684,14 @@ Services.prototype = {
 						this.logSrv("Dump domain='" + domain + "'." );
 						this.warningSrv("Destination IP address as domain after the '@' doesn't seem to be valid!");
 					}
-					return false;
+					return null;
 				}
 			}
-			return true;
+			// Build short valid address
+			if( log == true ) {
+				this.logSrv("Mail address returned='" + user + "@" + domain + "'." );
+			}
+			return new String( user + "@" + domain );
 		}
 
 		// Domain is symbolic name
@@ -657,9 +701,12 @@ Services.prototype = {
 				this.logSrv("Dump domain='" + domain + "'." );
 				this.warningSrv("Domain part of your email address after the '@' doesn't seem to be valid!");
 			}
-			return false;
+			return null;
 		}
-		dumpArrays(domainArray);
+		/**
+		 * Debug
+		 * dumpArrays(domainArray);
+		 */
 
 		/* 
 		 * domain name seems valid, but now make sure that it ends in a
@@ -682,7 +729,7 @@ Services.prototype = {
 				this.logSrv("Dump domain extension='" + domain + "'." );
 				this.warningSrv("The address must end in a top level domain (e.g. .com), or two letter country.");
 			}
-			return false;
+			return null;
 		}
 
 		// Make sure there's a host name preceding the domain.
@@ -691,20 +738,28 @@ Services.prototype = {
 				this.logSrv("Dump domain host name='" + domain + "'." );
 				this.warningSrv("This address is missing a hostname!");
 			}
-			return false;
+			return null;
 		}
-
+		// Build short valid address
+		if( log == true ) {
+			this.logSrv("Mail address returned='" + user + "@" + domain + "'." );
+		}
 		// If we've got this far, everything's valid!
-		return true;
+		return new String( user + "@" + domain );
 	},
 	//  End -->
 }
 
+/** 
+ * Log all elements of an array to debug it.
+ */
 function dumpArrays(array) {
 	if( array == null ) return;
 	var service = new Services();
-	for (var i=0; i<array.length ; i++)
+	for (var i=0; i<array.length ; i++) {
 		service.logSrv("POS" + i + "=" + array[i]);
+	}
+	service = null;
 }
 
 /** 
@@ -716,17 +771,6 @@ String.prototype.trim = function(regExp){
 		regExp = /(^(\s|<)*)|((\s|>|;)*$)/g
 	}
 	return this.replace(regExp, "");
-}
-
-// Exemple d'utilisation :
-function testTrim( message ){
-	alert("testTRIM");
-	var s = "    espaces à gauche et à droite    ";
-	s = message;
-	alert("> " + s + " (" + s.length + ")");
-	// Supprime les espaces à gauche et à droite
-	s = s.trim();
-	alert("> " + s + " (" + s.length + ")");
 }
 
 /**
