@@ -138,7 +138,7 @@ static const SEC_ASN1Template smime_encryptionkeypref_template[] = {
 };
 
 static const SEC_ASN1Template NSSCMSSecurityLabelTemplate[] = {
-    { SEC_ASN1_SEQUENCE, 0, NULL, sizeof(NSSCMSSecurityLabel) },
+    { SEC_ASN1_SET, 0, NULL, sizeof(NSSCMSSecurityLabel) },
     { SEC_ASN1_OBJECT_ID, offsetof(NSSCMSSecurityLabel, securityPolicyIdentifier) },
     { SEC_ASN1_OPTIONAL | SEC_ASN1_INTEGER, offsetof(NSSCMSSecurityLabel, securityClassification) },
     { 0 }

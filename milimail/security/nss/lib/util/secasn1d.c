@@ -1118,6 +1118,11 @@ sec_asn1d_prepare_for_contents (sec_asn1d_state *state)
 
     switch (state->underlying_kind) {
       case SEC_ASN1_SEQUENCE:
+      case SEC_ASN1_SET:
+    /*
+     * Warning: SET is handled here as a SEQUENCE. We need this to read Security Label
+     * as SET is not implemented. Next 'case SEC_ASN1_SET' has been disabled.
+     */
 	/*
 	 * We need to push a child to handle the individual fields.
 	 */
@@ -1132,7 +1137,7 @@ sec_asn1d_prepare_for_contents (sec_asn1d_state *state)
 	    state = sec_asn1d_init_state_based_on_template (state);
 	}
 	break;
-
+#if 0 /* See comment 'Warning...' in previous 'case' */
       case SEC_ASN1_SET:	/* XXX SET is not really implemented */
 	/*
 	 * XXX A plain SET requires special handling; scanning of a
@@ -1145,7 +1150,7 @@ sec_asn1d_prepare_for_contents (sec_asn1d_state *state)
 	PORT_SetError (SEC_ERROR_BAD_DER); /* XXX */
 	state->top->status = decodeError;
 	break;
-
+#endif
       case SEC_ASN1_NULL:
 	/*
 	 * The NULL type, by definition, is "nothing", content length of zero.
