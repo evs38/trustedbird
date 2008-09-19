@@ -42,22 +42,6 @@
 #include "nsStringAPI.h"
 #include "Utils.h"
 
-#ifdef MRS_LOG
-
-#ifdef XP_WIN
-#define INFO(x) \
-	logger.Info(x, "MRS");
-#else
-#define INFO(x) \
-	logger.Info(x, __PRETTY_FUNCTION__);
-#endif
-
-#else
-
-#define INFO(x)
-
-#endif
-
 using namespace std;
 
 AccountService_i::AccountService_i() {
