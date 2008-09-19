@@ -116,3 +116,24 @@ interface MessageComposeService {
 
 	void SendMessage(in CAccount p_account, in CMessage p_message, in MessageSendListener p_listener, in boolean openComposeWindowOnBadFormat) raises (CInternalServerException);
 };
+
+struct CMessageHdr {
+        string id;
+};
+
+typedef sequence<CMessageHdr> CMessageHdrs;
+
+struct CFolder {
+        string name;
+        string uri;
+};
+
+typedef sequence<CFolder> CFolders;
+
+interface MessageBrowseService {
+		void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder);
+		void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders);
+        void GetMessageHdrs(in CFolder p_folder, out CMessageHdrs p_messageHdrs);
+};
+
+
