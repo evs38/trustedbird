@@ -91,11 +91,18 @@ function OutOfOfficeSettings (services) {
 	this.redirectionEnable = false;
 
 	/**
-		The destinationAddress field indicates the address mail to redirect the received 
-		mail for the selected account.
-		@type string
-	*/
+	 * 		The destinationAddress field indicates the address mail to redirect the received
+	 * 		mail for the selected account.
+	 * 		@type string
+	 */
 	this.redirectionDestinationAddress = "";
+	/**
+	 * 		The short destinationAddress to redirect the received mail for the selected account.
+	 * 		This address looks like the following format 'user@domain.extension'.
+	 * 		Without confusing display name or anything else.
+	 * 		@type string
+	 */
+	this.redirectionShortMailAddress = "";
 
 	/**
 		Keep message allow the user to keep the original message to his own mail box.
@@ -105,60 +112,59 @@ function OutOfOfficeSettings (services) {
 	*/
 	this.redirectionKeepMessage = false;
 
-	/*
-		The notificationEnable field activate the automatic response in case of the
-		'Out Of Office' of the user.
-		For each mail message received in the mailbox of the user account, all sender
-		will recieve an out of office notification.
-		@type boolean
+	/**
+	 * 	The notificationEnable field activate the automatic response in case of the	'Out Of Office' of the user.
+	 * 	For each mail message received in the mailbox of the user account, all sender will recieve an out of office 
+	 *  notification.
+	 *  @type boolean
 	*/
 	this.notificationEnable = false;
 
-	/**
-		Definition of the message sent for each sender of a mail message to this mailbox account.
-		@type string
-	*/
+	/**	
+	 * Definition of the message sent for each sender of a mail message to this mailbox account.
+	 * @type string
+	 */
 	this.notificationMessage = "";
 	
-	/**
-		Object to access to global service (Log, ...) 
-		@type Services
-	*/
+	/**	
+	 * Object to access to global service (Log, ...)
+	 * @type Services
+	 */
 	this.services = services;
 	
 	/**
-		Name of the script installed to the sieve server
-		@type string
-	*/
+	 * 	Name of the script installed to the sieve server
+	 * 	@type string
+	 */
 	this.scriptName = null;
 
-	/* 
-	 * Value define to put the default subjet for the notification
-	 * @type string
+	/**
+	 *	Value define to put the default subjet for the notification
+	 *	@type string
 	 */
 	this.notificationSubject = null;
 
 	/**
-		Object that contains the generated data to build the runtime script.
-		This field will be sent to the sieve server in the file named 'scriptOutOfOffice'. 
-		@type string
-	*/
+	 * 	Object that contains the generated data to build the runtime script.
+	 * 	This field will be sent to the sieve server in the file named 'scriptOutOfOffice'.
+	 * 	@type string
+	 */
 	this.scriptCore = "";
 
 	/**
-		Latest script core.
-		@type string
-	*/
+	 * 	Latest script core.
+	 * 	@type string
+	 */
 	this.latestScript = "";
 }
 
 OutOfOfficeSettings.prototype = {
 
-	/*
-	 * Return the name of the class initialized in CONST_HEADER variable.
-	 * This function overload the 'toString' standard function from Javascript Object.
+	/**
+	 *	Return the name of the class initialized in CONST_HEADER variable.
+	 *	This function overload the 'toString' standard function from Javascript Object.
 	 * 
-	 * @return (string) CONST_HEADER containing class name.
+	 *	@return (string) CONST_HEADER containing class name.
 	 */
 	toString : function()
 	{
@@ -169,8 +175,8 @@ OutOfOfficeSettings.prototype = {
 	},
 
 	/**
-		Initialize OutOfOfficeSettings 
-	*/
+	 * 	Initialize OutOfOfficeSettings
+	 */
 	initialize : function(uri)
 	{
 		if( this.services == undefined || this.services == null ) {
@@ -184,78 +190,152 @@ OutOfOfficeSettings.prototype = {
 	},
 
 	/**
-		Dump OutOfOfficeSettings 
-	*/
+	 * 	Dump OutOfOfficeSettings
+	 */
 	dump : function()
 	{
 		if( this.services != null ) {
 			this.services.logSrv( this.toString() + "OutOfOfficeSettings:dump script named'" + this.getScriptName() + "'...");
-			this.services.logSrv( this.toString() + "\tValue.redirectionEnable="+this.redirectionEnable);
-			this.services.logSrv( this.toString() + "\tValue.redirectionDestinationAddress="+this.redirectionDestinationAddress);
-			this.services.logSrv( this.toString() + "\tValue.redirectionKeepMessage="+this.redirectionKeepMessage);
-			this.services.logSrv( this.toString() + "\tValue.notificationEnable="+this.notificationEnable);
-			this.services.logSrv( this.toString() + "\tValue.notificationMessage="+this.notificationMessage);
+			this.services.logSrv( this.toString() + "\tValue.redirectionEnable="+this.getRedirection());
+			this.services.logSrv( this.toString() + "\tValue.redirectionDestinationAddress="+this.getRedirectionAddress() );
+			this.services.logSrv( this.toString() + "\tValue.redirectionKeepMessage="+this.getRedirectionKeepMessage() );
+			this.services.logSrv( this.toString() + "\tValue.notificationEnable="+this.getNotification() );
+			this.services.logSrv( this.toString() + "\tValue.notificationMessage="+this.getNotificationMessage() );
 			this.services.logSrv( this.toString() + "OutOfOfficeSettings:dump ended.");
 		}
 	},
 	
 
 	/**
-		@TODO
-		@return (boolean) redirectionEnable containing the activation status of redirection
-	*/
+	 *	@TODO
+	 *	@return (boolean) redirectionEnable containing the activation status of redirection
+	 */
 	getRedirection : function()
 	{
 		return this.redirectionEnable;
 	},
 	
 	/**
-		@TODO
-		@return (string) redirectionDestinationAddress containing the address of the redirection
-	*/
+	 *	@TODO
+	 *	@param (boolean) value containing the activation status of redirection
+	 */
+	setRedirection : function(value)
+	{
+		this.redirectionEnable = value;
+	},
+	
+	/**
+	 * 	@TODO
+	 * 	@return (string) redirectionDestinationAddress containing the address of the redirection
+	 */
 	getRedirectionAddress : function()
 	{
 		return this.redirectionDestinationAddress;
 	},
 
 	/**
-		@TODO
-		@return (boolean) redirectionKeepMessage containing the keep message status of redirection
-	*/
+	 * 	@TODO
+	 * 	@param (string) value containing the address of the redirection
+	 */
+	setRedirectionAddress : function(value)
+	{
+		this.redirectionDestinationAddress = value;
+	},
+
+	/**
+	 * 	@TODO
+	 * 	The requirement is strict because this parameter is use only for the generated script
+	 * 	@return (string) redirectionDestinationAddress containing the address of the redirection
+	 */
+	getShortMailAddress : function()
+	{
+		// require parameter must be defined
+		if( this.redirectionShortMailAddress == undefined || this.redirectionShortMailAddress == null ){
+			throw "ERROR: Out of Office Manager: To get the short mail address must be defined.";
+		}
+		return this.redirectionShortMailAddress;
+	},
+
+	/**
+	 * 	@TODO
+	 * 	The requirement is strict because this parameter is use only for the generated script
+	 * 	@param (string) value containing the address of the redirection
+	 */
+	setShortMailAddress : function(value)
+	{
+		// require parameter must be defined
+		if( shortAddress == undefined || shortAddress == null ){
+			throw "ERROR: Out of Office Manager: To set the short mail address must be defined.";
+		}
+		this.redirectionShortMailAddress;
+	},
+
+
+	/**
+	 *	@TODO
+	 *	@return (boolean) redirectionKeepMessage containing the keep message status of redirection
+	 */
 	getRedirectionKeepMessage : function()
 	{
 		return this.redirectionKeepMessage;
 	},
 
 	/**
-		@TODO
-		@return (boolean) notificationEnable containing the activation status of notification
-	*/
+	 *	@TODO
+	 *	@return (boolean) value containing the keep message status of redirection
+	 */
+	setRedirectionKeepMessage : function(value)
+	{
+		this.redirectionKeepMessage = value;
+	},
+
+	/**
+	 *	@TODO
+	 *	@return (boolean) notificationEnable containing the activation status of notification
+	 */
 	getNotification : function()
 	{
 		return this.notificationEnable;
 	},
 
 	/**
-		@TODO
-		@return (string) notificationMessage containing the notification message 
-	*/
+	 *	@TODO
+	 *	@return (boolean) value containing the activation status of notification
+	 */
+	setNotification : function(value)
+	{
+		this.notificationEnable = value;
+	},
+
+	/**
+	 *	@TODO
+	 *	@return (string) notificationMessage containing the notification message
+	 */
 	getNotificationMessage : function()
 	{
 		return this.notificationMessage;
 	},
 
 	/**
-		Set data of an OutOfOfficeSettings object with an array of attributs data
-		@param (array) arraySettings Define all attributes to set an OutOfOfficeSettings object 
-	*/
+	 *	@TODO
+	 *	@return (string) value containing the notification message
+	 */
+	setNotificationMessage : function(value)
+	{
+		this.notificationMessage = value;
+	},
+
+	/**
+	 *	Set data of an OutOfOfficeSettings object with an array of attributs data
+	 *	@param (array) arraySettings Define all attributes to set an OutOfOfficeSettings object
+	 */
 	setDataFromArray : function(arraySettings)
 	{
-		this.redirectionEnable				=	arraySettings[0];
-		this.redirectionDestinationAddress	=	arraySettings[1];
-		this.redirectionKeepMessage			=	arraySettings[2];
-		this.notificationEnable				=	arraySettings[3];
-		this.notificationMessage			=	arraySettings[4];
+		this.setRedirection( arraySettings[0] );
+		this.setRedirectionAddress( arraySettings[1] );
+		this.setRedirectionKeepMessage( arraySettings[2] );
+		this.setNotification( arraySettings[3] );
+		this.setNotificationMessage( arraySettings[4] );
 		this.dump();
 	},
 
@@ -269,11 +349,11 @@ OutOfOfficeSettings.prototype = {
 	*/
 	setDataFromFields : function(redirectionEnable,redirectionDestinationAddress,redirectionKeepMessage,notificationEnable,notificationMessage)
 	{
-		this.redirectionEnable				=	redirectionEnable;
-		this.redirectionDestinationAddress	=	redirectionDestinationAddress;
-		this.redirectionKeepMessage			=	redirectionKeepMessage;
-		this.notificationEnable				=	notificationEnable;
-		this.notificationMessage			=	notificationMessage;	
+		this.setRedirection( redirectionEnable );
+		this.setRedirectionAddress( redirectionDestinationAddress );
+		this.setRedirectionKeepMessage( redirectionKeepMessage );
+		this.setNotification( notificationEnable );
+		this.setNotificationMessage( notificationMessage );	
 		this.dump();
 	},
 
@@ -283,11 +363,11 @@ OutOfOfficeSettings.prototype = {
 	*/
 	setDataFromObject : function(objSettings)
 	{
-		this.redirectionEnable				=	objSettings.redirectionEnable;
-		this.redirectionDestinationAddress	=	objSettings.redirectionDestinationAddress;
-		this.redirectionKeepMessage			=	objSettings.redirectionKeepMessage;
-		this.notificationEnable				=	objSettings.notificationEnable;
-		this.notificationMessage			=	objSettings.notificationMessage;	
+		this.setRedirection( objSettings.getRedirection() );
+		this.setRedirectionAddress( objSettings.getRedirectionAddress() );
+		this.setRedirectionKeepMessage( objSettings.getRedirectionKeepMessage() );
+		this.setNotification( objSettings.getNotification() );
+		this.setNotificationMessage( objSettings.getNotificationMessage() );	
 		this.dump();
 	},
 	
@@ -298,14 +378,16 @@ OutOfOfficeSettings.prototype = {
 	checkDataValidity : function()
 	{
 		// Redirection activated check the mail address.
-		if( this.redirectionEnable == true ){
-			if( this.services.isAddressMailValid( this.redirectionDestinationAddress, true ) == false ){
+		if( this.getRedirection() == true ){
+			if( this.services.isAddressMailValid( this.getRedirectionAddress(), true ) == false ){
 				return 1;
 			}
+			// Redirection address valid, update the short mail address to use in the final sieve script
+			this.setShortMailAddress( this.services.getShortAddressMailFrom( this.getRedirectionAddress() ) );
 		}
 		// Redirection activated check the mail address.
-		if( this.notificationEnable == true ){
-			if( this.services.isNotificationMessageValid( this.notificationMessage ) == false ){
+		if( this.getNotification() == true ){
+			if( this.services.isNotificationMessageValid( this.getNotificationMessage() ) == false ){
 				return 2;
 			}
 		}
@@ -360,14 +442,14 @@ OutOfOfficeSettings.prototype = {
 		this.insertLine("# * Do not modify this part.");
 		this.insertLine("# *" ); 
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
-		this.insertLine(this.CONST_KEYWORD_REDIRECTION 			+ "=" + this.redirectionEnable);
+		this.insertLine(this.CONST_KEYWORD_REDIRECTION 			+ "=" + this.getRedirection() );
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
-		this.insertLine(this.CONST_KEYWORD_REDIRECTIONADDRESS	+ "=" + this.redirectionDestinationAddress);
+		this.insertLine(this.CONST_KEYWORD_REDIRECTIONADDRESS	+ "=" + this.getRedirectionAddress() );
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
-		this.insertLine(this.CONST_KEYWORD_KEEPMESSAGE 			+ "=" + this.redirectionKeepMessage);
+		this.insertLine(this.CONST_KEYWORD_KEEPMESSAGE 			+ "=" + this.getRedirectionKeepMessage() );
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
-		this.insertLine(this.CONST_KEYWORD_NOTIFICATION 		+ "=" + this.notificationEnable);
-		var tempNotification = this.encodeNotification( this.notificationMessage );
+		this.insertLine(this.CONST_KEYWORD_NOTIFICATION 		+ "=" + this.getNotification() );
+		var tempNotification = this.encodeNotification( this.getNotificationMessage() );
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_NOTIFICATIONMESSAGE	+ "=" + tempNotification);
 		this.insertLine("# ******************************************************************************");
@@ -395,7 +477,7 @@ OutOfOfficeSettings.prototype = {
 	{
 		this.insertLine();
 		var require = false;
-		if( this.notificationEnable == true ){
+		if( this.getNotification() == true ){
 			require = true;
 		}
 		if( require == false ){
@@ -405,7 +487,7 @@ OutOfOfficeSettings.prototype = {
 
 		var requireCount = 0; // Needed to add coma between require function (futur used)
 		this.insertLine("require [", false);
-		if( this.notificationEnable == true ){
+		if( this.getNotification() == true ){
 			this.insertLine("\"vacation\"", false);
 			++requireCount;
 		}
@@ -419,15 +501,15 @@ OutOfOfficeSettings.prototype = {
 	 */
 	generateCoreRedirection : function()
 	{
-		if( this.redirectionEnable == false ){
+		if( this.getRedirection() == false ){
 			return;  // Do not need to add redirection code
 		}
 		this.insertLine();
-		this.insertLine("if header :contains  \"From\" \"" + this.redirectionDestinationAddress +"\" {");
+		this.insertLine("if header :contains  \"From\" \"" + this.getShortMailAddress() +"\" {");
 		this.insertLine("\tstop;");
 		this.insertLine("}");
-		this.insertLine("redirect \"" + this.redirectionDestinationAddress +"\";");
-		if( this.redirectionKeepMessage == true ){
+		this.insertLine("redirect \"" + this.getShortMailAddress() +"\";");
+		if( this.getRedirectionKeepMessage() == true ){
 			this.insertLine("keep;");
 		}
 		this.insertLine();
@@ -441,14 +523,14 @@ OutOfOfficeSettings.prototype = {
 	 */
 	generateCoreNotification : function()
 	{
-		if( this.notificationEnable == false ){
+		if( this.getNotification() == false ){
 			return; // Do not need to add notification code
 		}
 		this.insertLine("vacation");
 		this.insertLine("\t:subject \"", false);
 		this.insertLine(this.getNotificationSubject(), false);
 		this.insertLine("\" \"", false);
-		this.insertLine(this.notificationMessage, false);
+		this.insertLine(this.getNotificationMessage(), false);
 		this.insertLine("\";");
 		this.services.logSrv( this.toString() + "\tgenerateCoreNotification");
 	},
@@ -565,11 +647,11 @@ OutOfOfficeSettings.prototype = {
 	{
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTION + ".enabled";
-			this.redirectionEnable = gPreference.getBoolPref(valueToRead);
-			this.services.logSrv( this.toString() + valueToRead + "=" + this.redirectionEnable);
+			this.setRedirection( gPreference.getBoolPref(valueToRead) );
+			this.services.logSrv( this.toString() + valueToRead + "=" + this.getRedirection());
 		}
 		catch(e) {
-			this.redirectionEnable = false; 
+			this.setRedirection(  false ); 
 			this.services.logSrv( this.toString() + "Set redirectionEnable to default value (false)" );
 		}
 	},
@@ -582,11 +664,11 @@ OutOfOfficeSettings.prototype = {
 	{
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTIONADDRESS;
-			this.redirectionDestinationAddress = gPreference.getCharPref(valueToRead);
-			this.services.logSrv( this.toString() + valueToRead + "=" + this.redirectionDestinationAddress);
+			this.setRedirectionAddress( gPreference.getCharPref(valueToRead) );
+			this.services.logSrv( this.toString() + valueToRead + "=" + this.getRedirectionAddress() );
 		}
 		catch(e) {
-			this.redirectionDestinationAddress = ""; 
+			this.setRedirectionAddress( "" ); 
 			this.services.logSrv( this.toString() + "Set redirectionDestinationAddress to default value (empty string)" );
 		}
 	},
@@ -599,11 +681,11 @@ OutOfOfficeSettings.prototype = {
 	{
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_KEEPMESSAGE + ".enabled";
-			this.redirectionKeepMessage = gPreference.getBoolPref(valueToRead);
-			this.services.logSrv( this.toString() + valueToRead + "=" + this.redirectionKeepMessage);
+			this.setRedirectionKeepMessage( gPreference.getBoolPref(valueToRead) );
+			this.services.logSrv( this.toString() + valueToRead + "=" + this.getRedirectionKeepMessage() );
 		}
 		catch(e) {
-			this.redirectionKeepMessage = false; 
+			this.setRedirectionKeepMessage( false ); 
 			this.services.logSrv( this.toString() + "Set redirectionKeepMessage to default value (false)" );
 		}
 	},
@@ -616,11 +698,11 @@ OutOfOfficeSettings.prototype = {
 	{
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_NOTIFICATION + ".enabled";
-			this.notificationEnable = gPreference.getBoolPref(valueToRead);
-			this.services.logSrv( this.toString() + valueToRead + "=" + this.notificationEnable);
+			this.setNotification( gPreference.getBoolPref(valueToRead) );
+			this.services.logSrv( this.toString() + valueToRead + "=" + this.getNotification() );
 		}
 		catch(e) {
-			this.notificationEnable = false; 
+			this.setNotification( false ); 
 			this.services.logSrv( this.toString() + "Set notificationEnable to default value (false)" );
 		}
 	},
@@ -633,11 +715,11 @@ OutOfOfficeSettings.prototype = {
 	{
 		try {
 			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_NOTIFICATIONMESSAGE;
-			this.notificationMessage = gPreference.getCharPref(valueToRead);
-			this.services.logSrv( this.toString() + valueToRead + "=" + this.notificationMessage);
+			this.setNotificationMessage( gPreference.getCharPref(valueToRead) );
+			this.services.logSrv( this.toString() + valueToRead + "=" + this.getNotificationMessage());
 		}
 		catch(e) {
-			this.notificationMessage = ""; 
+			this.setNotificationMessage( "" ); 
 			this.services.logSrv( this.toString() + "Set notificationMessage to default value (empty string)" );
 		}
 	},

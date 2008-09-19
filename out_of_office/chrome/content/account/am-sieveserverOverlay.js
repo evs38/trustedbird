@@ -443,9 +443,10 @@ function checkDataValidity()
 		return false;
 	}
 	if( type == 1 && gSieveServerToConfigure.getHostName() == "" ){
-		alertDataValidity("&outofoffice.settings.invalid.data;", 'labelHostname');
-		globalServices.setFocusCtrlID('txtHostname');
-		return false;
+		gSieveServerToConfigure.setHostName( gAccount.getHost().getHostname() );
+		//alertDataValidity("&outofoffice.settings.invalid.data;", 'labelHostname');
+		//globalServices.setFocusCtrlID('txtHostname');
+		//return false;
 	}
 
 	return true;

@@ -36,16 +36,22 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
-	@fileoverview
-	User interface to set out of office parameters to a user account.
-	This file is called by the OutOfOfficeAccountListView
-	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
-*/
+ * @fileoverview
+ * User interface to set out of office parameters to a user account.
+ * This file is called by the OutOfOfficeAccountListView
+ * @author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+ */
 
-
+/**
+ * Global variables
+ */
 var globalServices=new Services();
 var gOutOfOfficeManager = null;
     
+/**
+ * Function to initialize user interface on windows load.
+ * @param (object) sender Context window document.
+ */
 function onDialogLoad(sender)
 {
 	enableCheckboxControls( false );
@@ -68,28 +74,17 @@ function onDialogLoad(sender)
 		throw "The object Out Of Office manager cannot be null.";
 	}
 	// Add account name in the window title
-	window.title += " '";
-	window.title += gOutOfOfficeManager.account.getDescription();
-	window.title += "'";
+	document.title += " '";
+	document.title += gOutOfOfficeManager.account.getDescription();
+	document.title += "'";
 	
 	gOutOfOfficeManager.loadSettings(this);	
 }
 
-function onConnectFinish(success)
-{
-	globalServices.logSrv("onConnectFinish("+ success +") Begin to update user interface control..." );
-	// Retrieve out of office settings from server Cyrus for the out of office file
-	if( gOutOfOfficeManager.getSettings() == null ){	// No account selected
-		globalServices.errorSrv("No account selected to configure" );
-		return;
-	}
-	enableCheckboxControls( success );
-	enableOutOfOfficeRedirectionCtrl(gOutOfOfficeManager.getSettings().getRedirection());
-	enableOutOfOfficeNotificationCtrl(gOutOfOfficeManager.getSettings().getNotification());
-	updateData(false); // Set data to user interface control
-	globalServices.logSrv("onConnectFinish ended");
-}
-
+/**
+ * Function to retrieve and save data.
+ * @param (object) sender Context window document.
+ */
 function onDialogAccept(sender)
 {
 	globalServices.logSrv("onDialogAccept..." );
@@ -110,8 +105,27 @@ function onDialogAccept(sender)
 }
 
 /**
-	Manage the redirection UI control
-*/
+ * Function to report connection status.
+ * @param (boolean) success Indicate the status of the connection with the server.
+ */
+function onConnectFinish(success)
+{
+	globalServices.logSrv("onConnectFinish("+ success +") Begin to update user interface control..." );
+	// Retrieve out of office settings from server Cyrus for the out of office file
+	if( gOutOfOfficeManager.getSettings() == null ){	// No account selected
+		globalServices.errorSrv("No account selected to configure" );
+		return;
+	}
+	enableCheckboxControls( success );
+	enableOutOfOfficeRedirectionCtrl(gOutOfOfficeManager.getSettings().getRedirection());
+	enableOutOfOfficeNotificationCtrl(gOutOfOfficeManager.getSettings().getNotification());
+	updateData(false); // Set data to user interface control
+	globalServices.logSrv("onConnectFinish ended");
+}
+
+/**
+ * Manage the redirection UI control
+ */
 function onOutOfOfficeRedirectionCommand(sender)
 {
 	globalServices.logSrv("Redirection activated='" + sender.checked + "'.");
@@ -119,9 +133,9 @@ function onOutOfOfficeRedirectionCommand(sender)
 }
 
 /**
-	Manage UI control associate to redirection field.
-	Control associated is Destination address and Keep message fields.
-*/
+ * Manage UI control associate to redirection field.
+ * Control associated is Destination address and Keep message fields.
+ */
 function enableOutOfOfficeRedirectionCtrl(enabled)
 {
 	globalServices.enableCtrlID('labelOutOfOfficeDestinationAddress', enabled);

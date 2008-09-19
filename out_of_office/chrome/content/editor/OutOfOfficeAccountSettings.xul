@@ -58,6 +58,7 @@
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeManager.js"/>
 	<script type="application/x-javascript" src="chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.js"/>
 	
+	<script type="application/x-javascript" src="chrome://global/content/inlineSpellCheckUI.js"/>
 	<script type="application/x-javascript" src="chrome://messenger/content/messengercompose/MsgComposeCommands.js"/>
 	<script type="application/x-javascript" src="chrome://messenger/content/messengercompose/addressingWidgetOverlay.js"/>
 

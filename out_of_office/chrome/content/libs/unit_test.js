@@ -253,7 +253,7 @@ tc_mailAddressValidation.tests = {
 tc_mailAddressExtraction.tests = {
 	'AddressMailExtraction' : function() { // From table extract mail address if valid with format user@domain.ext
 		for (var index = 0; index < arrayAddressMail.length; index++) {
-			var address = globalServices.getAddressMail(arrayAddressMail[index][_ADDR_TEST] );
+			var address = globalServices.getShortAddressMailFrom(arrayAddressMail[index][_ADDR_TEST] );
 			// Check if mail can be valid
 			if( arrayAddressMail[index][_RESULT] == true ){
 				assert.isTrue( address == arrayAddressMail[index][_ADDR_EXTRACTED] );

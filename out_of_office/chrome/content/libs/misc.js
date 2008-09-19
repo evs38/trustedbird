@@ -71,7 +71,7 @@ function Services() {
 	 * 
 	 * @type string
 	 */
-	this.extensionVersion="0.0.6";
+	this.extensionVersion="0.0.8";
 	/**
 	 * preferences
 	 * 
@@ -419,7 +419,7 @@ Services.prototype = {
 	 *            
 	 * @author Olivier Brun / BT France
 	 */
-	getAddressMail : function( email, log )
+	getShortAddressMailFrom : function( email, log )
 	{
 		if( log == undefined || log == null ) {
 			log = false;

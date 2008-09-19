@@ -215,7 +215,7 @@ function onEditClick(sender)
 	var args = new Array();
 	// args["OutOfOfficeSieveAccountToConfigure"] = currentAccount;
 	args["OutOfOfficeSieveAccountToConfigure"] = gOutOfOfficeManager;
-	args["OutOfOfficeSieveAccountReturnCode"] = null;
+	args["OutOfOfficeSieveAccountReturnCode"] = false;
 	globalServices.logSrv( OOOALV_FILE_HEADER + "onEditClick open account settings dialog" );
 
 	window.openDialog("chrome://out_of_office/content/editor/OutOfOfficeAccountSettings.xul", "OutOfOfficeScriptGenerator", "chrome,modal,titlebar,centerscreen", args);	        

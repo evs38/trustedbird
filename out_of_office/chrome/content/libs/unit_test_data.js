@@ -57,9 +57,9 @@ var keyIntTest="extensions.out_of_office.unittestint";
  *
  * 
  * Array definitions:
- * oooSettings.redirection=true;
- * oooSettings.destinationAddress=olivier.brun@bt.com;
- * oooSettings.keepMessage=true;
+ * oooSettings.redirectionEnable=true;
+ * oooSettings.redirectionDestinationAddress=DisplayName UserName@DomaineName
+ * oooSettings.redirectionKeepMessage=true;
  * oooSettings.notificationEnable=true;
  * oooSettings.notificationMessage="Je suis absent pour le moment.\r\n\nRobert.";
  * 
