@@ -39,9 +39,11 @@ package org.milimail.messageRemoteServiceAPI.init;
 import java.io.IOException;
 
 import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
+import org.milimail.messageRemoteServiceAPI.browse.MessageBrowseServiceProxy;
 import org.milimail.messageRemoteServiceAPI.compose.MessageComposeServiceProxy;
 import org.milimail.messageRemoteServiceAPI.exceptions.ServiceCreationException;
 import org.milimail.messageRemoteServiceAPI.stubs.AccountServiceHelper;
+import org.milimail.messageRemoteServiceAPI.stubs.MessageBrowseServiceHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageComposeServiceHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListenerHelper;
@@ -110,5 +112,18 @@ public class ServiceCreator {
 		return new MessageComposeServiceProxy(MessageComposeServiceHelper
 				.narrow(obj));
 
+	}
+
+	public MessageBrowseServiceProxy createBrowseService() throws ServiceCreationException {
+		String ior;
+		try {
+			ior = IORFinder.getIOR("MessageBrowseService");
+		} catch (IOException e) {
+			throw new ServiceCreationException(
+					"Cannot create MessageBrowseService, verify IOR File", e);
+		}
+		org.omg.CORBA.Object obj = orb.string_to_object(ior);
+		return new MessageBrowseServiceProxy(MessageBrowseServiceHelper
+				.narrow(obj));
 	}
 }
