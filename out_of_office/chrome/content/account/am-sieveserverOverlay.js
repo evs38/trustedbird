@@ -72,7 +72,7 @@ onInit = function onInitHook(aPageId, aServerId)
 
 
 	globalServices.logSrv("onInitHook for Server='" + gServer.key + "' and for Identity='" + gIdentity.key + "' started.");
-	gAccount = getAccountByKey(gIdentity);
+	gAccount = getAccountByKey(gServer.key);
 	
 	// For the first version all functionalities are not used.
 	hideControlNotUsed();
@@ -442,13 +442,25 @@ function checkDataValidity()
 		alertDataValidity("&outofoffice.settings.invalid.choice;", 'cbxHost' );
 		return false;
 	}
-	if( type == 1 && gSieveServerToConfigure.getHostName() == "" ){
-		gSieveServerToConfigure.setHostName( gAccount.getHost().getHostname() );
-		//alertDataValidity("&outofoffice.settings.invalid.data;", 'labelHostname');
-		//globalServices.setFocusCtrlID('txtHostname');
-		//return false;
-	}
+	if( type == 1 ){
+		// retrieve default value if an error occurs
+		var account = new SieveImapHost(gAccount.imapKey);
+		if( gSieveServerToConfigure.getHostName() == "" ) {
+			gSieveServerToConfigure.setHostName( account.getHostname() );
+			alertDataValidity("&outofoffice.settings.invalid.data;", 'labelHostname', account.getHostname());
+			//globalServices.setFocusCtrlID('txtHostname');
+			//return false;
+		}
 
+		if( gSieveServerToConfigure.getHostPort() == 0 ){
+			gSieveServerToConfigure.setHostPort( account.getPort() );
+			alertDataValidity("&outofoffice.settings.invalid.data;", 'labelPort', account.getPort());
+		}
+		account = null;
+	} else { // reset preference to the default value if the user want to use default imap settings
+		gSieveServerToConfigure.setHostPort(2000);
+		gSieveServerToConfigure.setHostName("");
+	}
 	return true;
 }
 
@@ -457,10 +469,13 @@ function checkDataValidity()
  * @param (string) message String to localize.
  * @param (string) fieldName Label of the UI control id. 
  */
-function alertDataValidity( message, fieldName )
+function alertDataValidity( message, fieldName, value )
 {
 	var values = new Array();
 	values.push( globalServices.getStringLabel(fieldName) );
+	if( value != undefined && value != null ){
+		values.push( value );
+	}
 	alert( globalServices.localizeString( "out_of_office_locale.properties", message, values) );
 }
 

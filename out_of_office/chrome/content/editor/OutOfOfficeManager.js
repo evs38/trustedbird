@@ -251,7 +251,7 @@ OutOfOfficeSettings.prototype = {
 	{
 		// require parameter must be defined
 		if( this.redirectionShortMailAddress == undefined || this.redirectionShortMailAddress == null ){
-			throw "ERROR: Out of Office Manager: To get the short mail address must be defined.";
+			throw "ERROR: Out of Office Manager: To get the short mail address, the value must be defined.";
 		}
 		return this.redirectionShortMailAddress;
 	},
@@ -264,10 +264,10 @@ OutOfOfficeSettings.prototype = {
 	setShortMailAddress : function(value)
 	{
 		// require parameter must be defined
-		if( shortAddress == undefined || shortAddress == null ){
-			throw "ERROR: Out of Office Manager: To set the short mail address must be defined.";
+		if( value == undefined || value == null ){
+			throw "ERROR: Out of Office Manager: To set the short mail address, the value must be defined.";
 		}
-		this.redirectionShortMailAddress;
+		this.redirectionShortMailAddress = value;
 	},
 
 

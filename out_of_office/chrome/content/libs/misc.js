@@ -368,8 +368,12 @@ Services.prototype = {
 	    	return message; // No value to replace
 	    
         // Replace variables in string
-	    for(var count = 0; count < arrayValue.length; count++ ){
+	    // Save length because the method 'arrayValue.shift()' remove the entry
+    	var maxLength = arrayValue.length; 
+	    for(var count = 0; count < maxLength; count++ ){
 			var reg = new RegExp("%"+(count+1), "g");	
+			// var value = arrayValue.shift();
+	    	// this.logSrv( "Add value '" + value + " to var " + "%"+(count+1) );
 			message = message.replace(reg, arrayValue.shift() );
 	    }
 		return message;

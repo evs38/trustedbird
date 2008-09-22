@@ -73,13 +73,17 @@ function onAccept()
  * @param searchAccount Account parameter to search from account list
  * @return account found in the sieve server list.
  */
-function getAccountByKey(searchAccount) 
-{ 
+function getAccountByKey(searchKey) 
+{
+	//require
+	if( searchKey == undefined || searchKey == null){
+		throw "ERROR: getAccountByKey(): The account cannot be retrieved because the key is not valid!";
+	}
 	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 
 	jsLoader.loadSubScript("chrome://out_of_office/content/options/OutOfOfficeSieveServerTreeView.js");
 
-	globalServices.logSrv( "getAccountByKey started : search " + gServer.key + "." ) ;
+	globalServices.logSrv( "getAccountByKey started : search " + searchKey + "." ) ;
 
 	// Use the SievePrefTreeView object to retrieve the account list (Only account kind of imap)
 	// @TODO Optimization will be to retrieve only the account used (not important).
@@ -90,7 +94,7 @@ function getAccountByKey(searchAccount)
 
 		globalServices.logSrv( "    Account key=" + account.getImapKey() + " description=" + account.getDescription() );
 		// Retrieve each incoming server to find the right account to configure
-		if( account.getImapKey() == gServer.key )
+		if( account.getImapKey() == searchKey )
 		{
 			globalServices.logSrv( "getAccountByKey ended: Account found=" + account + "." ) ;
 			return account;
