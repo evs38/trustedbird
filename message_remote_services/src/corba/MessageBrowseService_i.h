@@ -39,6 +39,7 @@
 
 #include "nsIServiceManager.h"
 #include "Services.h"
+#include "nsString.h"
 
 class MessageBrowseService_i : public POA_MessageBrowseService
 {
@@ -54,6 +55,7 @@ public:
 
 private:
 
+	virtual void Adapt(const char * recipients, Addresses& addresses);
 };
 
 #endif /*MESSAGEBROWSESERVICE_I_H_*/

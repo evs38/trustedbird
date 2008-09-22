@@ -119,6 +119,14 @@ interface MessageComposeService {
 
 struct CMessageHdr {
         string id;
+        string author;
+        string subject;
+        Addresses recipients;
+        Addresses ccRecipients;
+        string date;
+        string charset;
+        boolean isRead;
+        unsigned long size;
 };
 
 typedef sequence<CMessageHdr> CMessageHdrs;
@@ -131,9 +139,9 @@ struct CFolder {
 typedef sequence<CFolder> CFolders;
 
 interface MessageBrowseService {
-		void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder);
-		void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders);
-        void GetMessageHdrs(in CFolder p_folder, out CMessageHdrs p_messageHdrs);
+		void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder) raises (CInternalServerException);
+		void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders) raises (CInternalServerException);
+        void GetMessageHdrs(in CFolder p_folder, out CMessageHdrs p_messageHdrs) raises (CInternalServerException);
 };
 
 

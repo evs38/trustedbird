@@ -43,6 +43,8 @@
 #include "nsAdapterEnumerator.h"
 #include "nsMsgUtils.h"
 #include "nsIRDFService.h"
+#include "nsStringAPI.h"
+#include "nsIMsgHeaderParser.h"
 #include <iostream>
 
 using namespace std;
@@ -66,13 +68,14 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	rv = rdf->GetResource(nsCAutoString(p_folder.uri), getter_AddRefs(
 			resource));
 	pFolder = do_QueryInterface(resource, &rv);
+	ENSURE_SUCCESS(rv, "Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
 
 	nsCOMPtr<nsIMsgDatabase> pMsgDatabase;
 	rv = pFolder->GetMsgDatabase(nsnull, getter_AddRefs(pMsgDatabase));
 	ENSURE_SUCCESS(rv, "Cannot GetMsgDatabase");
 
 	nsCOMPtr<nsISimpleEnumerator> pSimpleEnumerator;
-	pMsgDatabase->EnumerateMessages(getter_AddRefs(pSimpleEnumerator));
+	rv = pMsgDatabase->EnumerateMessages(getter_AddRefs(pSimpleEnumerator));
 	ENSURE_SUCCESS(rv, "Cannot EnumerateMessages");
 
 	PRBool moreElements = PR_FALSE;
@@ -86,19 +89,107 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 		nsCOMPtr<nsISupports> pEntry;
 		rv = pSimpleEnumerator->GetNext(getter_AddRefs(pEntry));
 		ENSURE_SUCCESS(rv, "Cannot GetNext");
-		cout << "DEBUG " << i << endl;
-
 		nsCOMPtr<nsIMsgDBHdr> pMsgDBHdr(do_QueryInterface(pEntry));
 		CMessageHdr cMessageHdr;
+
+		//ID Message
 		char * id;
-		pMsgDBHdr->GetMessageId(&id);
+		rv = pMsgDBHdr->GetMessageId(&id);
+		ENSURE_SUCCESS(rv, "Cannot GetMessageId on nsIMsgDBHdr");
 		cMessageHdr.id = id;
+
+		//Subject
+		char * subject;
+		rv = pMsgDBHdr->GetSubject(&subject);
+		cMessageHdr.subject = subject;
+
+		//Recipients
+		char * r;
+		rv = pMsgDBHdr->GetRecipients(&r);
+		ENSURE_SUCCESS(rv, "Cannot GetRecipients on nsIMsgDBHdr");
+
+		Addresses recipients;
+		Adapt(r, recipients);
+		cMessageHdr.recipients = recipients;
+
+		//CC
+		char * cc;
+		rv = pMsgDBHdr->GetCcList(&cc);
+		ENSURE_SUCCESS(rv, "Cannot GetCcList on nsIMsgDBHdr");
+		Addresses ccRecipients;
+		Adapt(cc, ccRecipients);
+		cMessageHdr.ccRecipients = ccRecipients;
+
+		//Author
+		char * author;
+		rv = pMsgDBHdr->GetAuthor(&author);
+		Addresses authors;
+		Adapt(author, authors);
+		ENSURE_SUCCESS(rv, "Cannot GetAuthor on nsIMsgDBHdr");
+		if (authors.length() == 1)
+			cMessageHdr.author = authors[0];
+		else
+			cMessageHdr.author = "";
+
+		//Date
+		PRTime date;
+		char dateString[100];
+		rv = pMsgDBHdr->GetDate(&date);
+		ENSURE_SUCCESS(rv, "Cannot GetDate on nsIMsgDBHdr");
+		PRExplodedTime exploded;
+		PR_ExplodeTime(date, PR_LocalTimeParameters, &exploded);
+		PR_FormatTimeUSEnglish(dateString,  sizeof(dateString), "%m/%d/%Y %I:%M %p", &exploded);
+		nsCAutoString s;
+		s+=dateString;
+		cMessageHdr.date = s.get();
+
+		//Charset
+		char * charset;
+		rv = pMsgDBHdr->GetCharset(&charset);
+		ENSURE_SUCCESS(rv, "Cannot GetCharset on nsIMsgDBHdr");
+		cMessageHdr.charset = charset;
+
+		//IsRead
+		PRBool isRead;
+		rv = pMsgDBHdr->GetIsRead(&isRead);
+		ENSURE_SUCCESS(rv, "Cannot GetIsRead on nsIMsgDBHdr");
+		cMessageHdr.isRead = isRead;
+
+		//Size
+		PRUint32 size;
+		rv = pMsgDBHdr->GetMessageSize(&size);
+		ENSURE_SUCCESS(rv, "Cannot GetMessageSize on nsIMsgDBHdr");
+		cMessageHdr.size = size;
+
 		cMessageHdrs->length(i+1);
 		(*cMessageHdrs)[i++] = cMessageHdr;
 	}
 
 	p_messageHdrs = cMessageHdrs;
 }
+
+ void MessageBrowseService_i::Adapt(const char * recipients, Addresses& addresses)
+ {
+	 nsresult rv;
+	 nsCOMPtr<nsIMsgHeaderParser> parser = do_GetService(NS_MAILNEWS_MIME_HEADER_PARSER_CONTRACTID, &rv);
+
+	 PRUnichar ** emailAddresses;
+	 PRUnichar ** names;
+	 PRUnichar ** fullNames;
+	 PRUint32 numAddresses;
+
+	 parser->ParseHeadersWithArray(NS_ConvertUTF8toUTF16(recipients).get(), &emailAddresses, &names, &fullNames, &numAddresses);
+
+	 for(unsigned int i = 0; i < numAddresses; i++) {
+		 nsAutoString address;
+		 address.Adopt(emailAddresses[i]);
+		 addresses.length(i+1);
+		 addresses[i] = NS_ConvertUTF16toUTF8(address).get();
+		 //It is possible to add name and fullname
+	 }
+ }
+
+
 
  void MessageBrowseService_i::GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders)
  {
@@ -111,9 +202,10 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	nsCOMPtr<nsIRDFResource> resource;
 	rv = rdf->GetResource(nsCAutoString(p_rootFolder.uri), getter_AddRefs(
 			resource));
-
+	ENSURE_SUCCESS(rv, "Cannot GetResource on nsIMsgFolder rootFolder");
 
 	pFolder = do_QueryInterface(resource, &rv);
+	ENSURE_SUCCESS(rv, "Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
 
 	if (pFolder == nsnull)
 		cout << "2" << endl;

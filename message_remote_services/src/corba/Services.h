@@ -1002,6 +1002,385 @@ private:
 };
 
 
+struct CMessageHdr {
+  typedef _CORBA_ConstrType_Variable_Var<CMessageHdr> _var_type;
+
+  
+  ::CORBA::String_member id;
+
+  ::CORBA::String_member author;
+
+  ::CORBA::String_member subject;
+
+  Addresses recipients;
+
+  Addresses ccRecipients;
+
+  ::CORBA::String_member date;
+
+  ::CORBA::String_member charset;
+
+  ::CORBA::Boolean isRead;
+
+  ::CORBA::ULong size;
+
+
+
+  void operator>>= (cdrStream &) const;
+  void operator<<= (cdrStream &);
+};
+
+typedef CMessageHdr::_var_type CMessageHdr_var;
+
+typedef _CORBA_ConstrType_Variable_OUT_arg< CMessageHdr,CMessageHdr_var > CMessageHdr_out;
+
+class CMessageHdrs_var;
+
+class CMessageHdrs : public _CORBA_Unbounded_Sequence< CMessageHdr >  {
+public:
+  typedef CMessageHdrs_var _var_type;
+  inline CMessageHdrs() {}
+  inline CMessageHdrs(const CMessageHdrs& _s)
+    : _CORBA_Unbounded_Sequence< CMessageHdr > (_s) {}
+
+  inline CMessageHdrs(_CORBA_ULong _max)
+    : _CORBA_Unbounded_Sequence< CMessageHdr > (_max) {}
+  inline CMessageHdrs(_CORBA_ULong _max, _CORBA_ULong _len, CMessageHdr* _val, _CORBA_Boolean _rel=0)
+    : _CORBA_Unbounded_Sequence< CMessageHdr > (_max, _len, _val, _rel) {}
+
+
+
+  inline CMessageHdrs& operator = (const CMessageHdrs& _s) {
+    _CORBA_Unbounded_Sequence< CMessageHdr > ::operator=(_s);
+    return *this;
+  }
+};
+
+class CMessageHdrs_out;
+
+class CMessageHdrs_var {
+public:
+  inline CMessageHdrs_var() : _pd_seq(0) {}
+  inline CMessageHdrs_var(CMessageHdrs* _s) : _pd_seq(_s) {}
+  inline CMessageHdrs_var(const CMessageHdrs_var& _s) {
+    if( _s._pd_seq )  _pd_seq = new CMessageHdrs(*_s._pd_seq);
+    else              _pd_seq = 0;
+  }
+  inline ~CMessageHdrs_var() { if( _pd_seq )  delete _pd_seq; }
+    
+  inline CMessageHdrs_var& operator = (CMessageHdrs* _s) {
+    if( _pd_seq )  delete _pd_seq;
+    _pd_seq = _s;
+    return *this;
+  }
+  inline CMessageHdrs_var& operator = (const CMessageHdrs_var& _s) {
+    if( _s._pd_seq ) {
+      if( !_pd_seq )  _pd_seq = new CMessageHdrs;
+      *_pd_seq = *_s._pd_seq;
+    } else if( _pd_seq ) {
+      delete _pd_seq;
+      _pd_seq = 0;
+    }
+    return *this;
+  }
+  inline CMessageHdr& operator [] (_CORBA_ULong _s) {
+    return (*_pd_seq)[_s];
+  }
+
+
+
+  inline CMessageHdrs* operator -> () { return _pd_seq; }
+  inline const CMessageHdrs* operator -> () const { return _pd_seq; }
+#if defined(__GNUG__)
+  inline operator CMessageHdrs& () const { return *_pd_seq; }
+#else
+  inline operator const CMessageHdrs& () const { return *_pd_seq; }
+  inline operator CMessageHdrs& () { return *_pd_seq; }
+#endif
+    
+  inline const CMessageHdrs& in() const { return *_pd_seq; }
+  inline CMessageHdrs&       inout()    { return *_pd_seq; }
+  inline CMessageHdrs*&      out() {
+    if( _pd_seq ) { delete _pd_seq; _pd_seq = 0; }
+    return _pd_seq;
+  }
+  inline CMessageHdrs* _retn() { CMessageHdrs* tmp = _pd_seq; _pd_seq = 0; return tmp; }
+    
+  friend class CMessageHdrs_out;
+  
+private:
+  CMessageHdrs* _pd_seq;
+};
+
+class CMessageHdrs_out {
+public:
+  inline CMessageHdrs_out(CMessageHdrs*& _s) : _data(_s) { _data = 0; }
+  inline CMessageHdrs_out(CMessageHdrs_var& _s)
+    : _data(_s._pd_seq) { _s = (CMessageHdrs*) 0; }
+  inline CMessageHdrs_out(const CMessageHdrs_out& _s) : _data(_s._data) {}
+  inline CMessageHdrs_out& operator = (const CMessageHdrs_out& _s) {
+    _data = _s._data;
+    return *this;
+  }
+  inline CMessageHdrs_out& operator = (CMessageHdrs* _s) {
+    _data = _s;
+    return *this;
+  }
+  inline operator CMessageHdrs*&()  { return _data; }
+  inline CMessageHdrs*& ptr()       { return _data; }
+  inline CMessageHdrs* operator->() { return _data; }
+
+  inline CMessageHdr& operator [] (_CORBA_ULong _i) {
+    return (*_data)[_i];
+  }
+
+
+
+  CMessageHdrs*& _data;
+
+private:
+  CMessageHdrs_out();
+  CMessageHdrs_out& operator=(const CMessageHdrs_var&);
+};
+
+struct CFolder {
+  typedef _CORBA_ConstrType_Variable_Var<CFolder> _var_type;
+
+  
+  ::CORBA::String_member name;
+
+  ::CORBA::String_member uri;
+
+
+
+  void operator>>= (cdrStream &) const;
+  void operator<<= (cdrStream &);
+};
+
+typedef CFolder::_var_type CFolder_var;
+
+typedef _CORBA_ConstrType_Variable_OUT_arg< CFolder,CFolder_var > CFolder_out;
+
+class CFolders_var;
+
+class CFolders : public _CORBA_Unbounded_Sequence< CFolder >  {
+public:
+  typedef CFolders_var _var_type;
+  inline CFolders() {}
+  inline CFolders(const CFolders& _s)
+    : _CORBA_Unbounded_Sequence< CFolder > (_s) {}
+
+  inline CFolders(_CORBA_ULong _max)
+    : _CORBA_Unbounded_Sequence< CFolder > (_max) {}
+  inline CFolders(_CORBA_ULong _max, _CORBA_ULong _len, CFolder* _val, _CORBA_Boolean _rel=0)
+    : _CORBA_Unbounded_Sequence< CFolder > (_max, _len, _val, _rel) {}
+
+
+
+  inline CFolders& operator = (const CFolders& _s) {
+    _CORBA_Unbounded_Sequence< CFolder > ::operator=(_s);
+    return *this;
+  }
+};
+
+class CFolders_out;
+
+class CFolders_var {
+public:
+  inline CFolders_var() : _pd_seq(0) {}
+  inline CFolders_var(CFolders* _s) : _pd_seq(_s) {}
+  inline CFolders_var(const CFolders_var& _s) {
+    if( _s._pd_seq )  _pd_seq = new CFolders(*_s._pd_seq);
+    else              _pd_seq = 0;
+  }
+  inline ~CFolders_var() { if( _pd_seq )  delete _pd_seq; }
+    
+  inline CFolders_var& operator = (CFolders* _s) {
+    if( _pd_seq )  delete _pd_seq;
+    _pd_seq = _s;
+    return *this;
+  }
+  inline CFolders_var& operator = (const CFolders_var& _s) {
+    if( _s._pd_seq ) {
+      if( !_pd_seq )  _pd_seq = new CFolders;
+      *_pd_seq = *_s._pd_seq;
+    } else if( _pd_seq ) {
+      delete _pd_seq;
+      _pd_seq = 0;
+    }
+    return *this;
+  }
+  inline CFolder& operator [] (_CORBA_ULong _s) {
+    return (*_pd_seq)[_s];
+  }
+
+
+
+  inline CFolders* operator -> () { return _pd_seq; }
+  inline const CFolders* operator -> () const { return _pd_seq; }
+#if defined(__GNUG__)
+  inline operator CFolders& () const { return *_pd_seq; }
+#else
+  inline operator const CFolders& () const { return *_pd_seq; }
+  inline operator CFolders& () { return *_pd_seq; }
+#endif
+    
+  inline const CFolders& in() const { return *_pd_seq; }
+  inline CFolders&       inout()    { return *_pd_seq; }
+  inline CFolders*&      out() {
+    if( _pd_seq ) { delete _pd_seq; _pd_seq = 0; }
+    return _pd_seq;
+  }
+  inline CFolders* _retn() { CFolders* tmp = _pd_seq; _pd_seq = 0; return tmp; }
+    
+  friend class CFolders_out;
+  
+private:
+  CFolders* _pd_seq;
+};
+
+class CFolders_out {
+public:
+  inline CFolders_out(CFolders*& _s) : _data(_s) { _data = 0; }
+  inline CFolders_out(CFolders_var& _s)
+    : _data(_s._pd_seq) { _s = (CFolders*) 0; }
+  inline CFolders_out(const CFolders_out& _s) : _data(_s._data) {}
+  inline CFolders_out& operator = (const CFolders_out& _s) {
+    _data = _s._data;
+    return *this;
+  }
+  inline CFolders_out& operator = (CFolders* _s) {
+    _data = _s;
+    return *this;
+  }
+  inline operator CFolders*&()  { return _data; }
+  inline CFolders*& ptr()       { return _data; }
+  inline CFolders* operator->() { return _data; }
+
+  inline CFolder& operator [] (_CORBA_ULong _i) {
+    return (*_data)[_i];
+  }
+
+
+
+  CFolders*& _data;
+
+private:
+  CFolders_out();
+  CFolders_out& operator=(const CFolders_var&);
+};
+
+#ifndef __MessageBrowseService__
+#define __MessageBrowseService__
+
+class MessageBrowseService;
+class _objref_MessageBrowseService;
+class _impl_MessageBrowseService;
+
+typedef _objref_MessageBrowseService* MessageBrowseService_ptr;
+typedef MessageBrowseService_ptr MessageBrowseServiceRef;
+
+class MessageBrowseService_Helper {
+public:
+  typedef MessageBrowseService_ptr _ptr_type;
+
+  static _ptr_type _nil();
+  static _CORBA_Boolean is_nil(_ptr_type);
+  static void release(_ptr_type);
+  static void duplicate(_ptr_type);
+  static void marshalObjRef(_ptr_type, cdrStream&);
+  static _ptr_type unmarshalObjRef(cdrStream&);
+};
+
+typedef _CORBA_ObjRef_Var<_objref_MessageBrowseService, MessageBrowseService_Helper> MessageBrowseService_var;
+typedef _CORBA_ObjRef_OUT_arg<_objref_MessageBrowseService,MessageBrowseService_Helper > MessageBrowseService_out;
+
+#endif
+
+// interface MessageBrowseService
+class MessageBrowseService {
+public:
+  // Declarations for this interface type.
+  typedef MessageBrowseService_ptr _ptr_type;
+  typedef MessageBrowseService_var _var_type;
+
+  static _ptr_type _duplicate(_ptr_type);
+  static _ptr_type _narrow(::CORBA::Object_ptr);
+  static _ptr_type _unchecked_narrow(::CORBA::Object_ptr);
+  
+  static _ptr_type _nil();
+
+  static inline void _marshalObjRef(_ptr_type, cdrStream&);
+
+  static inline _ptr_type _unmarshalObjRef(cdrStream& s) {
+    omniObjRef* o = omniObjRef::_unMarshal(_PD_repoId,s);
+    if (o)
+      return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
+    else
+      return _nil();
+  }
+
+  static _core_attr const char* _PD_repoId;
+
+  // Other IDL defined within this scope.
+  
+};
+
+class _objref_MessageBrowseService :
+  public virtual ::CORBA::Object,
+  public virtual omniObjRef
+{
+public:
+  void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
+  void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders);
+  void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs);
+
+  inline _objref_MessageBrowseService()  { _PR_setobj(0); }  // nil
+  _objref_MessageBrowseService(omniIOR*, omniIdentity*);
+
+protected:
+  virtual ~_objref_MessageBrowseService();
+
+  
+private:
+  virtual void* _ptrToObjRef(const char*);
+
+  _objref_MessageBrowseService(const _objref_MessageBrowseService&);
+  _objref_MessageBrowseService& operator = (const _objref_MessageBrowseService&);
+  // not implemented
+
+  friend class MessageBrowseService;
+};
+
+class _pof_MessageBrowseService : public _OMNI_NS(proxyObjectFactory) {
+public:
+  inline _pof_MessageBrowseService() : _OMNI_NS(proxyObjectFactory)(MessageBrowseService::_PD_repoId) {}
+  virtual ~_pof_MessageBrowseService();
+
+  virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
+  virtual _CORBA_Boolean is_a(const char*) const;
+};
+
+class _impl_MessageBrowseService :
+  public virtual omniServant
+{
+public:
+  virtual ~_impl_MessageBrowseService();
+
+  virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder) = 0;
+  virtual void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders) = 0;
+  virtual void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs) = 0;
+  
+public:  // Really protected, workaround for xlC
+  virtual _CORBA_Boolean _dispatch(omniCallHandle&);
+
+private:
+  virtual void* _ptrToInterface(const char*);
+  virtual const char* _mostDerivedRepoId();
+  
+};
+
+
 
 
 class POA_AccountService :
@@ -1040,6 +1419,18 @@ public:
   }
 };
 
+class POA_MessageBrowseService :
+  public virtual _impl_MessageBrowseService,
+  public virtual ::PortableServer::ServantBase
+{
+public:
+  virtual ~POA_MessageBrowseService();
+
+  inline ::MessageBrowseService_ptr _this() {
+    return (::MessageBrowseService_ptr) _do_this(::MessageBrowseService::_PD_repoId);
+  }
+};
+
 
 
 
@@ -1065,6 +1456,12 @@ MessageSendListener::_marshalObjRef(::MessageSendListener_ptr obj, cdrStream& s)
 
 inline void
 MessageComposeService::_marshalObjRef(::MessageComposeService_ptr obj, cdrStream& s) {
+  omniObjRef::_marshal(obj->_PR_getobj(),s);
+}
+
+
+inline void
+MessageBrowseService::_marshalObjRef(::MessageBrowseService_ptr obj, cdrStream& s) {
   omniObjRef::_marshal(obj->_PR_getobj(),s);
 }
 
