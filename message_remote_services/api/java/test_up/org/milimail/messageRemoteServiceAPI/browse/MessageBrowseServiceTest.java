@@ -76,7 +76,7 @@ public class MessageBrowseServiceTest extends TestCase {
 		return account;
 	}
 	
-	public void testGetMessageKeys() throws Exception {
+	public void testGetMessageHdr() throws Exception {
 		CMessageHdrsHolder hdrsHolder = new CMessageHdrsHolder();
 		CFolder folder = new CFolder();
 		folder.uri = "imap://users2@localhost/INBOX";
@@ -85,7 +85,26 @@ public class MessageBrowseServiceTest extends TestCase {
 		
 		CMessageHdr[] hdrs = hdrsHolder.value;
 		for (int i = 0; i < hdrs.length; i++) {
-			System.out.println(i + " " + hdrs[i].id);
+			
+			String recipients = "";
+			for (int j = 0; j < hdrs[i].recipients.length; j++) {
+				recipients +=hdrs[i].recipients[j] + ",";
+			}
+			
+			String cc = "";
+			for (int j = 0; j < hdrs[i].ccRecipients.length; j++) {
+				cc +=hdrs[i].ccRecipients[j] + ",";
+			}
+			
+			System.out.println(i+1 + " <ID : " + hdrs[i].id + "> " +
+					"<SUBJECT : "+hdrs[i].subject +"> " +
+					"<RECIPIENTS : " + recipients + "> " +
+					"<CC : " + cc + "> " +
+					"<AUTHOR : "+hdrs[i].author + "> " +
+					"<DATE : "+hdrs[i].date + "> " +
+					"<CHARSET :" + hdrs[i].charset + "> " +
+					"<ISREAD :" + hdrs[i].isRead + "> " +
+					"<SIZE : " + hdrs[i].size + ">");
 		}
 		
 	}
