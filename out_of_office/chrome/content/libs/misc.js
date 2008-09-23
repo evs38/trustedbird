@@ -335,7 +335,7 @@ Services.prototype = {
 	localizeString : function( localeFileName, message, arrayValue )
 	{
 		if( message == undefined || message == null ){
-			throw new Exception("localizeString: message cannot be null.");
+			throw "localizeString(): String message to localize cannot be null (message)!";
 		}
 		/*
 		 * Check if the localization requested and the string are valid
@@ -524,7 +524,7 @@ Services.prototype = {
 	emailCheck : function( address, log ) {
 
 		if( address == undefined || address == null ) { //Invalid data
-			throw "The mail address to check cannot  be null or undefined !";
+			throw "emailCheck(): Address parameter to check cannot be null (address)!";
 		}
 		if( log == undefined || log == null ) {
 			log = false;

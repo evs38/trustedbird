@@ -50,7 +50,7 @@ var gOutOfOfficeManager = null;
     
 /**
  * Function to initialize user interface on windows load.
- * @param (object) sender Context window document.
+ * @param (object) sender Context of the event
  */
 function onDialogLoad(sender)
 {
@@ -70,8 +70,7 @@ function onDialogLoad(sender)
  	// new OutOfOfficeManager(window.arguments[0]["OutOfOfficeSieveAccountToConfigure"]);
 	window.arguments[0]["OutOfOfficeSieveAccountReturnCode"] = false;
 	if( gOutOfOfficeManager == null ){
-		// @TODO Error
-		throw "The object Out Of Office manager cannot be null.";
+    	throw "onDialogLoad(): Out of office object manager cannot be null (gOutOfOfficeManager)!";
 	}
 	// Add account name in the window title
 	document.title += " '";

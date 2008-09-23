@@ -75,7 +75,7 @@ onInit = function onInitHook(aPageId, aServerId)
 	gAccount = getAccountByKey(gServer.key);
 	
 	// For the first version all functionalities are not used.
-	hideControlNotUsed();
+	// hideControlNotUsed();
 
 	if( gAccount == null ){
 		onDialogDisabled(); // Account not found or isn't an IMAP account
@@ -142,7 +142,7 @@ function onDialogLoad()
 {
 	// Require
 	if( gAccount == null ){
-		throw "Sieve server account cannot be null";
+		throw "onDialogLoad(): Sieve Server Account cannot be null (gAccount)!";
 	}
 
 	jsLoader.loadSubScript("chrome://out_of_office/content/account/OutOfOfficeSieveServerSettingsData.js");
@@ -344,7 +344,7 @@ function onDebugCommand(sender)
 	gSieveServerToConfigure.getDebugMode(sender.checked);
 }
 
-/*
+/**
  * Call this member function to initialize data in a dialog box, or to retrieve and validate dialog data.
  * @param (boolean) bSaveAndValidate Flag that indicates whether dialog box is being initialized (FALSE) or data is being retrieved (TRUE).
  * @return (boolean) Nonzero if the operation is successful; otherwise 0. If bSaveAndValidate is TRUE, then a return value of nonzero means that the data is successfully validated.
@@ -352,7 +352,7 @@ function onDebugCommand(sender)
 function updateData(bSaveAndValidate)
 {
     if (gSieveServerToConfigure == null){
-        throw "gSieveServerToConfigure: Sieve Account can't be null"; 
+    	throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
 	}
 	if(bSaveAndValidate == undefined){
 		bSaveAndValidate = true;
@@ -369,7 +369,7 @@ function updateData(bSaveAndValidate)
 }
 
 
-/*
+/**
  * Call this member function to load data from the Sieve account object.
  */
 function LoadData()
@@ -392,7 +392,7 @@ function LoadData()
 	var rgLogin = document.getElementById('rgLogin');
 	rgLogin.selectedIndex = gSieveServerToConfigure.getLoginIndex();
   
-/*
+/**
  * Olivier Brun 
 	- Options not used in the first version. 
 	- These parameters come from sieve extension.
@@ -412,7 +412,7 @@ function LoadData()
 */
 }
 
-/*
+/**
  * Call this member function to check the validity of the data before set the Sieve account object.
  * @return (boolean) True indicate that the data are correct, False indicate an invalid data set.
  */
@@ -464,7 +464,7 @@ function checkDataValidity()
 	return true;
 }
 
-/*
+/**
  * Display an error popup and set the focus to the UI control on error.
  * @param (string) message String to localize.
  * @param (string) fieldName Label of the UI control id. 
@@ -479,7 +479,7 @@ function alertDataValidity( message, fieldName, value )
 	alert( globalServices.localizeString( "out_of_office_locale.properties", message, values) );
 }
 
-/*
+/**
  * Call this member function to save data to the Sieve account object.
  */
 function SaveData()

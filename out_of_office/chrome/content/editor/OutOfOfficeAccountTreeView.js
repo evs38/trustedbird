@@ -159,7 +159,7 @@ OutOfOfficeAccountTreeView.prototype.cycleCell
     = function(row, col)
 {	// check if a connection is running
 	globalServices.logSrv(this.toString() + "cycleCell");
-	if( this.listener.onCycleCellActivate(this) == true ){
+	if( this.listener.onCycleCellActivate(this, row) == true ){
 		this.selection.select(row);
 	}else{
 		globalServices.logSrv(this.toString() + "Connection active cannot select new item");

@@ -50,7 +50,7 @@ function SieveServerSettingsData(account)
 {
 	// require
     if (account == undefined || account == null){
-        throw "SieveAccount: Sieve Account can't be null"; 
+    	throw "SieveServerSettingsData(): Sieve server account parameter cannot be null (account)!";
 	}
     
 	// get the custom Host settings
@@ -181,7 +181,7 @@ SieveServerSettingsData.prototype.setDebugMode = function (debugMode) {
 SieveServerSettingsData.prototype.updateAccount = function ( account ) {
 	// require
 	if (account == undefined || account == null){
-        throw "SieveAccount: Sieve Account can't be null"; 
+    	throw "updateAccount(): Sieve server account parameter cannot be null (account)!";
 	}
 
 	// Login field.

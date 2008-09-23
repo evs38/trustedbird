@@ -41,10 +41,11 @@ var gServer = null;
 
 var globalServices=new Services();
 
-/**
-Hook function to overload the the onPreInit function.
-This function has been hooked to initialize the gIdentity variable.
-*/
+/** 
+ * Hook function to overload the the onPreInit function.
+ * This function has been hooked to initialize the gIdentity variable.
+ * @param (object) account selected in the properties tree
+ */
 function onPreInit(account, accountValues)
 {
 	gServer = account.incomingServer;
@@ -62,12 +63,6 @@ function onSave()
 	globalServices.logSrv("onSave Server='" + gServer.key + "' and Identity='" + gIdentity.key + "'.");
 }
 
-function onAccept() 
-{
-	globalServices.logSrv("onAccept Server='" + gServer.key + "' and Identity='" + gIdentity.key + "'.");
-	return false;
-}
-
 /**
  * Retrieve sieve server account parameters from account list built with OutOfOfficeSieveServerTreeView
  * @param searchAccount Account parameter to search from account list
@@ -77,7 +72,7 @@ function getAccountByKey(searchKey)
 {
 	//require
 	if( searchKey == undefined || searchKey == null){
-		throw "ERROR: getAccountByKey(): The account cannot be retrieved because the key is not valid!";
+		throw "getAccountByKey(): The key parameter cannot be null (searchKey)!";
 	}
 	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 

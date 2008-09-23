@@ -97,12 +97,16 @@ function onWindowLoad()
  * @param (object) sender Object that call the function
  * @return (boolean) Indicate if the sender can be run action or wait because a connection running 
  */
-function onCycleCellActivate(sender)
+function onCycleCellActivate(sender, row)
 {
 	if( gConnectionActive == -1 ){ // No connection running
 		globalServices.logSrv( OOOALV_FILE_HEADER + "onCycleCellActivate");
 		gActivateScript = true;
-		onTreeSelect(document.getElementById('treeAccounts'));
+		// Update manually the currentIndex when the tree view call it
+		// This is to solve the activation of the right item account
+		var tree = document.getElementById('treeAccounts');
+		tree.currentIndex = row;
+		onTreeSelect(tree);
 	}
 	return ( gConnectionActive == -1 );
 }
@@ -165,6 +169,7 @@ function onUpdateControl(tree)
 
 /**
  * Set information fields to show current sieve server parameters
+ * @param (object) account Contain the server parameters to update user interface.
  */
 function setInformationFields( account )
 {
@@ -183,7 +188,7 @@ function setInformationFields( account )
 	document.getElementById('txtDispUserName').value = account.getLogin().getUsername();     	
 }
 
-/*
+/**
  * TODO To be reactivated if this functionality is requested (See file OutOfOfficeSieveServer.js)
  * Function called to check the validity of the current connection.
  */
@@ -193,8 +198,9 @@ function onKeepAlive()
 	gOutOfOfficeManager.keepAlive();
 }
 
-/*
- * Function called when user press button key
+/**
+ * Function called when user press the edit button
+ * @param (object) sender Context of the event
  */
 function onEditClick(sender)
 {
@@ -228,6 +234,10 @@ function onEditClick(sender)
 }
 
 
+/**
+ * Function to update user interface control
+ * @param (object) sender Context of the event
+ */
 function onEnableClick(sender)
 {
 	var tree = document.getElementById('treeAccounts');
@@ -246,28 +256,28 @@ function onEnableClick(sender)
 			return; // The update control will be donne later
 		}
 	}
-//	connectionProgress( true ); 
 	gConnectionActive = tree.currentIndex;
 	gActivateScript = true;
 	var account = OutOfOfficeAccountTreeView.getAccount(tree.currentIndex);
 	account.setConnectRequest();
 	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
-//	onUpdateControl( document.getElementById('treeAccounts') );
 
 	return;
 }
 
-/*
+/**
  * Display status of the connection with the selected Sieve server
+ * @param (string) message Contain the message status to display in the user interface
  */
 function postStatusMessage(message)
 {
  	document.getElementById('logger').value = message;
 }
 
-/*
+/**
  * Update the icon status of the out of office functionality for the current account
- * @param (boolean) Indicate if the script out of office is active 
+ * @param (boolean) active Indicate if the script out of office is active
+ * @param (boolean) connectionError Indicate if an error occurs during connection with the Sieve server
  */
 function postStatusAndUpdateUI(active, connectionError)
 {
@@ -287,7 +297,7 @@ function postStatusAndUpdateUI(active, connectionError)
 		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setConnectRequest();
 		OutOfOfficeAccountTreeView.getAccount(gConnectionActive).setEnabledOutOfOffice( active );
 	} else {
-		throw new Exception( OOOALV_FILE_HEADER + "Tree view control not valid (null)");
+		throw new Exception( OOOALV_FILE_HEADER + "User interface tree view control cannot be null (OutOfOfficeAccountTreeView)!");
 	}
 		
 
