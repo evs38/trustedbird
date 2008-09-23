@@ -208,7 +208,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	ENSURE_SUCCESS(rv, "Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
 
 	if (pFolder == nsnull)
-		cout << "2" << endl;
+		throw CInternalServerException("root Folder not found, bad uri");
 
 	nsCOMPtr<nsIEnumerator> subFolders;
 	rv = pFolder->GetSubFolders(getter_AddRefs(subFolders));
@@ -283,7 +283,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	nsAutoString folderString;
 	folderString.Adopt(n);
 
-	cFolder->name = NS_LossyConvertUTF16toASCII(folderString).get();
+	cFolder->name = NS_ConvertUTF16toUTF8(folderString).get();
 	char * uri;
 	pRootFolder->GetURI(&uri);
 	cFolder->uri = uri;
