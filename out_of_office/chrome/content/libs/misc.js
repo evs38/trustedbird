@@ -71,7 +71,7 @@ function Services() {
 	 * 
 	 * @type string
 	 */
-	this.extensionVersion="0.0.8";
+	this.extensionVersion="0.0.9";
 	/**
 	 * preferences
 	 * 
