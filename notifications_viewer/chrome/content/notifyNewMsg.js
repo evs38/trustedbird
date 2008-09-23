@@ -150,7 +150,7 @@ var notifyListener = {
 	/**
 		Get message source
 		@param {nsIMsgDBHdr} header
-		@return {boolean} return <b>false</b> if an error occured
+		@return {boolean} return <b>false</b> if an error occurs
 	*/
 	getMsgSrc: function(header) {
 
@@ -190,7 +190,7 @@ var notifyListener = {
 		Get message source is finished
 		@param {nsIMsgDBHdr} header
 		@param {string} msgSrc message source
-		@return {boolean} return <b>false</b> if an error occured
+		@return {boolean} return <b>false</b> if an error occurs
 	*/
 	parseMsg: function (header,msgSrc) {
 
@@ -430,7 +430,7 @@ var notifyListener = {
 	*/
 	threadNotification : function(msgDBHdr,msgSrc,targetDBFolder,properties) {
 
-		// create tmp file (.eml) with new header fields
+		// create temporary file (.eml) with new header fields
 		var file=notifyListener.makeNewMsgSrc(msgDBHdr,msgSrc,properties);
 
 		var flags=msgDBHdr.flags;
@@ -444,14 +444,14 @@ var notifyListener = {
 			list.AppendElement(msgDBHdr);
 			msgDBHdr.folder.deleteMessages(list,msgWindow,true,true,null,false);
 
-			// copy tmp file to folder
+			// copy temporary file to folder
 			notifyListener.copyFileMessage(file,flags,messageId,targetDBFolder,isRead,isFlagged,0);
 		} else
-			srv.warningSrv("notifyListener.threadNotification - tmp file "+file+" doesn't exist");
+			srv.warningSrv("notifyListener.threadNotification - temporary file "+file+" doesn't exist");
 	},
 
 	/**
-		Copy tmp file to folder
+		Copy temporary file to folder
 		@param {string} file file name
 		@param {number} flags
 		@param {string} messageId message Id
@@ -491,16 +491,16 @@ var notifyListener = {
 			catch (e) { // copy failed
 				if (count<10) { // try later, TB's busy
 					var delay=Math.round(1000*Math.random()+1500)*count; // a random delays
-					srv.warningSrv("notifyListener.copyFileMessage - TB's busy, try later (->"+delay+"ms). tmp file: "+file+" count : "+count);
+					srv.warningSrv("notifyListener.copyFileMessage - TB's busy, try later (->"+delay+"ms). temporary file: "+file+" count : "+count);
 					setTimeout(notifyListener.copyFileMessage,delay,file,flags,messageId,targetDBFolder,isRead,isFlagged,count);
 				} else {
 					srv.errorSrv("notifyListener.copyFileMessage - Impossible to copy file "+file);
-					// remove tmp file
+					// remove temporary file
 					notifyListener.removeFile(file); //TODO perhaps keep this file ?
 				}
 			}
 		} else
-			srv.warningSrv("notifyListener.copyFileMessage - tmp file "+file+" doesn't exist");
+			srv.warningSrv("notifyListener.copyFileMessage - temporary file "+file+" doesn't exist");
 	},
 
 	/**
@@ -536,7 +536,7 @@ var notifyListener = {
 	},
 
 	/**
-		after a message has been copied this method cleans up things. Remove tmp file.
+		after a message has been copied this method cleans up things. Remove temporary file.
 		@param {string} file file name
 		@param {number} key message key
 		@param {string} messageId message Id
@@ -550,8 +550,12 @@ var notifyListener = {
 			var hdr=null;
 
 			if (key) {
-				// get message header by key (no key returned for IMAP)
-				hdr=folder.GetMessageHeader(key);
+			    try { // get message header by key (no header returned for IMAP)
+					hdr=folder.GetMessageHeader(key);
+			    }
+				catch (e) {// couldn't find header - perhaps an imap folder.
+					srv.errorSrv("notifyListener.cleanUp - error : \n"+e);
+				}
 			} else {
 				// only IMAP here
 				var findMsg=new findMsgDb(folder);
@@ -568,14 +572,14 @@ var notifyListener = {
 				srv.warningSrv("notifyListener.cleanUp (MsgId="+messageId+") - notification has not been found");
 			}
 
-			// now remove tmp file
+			// now remove temporary file
 			notifyListener.removeFile(file);
 		},
 
 	/**
 		Remove file
 		@param {string} fileName file name
-		@return {boolean} return <b>false</b> if an error occured
+		@return {boolean} return <b>false</b> if an error occurs
 	*/
 	removeFile : function (fileName) {
 		srv.logSrv("notifyListener.removeFile - "+fileName);
@@ -592,11 +596,11 @@ var notifyListener = {
 	},
 
 	/**
-		create tmp file (.eml) with new header fields.
+		create temporary file (.eml) with new header fields.
 		@param {nsIMsgDBHdr} msgDBHdr
 		@param {string} msgSrc message source
 		@param {Array} properties list of {@link propertyObj}
-		@return {string} filePath or <b>null</b> if an error occured
+		@return {string} filePath or <b>null</b> if an error occurs
 	*/
 	makeNewMsgSrc: function (msgDBHdr,msgSrc,properties) {
 
