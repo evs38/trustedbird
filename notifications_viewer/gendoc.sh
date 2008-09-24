@@ -13,7 +13,7 @@ JsDocPath="/home/daniel/utilitaires/JSDoc/jsdoc.pl"
 # project summary file
 projectSummary="project_summary.txt"
 
-# documente files
+# document files
 files="./chrome/content/*.js"
 
 # output directory
