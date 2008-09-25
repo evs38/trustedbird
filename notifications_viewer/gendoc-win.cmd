@@ -23,7 +23,6 @@ set files=.\chrome\content
 rem output directory
 set outputDirectory=doc
 
-
 rem Clean up output directory
 if exist %outputDirectory% rmdir %outputDirectory% /S /Q 
 
