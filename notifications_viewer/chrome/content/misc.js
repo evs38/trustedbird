@@ -230,7 +230,7 @@ var prefDialogBox = {
 
 	/**
 		Save Preferences from Dialog Box
-		@return {boolean} <b>false</b> if an error occured
+		@return {boolean} <b>false</b> if an error occurs
 	*/
 	savePrefs : function() {
 		if (!this.services)
@@ -298,7 +298,7 @@ var prefDialogBox = {
 	Move message
 	@param {nsIMsgDBHdr} msgHdr message to move
 	@param {nsIMsgFolder} dstFolder folder destination
-	@return {boolean} return <b>false</b> if an error occured
+	@return {boolean} return <b>false</b> if an error occurs
 */
 function moveMessage (msgHdr, dstFolder) {
 

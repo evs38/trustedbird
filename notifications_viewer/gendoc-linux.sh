@@ -11,7 +11,7 @@
 JsDocPath="/home/daniel/utilitaires/JSDoc/jsdoc.pl"
 
 # Project logo
-logoPath=./chrome/skin/notificationsviewer.png
+logoPath="./chrome/skin/notificationsviewer.png"
 
 # project summary file
 projectSummary="project_summary.txt"

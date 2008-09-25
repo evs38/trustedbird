@@ -350,7 +350,7 @@ customProperties.prototype = {
 		Change properties with the {@link deliveryReport} object
 		@param {deliveryReport} dveryReport a {@link deliveryReport} object
 		@param {string} messageId  message-id of notification
-		@return {boolean} <b>false</b> if an error occured
+		@return {boolean} <b>false</b> if an error occurs
 	*/
 	addDsnReport: function(dveryReport,messageId) {
 		// check type
@@ -391,7 +391,7 @@ customProperties.prototype = {
 		Change properties with the {@link mdnReport} object
 		@param {mdnReport} report a {@link mdnReport} object
 		@param {string} messageId  message-id of notification
-		@return {boolean} <b>false</b> if an error occured
+		@return {boolean} <b>false</b> if an error occurs
 	*/
 	addMdnReport: function(report,messageId) {
 		// check type
