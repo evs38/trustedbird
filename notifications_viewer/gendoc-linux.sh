@@ -27,6 +27,6 @@ outputDirectory="doc"
 if [ -d  $outputDirectory ] ; then rm $outputDirectory/* -f 2>/dev/null ; fi
 
 
-perl $JsDocPath -d $outputDirectory --project-summary $projectSummary  --no-sources $files
+perl $JsDocPath -d $outputDirectory --logo $logoPath --project-summary $projectSummary  --no-sources $files
 
 
