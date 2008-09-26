@@ -5,6 +5,7 @@ CVS/*
 .svn/*
 exclude.txt
 *.sh
+*.cmd
 doc/*
 unit_test*
 *.cache
