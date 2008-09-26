@@ -1,3 +1,8 @@
+/**
+ * @fileoverview SieveAccounts class - Library class to manage Sieve account parameters.
+ * @author Thomas Schmid Creator of the Sieve library.
+ * @author Olivier Brun Contributor - BT Global Services / Etat francais Ministere de la Defense
+ */
 var gPref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 
 // Load all the Libraries we need...

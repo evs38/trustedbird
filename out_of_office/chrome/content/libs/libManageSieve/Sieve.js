@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Sieve class - Library class is a simple socket implementation.
+ * @author Thomas Schmid Creator of the Sieve library.
+ * @author Olivier Brun Contributor - BT Global Services / Etat francais Ministere de la Defense
+ */
+
 // Load all the Libraries we need...
 var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 // includes

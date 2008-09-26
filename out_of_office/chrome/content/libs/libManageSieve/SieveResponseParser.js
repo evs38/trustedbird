@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SieveResponseParser class - Library class to parse Sieve server response and validate it. See class from SieveResponse.js file.
+ * @author Thomas Schmid Creator of the Sieve library.
+ * @author Olivier Brun Contributor - BT Global Services / Etat francais Ministere de la Defense
+ */
+
+
 function SieveResponseParser(data)
 {
   if (data == null)

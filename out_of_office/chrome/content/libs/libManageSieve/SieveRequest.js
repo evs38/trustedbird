@@ -1,3 +1,9 @@
+/**
+ * @fileoverview SieveRequest class - Library class is implementation for sieve requests. See {@link Sieve} and all class from SieveResponse.js file.
+ * @author Thomas Schmid Creator of the Sieve library.
+ * @author Olivier Brun Contributor - BT Global Services / Etat francais Ministere de la Defense
+ */
+
 // Load all the Libraries we need...
 var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 

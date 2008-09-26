@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SieveResponse class - Library class is implementation for sieve responses. See {@link Sieve} and all class from SieveRequest.js file.
+ * @author Thomas Schmid Creator of the Sieve library.
+ * @author Olivier Brun Contributor - BT Global Services / Etat francais Ministere de la Defense
+ */
+
+
 /*******************************************************************************
  
   FACTSHEET: 

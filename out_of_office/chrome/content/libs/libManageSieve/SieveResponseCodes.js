@@ -1,3 +1,8 @@
+/**
+ * @fileoverview SieveResponseCodes* class - Library class is implementation to manage response codes from server.
+ * @author Thomas Schmid Creator of the Sieve library.
+ */
+
 function SieveRespCodeAuthTooWeak(code) 
 {
   this.code = code
