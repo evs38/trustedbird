@@ -3,4 +3,3 @@ locale		out_of_office	en-US	chrome/locale/en-US/
 locale		out_of_office	fr-FR	chrome/locale/fr-FR/
 
 overlay		chrome://global/content/globalOverlay.xul chrome://out_of_office/content/OutOfOfficeMenuOverlay.xul
-overlay		chrome://out_of_office/content/am-sieveserver.xul  chrome://out_of_office/content/account/am-sieveserverOverlay.xul
