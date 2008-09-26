@@ -36,6 +36,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * @fileoverview Account Manager Extension - Extend account manager properties tree by adding a new menu entry.
+ * @author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+ */
+
+/**
+ * Global variables
+ */
 // components defined in this file
 const OUT_OF_OFFICE_EXTENSION_SERVICE_CONTRACTID =
     "@mozilla.org/accountmanager/extension;1?name=sieveserver";
@@ -47,6 +55,12 @@ const nsIMsgAccountManagerExtension  = Components.interfaces.nsIMsgAccountManage
 const nsICategoryManager = Components.interfaces.nsICategoryManager;
 const nsISupports = Components.interfaces.nsISupports;
 
+/**
+ * @class Account manager extension service use by the account manager to add a new menu entry.
+ * This allow the user to configure this extension from the account properties. 
+ * @constructor
+ * @author Olivier Brun / BT Global Services / Etat francais Ministere de la Defense
+ */
 function OUT_OF_OFFICEService()
 {}
 
