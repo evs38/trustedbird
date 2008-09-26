@@ -35,18 +35,27 @@
  * -
  * ***** END LICENSE BLOCK ***** */
 
-/*
-   Default pref values for notifications viewer
-*/
+/**
+ * @fileoverview Default Values Preferences - Define the défault values for preferences of the <b>'Out of Office'</b> extension
+ * @author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
+ */
 
-// the last configured out_of_office version
+/**
+ * the latest configured out_of_office version
+ */
 pref("extensions.out_of_office.version","");
 
-// debug
+/**
+ * Debug activation
+ */
 pref("extensions.out_of_office.debug",false);
 
-// default file name for the out of office script
+/**
+ * default script file name installed for an account to the Sieve server
+ */
 pref("extensions.out_of_office.scriptFileName","OutOfOfficeScriptFile");
 
-// default notification subject for the out of office extension
+/**
+ * default subject of a mail for a notification message
+ */
 pref("extensions.out_of_office.notificationSubject","Out of Office AutoReply");
