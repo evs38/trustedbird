@@ -36,15 +36,16 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-/*
- * @fileoverview
- * Library to manage sieve server settings
+/**
+ * @fileoverview Sieve Server Data - Library to manage sieve server settings and the user interface.
  * @author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
  */
 
 /**
- * Constructor
- * @param account Object account with value to initialize user interface
+ * @class Sieve server data for the user interface. Used in file am-sieveserverOverlay.js
+ * @constructor
+ * @param (Object) account with value to initialize user interface
+ * @author Olivier Brun / BT Global Services / Etat francais Ministere de la Defense
  */
 function SieveServerSettingsData(account)
 {
@@ -83,100 +84,204 @@ function SieveServerSettingsData(account)
 	// this.debugMode = account.getSettings().hasDebugFlag(2);
 }
 
+/**
+ * Getter of the host name value 
+ * @return (String) Return the host name value. 
+ */
 SieveServerSettingsData.prototype.getHostName = function () {
 	return this.hostName; 
 }
+/**
+ * Setter of the host name value 
+ * @param (String) New host name value. 
+ */
 SieveServerSettingsData.prototype.setHostName = function (hostName) {
 	this.hostName = hostName; 
 }
 
+/**
+ * Getter of the host port value 
+ * @return (Boolean) Return the host port value. 
+ */
 SieveServerSettingsData.prototype.getHostPort = function () {
 	return this.hostPort; 
 }
+/**
+ * Setter of the host port value 
+ * @param (Boolean) New host port value. 
+ */
 SieveServerSettingsData.prototype.setHostPort = function (hostPort) {
 	this.hostPort = hostPort; 
 }
 
+/**
+ * Getter of the host TLS value 
+ * @return (Boolean) Return the host TLS value. 
+ */
 SieveServerSettingsData.prototype.getHostTLS = function () {
 	return this.hostTLS; 
 }
+/**
+ * Setter of the host TLS value 
+ * @param (Boolean) New host TLS value. 
+ */
 SieveServerSettingsData.prototype.setHostTLS = function (hostTLS) {
 	this.hostTLS = hostTLS; 
 }
 
+/**
+ * Getter of the host type value 
+ * @return (Integer) Return the host type value. 
+ */
 SieveServerSettingsData.prototype.getHostType = function () {
 	return this.hostType; 
 }
+/**
+ * Setter of the host type value 
+ * @param (Integer) New host type value. 
+ */
 SieveServerSettingsData.prototype.setHostType = function (hostType) {
 	this.hostType = hostType; 
 }
 
+/**
+ * Getter of the user name value 
+ * @return (String) Return the user name value. 
+ */
 SieveServerSettingsData.prototype.getUserName = function () {
 	return this.userName; 
 }
+/**
+ * Setter of the user name value 
+ * @param (String) New user name value. 
+ */
 SieveServerSettingsData.prototype.setUserName = function (userName) {
 	this.userName = userName; 
 }
 
+/**
+ * Getter of the user password value 
+ * @return (String) Return the user password value. 
+ */
 SieveServerSettingsData.prototype.getUserPassword = function () {
 	return this.userPassword; 
 }
+/**
+ * Setter of the user password value 
+ * @param (String) New user password value. 
+ */
 SieveServerSettingsData.prototype.setUserPassword = function (userPassword) {
 	this.userPassword = userPassword; 
 }
 
+/**
+ * Getter of the password check attribute.
+ * @return (Boolean) Return the password check value. 
+ */
 SieveServerSettingsData.prototype.getUserPasswordCheck = function () {
 	return this.userPasswordCheck; 
 }
+/**
+ * Setter of the password check attribute.
+ * @param (Boolean) New password check value. 
+ */
 SieveServerSettingsData.prototype.setUserPasswordCheck = function (userPasswordCheck) {
 	this.userPasswordCheck = userPasswordCheck; 
 }
 
+/**
+ * Getter of the login value 
+ * @return (Integer) Return the login value. 
+ */
 SieveServerSettingsData.prototype.getLoginIndex = function () {
 	return this.rgLoginIndex; 
 }
+/**
+ * Setter of the login value 
+ * @param (Integer) New login value. 
+ */
 SieveServerSettingsData.prototype.setLoginIndex = function (rgLoginIndex) {
 	this.rgLoginIndex = rgLoginIndex; 
 }
 	  
+/**
+ * Getter of the keep alive value 
+ * @return (Integer) Return the keep alive value. 
+ */
 SieveServerSettingsData.prototype.getKeepAliveInterval = function () {
 	return this.keepAlive; 
 }
+/**
+ * Setter of the keep alive value 
+ * @param (Integer) New keep alive value. 
+ */
 SieveServerSettingsData.prototype.setKeepAliveInterval = function (keepAlive) {
 	this.keepAlive = keepAlive; 
 }
 
+/**
+ * Check if the keep alive is enable 
+ * @return (Boolean) <b>True</b> for enabled, <b>false</b> for disabled. 
+ */
 SieveServerSettingsData.prototype.isKeepAlive = function () {
 	return this.keepAliveCheck; 
 }
+/**
+ * Enable/Disable keep alive attribute. 
+ * @return (Boolean) <b>True</b> for enabled, <b>false</b> for disabled. 
+ */
 SieveServerSettingsData.prototype.enableKeepAlive = function (keepAliveCheck) {
 	this.keepAliveCheck = keepAliveCheck; 
 }
 	
+/**
+ * Setter of the compile delay value 
+ * @param (Integer) New compile delay value. 
+ */
 SieveServerSettingsData.prototype.getCompileDelay = function () {
 	return this.compileDelay; 
 }
+/**
+ * Setter of the compile delay value 
+ * @param (Integer) New compile delay value. 
+ */
 SieveServerSettingsData.prototype.setCompileDelay = function (compileDelay) {
 	this.compileDelay = compileDelay; 
 }
 
+/**
+ * Getter of the compiler attribute.
+ * @return (Boolean) Return the compile value. 
+ */
 SieveServerSettingsData.prototype.getCompileCheck = function () {
 	return this.compileCheck; 
 }
+/**
+ * Setter of the compiler attribute.
+ * @param (Boolean) New compile value. 
+ */
 SieveServerSettingsData.prototype.setCompileCheck = function (compileCheck) {
 	this.compileCheck = compileCheck; 
 }
 	
+/**
+ * Getter of the debug attribute.
+ * @return (Boolean) Return the debug value. 
+ */
 SieveServerSettingsData.prototype.getDebugMode = function () {
 	return this.debugMode; 
 }
+/**
+ * Setter of the debug attribute.
+ * @param (Boolean) New debug value. 
+ */
 SieveServerSettingsData.prototype.setDebugMode = function (debugMode) {
 	this.debugMode = debugMode; 
 }
 
 /**
- * Update sieve server account settings
- * @param account Object account to update with the user value
+ * Update account settings with the user data
+ * @param (Object) account to update with the user value
  */
 SieveServerSettingsData.prototype.updateAccount = function ( account ) {
 	// require
