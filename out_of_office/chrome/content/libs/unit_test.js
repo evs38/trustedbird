@@ -37,7 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
-	@fileoverview Unit Test for Notifications Viewer - Require MozLab add-ons
+	@fileoverview Unit Test - Provide unit test definition for Out of Office extension - Require MozLab add-ons
 	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
 */
 

@@ -38,7 +38,7 @@
 
 
 /**
- * @fileoverview misc methods
+ * @fileoverview Miscealenous - Provide class and methods tools. 
  * @author Daniel Rocher / Etat francais Ministere de la Defense
  * @author Olivier Brun / Etat francais Ministere de la Defense
  */
@@ -776,6 +776,42 @@ String.prototype.trim = function(regExp){
 	}
 	return this.replace(regExp, "");
 }
+
+
+/**
+ * Retrieve sieve server account parameters from account list built with OutOfOfficeSieveServerTreeView
+ * @param searchKey Key to search account object by his definition key from list.
+ * @return account found in the sieve server list.
+ */
+function getAccountByKey(searchKey) 
+{
+	//require
+	if( searchKey == undefined || searchKey == null){
+		throw "getAccountByKey(): The key parameter cannot be null (searchKey)!";
+	}
+	// Load all the Libraries we need...
+	var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveAccounts.js");
+
+	globalServices.logSrv( "getAccountByKey started : search " + searchKey + "." ) ;
+
+	// Use the SieveAccounts object to retrieve the account list (Only account kind of imap)
+	var arraySieveAccounts = new SieveAccounts().getAccounts(); 
+	for (var i = 0; i < arraySieveAccounts.length; i++)
+  	{
+		globalServices.logSrv( "    Account key=" + arraySieveAccounts[i].getImapKey() + " description=" + arraySieveAccounts[i].getDescription() );
+		// Retrieve each incoming server to find the right account to configure
+		if( arraySieveAccounts[i].getImapKey() == searchKey )
+		{
+			globalServices.logSrv( "getAccountByKey ended: Account found=" + arraySieveAccounts[i] + "." ) ;
+			return arraySieveAccounts[i];
+		}
+	}
+	globalServices.logSrv( "getAccountByKey ended: account not found.." ) ;
+	return null; // Not found
+}
+
+
 
 /**
  * Encoding/Decoding tools

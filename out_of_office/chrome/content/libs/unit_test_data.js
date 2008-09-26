@@ -38,7 +38,7 @@
 
 
 /**
- * 	@fileoverview Unit Test - This file provides data for tests
+ * 	@fileoverview Unit Test Data - This file provides data for unit tests used by the 'unit test' javascript file.
  * 	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
  */
 

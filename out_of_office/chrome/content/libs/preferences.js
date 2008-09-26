@@ -35,8 +35,7 @@
 
 
 /**
-	@fileoverview
-	This file implements the class Preferences
+	@fileoverview Preferences - This file implements the class Preferences
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */
 

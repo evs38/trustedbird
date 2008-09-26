@@ -38,13 +38,13 @@
 
 
 /**
-	@fileoverview Program entry
-	<ul>
-		<li>run services
-		<li>read preferences
-	</ul>
-	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
-*/
+ * 	@fileoverview Main - Program entry to initialize preferences values.
+ * 	<ul>
+ * 		<li>Run main program on load
+ * 		<li>Set version of the extension
+ * 	</ul>
+ * 	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+ */
 
 
 var globalServices=new Services();
