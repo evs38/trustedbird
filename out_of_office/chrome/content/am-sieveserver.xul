@@ -58,5 +58,169 @@
   
 	<dialogheader title="&outofoffice.pane.title;"/>
 
-	<vbox id="sieveserverIdentityEdit"/>
+	<vbox id="sieveserverIdentityEdit" >
+		<hbox id="smtpServerInfoBox">
+			<stack flex="1" class="inset">
+				<spacer id="backgroundBox"/>
+				<grid>
+					<columns>
+						<column/>
+						<column flex="1"/>
+					</columns>
+					<rows>
+						<row align="center">
+							<hbox pack="end"><label id="lblHost" value="&options.info.servername;"/></hbox>
+							<textbox id="txtDispHostname" class="plain"/>
+						</row>
+						<row align="center">
+							<hbox pack="end"><label id="lblPort" value="&options.info.port;"/></hbox>
+							<textbox id="txtDispPort" class="plain"/>
+						</row>
+						<row align="center">
+							<hbox pack="end"><label id="lblAuth" value="&options.info.auth;"/></hbox>
+							<textbox id="txtDispAuth" class="plain"/>
+						</row>          
+						<row align="center">
+							<hbox pack="end"><label id="lblUserName" value="&options.info.username;"/></hbox>
+							<textbox id="txtDispUserName" class="plain"/>
+						</row>
+						<row align="center">
+							<hbox pack="end"><label id="lblTLS" value="&options.info.secure;"/></hbox>
+							<textbox id="txtDispTLS" class="plain"/>
+						</row>
+					</rows>
+				</grid>
+			</stack>
+		</hbox>
+		<separator/>
+		<hbox>
+			<vbox flex="1">
+				<groupbox flex="1">
+					<caption>
+						<checkbox id="cbxHost" label="&options.host.label;" accesskey="&options.host.key;"
+							oncommand="onHostCommand(this)" />
+					</caption>
+					<grid>
+						<colums>
+							<column />
+							<column />
+						</colums>
+						<rows>
+							<row align="center">
+								<hbox>
+									<label id="labelHostname" value="&options.host.hostname.label;"
+										accesskey="&options.host.hostname.key;" control="txtHostname" />
+								</hbox>
+								<hbox align="center">
+									<label collapsed="true" use="txtHostname"/>
+									<textbox wsm_persist="true" size="20" id="txtHostname" oninput="onHostnameChange(this)" class="uri-element"/>
+									
+									<label id="labelPort" value="&options.host.port.label;"
+										accesskey="&options.host.port.key;" control="txtPort"/>
+									<label hidefor="movemail" 
+										collapsed="true" use="txtPort"/>
+									<textbox wsm_persist="true" size="3" id="txtPort" oninput="onPortChange(this)" 
+										preftype="int"  />
+										
+									<label id="labelDefaultPort" value="&options.host.port.default;" hidefor="movemail"/>
+								</hbox>
+							</row>
+							<row align="center">
+								<spacer />
+								<hbox align="center">
+									<checkbox id="cbxTLS" oncommand="onTLSCommand(this)"
+										label="&options.host.tls;" accesskey="&options.host.tls.key;" />
+								</hbox>
+							</row>
+	
+						</rows>
+					</grid>
+				</groupbox>
+			</vbox>
+		</hbox>
+		<!-- This part is hidden, to make configuration more simply -->
+		<hbox hidden="true" >
+			<vbox flex="1">
+				<groupbox id="groupLogin" flex="1">
+					<caption id="labelLogin" label="&options.login.label;" />
+					<radiogroup id="rgLogin" onselect="onLoginSelect(this);">
+						<radio id="rbNoAuth" label="&options.login.noAuth;" />
+						<radio id="rbImapAuth" label="&options.login.imapAuth;" />
+						<radio id="rbCustomAuth" label="&options.login.customAuth;" />
+					</radiogroup>
+					<hbox>
+						<spacer width="21px" />
+						<grid>
+							<colums>
+								<column />
+								<column />
+							</colums>
+							<rows>
+								<row align="center">
+									<hbox>
+									<label id="labelUsername" value="&options.login.username.label;"
+										accesskey="&options.login.username.key;" control="txtUsername" />
+									<textbox id="txtUsername" size="17" onchange="onLoginChange(this)" />
+									</hbox>
+									<hbox>
+									<label id="labelPassword" value="&options.login.password.label;"
+										accesskey="&options.login.password.key;" control="txtPassword" />
+									<textbox id="txtPassword" type="password" size="17"
+										onchange="onLoginChange(this)" onfocus="onPasswordFocus(this)" />
+									</hbox>
+								</row>
+								<row align="center">
+									<hbox>
+									<spacer />
+									</hbox>
+									<hbox>
+									<checkbox id="cbxPassword" oncommand="onPasswordCommand(this)"
+										accesskey="&options.login.password.remember.key;" label="&options.login.password.remember;" />
+									</hbox>
+								</row>
+							</rows>
+						</grid>
+					</hbox>
+				</groupbox>
+			</vbox>
+		</hbox>
+<!--
+		Olivier Brun 
+		- Options not used in the first version. 
+		- These parameters come from sieve extension.
+		- Option for Dialog window definition add it ==> style="width: 45em; height: 27em;" 
+	
+		<vbox>
+			<groupbox>
+				<caption label="&options.misc;" />
+				<grid>
+					<colums>
+						<column />
+						<column />
+						<column />
+					</colums>
+					<rows>
+						<row align="center">
+							<checkbox id="cbxKeepAlive" label="&options.misc.keepalive;"
+								accesskey="&options.misc.keepalive.key;" oncommand="onKeepAliveCommand(this)" />
+							<textbox id="txtKeepAlive" onchange="onKeepAliveChange(this)"
+								size="6" />
+							<label value="ms" />
+						</row>
+						<row align="center">
+							<checkbox id="cbxCompile" label="&options.misc.compile;"
+								accesskey="&options.misc.compile.key;" oncommand="onCompileCommand(this)" />
+							<textbox id="txtCompile" onchange="onCompileChange(this)"
+								size="6" />
+							<label value="ms" />
+						</row>
+					</rows>
+				</grid>
+				<checkbox id="cbxDebug" label="Debug options"
+					accesskey="D" oncommand="onDebugCommand(this)" />
+			</groupbox>
+		</vbox>
+-->
+
+	</vbox>
 </page>
