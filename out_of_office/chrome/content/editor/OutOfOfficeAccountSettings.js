@@ -38,7 +38,7 @@
 /**
  * @fileoverview
  * User interface to set out of office parameters to a user account.
- * This file is called by the OutOfOfficeAccountListView
+ * This file is called by the @link <b>OutOfOfficeAccountListView</b>
  * @author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
  */
 
@@ -82,7 +82,7 @@ function onDialogLoad(sender)
 
 /**
  * Function to retrieve and save data.
- * @param (object) sender Context window document.
+ * @param (object) sender Context of the event
  */
 function onDialogAccept(sender)
 {
@@ -105,7 +105,7 @@ function onDialogAccept(sender)
 
 /**
  * Function to report connection status.
- * @param (boolean) success Indicate the status of the connection with the server.
+ * @param (boolean) success Indicate the status of the connection with the server. <b>False<b/> an error occurs.
  */
 function onConnectFinish(success)
 {
@@ -123,7 +123,8 @@ function onConnectFinish(success)
 }
 
 /**
- * Manage the redirection UI control
+ * Function to manage the redirection UI control
+ * @param (object) sender Context of the event
  */
 function onOutOfOfficeRedirectionCommand(sender)
 {
@@ -132,8 +133,8 @@ function onOutOfOfficeRedirectionCommand(sender)
 }
 
 /**
- * Manage UI control associate to redirection field.
- * Control associated is Destination address and Keep message fields.
+ * Function to manage UI control associate to redirection.
+ * @param (boolean) <b>true</b> enable control for redirection parameters
  */
 function enableOutOfOfficeRedirectionCtrl(enabled)
 {
@@ -144,23 +145,26 @@ function enableOutOfOfficeRedirectionCtrl(enabled)
 }
 
 /**
-	Function called when the user type a character in the text field.
-*/
+ * Function called when the user type a character in the text field.
+ * @param (object) sender Context of the event
+ */
 function onOutOfOfficeDestinationAddressInput(sender)
 {
 	onDestinationAddressChange(sender);
 }
 
 /**
-	Function called when the destination address fields has changed.
-*/
+ * Function called when the destination address fields has changed.
+ * @param (object) sender Context of the event
+ */
 function onOutOfOfficeDestinationAddressChange(sender)
 {
 	onDestinationAddressChange(sender);
 }
 
-/*
+/**
  * Function called when the destination address fields has changed.
+ * @param (object) sender Context of the event
  */
 function onDestinationAddressChange(sender)
 {
@@ -174,41 +178,45 @@ function onDestinationAddressChange(sender)
 }
 
 /**
-	Manage the keep message UI control
-*/
+ * Manage the keep message UI control
+ * @param (object) sender Context of the event
+ */
 function onOutOfOfficeKeepMessageCommand(sender)
 {   
 	globalServices.logSrv("Keep message='" + sender.checked + "'.");
 }
 
 /**
-	Manage the activation of the notification UI control
-*/
+ * Manage the activation of the notification UI control
+ * @param (object) sender Context of the event
+ */
 function onOutOfOfficeNotificationCommand(sender)
 {
 	globalServices.logSrv("Notification message='" + sender.checked + "'.");
 	enableOutOfOfficeNotificationCtrl(sender.checked);
 }
 
-/*
- * Manage UI control associate to notification field.
- * Control associated is the notification message fields.
+/**
+ * Function to manage UI control associate to notification.
+ * @param (boolean) <b>true</b> enable control for notification parameters
  */
 function enableOutOfOfficeNotificationCtrl(enabled)
 {
 	globalServices.enableCtrlID('txtOutOfOfficeNotification', enabled);
 }
 
-/*
+/**
  * Function called when the notification message fields has changed
+ * @param (object) sender Context of the event
  */
 function onOutOfOfficeNotificationChange(sender)
 {
 	globalServices.logSrv("Notification message has changed.");
 }
 
-/*
+/**
  * Manage the activation of the out of office UI control
+ * @param (object) sender Context of the event
  */
 function onOutOfOfficeActivationCommand(sender)
 {
@@ -216,16 +224,18 @@ function onOutOfOfficeActivationCommand(sender)
 	gOutOfOfficeManager.activate( sender.checked );
 }
 
-/*
- * Display status of the connection with the selected Sieve server
+/**
+ * Function to display status of the connection with the selected Sieve server
+ * @param (object) message User information message
  */
 function postStatusMessage(message)
 {
   document.getElementById('logger').value = message;
 }
 
-/*
- * enable controls when the connection to the server is done.
+/**
+ * Function to enable/disable UI controls when the connection to the server is done.
+ * @param (boolean) <b>true</b> enable control to configure the out of office parameters
  */
 function enableCheckboxControls(enabled)
 {
@@ -233,13 +243,22 @@ function enableCheckboxControls(enabled)
 	globalServices.enableCtrlID('outofofficeNotificationCheckbox', enabled);
 }
 
-/*
+/**
  * Call this member function to initialize data in a dialog box, or to retrieve and validate dialog data.
  * @param (boolean) bSaveAndValidate Flag that indicates whether dialog box is being initialized (FALSE) or data is being retrieved (TRUE).
  * @return (boolean) Nonzero if the operation is successful; otherwise 0. If bSaveAndValidate is TRUE, then a return value of nonzero means that the data is successfully validated.
+ * @throws Exception if the server manager object is null or undefined @see gOutOfOfficeManager.
+ * @throws Exception if the services object is null or undefined @see globalServices.
  */
 function updateData(bSaveAndValidate)
 {
+	// Require
+    if (gOutOfOfficeManager == undefined || gOutOfOfficeManager == null){
+    	throw "updateData(): Sieve server manager cannot be null (gOutOfOfficeManager)!";
+	}
+    if (globalServices == undefined || globalServices == null){
+    	throw "updateData(): Services object cannot be null (globalServices)!";
+	}
 	if(bSaveAndValidate == undefined){
 		bSaveAndValidate = true;
 	}

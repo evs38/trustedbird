@@ -36,9 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
-	@fileoverview
-	This is our custom view, based on the treeview interface
-	@author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+ * @fileoverview This is our custom view, based on the <b>Tree View</b> interface
+ * @see <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ * @author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
 */
 
 // Load all the Libraries we need...
@@ -47,22 +47,51 @@ var jsLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getSe
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/preferences.js");
 jsLoader.loadSubScript("chrome://out_of_office/content/libs/misc.js");
 
+/**
+ * Global variables
+ */
 var globalServices=new Services();
 
+/**
+ * @class Account list tree view.
+ * @constructor
+ * @param listener Client of the tree view to receive event.
+ */
 function OutOfOfficeAccountTreeView(listener)
 {
 	// includes SieveAccount class
 	jsLoader.loadSubScript("chrome://out_of_office/content/libs/libManageSieve/SieveAccounts.js");
 	
+	/** @type string */
 	this.CONST_HEADER = new String("OutOfOfficeAccountTreeView: "); // for trace 
 	globalServices.logSrv( this.toString() + "Constructor.");
   
+	/**
+	 * SieveAccounts object
+	 * 
+	 * @type SieveAccounts
+	 */
 	this.sieveAccounts = new SieveAccounts();    
+	/**
+	 * SieveAccounts list
+	 * 
+	 * @type Array
+	 */
 	this.accounts = this.sieveAccounts.getAccounts();
+	/**
+	 * SieveAccount number
+	 * 
+	 * @type integer
+	 */
 	this.rowCount = this.accounts.length;
+	/**
+	 * Client of the tree view
+	 * 
+	 * @type object
+	 */
 	this.listener = listener;
 }
-/*
+/**
  * Return the name of the class initialized in CONST_HEADER variable.
  * This function overload the 'toString' standard function from Javascript Object.
  * 
@@ -77,6 +106,10 @@ OutOfOfficeAccountTreeView.prototype.toString
 	return this.CONST_HEADER;
 }
 
+/**
+ * Update class member.
+ * @param (object) rules Not used
+ */
 OutOfOfficeAccountTreeView.prototype.update
 	= function(rules)
 {
@@ -84,12 +117,27 @@ OutOfOfficeAccountTreeView.prototype.update
 	this.rowCount = this.accounts.length;
 }
 
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.getCellValue
 	= function(row,column)
 {
     return "";
 }
 
+/**
+ * Provide the label of the selected item to the control view.
+ * This label contain:
+ * 	<ul>
+ *		<li>The description of item.
+ *		<li>The status of latest access to the Sieve server.
+ *	</ul>
+ * @param (Integer) row Row selected by the user in the tree view
+ * @param (Integer) col Column selected by the user in the tree view
+ * @return (String) Label of the selected item
+ * @base Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.getCellText 
 	= function(row,column)
 {
@@ -110,21 +158,50 @@ OutOfOfficeAccountTreeView.prototype.getCellText
         return "";         
 }
     
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.setTree
 	= function(treebox){ this.treebox = treebox; }
 		
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.isContainer
 	= function(row){ return false; }
 
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.isSeparator
 	= function(row){ return false; }
 
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.isSorted
 	= function(row){ return false; }
 	
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.getLevel
 	= function(row){ return 0; }
 
+/**
+ * Provide the icon status of the selected item to the control view.
+ * This icon can indicate:
+ * 	<ul>
+ *		<li>Connection success and the functionalities are active on the server.
+ *		<li>Connection success and the functionalities are inactive on the server.
+ *		<li>Connection not yet establish.
+ *		<li>Connection failed and the account has been deactivated. 
+ *	</ul>
+ * @param (Integer) row Row selected by the user in the tree view
+ * @param (Integer) col Column selected by the user in the tree view
+ * @return (String) Chrome path to the image file.
+ * @base Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.getImageSrc
 	= function(row,column)
 {
@@ -143,18 +220,35 @@ OutOfOfficeAccountTreeView.prototype.getImageSrc
 	return  "chrome://out_of_office/content/images/out_of_office_connect_failed.png";
 }
 	
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.getRowProperties
 	= function(row,props){}
 	
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.getCellProperties
 	= function(row,col,props){}
 	
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.getColumnProperties
 	= function(colid,col,props){}
 
+/**
+ * Mozilla treeview documentation <li>http://www.xulplanet.com/references/xpcomref/ifaces/nsITreeView.html</li>
+ */
 OutOfOfficeAccountTreeView.prototype.cycleHeader
 	= function(col){}
 
+/**
+ * Called on the view when a cell is clicked
+ * @param (integer) row Row selected by the user in the tree view
+ * @param (integer) col Column selected by the user in the tree view
+ */
 OutOfOfficeAccountTreeView.prototype.cycleCell
     = function(row, col)
 {	// check if a connection is running
@@ -166,22 +260,23 @@ OutOfOfficeAccountTreeView.prototype.cycleCell
 	}
 }
 
-/*
+/**
  * Retrieve current selected account
- * @param (integer) Index of the account to retrieve
- * @return (object) SieveAccount class object
+ * @param (integer) index of the account to retrieve
+ * @return (object) @see <b>SieveAccount</b> class object
  */
-OutOfOfficeAccountTreeView.prototype.getAccount = function(row)
+OutOfOfficeAccountTreeView.prototype.getAccount = function(index)
 {
-	if( row < 0 || row >= this.accounts.length ){
+	if( index < 0 || index >= this.accounts.length ){
 		return null;
 	}
-	return this.accounts[row];
+	return this.accounts[index];
 }
 
-/*
- * Retrieve account list
- * @return (array) Array of SieveAccount class object
+/**
+ * Retrieve the account list
+ * @link SieveAccounts.js
+ * @return (object) Array of @see <b>SieveAccount</b>  class object
  */
 OutOfOfficeAccountTreeView.prototype.getAccountList = function()
 {

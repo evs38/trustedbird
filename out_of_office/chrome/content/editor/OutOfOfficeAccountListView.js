@@ -36,20 +36,27 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-/*
- * @fileoverview
- * Library to manage UI list of account out of office to access to the sieve script server
+/**
+ * @fileoverview Library to manage user interface for the account list that can access to the sieve script server
  * @author Olivier Brun - BT Global Services / Etat francais Ministere de la Defense
  */
 
+/**
+ * Global variables
+ */
 var globalServices=new Services();
 var OutOfOfficeAccountTreeView = null;
 var gOutOfOfficeManager = null;
-var gActivateScript = false;
 var gConnectionActive = -1; // Set to 0 to force the first connection on the first item
+var gActivateScript = false;
+var gInternalSelect = false;
 
 var OOOALV_FILE_HEADER = new String("OutOfOfficeAccountListView: "); 
 
+
+/**
+ * Function to initialize user interface on windows load.
+ */
 function onWindowLoad()
 {
 	// Load all the Libraries we need...
@@ -92,9 +99,10 @@ function onWindowLoad()
 	}
 }
 
-/*
+/**
  * Function call by the tree view when an item is selected.
- * @param (object) sender Object that call the function
+ * @param (object) sender Context of the event
+ * @param (Integer) row Index of the item selected
  * @return (boolean) Indicate if the sender can be run action or wait because a connection running 
  */
 function onCycleCellActivate(sender, row)
@@ -111,7 +119,10 @@ function onCycleCellActivate(sender, row)
 	return ( gConnectionActive == -1 );
 }
 
-var gInternalSelect = false;
+/**
+ * Function to manage tree item selection and the connection to the Sieve server selected.
+ * @param (object) tree object
+ */
 function onTreeSelect(tree)
 {	
 	if( gConnectionActive != -1 ){ // A connection to server is running
@@ -133,7 +144,7 @@ function onTreeSelect(tree)
 	gOutOfOfficeManager.reConnectServerTo(account, gActivateScript);
 }
 
-/*
+/**
  * Function to update UI control on the dialog box.
  * @param (object) tree object
  */
@@ -189,7 +200,7 @@ function setInformationFields( account )
 }
 
 /**
- * TODO To be reactivated if this functionality is requested (See file OutOfOfficeSieveServer.js)
+ * @TODO To be reactivated if this functionality is requested (See file OutOfOfficeSieveServer.js)
  * Function called to check the validity of the current connection.
  */
 function onKeepAlive()
