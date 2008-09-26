@@ -1,0 +1,28 @@
+OK * notificationMessage is not defined 
+[#4031] The user interface is locked on settings of the OutOfOffice window's.
+
+OK * Script format UTF8 les accents ne sont pas supportés + compte désactivé
+[#3911] Unable to add accents characters to a vacation message.
+
+OK * Activation d'un nouveau compte progress bar à désactiver. (Commit à faire).
+[#3914] User interface blocked while client is connecting to server.
+
+OK * Ajouter bouton Ok sur la fenêtre des parametres généraux Out Of Office (pour éviter de faire la croix rouge pour fermer)
+[#4032] Add Ok button to the general settings of the OutOfOffice window.
+
+OK * Ajouter le nom du compte qui est en configuration avec ses paramètres
+[#4033] Add the user name configured in the title bar of the OutOfOffice windows
+
+ * Validation des adresses problèmes des adresses rfc2822§3.4
+[#3900] Unable to validate mail address. (User interface)
+WORK IN PROGRESS
+
+
+ * Envoyer la config Sieve et les informations de configuration du serveur à Mr Cailleux laurent.cailleux@laposte.net
+
+ * Vérifier le test ANA. Ajouter la RFC vacation dans les tests technique
+
+
+
+
+
