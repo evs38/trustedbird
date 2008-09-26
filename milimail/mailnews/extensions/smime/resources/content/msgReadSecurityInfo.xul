@@ -105,13 +105,28 @@
     <vbox id="securityLabelBox" collapsed="true">
       <separator/>
       <label id="securityLabel">&securityLabel.name;</label>
-      <hbox>
+      <hbox id="securityLabelSecurityPolicyIdentifierBox">
         <label id="securityLabelSecurityPolicyIdentifierLabel">&securityLabel.securityPolicyIdentifier.name;</label>
-        <description id="securityPolicyIdentifier"/>
+        <description id="securityLabelSecurityPolicyIdentifierValue"/>
       </hbox>
-      <hbox>
+      <hbox id="securityLabelSecurityClassificationBox" collapsed="true">
         <label id="securityLabelSecurityClassificationLabel">&securityLabel.securityClassification.name;</label>
-        <description id="securityClassification"/>
+        <description id="securityLabelSecurityClassificationValue"/>
+      </hbox>
+      <hbox id="securityLabelPrivacyMarkBox" collapsed="true">
+        <label id="securityLabelPrivacyMarkLabel">&securityLabel.privacyMark.name;</label>
+        <description id="securityLabelPrivacyMarkValue"/>
+      </hbox>
+      <hbox id="securityLabelSecurityCategoriesBox" collapsed="true">
+        <label id="securityLabelSecurityCategoriesLabel">&securityLabel.securityCategories.name;</label>
+        <tree id="securityLabelSecurityCategoriesTree" flex="1" hidecolumnpicker="true" >
+          <treecols flex="1">
+            <treecol label="&securityLabel.securityCategories.type.name;" flex="1" />
+            <splitter class="tree-splitter" />
+            <treecol label="&securityLabel.securityCategories.value.name;" flex="2" />
+          </treecols>
+          <treechildren id="securityLabelSecurityCategoriesTreeChildren" />
+       </tree>
       </hbox>
     </vbox>
 

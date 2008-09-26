@@ -51,6 +51,8 @@ var gSignatureStatus = -1;
 var gEncryptionStatus = -1;
 var gSecurityPolicyIdentifier = null;
 var gSecurityClassification = -1;
+var gPrivacyMark = null;
+var gSecurityCategories = null;
 var gTripleWrapStatus = -1;
 
 var params = null;
@@ -83,7 +85,9 @@ function onLoad()
   gEncryptionStatus = params.GetInt(2);
   gSecurityPolicyIdentifier = params.GetString(3);
   gSecurityClassification = params.GetInt(4);
-  gTripleWrapStatus = params.GetInt(5);
+  gPrivacyMark = params.GetString(5);
+  gSecurityCategories = params.GetString(6);
+  gTripleWrapStatus = params.GetInt(7);
   
   var bundle = document.getElementById("bundle_smime_read_info");
 
@@ -290,10 +294,44 @@ function onLoad()
     }
   }
 
-  if (gSecurityPolicyIdentifier) {
+  if (gSecurityPolicyIdentifier != "") {
     document.getElementById("securityLabelBox").collapsed = false;
-    document.getElementById("securityPolicyIdentifier").value = getSecurityLabelSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
-    document.getElementById("securityClassification").value = getSecurityLabelSecurityClassificationName(gSecurityPolicyIdentifier, gSecurityClassification);
+    document.getElementById("securityLabelSecurityPolicyIdentifierValue").value = getSecurityLabelSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
+    if (gSecurityClassification != -1) {
+    	document.getElementById("securityLabelSecurityClassificationValue").value = getSecurityLabelSecurityClassificationName(gSecurityPolicyIdentifier, gSecurityClassification);
+    	document.getElementById("securityLabelSecurityClassificationBox").collapsed = false;
+    }
+    if (gPrivacyMark != "") {
+    	document.getElementById("securityLabelPrivacyMarkValue").value = gPrivacyMark;
+    	document.getElementById("securityLabelPrivacyMarkBox").collapsed = false;
+    }
+    if (gSecurityCategories != "") {
+    	var securityLabelSecurityCategoriesTree = document.getElementById("securityLabelSecurityCategoriesTree");
+    	var securityLabelSecurityCategoriesTreeChildren = document.getElementById("securityLabelSecurityCategoriesTreeChildren");
+    	
+    	securityCategoriesArray = gSecurityCategories.split("|");
+    	var treeSize = securityCategoriesArray.length / 2;
+    	if (treeSize > 5) treeSize = 5;
+    	securityLabelSecurityCategoriesTree.setAttribute("rows", parseInt(treeSize));
+
+    	for (var i = 0; i < securityCategoriesArray.length; i += 2) {
+    		var treeitem = document.createElement("treeitem");
+    		var treerow = document.createElement("treerow");
+    		var treecell1 = document.createElement("treecell");
+    		var treecell2 = document.createElement("treecell");
+    		treecell1.setAttribute("label", securityCategoriesArray[i]);
+    		treecell1.setAttribute("crop", "end");
+    		treecell1.setAttribute("flex", "1");
+    		treecell2.setAttribute("label", securityCategoriesArray[i + 1]);
+    		treecell2.setAttribute("crop", "end");
+    		treecell2.setAttribute("flex", "2");
+    		treerow.appendChild(treecell1);
+    		treerow.appendChild(treecell2);
+    		treeitem.appendChild(treerow);
+    		securityLabelSecurityCategoriesTreeChildren.appendChild(treeitem);
+    	}
+    	document.getElementById("securityLabelSecurityCategoriesBox").collapsed = false;
+    }
   }
 }
 

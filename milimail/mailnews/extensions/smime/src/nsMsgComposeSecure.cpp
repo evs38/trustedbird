@@ -248,6 +248,30 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityClassification(PRInt32 *_retva
   return NS_OK;
 }
 
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetPrivacyMark(const nsAString &value)
+{
+  mPrivacyMark = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetPrivacyMark(nsAString &_retval)
+{
+  _retval = mPrivacyMark;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityCategories(const nsAString &value)
+{
+  mSecurityCategories = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityCategories(nsAString &_retval)
+{
+  _retval = mSecurityCategories;
+  return NS_OK;
+}
+
 NS_IMETHODIMP nsMsgSMIMEComposeFields::SetRequireEncryptMessage(PRBool value)
 {
   mAlwaysEncryptMessage = value;
@@ -521,7 +545,7 @@ nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, 
   return NS_OK;
 }
 
-nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification)
+nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories)
 {
   if (!aComposeFields)
     return NS_ERROR_FAILURE; // kick out...invalid args....
@@ -540,6 +564,8 @@ nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aCompo
       {
         smimeCompFields->GetSecurityPolicyIdentifier(aSecurityPolicyIdentifier);
         smimeCompFields->GetSecurityClassification(aSecurityClassification);
+        smimeCompFields->GetPrivacyMark(aPrivacyMark);
+        smimeCompFields->GetSecurityCategories(aSecurityCategories);
         return NS_OK;
       }
     }
@@ -595,7 +621,7 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsOutputFileStream * 
   if (!signMessage && !encryptMessages && !tripleWrapMessage) return NS_ERROR_FAILURE;
   
   // Extract SecurityLabel State
-  ExtractSecurityLabelState(aCompFields, mSecurityPolicyIdentifier, &mSecurityClassification);
+  ExtractSecurityLabelState(aCompFields, mSecurityPolicyIdentifier, &mSecurityClassification, mPrivacyMark, mSecurityCategories);
 
   // Extract SignedReceiptRequest State
   mSignedReceiptRequest = PR_FALSE;
@@ -899,12 +925,8 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
 
   PR_ASSERT (mSelfSigningCert);
   PR_SetError(0,0);
-  
-  if (mSignedReceiptRequest) {
-	  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, (unsigned char*)mSignedReceiptRequest_ReceiptTo.get());
-  } else {
-	  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, NULL);
-  }
+
+  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, (char*)(NS_ConvertUTF16toUTF8(mPrivacyMark).get()), (char*)(NS_ConvertUTF16toUTF8(mSecurityCategories).get()), (mSignedReceiptRequest_ReceiptTo != NULL) ? (unsigned char*)mSignedReceiptRequest_ReceiptTo.get() : NULL);
   if (NS_FAILED(rv))  {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;

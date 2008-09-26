@@ -189,20 +189,27 @@ var smimeHeaderSink =
     }
   },
 
-  securityLabelStatus: function(aSecurityPolicyIdentifier, aSecurityClassification)
+  securityLabelStatus: function(aSecurityPolicyIdentifier, aSecurityClassification, aPrivacyMark, aSecurityCategories)
   {
     gSecurityPolicyIdentifier = aSecurityPolicyIdentifier;
     gSecurityClassification = aSecurityClassification;
-    
+    gPrivacyMark = aPrivacyMark;
+    gSecurityCategories = aSecurityCategories;
+
+    /* Add Security Label info in message database to be displayed in a column */
     var msgURI = GetLoadedMessage();
     if (msgURI) {
       var msgHdr = messenger.msgHdrFromURI(msgURI);
-      /* Write Security Label in message database */
-      msgHdr.setStringProperty("securityLabelSecurityPolicyIdentifier", gSecurityPolicyIdentifier);
-      msgHdr.setStringProperty("securityLabelSecurityClassification", gSecurityClassification);
+      if (gSecurityPolicyIdentifier != "") {
+    	  /* Write Security Label in message database */
+    	  msgHdr.setStringProperty("securityLabelSecurityPolicyIdentifier", gSecurityPolicyIdentifier);
+    	  msgHdr.setStringProperty("securityLabelSecurityClassification", gSecurityClassification);
+    	  msgHdr.setStringProperty("securityLabelPrivacyMark", gPrivacyMark);
+    	  msgHdr.setStringProperty("securityLabelSecurityCategories", gSecurityCategories);
       
-      /* Refresh tree view */
-      SelectMessage(msgURI);
+    	  /* Refresh tree view */
+    	  SelectMessage(msgURI);
+      }
     }
   },
 
@@ -330,6 +337,8 @@ function onSMIMEStartHeaders()
   
   gSecurityPolicyIdentifier = null;
   gSecurityClassification = -1;
+  gPrivacyMark = null;
+  gSecurityCategories = null;
 
   gSignerCert = null;
   gEncryptionCert = null;

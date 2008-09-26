@@ -94,6 +94,7 @@ typedef struct NSSCMSSignerIdentifierStr NSSCMSSignerIdentifier;
 typedef struct NSSCMSReceiptRequestStr NSSCMSReceiptRequest;
 
 typedef struct NSSCMSSecurityLabelStr NSSCMSSecurityLabel;
+typedef struct NSSCMSSecurityLabelSecurityCategoryStr NSSCMSSecurityLabelSecurityCategory;
 
 typedef struct NSSCMSEnvelopedDataStr NSSCMSEnvelopedData;
 typedef struct NSSCMSOriginatorInfoStr NSSCMSOriginatorInfo;
@@ -266,9 +267,17 @@ typedef enum {
     NSSCMSCM_CertChainWithRoot = 3
 } NSSCMSCertChainMode;
 
+
+struct NSSCMSSecurityLabelSecurityCategoryStr {
+    SECItem securityCategoryIdentifier;
+    SECItem securityCategoryValue;
+};
+
 struct NSSCMSSecurityLabelStr {
     SECItem securityPolicyIdentifier;
     SECItem securityClassification;
+    SECItem privacyMark;
+    NSSCMSSecurityLabelSecurityCategory** securityCategories;
 };
 
 struct NSSCMSReceiptRequestStr {

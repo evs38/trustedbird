@@ -40,6 +40,8 @@ var gEncryptionStatus = -1;
 var gSignatureStatus = -1;
 var gSecurityPolicyIdentifier = null;
 var gSecurityClassification = -1;
+var gPrivacyMark = null;
+var gSecurityCategories = null;
 var gTripleWrapStatus = -1;
 var gSignerCert = null;
 var gEncryptionCert = null;
@@ -100,7 +102,9 @@ function showMessageReadSecurityInfo()
   params.SetInt(2, gEncryptionStatus);
   params.SetString(3, gSecurityPolicyIdentifier);
   params.SetInt(4, gSecurityClassification);
-  params.SetInt(5, gTripleWrapStatus);
+  params.SetString(5, gPrivacyMark);
+  params.SetString(6, gSecurityCategories);
+  params.SetInt(7, gTripleWrapStatus);
   
   window.openDialog('chrome://messenger-smime/content/msgReadSecurityInfo.xul',
     '', 'chrome,resizable=1,modal=1,dialog=1', pkiParams );

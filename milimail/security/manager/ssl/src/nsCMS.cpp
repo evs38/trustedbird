@@ -158,7 +158,63 @@ NS_IMETHODIMP nsCMSMessage::GetSignerCommonName(char ** aName)
   return NS_OK;
 }
 
-NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification)
+/**
+ * Decode a DER encoded OID to a dot-separated string of integers
+ * @param in data DER encoded buffer
+ * @param in len Length of data
+ * @param out output Pointer to a string which will be allocated
+ * @return True if no memory error
+ */
+PRBool GetSecurityLabelDecodeOid(const unsigned char* data, const unsigned int len, char** output)
+{
+	if (len > 0 && data[0] < 128) {
+		/* Convert DER encoded OID to an array of integers (number of values is less than 'len + 1') */
+		unsigned int* oid = (unsigned int*) PORT_Alloc((len + 1) * sizeof(unsigned int));
+		if (oid == NULL) return PR_FALSE;
+
+		unsigned int itemCount = 0;
+		unsigned int i;
+		
+		/* Range of second item is 0-39 if first item is 0 or 1
+		 * and 0-47 if first item is 2 */
+		if (data[0] < 120) {
+			oid[itemCount++] = data[0] / 40;
+			oid[itemCount++] = data[0] % 40;
+		} else {
+			oid[itemCount++] = 2;
+			oid[itemCount++] = data[0] - (2 * 40);
+		}
+	
+		unsigned int n = 0;
+		for (i = 1; i < len; i++) {
+			n = n * 128 + (data[i] & 0x7F);
+			if ((data[i] & 0x80) != 0x80) {
+				oid[itemCount++] = n;
+				n = 0;
+			}
+		}
+	
+		/* Allocate output string: max 7 characters by number + '.' */
+		*output = (char*) PORT_Alloc(itemCount * (7 + 1) * sizeof(char));
+		if (*output == NULL) return PR_FALSE;
+	
+		unsigned int outputCount = 0;
+		for (i = 0; i < itemCount; i++) {
+			if (i != 0) {
+				(*output)[outputCount] = '.';
+				outputCount++;
+			}
+			if (oid[i] < 10000000) outputCount += sprintf(&((*output)[outputCount]), "%d", oid[i]);
+		}
+		(*output)[outputCount] = '\0';
+	
+		PORT_Free(oid);
+	}
+	
+	return PR_TRUE;
+}
+
+NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, PRUnichar** aPrivacyMark, PRUnichar** aSecurityCategories)
 {
 	nsNSSShutDownPreventionLock locker;
 	if (isAlreadyShutDown()) return NS_ERROR_NOT_AVAILABLE;
@@ -166,6 +222,8 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 	PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::GetSecurityLabel\n"));
 	NS_ENSURE_ARG(aSecurityPolicyIdentifier);
 	NS_ENSURE_ARG(aSecurityClassification);
+	NS_ENSURE_ARG(aPrivacyMark);
+	NS_ENSURE_ARG(aSecurityCategories);
 	
 	NSSCMSSignerInfo *signerinfo = GetTopLevelSignerInfo();
 	if (!signerinfo) return NS_ERROR_FAILURE;
@@ -174,69 +232,112 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 	if (securityLabel == NULL) return NS_ERROR_OUT_OF_MEMORY;
 	
 	if (NSS_CMSSignerInfo_GetSecurityLabel(signerinfo, securityLabel) == SECSuccess) {
-		if (securityLabel->securityPolicyIdentifier.data[0] < 128) {
+		if (securityLabel->securityPolicyIdentifier.len > 0 && securityLabel->securityPolicyIdentifier.data[0] < 128) {
+			unsigned int len;
+			
 			/*
 			 * securityPolicyIdentifier
 			 */
-			unsigned int len = securityLabel->securityPolicyIdentifier.len;
-		
-			/* Convert DER encoded OID to an array of integers (number of values is less than 'len + 1') */
-			unsigned int* oid = (unsigned int*) PORT_Alloc((len + 1) * sizeof(unsigned int));
-			unsigned int itemCount = 0;
+			char* securityPolicyIdentifier = NULL;
+			if (!GetSecurityLabelDecodeOid(securityLabel->securityPolicyIdentifier.data, securityLabel->securityPolicyIdentifier.len, &securityPolicyIdentifier)) return NS_ERROR_OUT_OF_MEMORY;
+
+			if (securityPolicyIdentifier != NULL) {
+				len = PORT_Strlen(securityPolicyIdentifier);
+				*aSecurityPolicyIdentifier = (char*) PORT_Alloc((len + 1) * sizeof(char));
+				PORT_Memcpy(*aSecurityPolicyIdentifier, securityPolicyIdentifier, len + 1);
+				PORT_Free(securityPolicyIdentifier);
+			}
 			
-			unsigned int i;
 			
-			/* Range of second item is 0-39 if first item is 0 or 1
-			 * and 0-47 if first item is 2 */
-			if (securityLabel->securityPolicyIdentifier.data[0] < 120) {
-				oid[itemCount++] = securityLabel->securityPolicyIdentifier.data[0] / 40;
-				oid[itemCount++] = securityLabel->securityPolicyIdentifier.data[0] % 40;
-			} else {
-				oid[itemCount++] = 2;
-				oid[itemCount++] = securityLabel->securityPolicyIdentifier.data[0] - (2 * 40);
-			}
-		
-			unsigned int n = 0;
-			for (i = 1; i < len; i++) {
-				n = n * 128 + (securityLabel->securityPolicyIdentifier.data[i] & 0x7F);
-				if ((securityLabel->securityPolicyIdentifier.data[i] & 0x80) != 0x80) {
-					oid[itemCount++] = n;
-					n = 0;
-				}
-			}
-		
-			/* Allocate output string: max 7 characters by number + '.' */
-			*aSecurityPolicyIdentifier = (char *) PORT_Alloc(itemCount * (7 + 1) * sizeof(char));
-			if (*aSecurityPolicyIdentifier == NULL) return NS_ERROR_OUT_OF_MEMORY;
-		
-			unsigned int nbCharsWritten = 0;
-			for (i = 0; i < itemCount; i++) {
-				if (i != 0) {
-					(*aSecurityPolicyIdentifier)[nbCharsWritten] = '.';
-					nbCharsWritten++;
-				}
-				if (oid[i] < 10000000) nbCharsWritten += sprintf(&((*aSecurityPolicyIdentifier)[nbCharsWritten]), "%d", oid[i]);
-			}
-			(*aSecurityPolicyIdentifier)[nbCharsWritten] = '\0';
-		
-			PORT_Free(oid);
-		
-		
 			/*
 			 * securityClassification
 			 */
 			len = securityLabel->securityClassification.len;
-			unsigned char *buf = (unsigned char *) PORT_Alloc(len * sizeof(unsigned char));
-			if (buf == NULL) return NS_ERROR_OUT_OF_MEMORY;
 			
-			PORT_Memcpy(buf, securityLabel->securityClassification.data, len);
-			*aSecurityClassification = 0;
-			for (unsigned char j = 0; j < len; j++) *aSecurityClassification = ((*aSecurityClassification) << (j*8)) + buf[j];
-			PORT_Free(buf);
-		} else {
-			*aSecurityPolicyIdentifier = (char *) PORT_Alloc(8 * sizeof(char));
-			if (*aSecurityPolicyIdentifier == NULL) return NS_ERROR_OUT_OF_MEMORY;
-			PORT_Memcpy(*aSecurityPolicyIdentifier, "invalid", 8);
+			*aSecurityClassification = -1;
+			if (len > 0) {
+				unsigned char *buf = (unsigned char *) PORT_Alloc(len * sizeof(unsigned char));
+				if (buf == NULL) return NS_ERROR_OUT_OF_MEMORY;
+				
+				PORT_Memcpy(buf, securityLabel->securityClassification.data, len);
+				*aSecurityClassification = 0;
+				for (unsigned char j = 0; j < len; j++) *aSecurityClassification = ((*aSecurityClassification) << (j*8)) + buf[j];
+				PORT_Free(buf);
+			}
+
+			
+			/*
+			 * privacyMark
+			 */
+			len = securityLabel->privacyMark.len;
+			
+			if (len > 0) {
+				char* tempPrivacyMark = (char *) PORT_Alloc((len + 1) * sizeof(char));
+				if (tempPrivacyMark == NULL) return NS_ERROR_OUT_OF_MEMORY;
+				PORT_Memcpy(tempPrivacyMark, securityLabel->privacyMark.data, len);
+				tempPrivacyMark[len] = '\0';
+
+				*aPrivacyMark = ToNewUnicode(NS_ConvertUTF8toUTF16(tempPrivacyMark));
+				PORT_Free(tempPrivacyMark);
+			}
+			
+			/*
+			 * securityCategories
+			 */
+			const char securityCategoriesSeparator = '|';
+			if (securityLabel->securityCategories != NULL) {
+				unsigned int i;
+				char* oid;
+				
+				/* Compute size of buffer */
+				len = 0;
+				for (i = 0; securityLabel->securityCategories[i] != NULL; i++) {
+					/* Add size of securityCategoryIdentifier */
+					oid = NULL;
+					if (!GetSecurityLabelDecodeOid(securityLabel->securityCategories[i]->securityCategoryIdentifier.data, securityLabel->securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
+					if (oid != NULL) len += PORT_Strlen(oid);
+					PORT_Free(oid);
+					
+					/* Add size of securityCategoryValue */
+					len += securityLabel->securityCategories[i]->securityCategoryValue.len;
+
+					/* Add size of 2 separators */
+					len += 2;
+				}
+				
+				/* Create buffer */
+				char* tempsecurityCategories = (char *) PORT_Alloc(len * sizeof(char));
+				if (tempsecurityCategories == NULL) return NS_ERROR_OUT_OF_MEMORY;
+
+				/* Fill buffer */
+				len = 0;
+				for (i = 0; securityLabel->securityCategories[i] != NULL; i++) {
+					/* Add securityCategoryIdentifier OID */
+					oid = NULL;
+					if (!GetSecurityLabelDecodeOid(securityLabel->securityCategories[i]->securityCategoryIdentifier.data, securityLabel->securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
+					if (oid != NULL) {
+						PORT_Memcpy(tempsecurityCategories + len, oid, PORT_Strlen(oid));
+						len += PORT_Strlen(oid);
+					}
+					PORT_Free(oid);
+					
+					/* Add separator */
+					tempsecurityCategories[len++] = securityCategoriesSeparator;
+
+					/* Add securityCategoryValue */
+					PORT_Memcpy(tempsecurityCategories + len, securityLabel->securityCategories[i]->securityCategoryValue.data, securityLabel->securityCategories[i]->securityCategoryValue.len);
+					len += securityLabel->securityCategories[i]->securityCategoryValue.len;
+					
+					/* Add separator */
+					tempsecurityCategories[len++] = securityCategoriesSeparator;
+				}
+				
+				/* Overwrite last separator with \0 */
+				tempsecurityCategories[len - 1] = '\0';
+				
+				*aSecurityCategories = ToNewUnicode(NS_ConvertUTF8toUTF16(tempsecurityCategories));
+				PORT_Free(tempsecurityCategories);
+			}
 		}
 	}
 	
@@ -760,7 +861,7 @@ loser:
   return rv;
 }
 
-NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert* aEncryptCert, unsigned char* aDigestData, PRUint32 aDigestDataLen, const char* aSecurityPolicyIdentifier, PRInt32 aSecurityClassification, unsigned char* aReceiptsTo)
+NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert* aEncryptCert, unsigned char* aDigestData, PRUint32 aDigestDataLen, const char* aSecurityPolicyIdentifier, PRInt32 aSecurityClassification, const char* aPrivacyMark, const char* aSecurityCategories, unsigned char* aReceiptsTo)
 {
   nsNSSShutDownPreventionLock locker;
   if (isAlreadyShutDown())
@@ -846,16 +947,16 @@ NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert*
     PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add smime caps\n"));
     goto loser;
   }
-
-  if (aSecurityClassification != -1) {
-    if (NSS_CMSSignerInfo_AddSecurityLabel(signerinfo, aSecurityPolicyIdentifier, aSecurityClassification) != SECSuccess) {
+    
+  if (aSecurityPolicyIdentifier != NULL && aSecurityPolicyIdentifier[0] != '\0') {
+    if (NSS_CMSSignerInfo_AddSecurityLabel(signerinfo, aSecurityPolicyIdentifier, aSecurityClassification, aPrivacyMark, aSecurityCategories) != SECSuccess) {
       PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add security label\n"));
       goto loser;
     }
   }
-
+  
   // Add ReceiptRequest if requested
-  if (aReceiptsTo != NULL) {
+  if (aReceiptsTo != NULL && aReceiptsTo[0] != '\0') {
 
     // Generate UUID
     nsID* uuid;

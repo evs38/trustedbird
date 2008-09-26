@@ -142,7 +142,7 @@ extern SECStatus NSS_SMIMEUtil_CreateMSSMIMEEncKeyPrefs(PLArenaPool *poolp, SECI
 /*
  * NSS_SMIMEUtil_CreateSecurityLabel - create S/MIME SecurityLabel attr value
  */
-extern SECStatus NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char* securityPolicyIdentifier, PRInt32 securityClassification);
+extern SECStatus NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char* securityPolicyIdentifier, PRInt32 securityClassification, const char* privacyMark, const char* securityCategories);
 
 /*
  * NSS_SMIMEUtil_GetSecurityLabel - get S/MIME SecurityLabel attr value

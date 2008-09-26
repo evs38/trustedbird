@@ -755,7 +755,7 @@ NSS_CMSSignerInfo_AddMSSMIMEEncKeyPrefs(NSSCMSSignerInfo *signerinfo, CERTCertif
  * authenticated (i.e. signed) attributes of "signerinfo".
  */
 extern SECStatus
-NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char* securityPolicyIdentifier, PRInt32 securityClassification);
+NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char* securityPolicyIdentifier, PRInt32 securityClassification, const char* privacyMark, const char* securityCategories);
 
 /*
  * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value

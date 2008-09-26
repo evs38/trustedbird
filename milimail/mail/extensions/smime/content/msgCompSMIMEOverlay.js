@@ -259,15 +259,17 @@ function setSecurityClassification(event)
   // Set the securityClassification value for the Security Label
   gSMFields.securityPolicyIdentifier = "1.2.840.113549.1.9.16.7.1";
   gSMFields.securityClassification = event.target.getAttribute('value');
-
-  if (gSMFields.securityClassification != SECURITY_CLASSIFICATION_NONE) {
+  gSMFields.privacyMark = "";
+  gSMFields.securityCategories = "";
+  
+  if (gSMFields.securityPolicyIdentifier != "") {
     setSecurityLabelUI(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
   } else {
     setNoSecurityLabelUI();
   }
   
   // make sure we have a cert name for signing ...
-  if (gSMFields.securityClassification != SECURITY_CLASSIFICATION_NONE)
+  if (gSMFields.securityPolicyIdentifier != "")
   {
     var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
 
@@ -456,10 +458,11 @@ function setNoSecurityLabelUI()
   top.document.getElementById("securityLabelSecurityClassification-status").collapsed = true;
 }
 
-function setSecurityLabelUI(securityPolicyIdentifier, securityClassification)
+/* Set Security Label info in status bar */
+function setSecurityLabelUI()
 {
-  top.document.getElementById("securityLabelSecurityClassification-status").label = getSecurityLabelSecurityClassificationName(securityPolicyIdentifier, securityClassification)
-    + " [" + getSecurityLabelSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+  top.document.getElementById("securityLabelSecurityClassification-status").label = getSecurityLabelSecurityClassificationName(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification)
+    + " [" + getSecurityLabelSecurityPolicyIdentifierName(gSMFields.securityPolicyIdentifier) + "]";
   top.document.getElementById("securityLabelSecurityClassification-status").collapsed = false;
 }
 
