@@ -1,0 +1,2 @@
+Out of Office is an add-on for Mozilla Thunderbird which can redirect incoming mails to another recipient or send an out of office notification when a new message is received.
+These features are handled by the Sieve service of an IMAP server. Ref:RFC 5228 (Sieve: An Email Filtering Language), RFC 5230 (Sieve Email Filtering: Vacation Extension) and a draft (A Protocol for Remotely Managing Sieve Scripts).

@@ -1,1 +1,4 @@
 doc/
+*.sh
+*.cmd
+unit_test*
