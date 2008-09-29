@@ -33,8 +33,9 @@
  * 
  * ***** END LICENSE BLOCK ***** */
 
-/*
-   Default pref values for notifications viewer
+/**
+	@fileoverview
+	Default pref values for notifications viewer
 */
 
 // the last configured notifications_viewer version

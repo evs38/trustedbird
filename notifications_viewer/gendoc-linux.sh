@@ -17,7 +17,7 @@ logoPath="./chrome/skin/notificationsviewer.png"
 projectSummary="project_summary.txt"
 
 # document files
-files="./chrome/content/*.js"
+files="./"
 
 # output directory
 outputDirectory="doc"
@@ -27,6 +27,6 @@ outputDirectory="doc"
 if [ -d  $outputDirectory ] ; then rm $outputDirectory/* -f 2>/dev/null ; fi
 
 
-perl $JsDocPath -d $outputDirectory --logo $logoPath --project-summary $projectSummary  --no-sources $files
+perl $JsDocPath -r -d $outputDirectory --logo $logoPath --project-summary $projectSummary  --no-sources $files
 
 

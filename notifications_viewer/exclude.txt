@@ -7,7 +7,7 @@ exclude.txt
 *.sh
 *.cmd
 doc/*
-unit_test*
+*unit_test*
 *.cache
 update.rdf
 notifications_viewer_listofmsg.cache

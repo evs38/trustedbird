@@ -18,12 +18,12 @@ rem project summary file
 set projectSummary=project_summary.txt
 
 rem document files
-set files=.\chrome\content
+set files=.\
 
 rem output directory
 set outputDirectory=doc
 
 rem Clean up output directory
-if exist %outputDirectory% rmdir %outputDirectory% /S /Q 
+if exist %outputDirectory% del %outputDirectory%\*.* /Q
 
 perl %JsDocPath% -r -d %outputDirectory% --logo %logoPath% --project-summary %projectSummary%  --no-sources %files%
