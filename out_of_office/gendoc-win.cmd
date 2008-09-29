@@ -30,6 +30,6 @@ set outputDirectory=%mainDirectory%\js_doc
 
 
 rem Clean up output directory
-if exist %outputDirectory% rmdir %outputDirectory% /S /Q 
+if exist %outputDirectory% del %outputDirectory%\*.* /Q
 
 perl %JsDocPath% -r -d %outputDirectory% --logo %logoPath% --project-summary %projectSummary%  --no-sources %files%
