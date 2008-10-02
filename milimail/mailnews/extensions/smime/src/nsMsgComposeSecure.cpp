@@ -71,6 +71,13 @@ nsCOMPtr<nsIStringBundle> nsMsgComposeSecure::mSMIMEBundle = nsnull;
 
 #define SMIME_STRBUNDLE_URL "chrome://messenger/locale/am-smime.properties"
 
+/* Location of Security Label with triple wrapping */
+enum {
+	SECURITY_LABEL_LOCATION_BOTH_SIGNATURES = 0,
+	SECURITY_LABEL_LOCATION_INNER_SIGNATURE_ONLY = 1,
+	SECURITY_LABEL_LOCATION_OUTER_SIGNATURE_ONLY = 2
+};
+
 static void mime_crypto_write_base64 (void *closure, const char *buf,
               unsigned long size);
 static nsresult PR_CALLBACK mime_encoder_output_fn(const char *buf, PRInt32 size, void *closure);
@@ -204,7 +211,7 @@ char
 NS_IMPL_ISUPPORTS1(nsMsgSMIMEComposeFields, nsIMsgSMIMECompFields)
 
 nsMsgSMIMEComposeFields::nsMsgSMIMEComposeFields()
-:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE), mSecurityClassification(-1), mSignedReceiptRequest(PR_FALSE), mTripleWrapMessage(PR_FALSE)
+:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE), mSecurityLabelLocation(SECURITY_LABEL_LOCATION_BOTH_SIGNATURES), mSecurityClassification(-1), mSignedReceiptRequest(PR_FALSE), mTripleWrapMessage(PR_FALSE)
 {
 }
 
@@ -221,6 +228,18 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSignMessage(PRBool value)
 NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignMessage(PRBool *_retval)
 {
   *_retval = mSignMessage;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityLabelLocation(PRInt32 value)
+{
+  mSecurityLabelLocation = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityLabelLocation(PRInt32 *_retval)
+{
+  *_retval = mSecurityLabelLocation;
   return NS_OK;
 }
 
@@ -333,6 +352,7 @@ nsMsgComposeSecure::nsMsgComposeSecure()
   mCryptoEncoderData = 0;
   mBuffer = 0;
   mBufferedBytes = 0;
+  mSecurityLabelLocation = SECURITY_LABEL_LOCATION_BOTH_SIGNATURES;
   mSecurityClassification = -1;
 }
 
@@ -545,11 +565,12 @@ nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, 
   return NS_OK;
 }
 
-nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories)
+nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, PRInt32 * aSecurityLabelLocation, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories)
 {
   if (!aComposeFields)
     return NS_ERROR_FAILURE; // kick out...invalid args....
 
+  NS_ENSURE_ARG(aSecurityLabelLocation);
   NS_ENSURE_ARG(aSecurityClassification);
 
   nsCOMPtr<nsISupports> securityInfo;
@@ -562,6 +583,7 @@ nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aCompo
       nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
       if (smimeCompFields)
       {
+        smimeCompFields->GetSecurityLabelLocation(aSecurityLabelLocation);
         smimeCompFields->GetSecurityPolicyIdentifier(aSecurityPolicyIdentifier);
         smimeCompFields->GetSecurityClassification(aSecurityClassification);
         smimeCompFields->GetPrivacyMark(aPrivacyMark);
@@ -621,7 +643,7 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsOutputFileStream * 
   if (!signMessage && !encryptMessages && !tripleWrapMessage) return NS_ERROR_FAILURE;
   
   // Extract SecurityLabel State
-  ExtractSecurityLabelState(aCompFields, mSecurityPolicyIdentifier, &mSecurityClassification, mPrivacyMark, mSecurityCategories);
+  ExtractSecurityLabelState(aCompFields, &mSecurityLabelLocation, mSecurityPolicyIdentifier, &mSecurityClassification, mPrivacyMark, mSecurityCategories);
 
   // Extract SignedReceiptRequest State
   mSignedReceiptRequest = PR_FALSE;
@@ -708,9 +730,6 @@ NS_IMETHODIMP nsMsgComposeSecure::FinishCryptoEncapsulation(PRBool aAbort, nsIMs
     case mime_crypto_signed_encrypted_signed:
       /* Finish inner signature */
       rv = MimeFinishEncryption (PR_TRUE, sendReport);
-      
-      /* Disable receipt request before generating outer signature */
-      mSignedReceiptRequest = PR_FALSE;
       
       /* Finish outer signature */
       if (!NS_FAILED(rv)) rv = MimeFinishMultipartSigned (PR_TRUE, sendReport);
@@ -925,8 +944,20 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
 
   PR_ASSERT (mSelfSigningCert);
   PR_SetError(0,0);
-
-  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length(), (char*)mSecurityPolicyIdentifier.get(), mSecurityClassification, (char*)(NS_ConvertUTF16toUTF8(mPrivacyMark).get()), (char*)(NS_ConvertUTF16toUTF8(mSecurityCategories).get()), (mSignedReceiptRequest_ReceiptTo != NULL) ? (unsigned char*)mSignedReceiptRequest_ReceiptTo.get() : NULL);
+  
+  PRBool tripleWrapped;
+  if (mCryptoState == mime_crypto_signed_encrypted_signed) tripleWrapped = PR_TRUE; else tripleWrapped = PR_FALSE;
+  
+  rv = cinfo->CreateSigned(mSelfSigningCert,
+						   mSelfEncryptionCert,
+						   (unsigned char*)hashString.get(),
+						   hashString.Length(),
+						   (tripleWrapped && ((aOuter && mSecurityLabelLocation == SECURITY_LABEL_LOCATION_INNER_SIGNATURE_ONLY) || (!aOuter && mSecurityLabelLocation == SECURITY_LABEL_LOCATION_OUTER_SIGNATURE_ONLY))) ? NULL : (char*)mSecurityPolicyIdentifier.get(),
+						   mSecurityClassification,
+						   (char*)(NS_ConvertUTF16toUTF8(mPrivacyMark).get()),
+						   (char*)(NS_ConvertUTF16toUTF8(mSecurityCategories).get()),
+						   ((tripleWrapped && aOuter) || !mSignedReceiptRequest) ? NULL : (unsigned char*)mSignedReceiptRequest_ReceiptTo.get()
+						  );
   if (NS_FAILED(rv))  {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;

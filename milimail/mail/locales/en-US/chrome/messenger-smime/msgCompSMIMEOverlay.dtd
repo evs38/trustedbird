@@ -31,19 +31,5 @@
 <!ENTITY menu_viewSecurityStatus.label "Message Security Info">
 <!ENTITY menu_viewSecurityStatus.accesskey "I">
 
-<!ENTITY menu_securityLabel.label "Security Label">
+<!ENTITY menu_securityLabel.label "Security Label...">
 <!ENTITY menu_securityLabel.accesskey "L">
-<!ENTITY menu_securityClassification_topSecret.label "top-secret (5)">
-<!ENTITY menu_securityClassification_topSecret.accesskey "T">
-<!ENTITY menu_securityClassification_secret.label "secret (4)">
-<!ENTITY menu_securityClassification_secret.accesskey "S">
-<!ENTITY menu_securityClassification_confidential.label "confidential (3)">
-<!ENTITY menu_securityClassification_confidential.accesskey "C">
-<!ENTITY menu_securityClassification_restricted.label "restricted (2)">
-<!ENTITY menu_securityClassification_restricted.accesskey "R">
-<!ENTITY menu_securityClassification_unclassified.label "unclassified (1)">
-<!ENTITY menu_securityClassification_unclassified.accesskey "n">
-<!ENTITY menu_securityClassification_unmarked.label "unmarked (0)">
-<!ENTITY menu_securityClassification_unmarked.accesskey "U">
-<!ENTITY menu_securityClassification_none.label "None">
-<!ENTITY menu_securityClassification_none.accesskey "N">

@@ -39,8 +39,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const SECURITY_CLASSIFICATION_NONE = -1;
-
 const gISMimeCompFields = Components.interfaces.nsIMsgSMIMECompFields;
 const gSMimeCompFieldsContractID = "@mozilla.org/messenger-smime/composefields;1";
 const gSMimeContractID = "@mozilla.org/messenger-smime/smimejshelper;1";
@@ -58,8 +56,8 @@ function onComposerClose()
   setNoEncryptionUI();
   setNoSignatureUI();
   setTripleWrapUI(false);
-  setNoSecurityLabelUI();
-
+  securityLabelSetUIStatusBar();
+  
   if (!gMsgCompose)
     return;
 
@@ -126,7 +124,9 @@ function onComposerReOpen()
     gSMFields.tripleWrapMessage = gCurrentIdentity.getBoolAttribute("triple_wrap_mail");
     setTripleWrapUI(gSMFields.tripleWrapMessage);
     
-    setNoSecurityLabelUI();
+    gSMFields.securityLabelLocation = gCurrentIdentity.getIntAttribute("securityLabelLocation");
+
+    securityLabelSetUIStatusBar();
   }
 }
 
@@ -249,40 +249,41 @@ function signMessage()
   }
 }
 
-function setSecurityClassification(event)
-{
-  event.stopPropagation();
+/**
+ * Show a dialog to define Security Label settings
+ */
+function showSecurityLabelDialog() {
+	window.openDialog('chrome://messenger-smime/content/securityLabelDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=600,height=425');
+	
+	securityLabelSetUIStatusBar(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
+	
+	/* make sure we have a cert name for signing */
+	if (gSMFields.securityPolicyIdentifier != "") {
+		var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+		if (!signingCertName) {
+			showNeedSetupInfo();
+			return;
+		}
 
-  if (!gSMFields)
-    return;
+		// Enable signing if disable
+		if (!gSMFields.signMessage) signMessage();
+	}
+}
 
-  // Set the securityClassification value for the Security Label
-  gSMFields.securityPolicyIdentifier = "1.2.840.113549.1.9.16.7.1";
-  gSMFields.securityClassification = event.target.getAttribute('value');
-  gSMFields.privacyMark = "";
-  gSMFields.securityCategories = "";
-  
-  if (gSMFields.securityPolicyIdentifier != "") {
-    setSecurityLabelUI(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
-  } else {
-    setNoSecurityLabelUI();
-  }
-  
-  // make sure we have a cert name for signing ...
-  if (gSMFields.securityPolicyIdentifier != "")
-  {
-    var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
-
-    if (!signingCertName) {
-      gSMFields.securityClassification = SECURITY_CLASSIFICATION_NONE;
-      showNeedSetupInfo();
-      return;
-    }
-
-    // Enable signing if disable
-    if (!gSMFields.signMessage)
-      signMessage();
-  }
+/**
+ * Display Security Label info in status bar of compose window
+ * @param securityPolicyIdentifier Security Policy Identifier
+ * @param securityClassification Security Classification
+ */
+function securityLabelSetUIStatusBar(securityPolicyIdentifier, securityClassification) {
+	if (securityPolicyIdentifier != undefined && securityPolicyIdentifier != "" && securityClassification != undefined && securityClassification != "" && securityClassification != "-1") {
+		top.document.getElementById("securityLabelSecurityClassification-status").label = securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification)
+			+ " [" + securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+		top.document.getElementById("securityLabelSecurityClassification-status").collapsed = false;
+	} else {
+		  top.document.getElementById("securityLabelSecurityClassification-status").label = "";
+		  top.document.getElementById("securityLabelSecurityClassification-status").collapsed = true;
+	}
 }
 
 // Toggle SignedReceiptRequest flag and update UI
@@ -354,19 +355,9 @@ function setSecuritySettings(menu_id)
   document.getElementById("menu_securityNoEncryption" + menu_id).setAttribute("checked", !gSMFields.requireEncryptMessage);
   document.getElementById("menu_securitySign" + menu_id).setAttribute("checked", gSMFields.signMessage);
 
-
-  var menu_securityLabel = document.getElementById("menu_securityLabel" + menu_id);
-  var menuitems = menu_securityLabel.getElementsByTagName("menuitem");
-  for (var i = 0; i < menuitems.length; i++) {
-    if (menuitems[i].getAttribute('value') == gSMFields.securityClassification)
-      menuitems[i].setAttribute('checked', 'true');
-    else
-      menuitems[i].removeAttribute('checked');
-  }
-
   // Enable or disable menuitem "sign" according to signedReceiptRequest and tripleWrapMessage flags
   document.getElementById("menu_securitySign" + menu_id).setAttribute("disabled",
-    gSMFields.signedReceiptRequest || gSMFields.tripleWrapMessage || (gSMFields.securityClassification != SECURITY_CLASSIFICATION_NONE));
+    gSMFields.signedReceiptRequest || gSMFields.tripleWrapMessage || (gSMFields.securityPolicyIdentifier != ""));
 
   // Set checked status for SignedReceiptRequest menuitem
   document.getElementById("menu_securitySignedReceiptRequest" + menu_id).setAttribute("checked", gSMFields.signedReceiptRequest);
@@ -403,16 +394,16 @@ function doSecurityButton()
       signMessage();
       break;
     
-    case "setSecurityClassification":
-      setSecurityClassification();
-      break;
-
     case "signedReceiptRequest":
       toggleSignedReceiptRequest();
       break;
 
     case "tripleWrapMessage":
       toggleTripleWrapMessage();
+      break;
+
+    case "securityLabelDialog":
+      showSecurityLabelDialog();
       break;
 
     case "show":
@@ -450,20 +441,6 @@ function setTripleWrapUI(isEnable)
 {
   top.document.getElementById("securityStatus").setAttribute("tripleWrap", (isEnable) ? "ok" : "");
   top.document.getElementById("tripleWrapping-status").collapsed = isEnable;
-}
-
-function setNoSecurityLabelUI()
-{
-  top.document.getElementById("securityLabelSecurityClassification-status").label = "";
-  top.document.getElementById("securityLabelSecurityClassification-status").collapsed = true;
-}
-
-/* Set Security Label info in status bar */
-function setSecurityLabelUI()
-{
-  top.document.getElementById("securityLabelSecurityClassification-status").label = getSecurityLabelSecurityClassificationName(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification)
-    + " [" + getSecurityLabelSecurityPolicyIdentifierName(gSMFields.securityPolicyIdentifier) + "]";
-  top.document.getElementById("securityLabelSecurityClassification-status").collapsed = false;
 }
 
 function showMessageComposeSecurityStatus()

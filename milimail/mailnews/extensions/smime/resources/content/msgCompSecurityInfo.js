@@ -253,8 +253,8 @@ function onLoad()
     
     /* Security Label */
     if (params.smFields.securityClassification != -1) {
-    	securityLabel_element.value = getSecurityLabelSecurityClassificationName(params.smFields.securityPolicyIdentifier, params.smFields.securityClassification)
-    								+ " [" + getSecurityLabelSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
+    	securityLabel_element.value = securityLabelGetSecurityClassificationName(params.smFields.securityPolicyIdentifier, params.smFields.securityClassification)
+    								+ " [" + securityLabelGetSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
     } else {
     	securityLabel_element.value = no_string;;
     }

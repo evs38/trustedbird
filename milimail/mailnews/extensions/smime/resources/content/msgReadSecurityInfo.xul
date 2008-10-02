@@ -102,39 +102,47 @@
       </hbox>
     </vbox>
 
-    <vbox id="securityLabelBox" collapsed="true">
-      <separator/>
-      <label id="securityLabel">&securityLabel.name;</label>
-      <hbox id="securityLabelSecurityPolicyIdentifierBox">
-        <label id="securityLabelSecurityPolicyIdentifierLabel">&securityLabel.securityPolicyIdentifier.name;</label>
-        <description id="securityLabelSecurityPolicyIdentifierValue"/>
-      </hbox>
-      <hbox id="securityLabelSecurityClassificationBox" collapsed="true">
-        <label id="securityLabelSecurityClassificationLabel">&securityLabel.securityClassification.name;</label>
-        <description id="securityLabelSecurityClassificationValue"/>
-      </hbox>
-      <hbox id="securityLabelPrivacyMarkBox" collapsed="true">
-        <label id="securityLabelPrivacyMarkLabel">&securityLabel.privacyMark.name;</label>
-        <description id="securityLabelPrivacyMarkValue"/>
-      </hbox>
-      <hbox id="securityLabelSecurityCategoriesBox" collapsed="true">
-        <label id="securityLabelSecurityCategoriesLabel">&securityLabel.securityCategories.name;</label>
-        <tree id="securityLabelSecurityCategoriesTree" flex="1" hidecolumnpicker="true" >
-          <treecols flex="1">
-            <treecol label="&securityLabel.securityCategories.type.name;" flex="1" />
-            <splitter class="tree-splitter" />
-            <treecol label="&securityLabel.securityCategories.value.name;" flex="2" />
-          </treecols>
-          <treechildren id="securityLabelSecurityCategoriesTreeChildren" />
-       </tree>
-      </hbox>
-    </vbox>
-
     <separator/>
 
     <label id="tripleWrapLabel"/>
     <label id="tripleWrapHeader" collapsed="true"/>
     <description id="tripleWrapExplanation"/>
+
+    <vbox id="securityLabelBox" collapsed="true">
+      <separator/>
+      <label id="securityLabel">&securityLabel.name;</label>
+      <grid flex="1">
+        <columns>
+          <column />
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row align="center">
+            <label id="securityLabelSecurityPolicyIdentifierLabel" value="&securityLabel.securityPolicyIdentifier.name;" />
+            <description id="securityLabelSecurityPolicyIdentifierValue"/>
+          </row>
+          <row align="center" id="securityLabelSecurityClassificationRow" collapsed="true">
+            <label id="securityLabelSecurityClassificationLabel" value="&securityLabel.securityClassification.name;" />
+            <description id="securityLabelSecurityClassificationValue"/>
+          </row>
+          <row align="center" id="securityLabelPrivacyMarkRow" collapsed="true">
+            <label id="securityLabelPrivacyMarkLabel" value="&securityLabel.privacyMark.name;" />
+            <description id="securityLabelPrivacyMarkValue"/>
+          </row>
+          <row align="center" id="securityLabelSecurityCategoriesRow" collapsed="true">
+            <label id="securityLabelSecurityCategoriesLabel" value="&securityLabel.securityCategories.name;" />
+            <tree id="securityLabelSecurityCategoriesTree" flex="1" hidecolumnpicker="true" >
+              <treecols flex="1">
+                <treecol label="&securityLabel.securityCategories.type.name;" flex="1" />
+                <splitter class="tree-splitter" />
+                <treecol label="&securityLabel.securityCategories.value.name;" flex="2" />
+              </treecols>
+              <treechildren id="securityLabelSecurityCategoriesTreeChildren" />
+            </tree>
+          </row>
+        </rows>
+      </grid>
+    </vbox>
 
   </vbox>
 </dialog>

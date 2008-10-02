@@ -58,7 +58,7 @@ var securityLabelSecurityClassificationColumnHandler = {
 		var securityLabelSecurityClassification = hdr.getStringProperty("securityLabelSecurityClassification");
 
 		if (securityLabelSecurityPolicyIdentifier != "") {
-			if (securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1") return getSecurityLabelSecurityClassificationName(securityLabelSecurityPolicyIdentifier, securityLabelSecurityClassification);
+			if (securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1") return securityLabelGetSecurityClassificationName(securityLabelSecurityPolicyIdentifier, securityLabelSecurityClassification);
 		}
 		return "";
 	},

@@ -123,6 +123,8 @@ bin\components\msgsmime.xpt
 
 bin\components\dsn-service.js
 
+bin\components\securitylabel-service.js
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Chrome Files
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

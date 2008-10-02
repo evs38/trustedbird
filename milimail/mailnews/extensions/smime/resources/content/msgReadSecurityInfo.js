@@ -296,14 +296,14 @@ function onLoad()
 
   if (gSecurityPolicyIdentifier != "") {
     document.getElementById("securityLabelBox").collapsed = false;
-    document.getElementById("securityLabelSecurityPolicyIdentifierValue").value = getSecurityLabelSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
+    document.getElementById("securityLabelSecurityPolicyIdentifierValue").value = securityLabelGetSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
     if (gSecurityClassification != -1) {
-    	document.getElementById("securityLabelSecurityClassificationValue").value = getSecurityLabelSecurityClassificationName(gSecurityPolicyIdentifier, gSecurityClassification);
-    	document.getElementById("securityLabelSecurityClassificationBox").collapsed = false;
+    	document.getElementById("securityLabelSecurityClassificationValue").value = securityLabelGetSecurityClassificationName(gSecurityPolicyIdentifier, gSecurityClassification);
+    	document.getElementById("securityLabelSecurityClassificationRow").collapsed = false;
     }
     if (gPrivacyMark != "") {
     	document.getElementById("securityLabelPrivacyMarkValue").value = gPrivacyMark;
-    	document.getElementById("securityLabelPrivacyMarkBox").collapsed = false;
+    	document.getElementById("securityLabelPrivacyMarkRow").collapsed = false;
     }
     if (gSecurityCategories != "") {
     	var securityLabelSecurityCategoriesTree = document.getElementById("securityLabelSecurityCategoriesTree");
@@ -330,7 +330,7 @@ function onLoad()
     		treeitem.appendChild(treerow);
     		securityLabelSecurityCategoriesTreeChildren.appendChild(treeitem);
     	}
-    	document.getElementById("securityLabelSecurityCategoriesBox").collapsed = false;
+    	document.getElementById("securityLabelSecurityCategoriesRow").collapsed = false;
     }
   }
 }

@@ -68,6 +68,8 @@
   locale/@AB_CD@/messenger/msgmdn.properties                            (%chrome/messenger/msgmdn.properties)
   locale/@AB_CD@/messenger/am-dsn.dtd                                   (%chrome/messenger/am-dsn.dtd)
   locale/@AB_CD@/messenger/am-dsn.properties                            (%chrome/messenger/am-dsn.properties)
+  locale/@AB_CD@/messenger/am-securitylabel.dtd                         (%chrome/messenger/am-securitylabel.dtd)
+  locale/@AB_CD@/messenger/am-securitylabel.properties                  (%chrome/messenger/am-securitylabel.properties)
   locale/@AB_CD@/messenger/mailviews.properties                         (%chrome/messenger/mailviews.properties)
   locale/@AB_CD@/messenger/msgViewPickerOverlay.dtd                     (%chrome/messenger/msgViewPickerOverlay.dtd)
   locale/@AB_CD@/messenger/mailViewSetup.dtd                            (%chrome/messenger/mailViewSetup.dtd)

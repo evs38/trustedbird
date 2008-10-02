@@ -13,6 +13,8 @@ messenger.jar:
 *  content/messenger-smime/msgHdrViewSMIMEOverlay.js                (content/msgHdrViewSMIMEOverlay.js)
 *  content/messenger-smime/pref-smime-advanced.xul                  (content/pref-smime-advanced.xul)
 *  content/messenger-smime/securityLabelTreeColOverlay.xul          (content/securityLabelTreeColOverlay.xul)
+*  content/messenger-smime/securityLabelDialog.xul                  (content/securityLabelDialog.xul)
+*  content/messenger-smime/securityLabelDialog.js                   (content/securityLabelDialog.js)
 *  content/messenger/am-smime.xul                                   (content/am-smime.xul)
 *  content/messenger/am-smime.js                                    (content/am-smime.js)
    content/messenger-smime/msgReadSMIMEOverlay.js                   (/mailnews/extensions/smime/resources/content/msgReadSMIMEOverlay.js)

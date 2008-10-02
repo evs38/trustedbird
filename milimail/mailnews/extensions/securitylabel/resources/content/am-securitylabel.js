@@ -1,4 +1,5 @@
-/* ***** BEGIN LICENSE BLOCK *****
+/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -11,7 +12,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla.
+ * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
  * BT Global Services / Etat francais Ministere de la Defense.
@@ -21,8 +22,8 @@
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * either of the GNU General Public License Version 2 or later (the "GPL"),
+ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
  * under the terms of either the GPL or the LGPL, and not to allow others to
@@ -34,38 +35,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *  Get Human-readable Security Classification value
- *  @param securityPolicyIdentifier String with Policy Identifier OID
- *  @param securityClassification Classification value
- *  @return String with the name and value of the Security Classification
- */
-function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification) {
-	if (securityPolicyIdentifier == undefined || securityClassification == undefined) return "";
-	
-	switch (parseInt(securityClassification)) {
-		case 0:	return "unmarked (0)";
-		case 1:	return "unclassified (1)";
-		case 2:	return "restricted (2)";
-		case 3:	return "confidential (3)";
-		case 4:	return "secret (4)";
-		case 5:	return "top-secret (5)";
-	}
-	
-	return "unknown (" + securityClassification + ")";
+var gIdentity;
+
+function onPreInit(account, accountValues) {
+	gIdentity = account.defaultIdentity;
 }
 
-/**
- * Get Human-readable Security Policy Identifier
- * @param securityPolicyIdentifier String with Policy Identifier OID
- * @return String with the name of the Policy Identifier
- */
-function securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) {
-	if (securityPolicyIdentifier == undefined || securityPolicyIdentifier == "") return "";
+function onInit() {
+	document.getElementById("securityLabelLocationRadiogroup").selectedIndex = gIdentity.getIntAttribute("securityLabelLocation");
+	return true;
+}
 
-	switch (securityPolicyIdentifier) {
-		case "1.2.840.113549.1.9.16.7.1": return "default";
-	}
-	
-	return "unknown (" + securityPolicyIdentifier + ")";
+function onSave() {
+	gIdentity.setIntAttribute("securityLabelLocation", document.getElementById("securityLabelLocationRadiogroup").selectedIndex);
 }

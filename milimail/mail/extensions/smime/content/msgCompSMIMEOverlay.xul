@@ -45,8 +45,8 @@
 <!DOCTYPE overlay SYSTEM "chrome://messenger-smime/locale/msgCompSMIMEOverlay.dtd">
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/x-javascript" src="chrome://messenger-smime/content/msgCompSMIMEOverlay.js"/>
   <script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabel.js"/>
+  <script type="application/x-javascript" src="chrome://messenger-smime/content/msgCompSMIMEOverlay.js"/>
   <script type="application/x-javascript"><![CDATA[
     window.addEventListener("load", smimeComposeOnLoad, true);
   ]]></script>
@@ -74,17 +74,7 @@
         <menuseparator/>
         <menuitem id="menu_securityTripleWrap1" type="checkbox" accesskey="&menu_securityTripleWrap.accesskey;" label="&menu_securityTripleWrap.label;" oncommand="toggleTripleWrapMessage()" tooltiptext="&tripleWrap.description;"/>
         <menuseparator/>
-        <menu id="menu_securityLabel1" label="&menu_securityLabel.label;" accesskey="&menu_securityLabel.accesskey;" oncommand="setSecurityClassification(event);">
-          <menupopup>
-            <menuitem id="securityClassification1_topSecret"    value="5"  type="radio" name="securityClassification1" label="&menu_securityClassification_topSecret.label;"    accesskey="&menu_securityClassification_topSecret.accesskey;"/>
-            <menuitem id="securityClassification1_secret"       value="4"  type="radio" name="securityClassification1" label="&menu_securityClassification_secret.label;"       accesskey="&menu_securityClassification_secret.accesskey;"/>
-            <menuitem id="securityClassification1_confidential" value="3"  type="radio" name="securityClassification1" label="&menu_securityClassification_confidential.label;" accesskey="&menu_securityClassification_confidential.accesskey;"/>
-            <menuitem id="securityClassification1_restricted"   value="2"  type="radio" name="securityClassification1" label="&menu_securityClassification_restricted.label;"   accesskey="&menu_securityClassification_restricted.accesskey;"/>
-            <menuitem id="securityClassification1_unclassified" value="1"  type="radio" name="securityClassification1" label="&menu_securityClassification_unclassified.label;" accesskey="&menu_securityClassification_unclassified.accesskey;"/>
-            <menuitem id="securityClassification1_unmarked"     value="0"  type="radio" name="securityClassification1" label="&menu_securityClassification_unmarked.label;"     accesskey="&menu_securityClassification_unmarked.accesskey;"/>
-            <menuitem id="securityClassification1_none"         value="-1" type="radio" name="securityClassification1" label="&menu_securityClassification_none.label;"         accesskey="&menu_securityClassification_none.accesskey;" checked="true"/>
-          </menupopup>
-        </menu>
+        <menuitem id="menu_securityLabelDialog1" accesskey="&menu_securityLabel.accesskey;" label="&menu_securityLabel.label;" oncommand="showSecurityLabelDialog();" />
       </menupopup>
     </menu>
   </menupopup>
@@ -104,17 +94,7 @@
         <menuseparator/>
         <menuitem id="menu_securityTripleWrap2" type="checkbox" accesskey="&menu_securityTripleWrap.accesskey;" label="&menu_securityTripleWrap.label;" oncommand="setNextCommand('tripleWrapMessage');" tooltiptext="&tripleWrap.description;"/>
         <menuseparator/>
-        <menu id="menu_securityLabel2" label="&menu_securityLabel.label;" accesskey="&menu_securityLabel.accesskey;" oncommand="setSecurityClassification(event);">
-          <menupopup>
-            <menuitem id="securityClassification2_topSecret"    value="5"  type="radio" name="securityClassification2" label="&menu_securityClassification_topSecret.label;"    accesskey="&menu_securityClassification_topSecret.accesskey;"/>
-            <menuitem id="securityClassification2_secret"       value="4"  type="radio" name="securityClassification2" label="&menu_securityClassification_secret.label;"       accesskey="&menu_securityClassification_secret.accesskey;"/>
-            <menuitem id="securityClassification2_confidential" value="3"  type="radio" name="securityClassification2" label="&menu_securityClassification_confidential.label;" accesskey="&menu_securityClassification_confidential.accesskey;"/>
-            <menuitem id="securityClassification2_restricted"   value="2"  type="radio" name="securityClassification2" label="&menu_securityClassification_restricted.label;"   accesskey="&menu_securityClassification_restricted.accesskey;"/>
-            <menuitem id="securityClassification2_unclassified" value="1"  type="radio" name="securityClassification2" label="&menu_securityClassification_unclassified.label;" accesskey="&menu_securityClassification_unclassified.accesskey;"/>
-            <menuitem id="securityClassification2_unmarked"     value="0"  type="radio" name="securityClassification2" label="&menu_securityClassification_unmarked.label;"     accesskey="&menu_securityClassification_unmarked.accesskey;"/>
-            <menuitem id="securityClassification2_none"         value="-1" type="radio" name="securityClassification2" label="&menu_securityClassification_none.label;"         accesskey="&menu_securityClassification_none.accesskey;" checked="true"/>
-          </menupopup>
-        </menu>
+        <menuitem id="menu_securityLabelDialog2" accesskey="&menu_securityLabel.accesskey;" label="&menu_securityLabel.label;" oncommand="setNextCommand('securityLabelDialog');" />
         <menuseparator/>
         <menuitem id="menu_securityStatus2" accesskey="&menu_securityStatus.accesskey;" label="&menu_securityStatus.label;" oncommand="setNextCommand('show');"/>
       </menupopup>
