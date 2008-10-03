@@ -40,6 +40,9 @@ var securityLabelSecurityClassificationList = [];
 var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 jsLoader.loadSubScript("chrome://messenger/content/io.js");
 
+var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+var gStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
+
 
 /**
  *  Get Human-readable Security Classification value
@@ -58,7 +61,7 @@ function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, se
 		}
 	}
 	
-	return "unknown (" + securityClassification + ")";
+	return gStringBundle.GetStringFromName("unknownSecurityClassification") +" (" + securityClassification + ")";
 }
 
 
@@ -76,7 +79,7 @@ function securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) 
 		if (securityLabelSecurityPolicyList[policyName] == securityPolicyIdentifier) return policyName;
 	}
 	
-	return "unknown (" + securityPolicyIdentifier + ")";
+	return gStringBundle.GetStringFromName("unknownSecurityPolicyIdentifier") +" (" + securityPolicyIdentifier + ")";
 }
 
 

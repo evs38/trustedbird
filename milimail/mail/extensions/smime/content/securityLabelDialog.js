@@ -37,12 +37,16 @@
 */
 
 var gSMFields;
+var gStringBundle;
 
 function securityLabelDialogOnLoad() {
 	gSMFields = window.opener.gMsgCompose.compFields.securityInfo;
 	if (gSMFields == null) return;
 	
-	
+	gStringBundle = document.getElementById("securityLabelDialogStringbundle");
+	var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+	gStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
+
 	/* Read Security Label profiles */
 	securityLabelReadProfiles();
 
@@ -54,7 +58,7 @@ function securityLabelDialogOnLoad() {
 	while (securityPolicyIdentifierMenulist.menupopup.firstChild) securityPolicyIdentifierMenulist.menupopup.removeChild(securityPolicyIdentifierMenulist.menupopup.firstChild);
 	
 	/* Construct list */
-	securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, "none", "", "");
+	securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, gStringBundle.GetStringFromName("noSecurityPolicyIdentifier"), "", "");
 	for (policyName in securityLabelSecurityPolicyList) {
 		securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, policyName, securityLabelSecurityPolicyList[policyName], gSMFields.securityPolicyIdentifier);
 	}
@@ -105,7 +109,7 @@ function securityLabelDialogUpdateUI() {
 	while (securityClassificationMenulist.menupopup.firstChild) securityClassificationMenulist.menupopup.removeChild(securityClassificationMenulist.menupopup.firstChild);
 
 	/* Construct list */
-	securityLabelDialogCreateMenuItem(securityClassificationMenulist, "none", "-1", "-1");
+	securityLabelDialogCreateMenuItem(securityClassificationMenulist, gStringBundle.GetStringFromName("noSecurityClassification"), "-1", "-1");
 	var selectedLabel = document.getElementById("securityLabelSecurityPolicyIdentifierMenuList").selectedItem.label;
 	for (classificationName in securityLabelSecurityClassificationList[selectedLabel]) {
 		securityLabelDialogCreateMenuItem(securityClassificationMenulist, classificationName, securityLabelSecurityClassificationList[selectedLabel][classificationName], gSMFields.securityClassification);

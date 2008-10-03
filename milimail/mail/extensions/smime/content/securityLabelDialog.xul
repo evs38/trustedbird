@@ -47,12 +47,12 @@
 		title="&securityLabel.name;"
 		onload="securityLabelDialogOnLoad();"
 		ondialogaccept="securityLabelDialogOnAccept();">
-		
+	
 	<script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabel.js"/>
 	<script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabelDialog.js"/>
-		
+	
 	<dialogheader title="&securityLabel.name;" />
-		
+	
 	<grid flex="1">
 
 		<columns>

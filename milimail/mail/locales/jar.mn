@@ -148,6 +148,7 @@
   locale/@AB_CD@/messenger-smime/msgSecurityInfo.properties             (%chrome/messenger-smime/msgSecurityInfo.properties)
   locale/@AB_CD@/messenger-smime/msgsignedreceipt.properties            (%chrome/messenger-smime/msgsignedreceipt.properties)
   locale/@AB_CD@/messenger-smime/securityLabelTreeColOverlay.dtd        (%chrome/messenger-smime/securityLabelTreeColOverlay.dtd)
+  locale/@AB_CD@/messenger-smime/securityLabel.properties               (%chrome/messenger-smime/securityLabel.properties)
 % locale messenger-region @AB_CD@ %locale/@AB_CD@/messenger-region/
   locale/@AB_CD@/messenger-region/region.properties                     (%chrome/messenger-region/region.properties)
 % locale mozldap @AB_CD@ %locale/@AB_CD@/mozldap/
