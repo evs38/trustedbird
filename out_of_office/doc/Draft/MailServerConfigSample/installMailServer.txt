@@ -1,0 +1,102 @@
+Serveur recette milimail
+------------------------
+
+Liens:
+http://www.ibiblio.org/pub/linux/docs/howto/translations/fr/html-1page/Cyrus-IMAP.html
+http://www.luxpopuli.fr/internet/postfix_cyrus_imap_ssl_ldap/cyrus_imap_installer_cyrus_imap
+
+
+Procédure d'installation:
+
+Prérequis: 
+Machine correctement installé et configuré.
+Réseau, etc.
+
+Mise à jour systéme
+/etc/apt/sources.list:
+?????????????????
+main contrib non-free
+
+aptitude update
+aptitude dist-upgrade
+
+Spécifique si on utilise VMWARE
+VMware tools:
+aptitude install psmisc build-essential linux-headers-2.6-686
+=> VMware tools
+
+
+
+== Installation des paquets Postfix/Cyrus/Sasl authentification ==
+aptitude install postfix qpsmtpd ssh
+aptitude install cyrus-imapd-2.2
+aptitude install sasl2-bin
+
+== Postfix ==
+
+access unix socket /var/run/cyrus/socket/lmtp:
+
+Dans /etc/postfix/main.cf:
+Indiquer à Postfix que les communications avec cyrus sont faites via une socket lmtp
+ > mailbox_transport = lmtp:unix:/var/run/cyrus/socket/lmtp
+ > local_recipient_maps =
+
+Dans /etc/postfix/master.cf:
+ > lmtp NOT in chroot
+
+Ajouter l'utilisateur postfix dans le group utilisateur mail
+ > adduser postfix mail
+
+
+== Cyrus ==
+
+Administration: dans imapd.conf enlever le commentaire devant 'admins: cyrus'
+Cela active la possibilité d'utiliser l'outil cyradm et d'avoir le droit de voir la config courante!
+
+Configuration dans le fichier /etc/cyrus.conf
+On peut mettre en commentaire les protocoles que l'on a pas besoin
+comme pop3, nntp ...
+ 
+Base de passwords utilisateurs: /dev/sasldb2 par défaut le fichier est dans /etc/sasldb2
+Création d'utilisateur et affectation d'un mot de passe
+ > saslpasswd2 -c cyrus@DomainName
+ > saslpasswd2 -c user1@DomainName
+Lister les utilisateurs
+ > sasldblistusers2
+
+
+Vérifier et Changer les droits sur la bdd des utilisateurs SASL
+ > chown cyrus /etc/sasldb2
+
+Vérifier et Changer les droits sur /var/lib/cyrus et /var/spool/cyrus 
+ > chown -R cyrus:mail /var/lib/cyrus
+ > chown -R cyrus:mail /var/spool/cyrus
+
+Une fois que les utilisateurs sont créés on doit créer les boites aux lettres associées.
+Ceci se réalise avec l'outil cyradm.
+
+Connection à l'admin cyrus: 
+cyradm --user cyrus localhost
+
+Une fois connecté à l'amdmin :
+Création mailbox
+cyradm> cm user.user1
+
+Suppression mailbox:
+ATTENTION pour cela il faut changer les droits sur cet utilisateur
+cyradm> sam user.user1 cyrus all
+cyradm> dm user.user1
+
+Le test suivant fonctionne uniquement si les deux étapes précédentes ont été correctement réalisés
+Test login IMAP:
+imtest -a user1 localhost
+
+== Sieve ==
+Configuration dans le fichier /etc/cyrus.conf
+Activer l'accés distant au serveur SIEVE (autre que localhost)
+changer la ligne : 
+	sieve  cmd="timsieved" listen"sieve" prefork=0 maxchild=100
+à la place de 
+	sieve  cmd="timsieved" listen"localhost:sieve" prefork=0 maxchild=100
+
+
