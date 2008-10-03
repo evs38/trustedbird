@@ -34,6 +34,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var securityLabelSecurityPolicyList = [];
+var securityLabelSecurityClassificationList = [];
+
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+jsLoader.loadSubScript("chrome://messenger/content/io.js");
+
+
 /**
  *  Get Human-readable Security Classification value
  *  @param securityPolicyIdentifier String with Policy Identifier OID
@@ -43,17 +50,17 @@
 function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification) {
 	if (securityPolicyIdentifier == undefined || securityClassification == undefined) return "";
 	
-	switch (parseInt(securityClassification)) {
-		case 0:	return "unmarked (0)";
-		case 1:	return "unclassified (1)";
-		case 2:	return "restricted (2)";
-		case 3:	return "confidential (3)";
-		case 4:	return "secret (4)";
-		case 5:	return "top-secret (5)";
+	var securityPolicyIdentifierName = securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier);
+
+	if (securityLabelSecurityClassificationList[securityPolicyIdentifierName] != undefined) {
+		for (classificationName in securityLabelSecurityClassificationList[securityPolicyIdentifierName]) {
+			if (securityLabelSecurityClassificationList[securityPolicyIdentifierName][classificationName] == securityClassification) return classificationName;
+		}
 	}
 	
 	return "unknown (" + securityClassification + ")";
 }
+
 
 /**
  * Get Human-readable Security Policy Identifier
@@ -63,9 +70,86 @@ function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, se
 function securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) {
 	if (securityPolicyIdentifier == undefined || securityPolicyIdentifier == "") return "";
 
-	switch (securityPolicyIdentifier) {
-		case "1.2.840.113549.1.9.16.7.1": return "default";
+	securityLabelReadProfiles();
+	
+	for (policyName in securityLabelSecurityPolicyList) {
+		if (securityLabelSecurityPolicyList[policyName] == securityPolicyIdentifier) return policyName;
 	}
 	
 	return "unknown (" + securityPolicyIdentifier + ")";
+}
+
+
+var _securityLabelReadProfilesDone = false;
+
+/**
+ * Read Security Label profiles in %profile%/securityLabel/ directory
+ */
+function securityLabelReadProfiles() {
+	if (!_securityLabelReadProfilesDone) {
+
+		/* Reset lists */
+		securityLabelSecurityPolicyList = [];
+		securityLabelSecurityClassificationList = [];
+		                                           
+		var dir = DirIO.get("ProfD"); /* Profile directory */
+		dir.append("securityLabel");
+		var dirList = DirIO.read(dir);
+		for (i in dirList) {
+			var fileContents = FileIO.read(dirList[i], "UTF-8");
+			if (fileContents != false) {
+				var domParser = new DOMParser();
+				var dom = domParser.parseFromString(fileContents, "text/xml");
+				if (dom.documentElement.nodeName == "securityLabel") {
+					var policy = _parsePolicyIdentifier(dom);
+					if (policy != false) {
+						securityLabelSecurityPolicyList[policy[0]] = policy[1];
+						securityLabelSecurityClassificationList[policy[0]] = _parseSecurityClassification(dom);
+					}
+				}
+			}
+		}
+		
+		_securityLabelReadProfilesDone = true;
+	}
+}
+
+
+function _parsePolicyIdentifier(dom) {
+	var nodeList = dom.getElementsByTagName("policyIdentifier");
+	if (nodeList.length == 1) {
+		var node = nodeList.item(0);
+		var name = node.getAttribute("name");
+		var value = node.firstChild.nodeValue;
+		if (name != "" && value != "") return [name, value];
+	}
+	
+	return false;
+}
+
+
+function _parseSecurityClassification(dom) {
+	var list = [];
+	
+	var nodeList = dom.getElementsByTagName("securityClassification");
+	if (nodeList.length == 1) {
+		var node = nodeList.item(0);
+		var displayValue = node.getAttribute("displayValue");
+		if (node.hasChildNodes()) {
+			var nodeList = node.childNodes;
+			for (i = 0; i < nodeList.length; i++) {
+				var valueNode = nodeList.item(i);
+				if (valueNode.nodeName == "value") {
+					var name = valueNode.getAttribute("name");
+					var value = valueNode.firstChild.nodeValue;
+					if (parseInt(value) >= 0 && parseInt(value) <= 256) {
+						if (displayValue != "false" && displayValue != "0") name += " (" + value + ")";
+						list[name] = value;
+					}
+				}
+			}
+		}
+	}
+	
+	return list;
 }

@@ -54,6 +54,7 @@ FILES := \
 libs:: $(FILES)
 	$(INSTALL) $^ $(DIST)/bin/defaults/profile
 	$(INSTALL) $^ $(DIST)/bin/defaults/profile/US
+	$(INSTALL) securityLabelPolicyDefault.xml $(DIST)/bin/defaults/profile/securityLabel
 
 install:: $(FILES)
 	$(SYSINSTALL) $(IFLAGS1) $^ $(DESTDIR)$(mozappdir)/defaults/profile

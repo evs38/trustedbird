@@ -46,6 +46,7 @@ messenger.jar:
 *   content/messenger/search.xml                    (content/search.xml)
 *   content/messenger/newmailalert.xul              (content/newmailalert.xul)
     content/messenger/newmailalert.js               (content/newmailalert.js)
+    content/messenger/io.js                         (content/io.js)
 #ifdef MOZ_USE_GENERIC_BRANDING
 % content branding %content/branding/ xpcnativewrappers=yes
     content/branding/about-credits.png              (content/about-credits.png)

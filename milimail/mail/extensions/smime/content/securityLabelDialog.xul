@@ -63,7 +63,7 @@
 		<rows>
 			<row align="center">
 	        	<label control="securityLabelSecurityPolicyIdentifierTextbox" value="&securityLabel.securityPolicyIdentifier.name;" />
-				<menulist id="securityLabelSecurityPolicyIdentifierMenuList" oncommand="securityLabelDialogSetControls();">
+				<menulist id="securityLabelSecurityPolicyIdentifierMenuList" oncommand="securityLabelDialogUpdateUI();">
 					<menupopup />
 				</menulist>
 			</row>

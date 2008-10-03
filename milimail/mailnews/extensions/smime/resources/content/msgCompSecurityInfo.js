@@ -252,11 +252,15 @@ function onLoad()
     }
     
     /* Security Label */
-    if (params.smFields.securityClassification != -1) {
+    if (params.smFields.securityPolicyIdentifier != "") {
+      if (params.smFields.securityClassification != -1) {
     	securityLabel_element.value = securityLabelGetSecurityClassificationName(params.smFields.securityPolicyIdentifier, params.smFields.securityClassification)
     								+ " [" + securityLabelGetSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
+      } else {
+        securityLabel_element.value = "[" + securityLabelGetSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
+      }
     } else {
-    	securityLabel_element.value = no_string;;
+      securityLabel_element.value = no_string;
     }
   }
 

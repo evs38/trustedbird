@@ -253,7 +253,7 @@ function signMessage()
  * Show a dialog to define Security Label settings
  */
 function showSecurityLabelDialog() {
-	window.openDialog('chrome://messenger-smime/content/securityLabelDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=600,height=425');
+	window.openDialog('chrome://messenger-smime/content/securityLabelDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=500,height=350');
 	
 	securityLabelSetUIStatusBar(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
 	
@@ -261,6 +261,7 @@ function showSecurityLabelDialog() {
 	if (gSMFields.securityPolicyIdentifier != "") {
 		var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
 		if (!signingCertName) {
+			gSMFields.securityPolicyIdentifier = "";
 			showNeedSetupInfo();
 			return;
 		}
@@ -276,9 +277,13 @@ function showSecurityLabelDialog() {
  * @param securityClassification Security Classification
  */
 function securityLabelSetUIStatusBar(securityPolicyIdentifier, securityClassification) {
-	if (securityPolicyIdentifier != undefined && securityPolicyIdentifier != "" && securityClassification != undefined && securityClassification != "" && securityClassification != "-1") {
-		top.document.getElementById("securityLabelSecurityClassification-status").label = securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification)
-			+ " [" + securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+	if (securityPolicyIdentifier != undefined && securityPolicyIdentifier != "") {
+		if (securityClassification != undefined && securityClassification != "" && securityClassification != "-1") {
+			top.document.getElementById("securityLabelSecurityClassification-status").label = securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification)
+				+ " [" + securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+		} else {
+			top.document.getElementById("securityLabelSecurityClassification-status").label = "[" + securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+		}
 		top.document.getElementById("securityLabelSecurityClassification-status").collapsed = false;
 	} else {
 		  top.document.getElementById("securityLabelSecurityClassification-status").label = "";

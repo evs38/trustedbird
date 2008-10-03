@@ -39,35 +39,35 @@
 var gSMFields;
 
 function securityLabelDialogOnLoad() {
-	var menulist;
-	var menupopup;
-	
 	gSMFields = window.opener.gMsgCompose.compFields.securityInfo;
 	if (gSMFields == null) return;
+	
+	
+	/* Read Security Label profiles */
+	securityLabelReadProfiles();
 
+	
+	/* Build Security Policy menulist */
+	var securityPolicyIdentifierMenulist = document.getElementById("securityLabelSecurityPolicyIdentifierMenuList");
 
-	/* Security Policy Identifier */
-	menulist = document.getElementById("securityLabelSecurityPolicyIdentifierMenuList");
-	securityLabelDialogCreateMenuItem(menulist, "none", "", gSMFields.securityPolicyIdentifier);
-	securityLabelDialogCreateMenuItem(menulist, "default", "1.2.840.113549.1.9.16.7.1", gSMFields.securityPolicyIdentifier);
-
-	/* Security Classification */
-	menulist = document.getElementById("securityLabelSecurityClassificationMenuList");
-	securityLabelDialogCreateMenuItem(menulist, "top-secret (5)", "5", gSMFields.securityClassification);
-	securityLabelDialogCreateMenuItem(menulist, "secret (4)", "4", gSMFields.securityClassification);
-	securityLabelDialogCreateMenuItem(menulist, "confidential (3)", "3", gSMFields.securityClassification);
-	securityLabelDialogCreateMenuItem(menulist, "restricted (2)", "2", gSMFields.securityClassification);
-	securityLabelDialogCreateMenuItem(menulist, "unclassified (1)", "1", gSMFields.securityClassification);
-	securityLabelDialogCreateMenuItem(menulist, "unmarked (0)", "0", gSMFields.securityClassification);
-	securityLabelDialogCreateMenuItem(menulist, "none", "-1", gSMFields.securityClassification);
+	/* Clear list */
+	while (securityPolicyIdentifierMenulist.menupopup.firstChild) securityPolicyIdentifierMenulist.menupopup.removeChild(securityPolicyIdentifierMenulist.menupopup.firstChild);
+	
+	/* Construct list */
+	securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, "none", "", "");
+	for (policyName in securityLabelSecurityPolicyList) {
+		securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, policyName, securityLabelSecurityPolicyList[policyName], gSMFields.securityPolicyIdentifier);
+	}
+	
 	
 	/* Privacy Mark */
 	document.getElementById("securityLabelPrivacyMarkTextbox").value = gSMFields.privacyMark;
 	
 	/* Security Categories */
-
-	/* Set controls */
-	securityLabelDialogSetControls();
+	/**** UI not implemented ****/
+	
+	/* Update UI */
+	securityLabelDialogUpdateUI();
 }
 
 function securityLabelDialogCreateMenuItem(menulist, label, value, selectedValue) {
@@ -91,9 +91,29 @@ function securityLabelDialogOnAccept() {
 		gSMFields.privacyMark = document.getElementById("securityLabelPrivacyMarkTextbox").value;
 		
 		/* Security Categories */
+		/**** UI not implemented ****/
 		//.replace("/|/g", "");
 
 	}
+}
+
+function securityLabelDialogUpdateUI() {
+	/* Build Security Classification menulist */
+	var securityClassificationMenulist = document.getElementById("securityLabelSecurityClassificationMenuList");
+
+	/* Clear list */
+	while (securityClassificationMenulist.menupopup.firstChild) securityClassificationMenulist.menupopup.removeChild(securityClassificationMenulist.menupopup.firstChild);
+
+	/* Construct list */
+	securityLabelDialogCreateMenuItem(securityClassificationMenulist, "none", "-1", "-1");
+	var selectedLabel = document.getElementById("securityLabelSecurityPolicyIdentifierMenuList").selectedItem.label;
+	for (classificationName in securityLabelSecurityClassificationList[selectedLabel]) {
+		securityLabelDialogCreateMenuItem(securityClassificationMenulist, classificationName, securityLabelSecurityClassificationList[selectedLabel][classificationName], gSMFields.securityClassification);
+	}
+
+
+	/* Enable/disable widgets */
+	securityLabelDialogSetControls();
 }
 
 function securityLabelDialogSetControls() {
