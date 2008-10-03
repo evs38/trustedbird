@@ -73,6 +73,7 @@ bin\defaults\messenger\mailViews.dat
 bin\defaults\profile\localstore.rdf
 bin\defaults\profile\prefs.js
 bin\defaults\profile\mimeTypes.rdf
+bin\defaults\profile\securityLabel\securityLabelPolicyDefault.xml
 
 bin\isp\*
 
