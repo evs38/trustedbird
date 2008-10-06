@@ -104,7 +104,7 @@ function securityLabelReadProfiles() {
 				var domParser = new DOMParser();
 				var dom = domParser.parseFromString(fileContents, "text/xml");
 				if (dom.documentElement.nodeName == "securityLabel") {
-					var policy = _parsePolicyIdentifier(dom);
+					var policy = _parseSecurityPolicyIdentifier(dom);
 					if (policy != false) {
 						securityLabelSecurityPolicyList[policy[0]] = policy[1];
 						securityLabelSecurityClassificationList[policy[0]] = _parseSecurityClassification(dom);
@@ -118,8 +118,8 @@ function securityLabelReadProfiles() {
 }
 
 
-function _parsePolicyIdentifier(dom) {
-	var nodeList = dom.getElementsByTagName("policyIdentifier");
+function _parseSecurityPolicyIdentifier(dom) {
+	var nodeList = dom.getElementsByTagName("securityPolicyIdentifier");
 	if (nodeList.length == 1) {
 		var node = nodeList.item(0);
 		var name = node.getAttribute("name");

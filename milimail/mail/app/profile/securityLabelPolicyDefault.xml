@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <securityLabel>
-	<policyIdentifier name="default">1.2.840.113549.1.9.16.7.1</policyIdentifier>
+	<securityPolicyIdentifier name="default">1.2.840.113549.1.9.16.7.1</securityPolicyIdentifier>
 	<securityClassification displayValue="true">
 		<value name="unmarked">0</value>
 		<value name="unclassified">1</value>
