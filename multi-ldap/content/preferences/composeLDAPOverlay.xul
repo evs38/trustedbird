@@ -200,7 +200,7 @@
               </hbox>
               <listbox
 				id="LDAPList"
-				rows="4"
+				rows="3"
 				preference="ldap_2.autoComplete.directoryServers"
 				onsynctopreference="return gComposePane.updateLDAPServerListPreference(event.target);">
                 <listhead>
@@ -212,17 +212,20 @@
 				<!-- listitem inserted dynamically. See createMultiLDAPDirectoriesList function in composeLDAPOverlay.js -->
               </listbox>
               
-              <vbox align="center">
-	              <hbox align="center" >
-		                <button id="editButton" label="&editDirectories.label;" 
-		                        oncommand="gComposePane.editDirectories();"
-		                        accesskey="&editDirectories.accesskey;"/>
-		                <label  align="bottom" value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
-		                <textbox id="autocompleteMinStringLength" size="3" maxlength="2" preference="ldap_2.autoComplete.minStringLength" />
-		                <label value="1-99 &char.label;" control="autocompleteMinStringLength" />
-	              </hbox>
-              </vbox>
-          </groupbox>
+              <hbox align="center">
+                <button id="editButton" label="&editDirectories.label;" 
+                        oncommand="gComposePane.editDirectories();"
+                        accesskey="&editDirectories.accesskey;"/>
+              </hbox>
+
+              <hbox align="center">
+                <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
+                <textbox id="autocompleteMinStringLength" size="3" maxlength="3" preference="ldap_2.autoComplete.minStringLength" />
+                <label value="(1-99)" control="autocompleteMinStringLength" />
+                <label value="&char.label;" control="autocompleteMinStringLength" />
+              </hbox>
+          
+            </groupbox>
             
             <separator class="thin"/>
 
