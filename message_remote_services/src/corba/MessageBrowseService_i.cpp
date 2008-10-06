@@ -41,10 +41,21 @@
 #include "nsIMsgDatabase.h"
 #include "nsIMsgHdr.h"
 #include "nsAdapterEnumerator.h"
-#include "nsMsgUtils.h"
 #include "nsIRDFService.h"
 #include "nsStringAPI.h"
 #include "nsIMsgHeaderParser.h"
+#include "nsIScriptableInputStream.h"
+#include "nsNetUtil.h"
+#include "nsIMsgMessageService.h"
+#include "nsMsgUtils.h"
+#include "nsIMessenger.h"
+#include "nsILineInputStream.h"
+#include "nsISeekableStream.h"
+#include "nsIProxyObjectManager.h"
+#include "nsIStreamConverter.h"
+#include "nsIMimeStreamConverter.h"
+#include "nsMsgMimeCID.h"
+#include "MessageStreamListener.h"
 #include <iostream>
 
 using namespace std;
@@ -160,6 +171,18 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 		rv = pMsgDBHdr->GetMessageSize(&size);
 		ENSURE_SUCCESS(rv, "Cannot GetMessageSize on nsIMsgDBHdr");
 		cMessageHdr.size = size;
+
+		//Key
+		PRUint32 key;
+		rv = pMsgDBHdr->GetMessageKey(&key);
+		ENSURE_SUCCESS(rv, "Cannot GetMessageKey on nsIMsgDBHdr");
+		cMessageHdr.key = key;
+
+		//URI
+		char * uri;
+		rv = pFolder->GenerateMessageURI(key, &uri);
+		ENSURE_SUCCESS(rv, "Cannot GenerateMessageURI on nsIMsgDBHdr");
+		cMessageHdr.uri = uri;
 
 		cMessageHdrs->length(i+1);
 		(*cMessageHdrs)[i++] = cMessageHdr;
@@ -288,5 +311,136 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	pRootFolder->GetURI(&uri);
 	cFolder->uri = uri;
 	p_rootFolder = cFolder;
+
+}
+
+ void MessageBrowseService_i::GetBody(const CMessageHdr& p_messageHdr, ::CORBA::String_out body)
+ {
+	 nsCOMPtr<nsIMsgMessageService> msgService;
+
+		 nsresult rv;
+		 nsCOMPtr<nsIMessenger> messenger =
+			  do_CreateInstance("@mozilla.org/messenger;1", &rv);
+		 rv = messenger->MessageServiceFromURI(p_messageHdr.uri, getter_AddRefs(msgService));
+
+
+		 nsCOMPtr<nsIInputStream> messageStream =
+		 	          do_CreateInstance("@mozilla.org/network/sync-stream-listener;1", &rv);
+		 	 ENSURE_SUCCESS(rv, "Cannot create nsIInputStream");
+
+		  nsCOMPtr<nsIProxyObjectManager> proxyObjMgr = do_GetService(
+		 		      "@mozilla.org/xpcomproxy;1", &rv);
+		 		  ENSURE_SUCCESS(rv,"Cannot get nsIProxyObjectManager");
+
+		  nsCOMPtr<nsIMsgMessageService> pMsgServiceProxy;
+		  ENSURE_SUCCESS(rv,"Cannot get GetProxyForObject nsIMsgMessageService");
+
+		  rv = proxyObjMgr->GetProxyForObject(NS_UI_THREAD_EVENTQ,
+		 		       NS_GET_IID(nsIMsgMessageService), msgService, PROXY_SYNC|PROXY_ALWAYS,
+		 		       getter_AddRefs(pMsgServiceProxy));
+
+		 cout << "p_messageHdr.uri : " << p_messageHdr.uri << endl;
+
+		 nsCOMPtr<nsIURI> url;
+		 rv = msgService->GetUrlForUri(p_messageHdr.uri, getter_AddRefs(url), nsnull);
+
+
+		 nsCOMPtr<nsIMimeStreamConverter> mimeConverter =
+			 		  do_CreateInstance(NS_MAILNEWS_MIME_STREAM_CONVERTER_CONTRACTID, &rv);
+
+
+		 nsCOMPtr<nsIStreamListener> streamListener = do_QueryInterface(mimeConverter);
+
+
+		nsCOMPtr<nsIScriptableInputStream> inputStream =
+				 			          do_CreateInstance("@mozilla.org/scriptableinputstream;1", &rv);
+				 		 ENSURE_SUCCESS(rv, "Cannot create nsIScriptableInputStream");
+
+		nsCOMPtr<nsIStreamListener>  msgStreamListener = new MessageStreamListener();
+
+		 //need nsIStreamListener implementation
+		 rv = pMsgServiceProxy->DisplayMessage(p_messageHdr.uri, msgStreamListener, nsnull, nsnull, nsnull, nsnull);
+		 ENSURE_SUCCESS(rv,"Cannot get DisplayMessage nsIMsgMessageService");
+
+		 body = "test";
+
+		 sleep(3);
+ }
+
+
+#define EMPTY_MESSAGE_LINE(buf) (buf[0] == '\r' || buf[0] == '\n' || buf[0] == '\0' || buf[0] == '\t')
+
+ void MessageBrowseService_i::GetSourceMessage(const char* uri,
+		::CORBA::String_out source) {
+
+	 nsCOMPtr<nsIMsgDBHdr> hdr;
+	 nsresult rv = GetMsgDBHdrFromURI(uri, getter_AddRefs(hdr));
+	 ENSURE_SUCCESS(rv, "Cannot GetMsgDBHdrFromURI");
+
+	 if (!hdr)
+		 cout << "NOT Found" << endl;
+
+	 nsCOMPtr <nsIMsgFolder> folder;
+	  hdr->GetFolder(getter_AddRefs(folder));
+
+	   nsCOMPtr <nsIInputStream> inputStream;
+	   nsCOMPtr <nsILocalFile> localFile;
+	   folder->GetFilePath(getter_AddRefs(localFile));
+	   nsCOMPtr<nsIFileInputStream> fileStream = do_CreateInstance(NS_LOCALFILEINPUTSTREAM_CONTRACTID, &rv);
+
+	   rv = fileStream->Init(localFile,  PR_RDONLY, 0664, PR_FALSE);  //just have to read the messages
+	  inputStream = do_QueryInterface(fileStream);
+
+	  PRUint32 messageOffset;
+	  PRUint32 lineCount;
+
+	  nsCOMPtr <nsILineInputStream> fileLineStream = do_QueryInterface(inputStream);
+	  hdr->GetMessageOffset(&messageOffset);
+	  hdr->GetLineCount(&lineCount);
+
+	  nsCOMPtr <nsISeekableStream> seekableStream = do_QueryInterface(inputStream);
+	  seekableStream->Seek(PR_SEEK_SET, messageOffset);
+
+	      PRBool hasMore = PR_TRUE;
+	     nsCAutoString curLine;
+	      PRBool inMessageBody = PR_FALSE;
+
+	    //  while (hasMore) // advance past message headers
+	      //{
+	        //     nsresult rv = fileLineStream->ReadLine(curLine, &hasMore);
+	          //  if (NS_FAILED(rv) || EMPTY_MESSAGE_LINE(curLine))
+	            //   break;
+	        //}
+
+
+
+	     PRUint32 msgSize;
+	      hdr->GetMessageSize(&msgSize);
+	      cout << "messageOffset : " << messageOffset  << endl;
+	      cout << "lineCount : " << lineCount  << endl;
+
+	  //   char *body = (char*) PORT_Alloc (msgSize + 1);
+	     nsCAutoString body;
+	     PRUint32 lineCountParsed = 0;
+	     //for (hasMore = PR_TRUE; lineCount >= 0 && hasMore && NS_SUCCEEDED(rv); lineCount--)
+	    while (hasMore == PR_TRUE && (lineCountParsed < lineCount))
+	    {
+	    	rv = fileLineStream->ReadLine(curLine, &hasMore);
+	    	//if (!EMPTY_MESSAGE_LINE(curLine))
+	    		lineCountParsed++;
+			if (NS_FAILED(rv)) {
+				cout << "Readline failed" << endl;
+				break;
+		}
+
+		curLine.Append(CRLF);
+
+		body += curLine.get();
+
+	}
+
+
+	     source = body.get();
+
 
 }

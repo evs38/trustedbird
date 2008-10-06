@@ -34,32 +34,45 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-#ifndef MESSAGEBROWSESERVICE_I_H_
-#define MESSAGEBROWSESERVICE_I_H_
 
-#include "nsIServiceManager.h"
-#include "Services.h"
+#include "MessageStreamListener.h"
 #include "nsString.h"
+#include <iostream>
+using namespace std;
 
-class MessageBrowseService_i : public POA_MessageBrowseService
-{
-public:
-	MessageBrowseService_i();
-	virtual ~MessageBrowseService_i();
+NS_IMPL_ISUPPORTS1(MessageStreamListener,nsIStreamListener)
 
-	virtual void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs);
+nsresult MessageStreamListener::OnDataAvailable(nsIRequest *aRequest,
+		nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset,
+		PRUint32 aCount) {
+	cout << "MessageStreamListener::OnDataAvailable" << endl;
 
-	virtual void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders);
+	nsCAutoString content;
 
-	virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
+	char buf[aCount];
+	PRUint32 ret, size;
+	nsresult rv;
 
-	virtual void GetBody(const CMessageHdr& p_messageHdr, ::CORBA::String_out body);
+	while(aCount)
+	{
+		size = PR_MIN(aCount, sizeof(buf));
+		rv = aInputStream->Read(buf, size, &ret);
+		content.Append(buf,ret);
 
-	virtual void GetSourceMessage(const char* uri, ::CORBA::String_out source);
+		aCount -= ret;
+	}
 
-private:
+	cout << "OnDataAvailable : size : " << aCount << endl;
+	cout << "DATA : " << content.get() << endl;
 
-	virtual void Adapt(const char * recipients, Addresses& addresses);
-};
 
-#endif /*MESSAGEBROWSESERVICE_I_H_*/
+}
+
+nsresult MessageStreamListener::OnStartRequest(nsIRequest* aRequest, nsISupports* aContext) {
+	return NS_OK;
+}
+
+nsresult MessageStreamListener::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext, nsresult rv) {
+
+	return NS_OK;
+}

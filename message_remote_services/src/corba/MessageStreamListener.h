@@ -34,32 +34,42 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-#ifndef MESSAGEBROWSESERVICE_I_H_
-#define MESSAGEBROWSESERVICE_I_H_
+#ifndef MESSAGESTREAMLISTENER_H_
+#define MESSAGESTREAMLISTENER_H_
 
-#include "nsIServiceManager.h"
-#include "Services.h"
-#include "nsString.h"
+#include "nsIStreamListener.h"
+#include "nsIInputStream.h"
 
-class MessageBrowseService_i : public POA_MessageBrowseService
+class MessageStreamListener : public nsIStreamListener
 {
-public:
-	MessageBrowseService_i();
-	virtual ~MessageBrowseService_i();
+public :
+	/*NS_IMETHOD OnDataAvailable(nsIRequest *aRequest,
+	nsISupports *aContext,
+	nsIInputStream *aInputStream,
+    PRUint32 aOffset,
+	PRUint32 aCount);*/
 
-	virtual void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs);
+    //NS_DECL_ISUPPORTS
+   // NS_DECL_NSISTREAMLISTENER
+    //NS_DECL_NSIREQUESTOBSERVER
 
-	virtual void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders);
+	// nsISupports interface
+	NS_DECL_ISUPPORTS
 
-	virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
+    MessageStreamListener(){};
 
-	virtual void GetBody(const CMessageHdr& p_messageHdr, ::CORBA::String_out body);
+    virtual ~MessageStreamListener(){}
 
-	virtual void GetSourceMessage(const char* uri, ::CORBA::String_out source);
+    NS_IMETHOD OnDataAvailable(nsIRequest *aRequest,
+    		nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset,
+    		PRUint32 aCount);
 
-private:
+    NS_IMETHOD OnStartRequest(nsIRequest* aRequest, nsISupports* aContext);
 
-	virtual void Adapt(const char * recipients, Addresses& addresses);
+    NS_IMETHOD OnStopRequest(nsIRequest* aRequest, nsISupports* aContext, nsresult rv);
+
+private :
+
 };
 
-#endif /*MESSAGEBROWSESERVICE_I_H_*/
+#endif /*MESSAGESTREAMLISTENER_H_*/
