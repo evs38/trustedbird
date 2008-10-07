@@ -91,6 +91,12 @@ Le test suivant fonctionne uniquement si les deux étapes précédentes ont été cor
 Test login IMAP:
 imtest -a user1 localhost
 
+== OpenLDAP ==
+
+http://www.debian-administration.org/articles/585
+http://www.coagul.org/article.php3?id_article=172
+
+
 == Sieve ==
 Configuration dans le fichier /etc/cyrus.conf
 Activer l'accés distant au serveur SIEVE (autre que localhost)
