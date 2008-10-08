@@ -71,7 +71,7 @@
 
 			<listbox
                 id="LDAPList"
-				row="6"
+				rows="3"
  				onclick="updateLDAPServerListPreference(event.target);"
 				>
 				<listhead>
@@ -85,12 +85,6 @@
 				 -->
             </listbox>
             
-            <hbox align="center">
-              <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
-              <textbox id="autocompleteMinStringLength" size="3" maxlength="3" />
-              <label value="&char.label;" control="autocompleteMinStringLength" />
-            </hbox>
-
 			<hbox align="center">
 				<button
 					id="editButton.account"
@@ -98,6 +92,13 @@
 					oncommand="editDirectories();"
 					accesskey="&editDirectories.accesskey;" />
 			</hbox>
+
+            <hbox align="center">
+              <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
+              <textbox id="autocompleteMinStringLength" size="3" maxlength="3" />
+              <label value="&char.label;" control="autocompleteMinStringLength" />
+            </hbox>
+
         </groupbox>
     </vbox>
 </overlay>

@@ -37,5 +37,5 @@
 
 <!ENTITY addressingEnable2.label "Carnets d'adresses locaux">
 <!ENTITY ldapAutocomplete.label "Auto-complétion avec">
-<!ENTITY usedirectories.label "Annuaires sélectionnés">
+<!ENTITY usedirectories.label "Annuaires LDAP sélectionnés">
 <!ENTITY autocompleteMinStringLength.label "Auto-complétion depuis les annuaires après">

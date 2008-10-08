@@ -37,5 +37,5 @@
 
 <!ENTITY addressingEnable2.label "Local Address Books">
 <!ENTITY ldapAutocomplete.label "Autocomplete with">
-<!ENTITY usedirectories.label "Selected Directories">
+<!ENTITY usedirectories.label "Selected LDAP Directories">
 <!ENTITY autocompleteMinStringLength.label "Autocomplete from directories after">
