@@ -276,7 +276,8 @@ struct NSSCMSSecurityLabelSecurityCategoryStr {
 struct NSSCMSSecurityLabelStr {
     SECItem securityPolicyIdentifier;
     SECItem securityClassification;
-    SECItem privacyMark;
+    SECItem privacyMarkPrintableString; /* Should be a CHOICE */
+    SECItem privacyMarkUTF8;
     NSSCMSSecurityLabelSecurityCategory** securityCategories;
 };
 

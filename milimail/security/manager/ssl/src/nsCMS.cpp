@@ -268,13 +268,22 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 			
 			/*
 			 * privacyMark
+			 * Search in privacyMarkUTF8 and privacyMarkPrintableString instead of a choice which doesn't work correctly
 			 */
-			len = securityLabel->privacyMark.len;
+			unsigned char* privacyMarkData;
+			len = 0;
+			if (securityLabel->privacyMarkUTF8.len > 0) {
+				len = securityLabel->privacyMarkUTF8.len;
+				privacyMarkData = securityLabel->privacyMarkUTF8.data;
+			} else if (securityLabel->privacyMarkPrintableString.len > 0) {
+				len = securityLabel->privacyMarkPrintableString.len;
+				privacyMarkData = securityLabel->privacyMarkPrintableString.data;
+			}
 			
 			if (len > 0) {
 				char* tempPrivacyMark = (char *) PORT_Alloc((len + 1) * sizeof(char));
 				if (tempPrivacyMark == NULL) return NS_ERROR_OUT_OF_MEMORY;
-				PORT_Memcpy(tempPrivacyMark, securityLabel->privacyMark.data, len);
+				PORT_Memcpy(tempPrivacyMark, privacyMarkData, len);
 				tempPrivacyMark[len] = '\0';
 
 				*aPrivacyMark = ToNewUnicode(NS_ConvertUTF8toUTF16(tempPrivacyMark));

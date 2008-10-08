@@ -157,7 +157,8 @@ static const SEC_ASN1Template NSSCMSSecurityLabelTemplate[] = {
     { SEC_ASN1_SET, 0, NULL, sizeof(NSSCMSSecurityLabel) },
     { SEC_ASN1_OBJECT_ID, offsetof(NSSCMSSecurityLabel, securityPolicyIdentifier) },
     { SEC_ASN1_INTEGER | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, securityClassification) },
-    { SEC_ASN1_UTF8_STRING | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, privacyMark) }, /* This should be a CHOICE */
+    { SEC_ASN1_PRINTABLE_STRING | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, privacyMarkPrintableString) }, /* These 2 lines should be a CHOICE */
+    { SEC_ASN1_UTF8_STRING | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, privacyMarkUTF8) },
     { SEC_ASN1_SET_OF | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, securityCategories), NSSCMSSecurityLabelSecurityCategoryTemplate },
     { 0 }
 };
@@ -877,7 +878,8 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
     
     securityLabel.securityPolicyIdentifier.len = 0;
     securityLabel.securityClassification.len = 0;
-	securityLabel.privacyMark.len = 0;
+	securityLabel.privacyMarkPrintableString.len = 0;
+	securityLabel.privacyMarkUTF8.len = 0;
     securityLabel.securityCategories = NULL;
 
     /*
@@ -905,10 +907,10 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
      */
 	len = PORT_Strlen(privacyMark);
     if (len > 0) {
-		securityLabel.privacyMark.data = (unsigned char*) PORT_Alloc(len * sizeof(unsigned char));
-		if (securityLabel.privacyMark.data == NULL) goto loser;
-		PORT_Memcpy(securityLabel.privacyMark.data, privacyMark, len);
-		securityLabel.privacyMark.len = len;
+		securityLabel.privacyMarkUTF8.data = (unsigned char*) PORT_Alloc(len * sizeof(unsigned char));
+		if (securityLabel.privacyMarkUTF8.data == NULL) goto loser;
+		PORT_Memcpy(securityLabel.privacyMarkUTF8.data, privacyMark, len);
+		securityLabel.privacyMarkUTF8.len = len;
     }
     
     
@@ -992,7 +994,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 loser:
     if (securityLabel.securityPolicyIdentifier.len > 0) PORT_Free(securityLabel.securityPolicyIdentifier.data);
     if (securityLabel.securityClassification.len > 0) PORT_Free(securityLabel.securityClassification.data);
-    if (securityLabel.privacyMark.len > 0) PORT_Free(securityLabel.privacyMark.data);
+    if (securityLabel.privacyMarkUTF8.len > 0) PORT_Free(securityLabel.privacyMarkUTF8.data);
     if (securityLabel.securityCategories != NULL) {
     	for (i = 0; securityLabel.securityCategories[i] != NULL; i++) {
     		if (securityLabel.securityCategories[i]->securityCategoryIdentifier.len > 0) PORT_Free(securityLabel.securityCategories[i]->securityCategoryIdentifier.data);
