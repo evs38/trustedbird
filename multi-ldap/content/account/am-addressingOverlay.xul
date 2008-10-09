@@ -58,9 +58,6 @@
         id="compositionAndAddressing">
         <groupbox>
             <caption label="&addressingTitle.label;" />
-			<description>
-				&autocompleteText.label;
-			</description>
 
             <checkbox
                 id="multi_ldap_use_custom_preferences"
@@ -69,7 +66,11 @@
                 oncommand="enableCustomPreferences(event.target)"
 				/>
 
-			<listbox
+			<description class="indent">
+				&autocompleteText.label;
+			</description>
+
+			<listbox class="indent"
                 id="LDAPList"
 				rows="3"
  				onclick="updateLDAPServerListPreference(event.target);"
@@ -85,7 +86,7 @@
 				 -->
             </listbox>
             
-			<hbox align="center">
+			<hbox class="indent" align="center">
 				<button
 					id="editButton.account"
 					label="&editDirectories.label;"
@@ -93,7 +94,7 @@
 					accesskey="&editDirectories.accesskey;" />
 			</hbox>
 
-            <hbox align="center">
+            <hbox class="indent" align="center">
               <label value="&autocompleteMinStringLength.label;" control="autocompleteMinStringLength" />
               <textbox id="autocompleteMinStringLength" size="3" maxlength="3" />
               <label value="&char.label;" control="autocompleteMinStringLength" />
