@@ -14,5 +14,5 @@
 <!ENTITY securityLabel.securityClassification.name "Security Classification:">
 <!ENTITY securityLabel.privacyMark.name "Privacy Mark:">
 <!ENTITY securityLabel.securityCategories.name "Security Categories:">
-<!ENTITY securityLabel.securityCategories.type.name "Type">
-<!ENTITY securityLabel.securityCategories.value.name "Value">
+<!ENTITY securityLabel.securityCategories.button.add.name "Add">
+<!ENTITY securityLabel.securityCategories.button.remove.name "Remove selected">

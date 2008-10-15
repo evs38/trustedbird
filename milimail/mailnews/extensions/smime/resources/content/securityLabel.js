@@ -36,33 +36,14 @@
 
 var securityLabelSecurityPolicyList = [];
 var securityLabelSecurityClassificationList = [];
+var securityLabelPrivacyMarkList = [];
+var securityLabelSecurityCategoriesList = [];
 
 var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 jsLoader.loadSubScript("chrome://messenger/content/io.js");
 
 var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
 var gStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
-
-
-/**
- *  Get Human-readable Security Classification value
- *  @param securityPolicyIdentifier String with Policy Identifier OID
- *  @param securityClassification Classification value
- *  @return String with the name and value of the Security Classification
- */
-function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification) {
-	if (securityPolicyIdentifier == undefined || securityClassification == undefined) return "";
-	
-	var securityPolicyIdentifierName = securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier);
-
-	if (securityLabelSecurityClassificationList[securityPolicyIdentifierName] != undefined) {
-		for (classificationName in securityLabelSecurityClassificationList[securityPolicyIdentifierName]) {
-			if (securityLabelSecurityClassificationList[securityPolicyIdentifierName][classificationName] == securityClassification) return classificationName;
-		}
-	}
-	
-	return gStringBundle.GetStringFromName("unknownSecurityClassification") +" (" + securityClassification + ")";
-}
 
 
 /**
@@ -83,6 +64,61 @@ function securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) 
 }
 
 
+/**
+ *  Get Human-readable Security Classification value
+ *  @param securityPolicyIdentifier String with Policy Identifier OID
+ *  @param securityClassification Classification value
+ *  @return String with the name and value of the Security Classification
+ */
+function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification) {
+	if (securityPolicyIdentifier == undefined || securityClassification == undefined) return "";
+	
+	var securityPolicyIdentifierName = securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier);
+
+	if (securityLabelSecurityClassificationList[securityPolicyIdentifierName] != undefined) {
+		for (classificationName in securityLabelSecurityClassificationList[securityPolicyIdentifierName]) {
+			if (securityLabelSecurityClassificationList[securityPolicyIdentifierName][classificationName] == securityClassification) return classificationName;
+		}
+	}
+	
+	return gStringBundle.GetStringFromName("unknownSecurityClassification") + " (" + securityClassification + ")";
+}
+
+
+/**
+ *  Get Human-readable Security Category value
+ *  @param securityPolicyIdentifier String with Policy Identifier OID
+ *  @param securityClassification Classification value
+ *  @param securityCategoryType Category type
+ *  @param securityCategoryValue Category value
+ *  @return String with the name of the Security Category
+ */
+function securityLabelGetSecurityCategoryName(securityPolicyIdentifier, securityClassification, securityCategoryType, securityCategoryValue) {
+	if (securityPolicyIdentifier == undefined || securityClassification == undefined || securityCategoryType == undefined || securityCategoryValue == undefined) return "";
+	
+	var securityPolicyIdentifierName = securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier);
+
+	if (securityLabelSecurityCategoriesList[securityPolicyIdentifierName] != undefined) {
+		for (var i = 0; i < 2; i++) {
+			var list;
+			/* Security Categories for all classifications */
+			if (i == 0) list = securityLabelSecurityCategoriesList[securityPolicyIdentifierName]["all"];
+			/* Security Categories for selected classification */
+			if (i == 1) list = securityLabelSecurityCategoriesList[securityPolicyIdentifierName][securityClassification.toString()];
+	                
+			for (securityCategoryName in list) {
+				if (list[securityCategoryName][0] == securityCategoryType && list[securityCategoryName][1] == securityCategoryValue) {
+					return securityCategoryName;
+				}
+			}
+		}
+	}
+	
+	return gStringBundle.GetStringFromName("unknownSecurityCategory") + " (" + securityCategoryType + " | " + securityCategoryValue + ")";
+}
+
+
+
 var _securityLabelReadProfilesDone = false;
 
 /**
@@ -94,6 +130,8 @@ function securityLabelReadProfiles() {
 		/* Reset lists */
 		securityLabelSecurityPolicyList = [];
 		securityLabelSecurityClassificationList = [];
+		securityLabelPrivacyMarkList = [];
+		securityLabelSecurityCategoriesList = [];
 		                                           
 		var dir = DirIO.get("ProfD"); /* Profile directory */
 		dir.append("securityLabel");
@@ -108,6 +146,8 @@ function securityLabelReadProfiles() {
 					if (policy != false) {
 						securityLabelSecurityPolicyList[policy[0]] = policy[1];
 						securityLabelSecurityClassificationList[policy[0]] = _parseSecurityClassification(dom);
+						securityLabelPrivacyMarkList[policy[0]] = _parsePrivacyMark(dom);
+						securityLabelSecurityCategoriesList[policy[0]] = _parseSecurityCategories(dom);
 					}
 				}
 			}
@@ -122,9 +162,9 @@ function _parseSecurityPolicyIdentifier(dom) {
 	var nodeList = dom.getElementsByTagName("securityPolicyIdentifier");
 	if (nodeList.length == 1) {
 		var node = nodeList.item(0);
-		var name = node.getAttribute("name");
-		var value = node.firstChild.nodeValue;
-		if (name != "" && value != "") return [name, value];
+		var label = _trim(node.getAttribute("label"));
+		var value = _trim(node.getAttribute("value"));
+		if (label != "" && value != "") return [label, value];
 	}
 	
 	return false;
@@ -134,20 +174,21 @@ function _parseSecurityPolicyIdentifier(dom) {
 function _parseSecurityClassification(dom) {
 	var list = [];
 	
-	var nodeList = dom.getElementsByTagName("securityClassification");
-	if (nodeList.length == 1) {
-		var node = nodeList.item(0);
-		var displayValue = node.getAttribute("displayValue");
+	var nodeList1 = dom.getElementsByTagName("securityClassification");
+	if (nodeList1.length == 1) {
+		var node = nodeList1.item(0);
+		var displayValue = node.getAttribute("valueDisplayed");
 		if (node.hasChildNodes()) {
-			var nodeList = node.childNodes;
-			for (i = 0; i < nodeList.length; i++) {
-				var valueNode = nodeList.item(i);
-				if (valueNode.nodeName == "value") {
-					var name = valueNode.getAttribute("name");
-					var value = valueNode.firstChild.nodeValue;
-					if (parseInt(value) >= 0 && parseInt(value) <= 256) {
-						if (displayValue != "false" && displayValue != "0") name += " (" + value + ")";
-						list[name] = value;
+			var nodeList2 = node.childNodes;
+			for (i = 0; i < nodeList2.length; i++) {
+				var itemNode = nodeList2.item(i);
+				if (itemNode.nodeName == "item") {
+					var label = _trim(itemNode.getAttribute("label"));
+					var value = _trim(itemNode.getAttribute("value"));
+					value = parseInt(value);
+					if (label != "" && value >= 0 && value <= 256) {
+						if (displayValue != "false" && displayValue != "0") label += " (" + value + ")";
+						list[label] = value;
 					}
 				}
 			}
@@ -155,4 +196,61 @@ function _parseSecurityClassification(dom) {
 	}
 	
 	return list;
+}
+
+function _parsePrivacyMark(dom) {
+	var list = [];
+	
+	var nodeList1 = dom.getElementsByTagName("privacyMark");
+	if (nodeList1.length == 1) {
+		var node = nodeList1.item(0);
+		var freeText = node.getAttribute("freeText");
+		if (freeText != "false" && freeText != "0")	list["freeText"] = true; else list["freeText"] = false;
+		if (node.hasChildNodes()) {
+			var nodeList2 = node.childNodes;
+			for (i = 0; i < nodeList2.length; i++) {
+				var itemNode = nodeList2.item(i);
+				if (itemNode.nodeName == "item") {
+					var value = _trim(itemNode.getAttribute("value"));
+					list.push(value);
+				}
+			}
+		}
+	}
+	
+	return list;
+}
+
+function _parseSecurityCategories(dom) {
+	var list = [];
+	
+	var nodeList1 = dom.getElementsByTagName("securityCategories");
+	for (var k = 0; k < nodeList1.length; k++) {
+		var node = nodeList1.item(k);
+		var securityClassificationValue = "all";
+		if (node.hasAttribute("securityClassificationValue")) {
+			securityClassificationValue = _trim(node.getAttribute("securityClassificationValue"));
+		}
+		if (node.hasChildNodes()) {
+			var nodeList2 = node.childNodes;
+			for (i = 0; i < nodeList2.length; i++) {
+				var itemNode = nodeList2.item(i);
+				if (itemNode.nodeName == "item") {
+					var label = _trim(itemNode.getAttribute("label"));
+					var type = _trim(itemNode.getAttribute("type").replace(/\|/g, ""));
+					var value = _trim(itemNode.getAttribute("value").replace(/\|/g, ""));
+					if (label != "" && type != "" && value != "") {
+						if (list[securityClassificationValue] == undefined) list[securityClassificationValue] = new Array();
+						list[securityClassificationValue][label] = [type, value];
+					}
+				}
+			}
+		}
+	}
+	
+	return list;
+}
+
+function _trim(s) {
+	return s.replace(/^\s+|\s+$/g, "");
 }

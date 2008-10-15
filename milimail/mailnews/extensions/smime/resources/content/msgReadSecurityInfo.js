@@ -306,29 +306,17 @@ function onLoad()
     	document.getElementById("securityLabelPrivacyMarkRow").collapsed = false;
     }
     if (gSecurityCategories != "") {
-    	var securityLabelSecurityCategoriesTree = document.getElementById("securityLabelSecurityCategoriesTree");
-    	var securityLabelSecurityCategoriesTreeChildren = document.getElementById("securityLabelSecurityCategoriesTreeChildren");
+    	var securityLabelSecurityCategoriesListbox = document.getElementById("securityLabelSecurityCategoriesListbox");
     	
     	securityCategoriesArray = gSecurityCategories.split("|");
-    	var treeSize = securityCategoriesArray.length / 2;
-    	if (treeSize > 5) treeSize = 5;
-    	securityLabelSecurityCategoriesTree.setAttribute("rows", parseInt(treeSize));
+    	var listboxSize = securityCategoriesArray.length / 2;
+    	if (listboxSize > 5) listboxSize = 5;
+    	securityLabelSecurityCategoriesListbox.setAttribute("rows", listboxSize);
 
     	for (var i = 0; i < securityCategoriesArray.length; i += 2) {
-    		var treeitem = document.createElement("treeitem");
-    		var treerow = document.createElement("treerow");
-    		var treecell1 = document.createElement("treecell");
-    		var treecell2 = document.createElement("treecell");
-    		treecell1.setAttribute("label", securityCategoriesArray[i]);
-    		treecell1.setAttribute("crop", "end");
-    		treecell1.setAttribute("flex", "1");
-    		treecell2.setAttribute("label", securityCategoriesArray[i + 1]);
-    		treecell2.setAttribute("crop", "end");
-    		treecell2.setAttribute("flex", "2");
-    		treerow.appendChild(treecell1);
-    		treerow.appendChild(treecell2);
-    		treeitem.appendChild(treerow);
-    		securityLabelSecurityCategoriesTreeChildren.appendChild(treeitem);
+    		var listitem = document.createElement("listitem");
+    		listitem.setAttribute("label", securityLabelGetSecurityCategoryName(gSecurityPolicyIdentifier, gSecurityClassification, securityCategoriesArray[i], securityCategoriesArray[i + 1]));
+    		securityLabelSecurityCategoriesListbox.appendChild(listitem);
     	}
     	document.getElementById("securityLabelSecurityCategoriesRow").collapsed = false;
     }

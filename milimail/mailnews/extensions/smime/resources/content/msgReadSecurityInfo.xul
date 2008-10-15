@@ -131,14 +131,7 @@
           </row>
           <row align="center" id="securityLabelSecurityCategoriesRow" collapsed="true">
             <label id="securityLabelSecurityCategoriesLabel" value="&securityLabel.securityCategories.name;" />
-            <tree id="securityLabelSecurityCategoriesTree" flex="1" hidecolumnpicker="true" >
-              <treecols flex="1">
-                <treecol label="&securityLabel.securityCategories.type.name;" flex="1" />
-                <splitter class="tree-splitter" />
-                <treecol label="&securityLabel.securityCategories.value.name;" flex="2" />
-              </treecols>
-              <treechildren id="securityLabelSecurityCategoriesTreeChildren" />
-            </tree>
+            <listbox id="securityLabelSecurityCategoriesListbox" flex="1" />
           </row>
         </rows>
       </grid>

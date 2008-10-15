@@ -63,43 +63,33 @@
 		<rows>
 			<row align="center">
 	        	<label control="securityLabelSecurityPolicyIdentifierTextbox" value="&securityLabel.securityPolicyIdentifier.name;" />
-				<menulist id="securityLabelSecurityPolicyIdentifierMenuList" oncommand="securityLabelDialogUpdateUI();">
+				<menulist id="securityLabelSecurityPolicyIdentifierMenuList" oncommand="securityLabelDialogOnSecurityPolicyIdentifier();">
 					<menupopup />
 				</menulist>
 			</row>
 			<row align="center">
 				<label value="&securityLabel.securityClassification.name;" />
-				<menulist id="securityLabelSecurityClassificationMenuList">
+				<menulist id="securityLabelSecurityClassificationMenuList" oncommand="securityLabelDialogOnSecurityClassification();">
 					<menupopup />
 				</menulist>
 			</row>
 			<row align="center">
         		<label control="securityLabelPrivacyMarkTextbox" value="&securityLabel.privacyMark.name;" />
-				<textbox id="securityLabelPrivacyMarkTextbox" />
+        		<vbox>
+					<textbox id="securityLabelPrivacyMarkTextbox" />
+					<menulist id="securityLabelPrivacyMarkMenuList">
+						<menupopup />
+					</menulist>
+				</vbox>
 			</row>
 			<row>
 	        	<label value="&securityLabel.securityCategories.name;" />
 	        	<vbox>
-				<tree id="securityLabelSecurityCategoriesTree" flex="1" hidecolumnpicker="true" rows="4">
-					<treecols flex="1">
-						<treecol label="&securityLabel.securityCategories.type.name;" flex="1" />
-						<splitter class="tree-splitter" />
-						<treecol label="&securityLabel.securityCategories.value.name;" flex="2" />
-					</treecols>
-					<treechildren id="securityLabelSecurityCategoriesTreeChildren">
-						<treeitem>
-							<treerow>
-								<treecell />
-								<treecell label="" />
-							</treerow>						
-						</treeitem>
-					</treechildren>
-				</tree>
-				<hbox>
-					<button label="Add" disabled="true" />
-					<button label="Edit" disabled="true" />
-					<button label="Remove" disabled="true" />
-				</hbox>
+					<listbox id="securityLabelSecurityCategoriesListbox" flex="1" rows="3" />
+					<hbox>
+						<button id="securityLabelSecurityCategoriesButtonAdd" label="&securityLabel.securityCategories.button.add.name;" oncommand="securityLabelDialogSecurityCategoriesOnButtonAdd();" />
+						<button id="securityLabelSecurityCategoriesButtonRemove" label="&securityLabel.securityCategories.button.remove.name;" oncommand="securityLabelDialogSecurityCategoriesOnButtonRemove();" />
+					</hbox>
 				</vbox>
 			</row>
 		</rows>
