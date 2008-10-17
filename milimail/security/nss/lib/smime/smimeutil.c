@@ -138,6 +138,11 @@ static const SEC_ASN1Template smime_encryptionkeypref_template[] = {
 };
 
 
+/* 
+ * ESS Security Label
+ * 
+ * Implemented as a SET OF CHOICE because SET decoding is not implemented in NSS
+ */
 static const SEC_ASN1Template securityCategoryIdentifierTemplate[] = {
     { SEC_ASN1_OBJECT_ID, 0, NULL },
 };
@@ -153,16 +158,22 @@ static const SEC_ASN1Template NSSCMSSecurityLabelSecurityCategoryTemplate[] = {
     { 0 }
 };
 
-static const SEC_ASN1Template NSSCMSSecurityLabelTemplate[] = {
-    { SEC_ASN1_SET, 0, NULL, sizeof(NSSCMSSecurityLabel) },
-    { SEC_ASN1_OBJECT_ID, offsetof(NSSCMSSecurityLabel, securityPolicyIdentifier) },
-    { SEC_ASN1_INTEGER | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, securityClassification) },
-    { SEC_ASN1_PRINTABLE_STRING | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, privacyMarkPrintableString) }, /* These 2 lines should be a CHOICE */
-    { SEC_ASN1_UTF8_STRING | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, privacyMarkUTF8) },
-    { SEC_ASN1_SET_OF | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecurityLabel, securityCategories), NSSCMSSecurityLabelSecurityCategoryTemplate },
+static const SEC_ASN1Template NSSCMSSecurityLabelElementTemplate[] = {
+    { SEC_ASN1_CHOICE, offsetof(NSSCMSSecurityLabelElement, selector), NULL, sizeof(NSSCMSSecurityLabelElement) },
+    { SEC_ASN1_OBJECT_ID, offsetof(NSSCMSSecurityLabelElement, id.securityPolicyIdentifier), NULL, NSSCMSSecurityLabelElement_securityPolicyIdentifier },
+    { SEC_ASN1_INTEGER, offsetof(NSSCMSSecurityLabelElement, id.securityClassification), NULL, NSSCMSSecurityLabelElement_securityClassification },
+    { SEC_ASN1_PRINTABLE_STRING, offsetof(NSSCMSSecurityLabelElement, id.privacyMarkPrintableString), NULL, NSSCMSSecurityLabelElement_privacyMarkPrintableString },
+    { SEC_ASN1_UTF8_STRING, offsetof(NSSCMSSecurityLabelElement, id.privacyMarkUTF8), NULL, NSSCMSSecurityLabelElement_privacyMarkUTF8 },
+    { SEC_ASN1_SET_OF, offsetof(NSSCMSSecurityLabelElement, id.securityCategories), NSSCMSSecurityLabelSecurityCategoryTemplate, NSSCMSSecurityLabelElement_securityCategories },
     { 0 }
 };
 
+static const SEC_ASN1Template NSSCMSSecurityLabelTemplate[] = {
+    { SEC_ASN1_SET_OF, 0, NSSCMSSecurityLabelElementTemplate },
+};
+
+
+/* ESS Signed Receipt Request */
 static const SEC_ASN1Template NSSCMSReceiptRequestTemplate[] = {
     { SEC_ASN1_SEQUENCE, 0, NULL, sizeof(NSSCMSReceiptRequest) },
     { SEC_ASN1_OCTET_STRING, offsetof(NSSCMSReceiptRequest, signedContentIdentifier) },
@@ -170,6 +181,7 @@ static const SEC_ASN1Template NSSCMSReceiptRequestTemplate[] = {
     { SEC_ASN1_IA5_STRING, offsetof(NSSCMSReceiptRequest, receiptsTo)}, /* TODO : Handle SEQUENCE OF GeneralName */
     { 0 }
 };
+
 
 /* smime_cipher_map - map of SMIME symmetric "ciphers" to algtag & parameters */
 typedef struct {
@@ -866,80 +878,94 @@ SECStatus NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(const char* data, const uns
 SECStatus
 NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char* securityPolicyIdentifier, PRInt32 securityClassification, const char* privacyMark, const char* securityCategories)
 {
-    NSSCMSSecurityLabel securityLabel;
-    SECItem* dummy = NULL;
-    unsigned int len;
-    unsigned int i;
-    unsigned int k;
-    unsigned int separatorCount;
-    unsigned int startPosition;
-    unsigned int fieldLen;
-    const char securityCategoriesSeparator = '|';
-    
-    securityLabel.securityPolicyIdentifier.len = 0;
-    securityLabel.securityClassification.len = 0;
-	securityLabel.privacyMarkPrintableString.len = 0;
-	securityLabel.privacyMarkUTF8.len = 0;
-    securityLabel.securityCategories = NULL;
-
-    /*
-     * securityPolicyIdentifier
-     */
-    if (NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(securityPolicyIdentifier, PORT_Strlen(securityPolicyIdentifier), &(securityLabel.securityPolicyIdentifier.data), &(securityLabel.securityPolicyIdentifier.len)) == SECFailure) goto loser;
-
-    
-    /*
-     * securityClassification
-     */
+	NSSCMSSecurityLabelElement** securityLabel;
+	SECItem* dummy = NULL;
+	unsigned int len;
+	unsigned int i;
+	unsigned int k;
+	unsigned int separatorCount;
+	unsigned int startPosition;
+	unsigned int fieldLen;
+	const char securityCategoriesSeparator = '|';
+	unsigned int securityLabelItem;
+	
+	/* 4 elements max + 1 NULL at the end */
+	securityLabel = (NSSCMSSecurityLabelElement**) PORT_Alloc(5 * sizeof(NSSCMSSecurityLabelElement*));
+	securityLabelItem = 0;
+	
+	/*
+	 * securityPolicyIdentifier
+	 */
+	securityLabel[securityLabelItem] = (NSSCMSSecurityLabelElement*) PORT_Alloc(sizeof(NSSCMSSecurityLabelElement));
+	securityLabel[securityLabelItem]->selector = NSSCMSSecurityLabelElement_securityPolicyIdentifier;
+	if (NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(securityPolicyIdentifier, PORT_Strlen(securityPolicyIdentifier), &(securityLabel[securityLabelItem]->id.securityPolicyIdentifier.data), &(securityLabel[securityLabelItem]->id.securityPolicyIdentifier.len)) == SECFailure) goto loser;
+	securityLabelItem++;
+	
+	
+	/*
+	 * securityClassification
+	 */
 	if (securityClassification != -1) {
-		securityLabel.securityClassification.data = (unsigned char*) PORT_Alloc(4 * sizeof(unsigned char));
-		if (securityLabel.securityClassification.data == NULL) goto loser;
-		securityLabel.securityClassification.data[0] = 0;
-		securityLabel.securityClassification.data[1] = 0;
-		securityLabel.securityClassification.data[2] = (unsigned char) (securityClassification>>8 & 0xFF);
-		securityLabel.securityClassification.data[3] = (unsigned char) (securityClassification & 0xFF);
-		securityLabel.securityClassification.len = 4;
+		securityLabel[securityLabelItem] = (NSSCMSSecurityLabelElement*) PORT_Alloc(sizeof(NSSCMSSecurityLabelElement));
+		securityLabel[securityLabelItem]->selector = NSSCMSSecurityLabelElement_securityClassification;
+		
+		securityLabel[securityLabelItem]->id.securityClassification.data = (unsigned char*) PORT_Alloc(4 * sizeof(unsigned char));
+		if (securityLabel[securityLabelItem]->id.securityClassification.data == NULL) goto loser;
+		securityLabel[securityLabelItem]->id.securityClassification.data[0] = 0;
+		securityLabel[securityLabelItem]->id.securityClassification.data[1] = 0;
+		securityLabel[securityLabelItem]->id.securityClassification.data[2] = (unsigned char) (securityClassification>>8 & 0xFF);
+		securityLabel[securityLabelItem]->id.securityClassification.data[3] = (unsigned char) (securityClassification & 0xFF);
+		securityLabel[securityLabelItem]->id.securityClassification.len = 4;
+		securityLabelItem++;
 	}
 	
 	
-    /*
-     * privacyMark
-     */
+	/*
+	 * privacyMark
+	 */
 	len = PORT_Strlen(privacyMark);
-    if (len > 0) {
-		securityLabel.privacyMarkUTF8.data = (unsigned char*) PORT_Alloc(len * sizeof(unsigned char));
-		if (securityLabel.privacyMarkUTF8.data == NULL) goto loser;
-		PORT_Memcpy(securityLabel.privacyMarkUTF8.data, privacyMark, len);
-		securityLabel.privacyMarkUTF8.len = len;
-    }
-    
-    
-    /*
-     * securityCategories
-     */
-    len = PORT_Strlen(securityCategories);
-    if (len > 0) {
-    	separatorCount = 0;
+	if (len > 0) {
+		securityLabel[securityLabelItem] = (NSSCMSSecurityLabelElement*) PORT_Alloc(sizeof(NSSCMSSecurityLabelElement));
+		securityLabel[securityLabelItem]->selector = NSSCMSSecurityLabelElement_privacyMarkUTF8;
 		
-    	/* Count number of separator character */
+		securityLabel[securityLabelItem]->id.privacyMarkUTF8.data = (unsigned char*) PORT_Alloc(len * sizeof(unsigned char));
+		if (securityLabel[securityLabelItem]->id.privacyMarkUTF8.data == NULL) goto loser;
+		PORT_Memcpy(securityLabel[securityLabelItem]->id.privacyMarkUTF8.data, privacyMark, len);
+		securityLabel[securityLabelItem]->id.privacyMarkUTF8.len = len;
+		securityLabelItem++;
+	}
+	
+	
+	/*
+	 * securityCategories
+	 */
+	len = PORT_Strlen(securityCategories);
+	if (len > 0) {
+		separatorCount = 0;
+		
+		/* Count number of separator character */
 		for (i = 0; i < len; i++) {
 			if (securityCategories[i] == securityCategoriesSeparator) separatorCount++;
 		}
 		
 		/* Separator count must be > 0 and odd */
 		if (separatorCount == 0 || ((separatorCount % 2) == 0)) goto loser;
-		
+	
+		/* Create object */
+		securityLabel[securityLabelItem] = (NSSCMSSecurityLabelElement*) PORT_Alloc(sizeof(NSSCMSSecurityLabelElement));
+		securityLabel[securityLabelItem]->selector = NSSCMSSecurityLabelElement_securityCategories;
+	
 		/* Allocate ((separatorCount / 2 ) + 1) + 1 NULL securityCategories */
-		securityLabel.securityCategories = (NSSCMSSecurityLabelSecurityCategory**) PORT_Alloc(((separatorCount / 2 ) + 2) * sizeof(NSSCMSSecurityLabelSecurityCategory*));
-		if (securityLabel.securityCategories == NULL) goto loser;
+		securityLabel[securityLabelItem]->id.securityCategories = (NSSCMSSecurityLabelSecurityCategory**) PORT_Alloc(((separatorCount / 2 ) + 2) * sizeof(NSSCMSSecurityLabelSecurityCategory*));
+		if (securityLabel[securityLabelItem]->id.securityCategories == NULL) goto loser;
 		for (i = 0; i < ((separatorCount / 2 ) + 1); i++) {
-			securityLabel.securityCategories[i] = (NSSCMSSecurityLabelSecurityCategory*) PORT_Alloc(sizeof(NSSCMSSecurityLabelSecurityCategory));
-			if (securityLabel.securityCategories[i] == NULL) goto loser;
-			securityLabel.securityCategories[i]->securityCategoryIdentifier.len = 0;
-			securityLabel.securityCategories[i]->securityCategoryValue.len = 0;
+			securityLabel[securityLabelItem]->id.securityCategories[i] = (NSSCMSSecurityLabelSecurityCategory*) PORT_Alloc(sizeof(NSSCMSSecurityLabelSecurityCategory));
+			if (securityLabel[securityLabelItem]->id.securityCategories[i] == NULL) goto loser;
+			securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryIdentifier.len = 0;
+			securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.len = 0;
 		}
 		/* Last one is NULL */
-		securityLabel.securityCategories[(separatorCount / 2 ) + 1] = NULL;
+		securityLabel[securityLabelItem]->id.securityCategories[(separatorCount / 2 ) + 1] = NULL;
 		
 		
 		startPosition = 0;
@@ -955,7 +981,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 			}
 			
 			if (fieldLen > 0) {
-				if (NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(securityCategories + startPosition, fieldLen, &(securityLabel.securityCategories[i]->securityCategoryIdentifier.data), &(securityLabel.securityCategories[i]->securityCategoryIdentifier.len)) == SECFailure) goto loser;
+				if (NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(securityCategories + startPosition, fieldLen, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryIdentifier.data), &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryIdentifier.len)) == SECFailure) goto loser;
 				startPosition += fieldLen + 1;
 			} else {
 				goto loser;
@@ -975,35 +1001,55 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 			}
 			
 			if (fieldLen > 0) {
-				securityLabel.securityCategories[i]->securityCategoryValue.data = (unsigned char*) PORT_Alloc(fieldLen * sizeof(unsigned char));
-				if (securityLabel.securityCategories[i]->securityCategoryValue.data == NULL) goto loser;
-				PORT_Memcpy(securityLabel.securityCategories[i]->securityCategoryValue.data, securityCategories + startPosition, fieldLen);
-				securityLabel.securityCategories[i]->securityCategoryValue.len = fieldLen;
+				securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.data = (unsigned char*) PORT_Alloc(fieldLen * sizeof(unsigned char));
+				if (securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.data == NULL) goto loser;
+				PORT_Memcpy(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.data, securityCategories + startPosition, fieldLen);
+				securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.len = fieldLen;
 				startPosition += fieldLen + 1;
 			} else {
 				goto loser;
 			}
-
-		}
-    }    
 	
-    
-    /* Now encode */
-    dummy = SEC_ASN1EncodeItem(poolp, dest, &securityLabel, NSSCMSSecurityLabelTemplate);
+		}
+		securityLabelItem++;
+	}
+	
+	securityLabel[securityLabelItem] = NULL;
+	
+	/* Now encode */
+	dummy = SEC_ASN1EncodeItem(poolp, dest, &securityLabel, NSSCMSSecurityLabelTemplate);
 
 loser:
-    if (securityLabel.securityPolicyIdentifier.len > 0) PORT_Free(securityLabel.securityPolicyIdentifier.data);
-    if (securityLabel.securityClassification.len > 0) PORT_Free(securityLabel.securityClassification.data);
-    if (securityLabel.privacyMarkUTF8.len > 0) PORT_Free(securityLabel.privacyMarkUTF8.data);
-    if (securityLabel.securityCategories != NULL) {
-    	for (i = 0; securityLabel.securityCategories[i] != NULL; i++) {
-    		if (securityLabel.securityCategories[i]->securityCategoryIdentifier.len > 0) PORT_Free(securityLabel.securityCategories[i]->securityCategoryIdentifier.data);
-    		if (securityLabel.securityCategories[i]->securityCategoryValue.len > 0) PORT_Free(securityLabel.securityCategories[i]->securityCategoryValue.data);
-    		PORT_Free(securityLabel.securityCategories[i]);
-    	}
-    	PORT_Free(securityLabel.securityCategories);
+    for (i = 0; securityLabel[i] != NULL; i++) {
+		switch (securityLabel[i]->selector) {
+			case NSSCMSSecurityLabelElement_securityPolicyIdentifier:
+				if (securityLabel[i]->id.securityPolicyIdentifier.len > 0) PORT_Free(securityLabel[i]->id.securityPolicyIdentifier.data);
+				break;
+			case NSSCMSSecurityLabelElement_securityClassification:
+				if (securityLabel[i]->id.securityClassification.len > 0) PORT_Free(securityLabel[i]->id.securityClassification.data);
+				break;
+			case NSSCMSSecurityLabelElement_privacyMarkPrintableString:
+				if (securityLabel[i]->id.privacyMarkPrintableString.len > 0) PORT_Free(securityLabel[i]->id.privacyMarkPrintableString.data);
+				break;
+			case NSSCMSSecurityLabelElement_privacyMarkUTF8:
+				if (securityLabel[i]->id.privacyMarkUTF8.len > 0) PORT_Free(securityLabel[i]->id.privacyMarkUTF8.data);
+				break;
+			case NSSCMSSecurityLabelElement_securityCategories:
+				if (securityLabel[i]->id.securityCategories != NULL) {
+					for (k = 0; securityLabel[i]->id.securityCategories[k] != NULL; k++) {
+						if (securityLabel[i]->id.securityCategories[k]->securityCategoryIdentifier.len > 0) PORT_Free(securityLabel[i]->id.securityCategories[k]->securityCategoryIdentifier.data);
+						if (securityLabel[i]->id.securityCategories[k]->securityCategoryValue.len > 0) PORT_Free(securityLabel[i]->id.securityCategories[k]->securityCategoryValue.data);
+						PORT_Free(securityLabel[i]->id.securityCategories[k]);
+					}
+					PORT_Free(securityLabel[i]->id.securityCategories);
+				}
+				break;
+		}
+		
+		PORT_Free(securityLabel[i]);
     }
-    
+    PORT_Free(securityLabel);
+
     return (dummy == NULL) ? SECFailure : SECSuccess;
 }
 

@@ -94,6 +94,7 @@ typedef struct NSSCMSSignerIdentifierStr NSSCMSSignerIdentifier;
 typedef struct NSSCMSReceiptRequestStr NSSCMSReceiptRequest;
 
 typedef struct NSSCMSSecurityLabelStr NSSCMSSecurityLabel;
+typedef struct NSSCMSSecurityLabelElementStr NSSCMSSecurityLabelElement;
 typedef struct NSSCMSSecurityLabelSecurityCategoryStr NSSCMSSecurityLabelSecurityCategory;
 
 typedef struct NSSCMSEnvelopedDataStr NSSCMSEnvelopedData;
@@ -268,19 +269,37 @@ typedef enum {
 } NSSCMSCertChainMode;
 
 
+/* ESS Security Label */
+typedef enum {
+	NSSCMSSecurityLabelElement_securityPolicyIdentifier = 0,
+	NSSCMSSecurityLabelElement_securityClassification = 1,
+	NSSCMSSecurityLabelElement_privacyMarkPrintableString = 2,
+	NSSCMSSecurityLabelElement_privacyMarkUTF8 = 3,
+	NSSCMSSecurityLabelElement_securityCategories = 4
+} NSSCMSSecurityLabelElementSelector;
+
+struct NSSCMSSecurityLabelElementStr {
+	NSSCMSSecurityLabelElementSelector selector;
+	union {
+		SECItem securityPolicyIdentifier;
+		SECItem securityClassification;
+		SECItem privacyMarkPrintableString;
+		SECItem privacyMarkUTF8;
+		NSSCMSSecurityLabelSecurityCategory** securityCategories;
+    } id;
+};
+
+struct NSSCMSSecurityLabelStr {
+	NSSCMSSecurityLabelElement** element;
+};
+
 struct NSSCMSSecurityLabelSecurityCategoryStr {
     SECItem securityCategoryIdentifier;
     SECItem securityCategoryValue;
 };
 
-struct NSSCMSSecurityLabelStr {
-    SECItem securityPolicyIdentifier;
-    SECItem securityClassification;
-    SECItem privacyMarkPrintableString; /* Should be a CHOICE */
-    SECItem privacyMarkUTF8;
-    NSSCMSSecurityLabelSecurityCategory** securityCategories;
-};
 
+/* ESS Signed Receipt Request */
 struct NSSCMSReceiptRequestStr {
     SECItem signedContentIdentifier;
     SECItem receiptsFrom;

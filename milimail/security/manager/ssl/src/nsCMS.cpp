@@ -228,125 +228,193 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 	NSSCMSSignerInfo *signerinfo = GetTopLevelSignerInfo();
 	if (!signerinfo) return NS_ERROR_FAILURE;
 	
-	NSSCMSSecurityLabel *securityLabel = (NSSCMSSecurityLabel *) PORT_ZAlloc(sizeof(NSSCMSSecurityLabel));
+	NSSCMSSecurityLabel* securityLabel = (NSSCMSSecurityLabel*) PORT_Alloc(sizeof(NSSCMSSecurityLabel));
 	if (securityLabel == NULL) return NS_ERROR_OUT_OF_MEMORY;
 	
 	if (NSS_CMSSignerInfo_GetSecurityLabel(signerinfo, securityLabel) == SECSuccess) {
-		if (securityLabel->securityPolicyIdentifier.len > 0 && securityLabel->securityPolicyIdentifier.data[0] < 128) {
+		
+		/* Check unicity of each element as we use a SET_OF CHOICE instead of a SET */
+		PRBool securityPolicyIdentifierAlreadyExists = PR_FALSE;
+		PRBool securityClassificationAlreadyExists = PR_FALSE;
+		PRBool privacyMarkAlreadyExists = PR_FALSE;
+		PRBool securityCategoriesAlreadyExists = PR_FALSE;
+		PRBool error = PR_FALSE;
+		
+		for (unsigned int elementId = 0; securityLabel->element[elementId] != NULL; elementId++) {
+		
 			unsigned int len;
+			NSSCMSSecurityLabelElement* securityLabelElement = securityLabel->element[elementId];
 			
-			/*
-			 * securityPolicyIdentifier
-			 */
-			char* securityPolicyIdentifier = NULL;
-			if (!GetSecurityLabelDecodeOid(securityLabel->securityPolicyIdentifier.data, securityLabel->securityPolicyIdentifier.len, &securityPolicyIdentifier)) return NS_ERROR_OUT_OF_MEMORY;
-
-			if (securityPolicyIdentifier != NULL) {
-				len = PORT_Strlen(securityPolicyIdentifier);
-				*aSecurityPolicyIdentifier = (char*) PORT_Alloc((len + 1) * sizeof(char));
-				PORT_Memcpy(*aSecurityPolicyIdentifier, securityPolicyIdentifier, len + 1);
-				PORT_Free(securityPolicyIdentifier);
-			}
+			switch (securityLabelElement->selector) {
 			
-			
-			/*
-			 * securityClassification
-			 */
-			len = securityLabel->securityClassification.len;
-			
-			*aSecurityClassification = -1;
-			if (len > 0) {
-				unsigned char *buf = (unsigned char *) PORT_Alloc(len * sizeof(unsigned char));
-				if (buf == NULL) return NS_ERROR_OUT_OF_MEMORY;
-				
-				PORT_Memcpy(buf, securityLabel->securityClassification.data, len);
-				*aSecurityClassification = 0;
-				for (unsigned char j = 0; j < len; j++) *aSecurityClassification = ((*aSecurityClassification) << (j*8)) + buf[j];
-				PORT_Free(buf);
-			}
-
-			
-			/*
-			 * privacyMark
-			 * Search in privacyMarkUTF8 and privacyMarkPrintableString instead of a choice which doesn't work correctly
-			 */
-			unsigned char* privacyMarkData;
-			len = 0;
-			if (securityLabel->privacyMarkUTF8.len > 0) {
-				len = securityLabel->privacyMarkUTF8.len;
-				privacyMarkData = securityLabel->privacyMarkUTF8.data;
-			} else if (securityLabel->privacyMarkPrintableString.len > 0) {
-				len = securityLabel->privacyMarkPrintableString.len;
-				privacyMarkData = securityLabel->privacyMarkPrintableString.data;
-			}
-			
-			if (len > 0) {
-				char* tempPrivacyMark = (char *) PORT_Alloc((len + 1) * sizeof(char));
-				if (tempPrivacyMark == NULL) return NS_ERROR_OUT_OF_MEMORY;
-				PORT_Memcpy(tempPrivacyMark, privacyMarkData, len);
-				tempPrivacyMark[len] = '\0';
-
-				*aPrivacyMark = ToNewUnicode(NS_ConvertUTF8toUTF16(tempPrivacyMark));
-				PORT_Free(tempPrivacyMark);
-			}
-			
-			/*
-			 * securityCategories
-			 */
-			const char securityCategoriesSeparator = '|';
-			if (securityLabel->securityCategories != NULL) {
-				unsigned int i;
-				char* oid;
-				
-				/* Compute size of buffer */
-				len = 0;
-				for (i = 0; securityLabel->securityCategories[i] != NULL; i++) {
-					/* Add size of securityCategoryIdentifier */
-					oid = NULL;
-					if (!GetSecurityLabelDecodeOid(securityLabel->securityCategories[i]->securityCategoryIdentifier.data, securityLabel->securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
-					if (oid != NULL) len += PORT_Strlen(oid);
-					PORT_Free(oid);
-					
-					/* Add size of securityCategoryValue */
-					len += securityLabel->securityCategories[i]->securityCategoryValue.len;
-
-					/* Add size of 2 separators */
-					len += 2;
-				}
-				
-				/* Create buffer */
-				char* tempsecurityCategories = (char *) PORT_Alloc(len * sizeof(char));
-				if (tempsecurityCategories == NULL) return NS_ERROR_OUT_OF_MEMORY;
-
-				/* Fill buffer */
-				len = 0;
-				for (i = 0; securityLabel->securityCategories[i] != NULL; i++) {
-					/* Add securityCategoryIdentifier OID */
-					oid = NULL;
-					if (!GetSecurityLabelDecodeOid(securityLabel->securityCategories[i]->securityCategoryIdentifier.data, securityLabel->securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
-					if (oid != NULL) {
-						PORT_Memcpy(tempsecurityCategories + len, oid, PORT_Strlen(oid));
-						len += PORT_Strlen(oid);
+				case NSSCMSSecurityLabelElement_securityPolicyIdentifier:
+					/*
+					 * securityPolicyIdentifier
+					 */
+					if (securityPolicyIdentifierAlreadyExists) {
+						error = PR_TRUE;
+						break;
 					}
-					PORT_Free(oid);
+					securityPolicyIdentifierAlreadyExists = PR_TRUE;
 					
-					/* Add separator */
-					tempsecurityCategories[len++] = securityCategoriesSeparator;
+					if (securityLabelElement->id.securityPolicyIdentifier.len > 0 && securityLabelElement->id.securityPolicyIdentifier.data[0] < 128) {
+						char* securityPolicyIdentifier = NULL;
 
-					/* Add securityCategoryValue */
-					PORT_Memcpy(tempsecurityCategories + len, securityLabel->securityCategories[i]->securityCategoryValue.data, securityLabel->securityCategories[i]->securityCategoryValue.len);
-					len += securityLabel->securityCategories[i]->securityCategoryValue.len;
+						if (!GetSecurityLabelDecodeOid(securityLabelElement->id.securityPolicyIdentifier.data, securityLabelElement->id.securityPolicyIdentifier.len, &securityPolicyIdentifier)) return NS_ERROR_OUT_OF_MEMORY;
+			
+						if (securityPolicyIdentifier != NULL) {
+							len = PORT_Strlen(securityPolicyIdentifier);
+							*aSecurityPolicyIdentifier = (char*) PORT_Alloc((len + 1) * sizeof(char));
+							PORT_Memcpy(*aSecurityPolicyIdentifier, securityPolicyIdentifier, len + 1);
+							PORT_Free(securityPolicyIdentifier);
+						}
+					}
+					break;
 					
-					/* Add separator */
-					tempsecurityCategories[len++] = securityCategoriesSeparator;
-				}
-				
-				/* Overwrite last separator with \0 */
-				tempsecurityCategories[len - 1] = '\0';
-				
-				*aSecurityCategories = ToNewUnicode(NS_ConvertUTF8toUTF16(tempsecurityCategories));
-				PORT_Free(tempsecurityCategories);
+				case NSSCMSSecurityLabelElement_securityClassification:
+					/*
+					 * securityClassification
+					 */
+					if (securityClassificationAlreadyExists) {
+						error = PR_TRUE;
+						break;
+					}
+					securityClassificationAlreadyExists = PR_TRUE;
+					
+					len = securityLabelElement->id.securityClassification.len;
+					
+					*aSecurityClassification = -1;
+					if (len > 0) {
+						unsigned char *buf = (unsigned char *) PORT_Alloc(len * sizeof(unsigned char));
+						if (buf == NULL) return NS_ERROR_OUT_OF_MEMORY;
+						
+						PORT_Memcpy(buf, securityLabelElement->id.securityClassification.data, len);
+						*aSecurityClassification = 0;
+						for (unsigned char j = 0; j < len; j++) *aSecurityClassification = ((*aSecurityClassification) << (j*8)) + buf[j];
+						PORT_Free(buf);
+					}
+					break;
+					
+				case NSSCMSSecurityLabelElement_privacyMarkPrintableString:
+					/*
+					 * privacyMark (PrintableString)
+					 */
+					if (privacyMarkAlreadyExists) {
+						error = PR_TRUE;
+						break;
+					}
+					privacyMarkAlreadyExists = PR_TRUE;
+					
+					len = securityLabelElement->id.privacyMarkPrintableString.len;
+					
+					if (len > 0) {
+						char* tempPrivacyMark = (char *) PORT_Alloc((len + 1) * sizeof(char));
+						if (tempPrivacyMark == NULL) return NS_ERROR_OUT_OF_MEMORY;
+						PORT_Memcpy(tempPrivacyMark, securityLabelElement->id.privacyMarkPrintableString.data, len);
+						tempPrivacyMark[len] = '\0';
+		
+						*aPrivacyMark = ToNewUnicode(NS_ConvertUTF8toUTF16(tempPrivacyMark));
+						PORT_Free(tempPrivacyMark);
+					}
+					break;
+					
+				case NSSCMSSecurityLabelElement_privacyMarkUTF8:
+					/*
+					 * privacyMark (UTF8)
+					 */
+					if (privacyMarkAlreadyExists) {
+						error = PR_TRUE;
+						break;
+					}
+					privacyMarkAlreadyExists = PR_TRUE;
+					
+					len = securityLabelElement->id.privacyMarkUTF8.len;
+					
+					if (len > 0) {
+						char* tempPrivacyMark = (char *) PORT_Alloc((len + 1) * sizeof(char));
+						if (tempPrivacyMark == NULL) return NS_ERROR_OUT_OF_MEMORY;
+						PORT_Memcpy(tempPrivacyMark, securityLabelElement->id.privacyMarkUTF8.data, len);
+						tempPrivacyMark[len] = '\0';
+		
+						*aPrivacyMark = ToNewUnicode(NS_ConvertUTF8toUTF16(tempPrivacyMark));
+						PORT_Free(tempPrivacyMark);
+					}
+					break;
+					
+				case NSSCMSSecurityLabelElement_securityCategories:
+					/*
+					 * securityCategories
+					 */
+					if (securityCategoriesAlreadyExists) {
+						error = PR_TRUE;
+						break;
+					}
+					securityCategoriesAlreadyExists = PR_TRUE;
+					
+					if (securityLabelElement->id.securityCategories != NULL) {
+						const char securityCategoriesSeparator = '|';
+						unsigned int i;
+						char* oid;
+						
+						/* Compute size of buffer */
+						len = 0;
+						for (i = 0; securityLabelElement->id.securityCategories[i] != NULL; i++) {
+							/* Add size of securityCategoryIdentifier */
+							oid = NULL;
+							if (!GetSecurityLabelDecodeOid(securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.data, securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
+							if (oid != NULL) len += PORT_Strlen(oid);
+							PORT_Free(oid);
+							
+							/* Add size of securityCategoryValue */
+							len += securityLabelElement->id.securityCategories[i]->securityCategoryValue.len;
+		
+							/* Add size of 2 separators */
+							len += 2;
+						}
+						
+						/* Create buffer */
+						char* tempsecurityCategories = (char *) PORT_Alloc(len * sizeof(char));
+						if (tempsecurityCategories == NULL) return NS_ERROR_OUT_OF_MEMORY;
+		
+						/* Fill buffer */
+						len = 0;
+						for (i = 0; securityLabelElement->id.securityCategories[i] != NULL; i++) {
+							/* Add securityCategoryIdentifier OID */
+							oid = NULL;
+							if (!GetSecurityLabelDecodeOid(securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.data, securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
+							if (oid != NULL) {
+								PORT_Memcpy(tempsecurityCategories + len, oid, PORT_Strlen(oid));
+								len += PORT_Strlen(oid);
+							}
+							PORT_Free(oid);
+							
+							/* Add separator */
+							tempsecurityCategories[len++] = securityCategoriesSeparator;
+							
+							/* Add securityCategoryValue */
+							PORT_Memcpy(tempsecurityCategories + len, securityLabelElement->id.securityCategories[i]->securityCategoryValue.data, securityLabelElement->id.securityCategories[i]->securityCategoryValue.len);
+							len += securityLabelElement->id.securityCategories[i]->securityCategoryValue.len;
+							
+							/* Add separator */
+							tempsecurityCategories[len++] = securityCategoriesSeparator;
+						}
+						
+						/* Overwrite last separator with \0 */
+						tempsecurityCategories[len - 1] = '\0';
+						
+						*aSecurityCategories = ToNewUnicode(NS_ConvertUTF8toUTF16(tempsecurityCategories));
+						PORT_Free(tempsecurityCategories);
+					}
+					break;
 			}
+			
+			if (error) break;
+		}
+		
+		/* Too many elements: forget Security Label */
+		if (error) {
+			PORT_Free(*aSecurityPolicyIdentifier);
+			*aSecurityPolicyIdentifier = NULL;
 		}
 	}
 	

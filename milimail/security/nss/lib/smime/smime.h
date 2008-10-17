@@ -147,7 +147,7 @@ extern SECStatus NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *
 /*
  * NSS_SMIMEUtil_GetSecurityLabel - get S/MIME SecurityLabel attr value
  */
-extern SECStatus NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *signerinfo, NSSCMSSecurityLabel *securityLabel);
+extern SECStatus NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *signerinfo, NSSCMSSecurityLabelElement **securityLabel);
 
 /*
  * NSS_SMIMEUtil_CreateReceiptRequest - create S/MIME ReceiptRequest attr value
