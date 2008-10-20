@@ -46,6 +46,7 @@
 
 	<vbox id="editcard">
 		<stringbundle id="card_viewer_extended_stringbundle" src="chrome://card_viewer_extended/locale/card_viewer_extended.properties"/>
+		<stringbundle id="bundle_ldap" src="chrome://mozldap/locale/ldap.properties"/>
 		<separator/>
 		<hbox>
 			<button id="card_viewer_extended_button_id" label="&card_viewer.button.showCurrentCertificate.label;" accesskey="&card_viewer.button.showCurrentCertificate.accesskey;" oncommand="cardvext_showCurrentCertificate()"/>
