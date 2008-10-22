@@ -38,9 +38,11 @@
 <?xml-stylesheet href="chrome://notifications_viewer/skin/default.css" type="text/css"?>
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 
-<window id="windowDetailNotifications"
+<dialog id="windowDetailNotifications"
 	title="&windowDetailNotifications.title;"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	buttons="accept"
+	width="425" height="210"
 	persist="screenX screenY width height" onload="displayNotifications.onload();">
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/windowDetailNotifications.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
@@ -57,6 +59,4 @@
 			<!-- here, rows when DSN and MDN are present -->
 		</grid>
 	</vbox>
-</window>
-
-
+</dialog>
