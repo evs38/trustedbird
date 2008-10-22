@@ -148,7 +148,7 @@ var columnHandlerMDNDeleted = {
 function columnInit() {
 	srv.logSrv("columnInit()");
 	var ObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-	ObserverService.addObserver(createDbObserver, "MsgCreateDBView", false);
+	ObserverService.addObserver(notificationsViewerCreateDbObserver, "MsgCreateDBView", false);
 
 	// add a popupshowing event listener for menus
 	document.getElementById("threadPaneContext").addEventListener("popupshowing", contextPopupShowing, false); // context menu
@@ -177,7 +177,7 @@ function contextPopupShowing() {
 /**
 	addColumnHandler takes a column ID and a handler object
 */
-var createDbObserver = {
+var notificationsViewerCreateDbObserver = {
 	// Components.interfaces.nsIObserver
 	observe: function(aMsgFolder, aTopic, aData) {
 		gDBView.addColumnHandler("colDSN", columnHandlerDSN);
