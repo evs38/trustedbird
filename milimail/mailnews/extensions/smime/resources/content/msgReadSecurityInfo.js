@@ -309,13 +309,13 @@ function onLoad()
     	var securityLabelSecurityCategoriesListbox = document.getElementById("securityLabelSecurityCategoriesListbox");
     	
     	securityCategoriesArray = gSecurityCategories.split("|");
-    	var listboxSize = securityCategoriesArray.length / 2;
+    	var listboxSize = securityCategoriesArray.length / 3;
     	if (listboxSize > 5) listboxSize = 5;
     	securityLabelSecurityCategoriesListbox.setAttribute("rows", listboxSize);
 
-    	for (var i = 0; i < securityCategoriesArray.length; i += 2) {
+    	for (var i = 0; i < securityCategoriesArray.length; i += 3) {
     		var listitem = document.createElement("listitem");
-    		listitem.setAttribute("label", securityLabelGetSecurityCategoryName(gSecurityPolicyIdentifier, gSecurityClassification, securityCategoriesArray[i], securityCategoriesArray[i + 1]));
+    		listitem.setAttribute("label", securityLabelGetSecurityCategoryName(gSecurityPolicyIdentifier, gSecurityClassification, securityCategoriesArray[i], securityCategoriesArray[i + 1], securityCategoriesArray[i + 2]));
     		securityLabelSecurityCategoriesListbox.appendChild(listitem);
     	}
     	document.getElementById("securityLabelSecurityCategoriesRow").collapsed = false;

@@ -148,7 +148,7 @@ static const SEC_ASN1Template securityCategoryIdentifierTemplate[] = {
 };
 
 static const SEC_ASN1Template securityCategoryValueTemplate[] = {
-	{ SEC_ASN1_UTF8_STRING, 0, NULL },
+	{ SEC_ASN1_ANY, 0, NULL },
 };
 
 static const SEC_ASN1Template NSSCMSSecurityLabelSecurityCategoryTemplate[] = {
@@ -884,13 +884,21 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 	unsigned int i;
 	unsigned int k;
 	unsigned int separatorCount;
+	unsigned int categoryCount;
 	unsigned int startPosition;
 	unsigned int fieldLen;
 	const char securityCategoriesSeparator = '|';
 	unsigned int securityLabelItem;
+	SECItem tempSecurityCategoryValue;
+	unsigned int tempSecurityCategoryValueType;
+	unsigned char* tempSecurityCategoryValueString;
+	unsigned int tempSecurityCategoryValueInteger;
 	
-	/* 4 elements max + 1 NULL at the end */
+	
+	/* 4 elements max + 1 NULL at the end = 5 elements */
 	securityLabel = (NSSCMSSecurityLabelElement**) PORT_Alloc(5 * sizeof(NSSCMSSecurityLabelElement*));
+	for (i = 0; i < 5; i++) securityLabel[i] = NULL;
+	
 	securityLabelItem = 0;
 	
 	/*
@@ -938,6 +946,10 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 	
 	/*
 	 * securityCategories
+	 * format: cat1_OID|cat1_type|cat1_value|cat2_OID|cat2_type|cat2_value|cat3_OID|cat3_type|cat3_value
+	 * 
+	 *   catX_type: 1 (UTF-8)
+	 *              2 (integer)
 	 */
 	len = PORT_Strlen(securityCategories);
 	if (len > 0) {
@@ -948,29 +960,30 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 			if (securityCategories[i] == securityCategoriesSeparator) separatorCount++;
 		}
 		
-		/* Separator count must be > 0 and odd */
-		if (separatorCount == 0 || ((separatorCount % 2) == 0)) goto loser;
-	
+		/* Separator count must be correct */
+		if (separatorCount < 2 || (((separatorCount - 2 ) % 3) != 0)) goto loser;
+		categoryCount = ((separatorCount - 2 ) / 3) + 1;
+		
 		/* Create object */
 		securityLabel[securityLabelItem] = (NSSCMSSecurityLabelElement*) PORT_Alloc(sizeof(NSSCMSSecurityLabelElement));
 		securityLabel[securityLabelItem]->selector = NSSCMSSecurityLabelElement_securityCategories;
-	
-		/* Allocate ((separatorCount / 2 ) + 1) + 1 NULL securityCategories */
-		securityLabel[securityLabelItem]->id.securityCategories = (NSSCMSSecurityLabelSecurityCategory**) PORT_Alloc(((separatorCount / 2 ) + 2) * sizeof(NSSCMSSecurityLabelSecurityCategory*));
+		
+		/* Allocate categoryCount + 1 NULL securityCategories */
+		securityLabel[securityLabelItem]->id.securityCategories = (NSSCMSSecurityLabelSecurityCategory**) PORT_Alloc((categoryCount + 1) * sizeof(NSSCMSSecurityLabelSecurityCategory*));
 		if (securityLabel[securityLabelItem]->id.securityCategories == NULL) goto loser;
-		for (i = 0; i < ((separatorCount / 2 ) + 1); i++) {
+		for (i = 0; i < categoryCount; i++) {
 			securityLabel[securityLabelItem]->id.securityCategories[i] = (NSSCMSSecurityLabelSecurityCategory*) PORT_Alloc(sizeof(NSSCMSSecurityLabelSecurityCategory));
 			if (securityLabel[securityLabelItem]->id.securityCategories[i] == NULL) goto loser;
 			securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryIdentifier.len = 0;
 			securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.len = 0;
 		}
 		/* Last one is NULL */
-		securityLabel[securityLabelItem]->id.securityCategories[(separatorCount / 2 ) + 1] = NULL;
+		securityLabel[securityLabelItem]->id.securityCategories[categoryCount] = NULL;
 		
 		
 		startPosition = 0;
 		
-		for (i = 0; i < ((separatorCount / 2 ) + 1); i++) {
+		for (i = 0; i < categoryCount; i++) {
 			/* Search and copy securityCategoryIdentifier */
 			fieldLen = 0;
 			for (k = startPosition; k < len; k++) {
@@ -982,6 +995,26 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 			
 			if (fieldLen > 0) {
 				if (NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(securityCategories + startPosition, fieldLen, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryIdentifier.data), &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryIdentifier.len)) == SECFailure) goto loser;
+				startPosition += fieldLen + 1;
+			} else {
+				goto loser;
+			}
+			
+			/* Search type */
+			fieldLen = 0;
+			for (k = startPosition; k < len; k++) {
+				if (securityCategories[k] == securityCategoriesSeparator) {
+					fieldLen = k - startPosition;
+					break;
+				}
+			}
+			
+			if (fieldLen == 1) {
+				tempSecurityCategoryValueType = 0;
+				if (securityCategories[startPosition] >= '0' && securityCategories[startPosition] <= '9') {
+					tempSecurityCategoryValueType = securityCategories[startPosition] - '0';
+				}
+				
 				startPosition += fieldLen + 1;
 			} else {
 				goto loser;
@@ -1001,10 +1034,36 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 			}
 			
 			if (fieldLen > 0) {
-				securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.data = (unsigned char*) PORT_Alloc(fieldLen * sizeof(unsigned char));
-				if (securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.data == NULL) goto loser;
-				PORT_Memcpy(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.data, securityCategories + startPosition, fieldLen);
-				securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue.len = fieldLen;
+				switch (tempSecurityCategoryValueType) {
+					case SECURITY_CATEGORY_VALUE_TYPE_UTF8:
+						tempSecurityCategoryValue.data = securityCategories + startPosition;
+						tempSecurityCategoryValue.len = fieldLen;
+						dummy = SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, SEC_UTF8StringTemplate);
+						if (dummy == NULL) goto loser;
+						break;
+					case SECURITY_CATEGORY_VALUE_TYPE_INTEGER:
+						tempSecurityCategoryValueString = (unsigned char*) PORT_Alloc((fieldLen + 1) * sizeof(unsigned char));
+						PORT_Memcpy(tempSecurityCategoryValueString, securityCategories + startPosition, fieldLen);
+						tempSecurityCategoryValueString[fieldLen] = '\0';
+						tempSecurityCategoryValueInteger = atoi(tempSecurityCategoryValueString);
+						PORT_Free(tempSecurityCategoryValueString);
+						
+						tempSecurityCategoryValue.data = (unsigned char*) PORT_Alloc(4 * sizeof(unsigned char));
+						tempSecurityCategoryValue.data[0] = (unsigned char) (tempSecurityCategoryValueInteger>>24 & 0xFF);;
+						tempSecurityCategoryValue.data[1] = (unsigned char) (tempSecurityCategoryValueInteger>>16 & 0xFF);;
+						tempSecurityCategoryValue.data[2] = (unsigned char) (tempSecurityCategoryValueInteger>>8 & 0xFF);
+						tempSecurityCategoryValue.data[3] = (unsigned char) (tempSecurityCategoryValueInteger & 0xFF);
+						tempSecurityCategoryValue.len = 4;
+						dummy = SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, SEC_IntegerTemplate);
+						PORT_Free(tempSecurityCategoryValue.data);
+						if (dummy == NULL) goto loser;
+						break;
+					default:
+						goto loser;
+						break;
+				}
+					
+					
 				startPosition += fieldLen + 1;
 			} else {
 				goto loser;
@@ -1014,7 +1073,6 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 		securityLabelItem++;
 	}
 	
-	securityLabel[securityLabelItem] = NULL;
 	
 	/* Now encode */
 	dummy = SEC_ASN1EncodeItem(poolp, dest, &securityLabel, NSSCMSSecurityLabelTemplate);
@@ -1038,7 +1096,6 @@ loser:
 				if (securityLabel[i]->id.securityCategories != NULL) {
 					for (k = 0; securityLabel[i]->id.securityCategories[k] != NULL; k++) {
 						if (securityLabel[i]->id.securityCategories[k]->securityCategoryIdentifier.len > 0) PORT_Free(securityLabel[i]->id.securityCategories[k]->securityCategoryIdentifier.data);
-						if (securityLabel[i]->id.securityCategories[k]->securityCategoryValue.len > 0) PORT_Free(securityLabel[i]->id.securityCategories[k]->securityCategoryValue.data);
 						PORT_Free(securityLabel[i]->id.securityCategories[k]);
 					}
 					PORT_Free(securityLabel[i]->id.securityCategories);

@@ -127,9 +127,9 @@ function securityLabelDialogInitUI() {
 	securityLabelDialogSecurityCategoriesClearList();
 	if (currentSecurityCategories != "") {
 		var s = currentSecurityCategories.split("|");
-		if (s.length % 2 == 0) {
-			for (var i = 0; i < s.length; i += 2) {
-				securityLabelDialogSecurityCategoriesAddItem(s[i] + "|" + s[i+1]);
+		if (s.length % 3 == 0) {
+			for (var i = 0; i < s.length; i += 3) {
+				securityLabelDialogSecurityCategoriesAddItem(s[i] + "|" + s[i+1] + "|" + s[i+2]);
 			}
 			var securityLabelSecurityCategoriesListbox = document.getElementById("securityLabelSecurityCategoriesListbox");
 			securityLabelSecurityCategoriesListbox.selectedItem = securityLabelSecurityCategoriesListbox.firstChild;
@@ -183,7 +183,7 @@ function securityLabelDialogSecurityCategoriesAddItem(selectedValue) {
 			if (i == 1) list = securityLabelSecurityCategoriesList[selectedPolicyIdentifier][document.getElementById("securityLabelSecurityClassificationMenuList").value];
 	                
 			for (securityCategoryName in list) {
-				securityLabelDialogCreateMenuItem(menulist, securityCategoryName, list[securityCategoryName][0] + "|" + list[securityCategoryName][1], selectedValue);
+				securityLabelDialogCreateMenuItem(menulist, securityCategoryName, list[securityCategoryName][0] + "|" + list[securityCategoryName][1] + "|" + list[securityCategoryName][2], selectedValue);
 			}
 		}
 	}

@@ -298,6 +298,12 @@ struct NSSCMSSecurityLabelSecurityCategoryStr {
     SECItem securityCategoryValue;
 };
 
+enum {
+	SECURITY_CATEGORY_VALUE_TYPE_UNKNOWN = 0,
+	SECURITY_CATEGORY_VALUE_TYPE_UTF8 = 1,
+	SECURITY_CATEGORY_VALUE_TYPE_INTEGER = 2
+};
+
 
 /* ESS Signed Receipt Request */
 struct NSSCMSReceiptRequestStr {

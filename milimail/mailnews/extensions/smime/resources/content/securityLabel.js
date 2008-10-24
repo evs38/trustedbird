@@ -93,8 +93,8 @@ function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, se
  *  @param securityCategoryValue Category value
  *  @return String with the name of the Security Category
  */
-function securityLabelGetSecurityCategoryName(securityPolicyIdentifier, securityClassification, securityCategoryType, securityCategoryValue) {
-	if (securityPolicyIdentifier == undefined || securityClassification == undefined || securityCategoryType == undefined || securityCategoryValue == undefined) return "";
+function securityLabelGetSecurityCategoryName(securityPolicyIdentifier, securityClassification, securityCategoryOid, securityCategoryType, securityCategoryValue) {
+	if (securityPolicyIdentifier == undefined || securityClassification == undefined || securityCategoryOid == undefined || securityCategoryType == undefined || securityCategoryValue == undefined) return "";
 	
 	var securityPolicyIdentifierName = securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier);
 
@@ -107,14 +107,14 @@ function securityLabelGetSecurityCategoryName(securityPolicyIdentifier, security
 			if (i == 1) list = securityLabelSecurityCategoriesList[securityPolicyIdentifierName][securityClassification.toString()];
 	                
 			for (securityCategoryName in list) {
-				if (list[securityCategoryName][0] == securityCategoryType && list[securityCategoryName][1] == securityCategoryValue) {
+				if (list[securityCategoryName][0] == securityCategoryOid && list[securityCategoryName][1] == securityCategoryType && list[securityCategoryName][2] == securityCategoryValue) {
 					return securityCategoryName;
 				}
 			}
 		}
 	}
 	
-	return gStringBundle.GetStringFromName("unknownSecurityCategory") + " (" + securityCategoryType + " | " + securityCategoryValue + ")";
+	return gStringBundle.GetStringFromName("unknownSecurityCategory") + " (" + securityCategoryOid + " | " + securityCategoryValue + ")";
 }
 
 
@@ -139,16 +139,20 @@ function securityLabelReadProfiles() {
 		for (i in dirList) {
 			var fileContents = FileIO.read(dirList[i], "UTF-8");
 			if (fileContents != false) {
-				var domParser = new DOMParser();
-				var dom = domParser.parseFromString(fileContents, "text/xml");
-				if (dom.documentElement.nodeName == "securityLabel") {
-					var policy = _parseSecurityPolicyIdentifier(dom);
-					if (policy != false) {
-						securityLabelSecurityPolicyList[policy[0]] = policy[1];
-						securityLabelSecurityClassificationList[policy[0]] = _parseSecurityClassification(dom);
-						securityLabelPrivacyMarkList[policy[0]] = _parsePrivacyMark(dom);
-						securityLabelSecurityCategoriesList[policy[0]] = _parseSecurityCategories(dom);
+				try {
+					var domParser = new DOMParser();
+					var dom = domParser.parseFromString(fileContents, "text/xml");
+					if (dom.documentElement.nodeName == "securityLabel") {
+						var policy = _parseSecurityPolicyIdentifier(dom);
+						if (policy != false) {
+							securityLabelSecurityPolicyList[policy[0]] = policy[1];
+							securityLabelSecurityClassificationList[policy[0]] = _parseSecurityClassification(dom);
+							securityLabelPrivacyMarkList[policy[0]] = _parsePrivacyMark(dom);
+							securityLabelSecurityCategoriesList[policy[0]] = _parseSecurityCategories(dom);
+						}
 					}
+				} catch (e) {
+					dump("S/MIME Security Label: error while reading profile\n");
 				}
 			}
 		}
@@ -237,11 +241,12 @@ function _parseSecurityCategories(dom) {
 				var itemNode = nodeList2.item(i);
 				if (itemNode.nodeName == "item") {
 					var label = _trim(itemNode.getAttribute("label"));
+					var oid = _trim(itemNode.getAttribute("oid").replace(/\|/g, ""));
 					var type = _trim(itemNode.getAttribute("type").replace(/\|/g, ""));
 					var value = _trim(itemNode.getAttribute("value").replace(/\|/g, ""));
-					if (label != "" && type != "" && value != "") {
+					if (label != "" && oid != "" && type != "" && value != "") {
 						if (list[securityClassificationValue] == undefined) list[securityClassificationValue] = new Array();
-						list[securityClassificationValue][label] = [type, value];
+						list[securityClassificationValue][label] = [oid, type, value];
 					}
 				}
 			}

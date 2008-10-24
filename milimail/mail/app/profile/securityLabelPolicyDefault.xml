@@ -45,29 +45,33 @@
 	Security Categories
 		securityClassificationValue (attribute) [integer]: specify that these categories apply only to this classification
 		item (element): category
-			type (attribute) [OID]: type of the category
+			oid (attribute) [OID]: type of the category
+			type (attribute) [integer]: data type of value attribute (1 for UTF-8 string, 2 for integer)
 			value (attribute) [string]: text of the category
 			label (attribute) [string]: displayed name of the category
 	-->		
 
 	<!-- For all Security Classification -->
 	<securityCategories>
-		<item type="1.2.66.1.5" value="private" label="Private" />
-		<item type="1.2.66.1.89.4" value="EU Protected Information" label="Protected Information" />
+		<item oid="1.2.66.1.5" type="1" value="private" label="Private" />
+		<item oid="1.2.66.1.89.4" type="1" value="EU Protected Information" label="Protected Information" />
 	</securityCategories>
 	
 	<!-- Only for Security Classification 4 -->
 	<securityCategories securityClassificationValue="4">
-		<item type="1.2.3.8" value="EYES ONLY" label="EYES ONLY" />
-		<item type="1.2.398.5" value="EU do not print" label="DO NOT PRINT" />
-		<item type="1.2.398.5" value="FR do not print" label="Ne pas imprimer" />
+		<item oid="1.2.3.8" type="1" value="EYES ONLY" label="EYES ONLY" />
+		<item oid="1.2.398.5" type="1" value="EU do not print" label="DO NOT PRINT" />
+		<item oid="1.2.398.5" type="1" value="FR do not print" label="Ne pas imprimer" />
 	</securityCategories>
 	
 	<!-- Only for Security Classification 5 -->
 	<securityCategories securityClassificationValue="5">
-		<item type="1.2.324.74" value="NATO CONFIDENTIAL" label="NATO CONFIDENTIAL" />
-		<item type="1.2.324.75" value="NATO RESTRICTED" label="NATO RESTRICTED" />
-		<item type="1.2.99.2" value="top-secret" label="高度機密" />
+		<item oid="1.2.324.74" type="1" value="NATO CONFIDENTIAL" label="NATO CONFIDENTIAL" />
+		<item oid="1.2.324.75" type="1" value="NATO RESTRICTED" label="NATO RESTRICTED" />
+		<item oid="1.2.99.2" type="1" value="高度機密" label="top-secret" />
+		<item oid="1.2.99.3" type="2" value="57" label="a" />
+		<item oid="1.2.99.4" type="2" value="6000" label="b" />
+		<item oid="1.2.99.5" type="1" value="6000" label="c" />
 	</securityCategories>
 	
 </securityLabel>

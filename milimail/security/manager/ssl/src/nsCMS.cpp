@@ -285,7 +285,7 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 					
 					*aSecurityClassification = -1;
 					if (len > 0) {
-						unsigned char *buf = (unsigned char *) PORT_Alloc(len * sizeof(unsigned char));
+						unsigned char* buf = (unsigned char*) PORT_Alloc(len * sizeof(unsigned char));
 						if (buf == NULL) return NS_ERROR_OUT_OF_MEMORY;
 						
 						PORT_Memcpy(buf, securityLabelElement->id.securityClassification.data, len);
@@ -308,7 +308,7 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 					len = securityLabelElement->id.privacyMarkPrintableString.len;
 					
 					if (len > 0) {
-						char* tempPrivacyMark = (char *) PORT_Alloc((len + 1) * sizeof(char));
+						char* tempPrivacyMark = (char*) PORT_Alloc((len + 1) * sizeof(char));
 						if (tempPrivacyMark == NULL) return NS_ERROR_OUT_OF_MEMORY;
 						PORT_Memcpy(tempPrivacyMark, securityLabelElement->id.privacyMarkPrintableString.data, len);
 						tempPrivacyMark[len] = '\0';
@@ -331,7 +331,7 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 					len = securityLabelElement->id.privacyMarkUTF8.len;
 					
 					if (len > 0) {
-						char* tempPrivacyMark = (char *) PORT_Alloc((len + 1) * sizeof(char));
+						char* tempPrivacyMark = (char*) PORT_Alloc((len + 1) * sizeof(char));
 						if (tempPrivacyMark == NULL) return NS_ERROR_OUT_OF_MEMORY;
 						PORT_Memcpy(tempPrivacyMark, securityLabelElement->id.privacyMarkUTF8.data, len);
 						tempPrivacyMark[len] = '\0';
@@ -359,51 +359,96 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 						/* Compute size of buffer */
 						len = 0;
 						for (i = 0; securityLabelElement->id.securityCategories[i] != NULL; i++) {
-							/* Add size of securityCategoryIdentifier */
-							oid = NULL;
-							if (!GetSecurityLabelDecodeOid(securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.data, securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
-							if (oid != NULL) len += PORT_Strlen(oid);
-							PORT_Free(oid);
-							
-							/* Add size of securityCategoryValue */
-							len += securityLabelElement->id.securityCategories[i]->securityCategoryValue.len;
-		
-							/* Add size of 2 separators */
-							len += 2;
-						}
-						
-						/* Create buffer */
-						char* tempsecurityCategories = (char *) PORT_Alloc(len * sizeof(char));
-						if (tempsecurityCategories == NULL) return NS_ERROR_OUT_OF_MEMORY;
-		
-						/* Fill buffer */
-						len = 0;
-						for (i = 0; securityLabelElement->id.securityCategories[i] != NULL; i++) {
-							/* Add securityCategoryIdentifier OID */
 							oid = NULL;
 							if (!GetSecurityLabelDecodeOid(securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.data, securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
 							if (oid != NULL) {
-								PORT_Memcpy(tempsecurityCategories + len, oid, PORT_Strlen(oid));
+								/* Add size of securityCategoryIdentifier */
 								len += PORT_Strlen(oid);
+								PORT_Free(oid);
+								
+								/* Add size of type field */
+								len += 1;
+								
+								/* Add size of securityCategoryValue */
+								if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.len > 2) {
+									if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.data[0] == 0x02) { /* Integer */
+										len += 7; /* 7 characters max for an integer */
+									} else { /* UTF-8 and other types */
+										len += securityLabelElement->id.securityCategories[i]->securityCategoryValue.len;
+									}
+								}
+								
+								/* Add size of 3 separators */
+								len += 3;
 							}
-							PORT_Free(oid);
-							
-							/* Add separator */
-							tempsecurityCategories[len++] = securityCategoriesSeparator;
-							
-							/* Add securityCategoryValue */
-							PORT_Memcpy(tempsecurityCategories + len, securityLabelElement->id.securityCategories[i]->securityCategoryValue.data, securityLabelElement->id.securityCategories[i]->securityCategoryValue.len);
-							len += securityLabelElement->id.securityCategories[i]->securityCategoryValue.len;
-							
-							/* Add separator */
-							tempsecurityCategories[len++] = securityCategoriesSeparator;
 						}
 						
-						/* Overwrite last separator with \0 */
-						tempsecurityCategories[len - 1] = '\0';
-						
-						*aSecurityCategories = ToNewUnicode(NS_ConvertUTF8toUTF16(tempsecurityCategories));
-						PORT_Free(tempsecurityCategories);
+						if (len > 0) {
+							/* Create buffer */
+							char* tempsecurityCategories = (char*) PORT_Alloc(len * sizeof(char));
+							if (tempsecurityCategories == NULL) return NS_ERROR_OUT_OF_MEMORY;
+			
+							/* Fill buffer */
+							len = 0;
+							for (i = 0; securityLabelElement->id.securityCategories[i] != NULL; i++) {
+								oid = NULL;
+								if (!GetSecurityLabelDecodeOid(securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.data, securityLabelElement->id.securityCategories[i]->securityCategoryIdentifier.len, &oid)) return NS_ERROR_OUT_OF_MEMORY;
+								if (oid != NULL) {
+									/* Add securityCategoryIdentifier OID */
+									PORT_Memcpy(tempsecurityCategories + len, oid, PORT_Strlen(oid));
+									len += PORT_Strlen(oid);
+									PORT_Free(oid);
+									
+									/* Add separator */
+									tempsecurityCategories[len++] = securityCategoriesSeparator;
+		
+									/* Add type field */
+									if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.len > 0) {
+										switch (securityLabelElement->id.securityCategories[i]->securityCategoryValue.data[0]) {
+											case 0x0C: /* UTF-8 */
+												tempsecurityCategories[len++] = '0' + SECURITY_CATEGORY_VALUE_TYPE_UTF8;
+												break;
+											case 0x02: /* Integer */
+												tempsecurityCategories[len++] = '0' + SECURITY_CATEGORY_VALUE_TYPE_INTEGER;
+												break;
+											default: /* Other type */
+												tempsecurityCategories[len++] = '0' + SECURITY_CATEGORY_VALUE_TYPE_UNKNOWN;
+												break;
+										}
+									}
+									
+									/* Add separator */
+									tempsecurityCategories[len++] = securityCategoriesSeparator;
+									
+									/* Add securityCategoryValue */
+									if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.len > 2) {
+										if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.data[0] == 0x02) { /* Integer: decode */
+											unsigned int value = 0;
+											for (unsigned int k = 2; k < securityLabelElement->id.securityCategories[i]->securityCategoryValue.len; k++) {
+												value *= 256;
+												value += securityLabelElement->id.securityCategories[i]->securityCategoryValue.data[k];
+											}
+											if (value < 10000000) {
+												int ret = snprintf(tempsecurityCategories + len, 7, "%d", value);
+												if (ret > 0) len += ret;
+											}
+										} else { /* UTF-8 and other types: direct copy */
+											PORT_Memcpy(tempsecurityCategories + len, securityLabelElement->id.securityCategories[i]->securityCategoryValue.data + 2, securityLabelElement->id.securityCategories[i]->securityCategoryValue.len - 2);
+											len += securityLabelElement->id.securityCategories[i]->securityCategoryValue.len - 2;
+										}
+									}
+									
+									/* Add separator */
+									tempsecurityCategories[len++] = securityCategoriesSeparator;
+								}
+							}
+							
+							/* Overwrite last separator with \0 */
+							tempsecurityCategories[len - 1] = '\0';
+
+							*aSecurityCategories = ToNewUnicode(NS_ConvertUTF8toUTF16(tempsecurityCategories));
+							PORT_Free(tempsecurityCategories);
+						}
 					}
 					break;
 			}
