@@ -151,6 +151,14 @@ static const SEC_ASN1Template securityCategoryValueTemplate[] = {
 	{ SEC_ASN1_ANY, 0, NULL },
 };
 
+static const SEC_ASN1Template securityCategoryValueUTF8Template[] = {
+	{ SEC_ASN1_UTF8_STRING | SEC_ASN1_MAY_STREAM, 0, NULL, sizeof(SECItem) },
+};
+
+static const SEC_ASN1Template securityCategoryValueIntegerTemplate[] = {
+	{ SEC_ASN1_INTEGER, 0, NULL, sizeof(SECItem) },
+};
+
 static const SEC_ASN1Template NSSCMSSecurityLabelSecurityCategoryTemplate[] = {
     { SEC_ASN1_SEQUENCE, 0, NULL, sizeof(NSSCMSSecurityLabelSecurityCategory) },
     { SEC_ASN1_CONTEXT_SPECIFIC | 0, offsetof(NSSCMSSecurityLabelSecurityCategory, securityCategoryIdentifier), securityCategoryIdentifierTemplate },
@@ -1038,7 +1046,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 					case SECURITY_CATEGORY_VALUE_TYPE_UTF8:
 						tempSecurityCategoryValue.data = securityCategories + startPosition;
 						tempSecurityCategoryValue.len = fieldLen;
-						dummy = SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, SEC_UTF8StringTemplate);
+						dummy = SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, securityCategoryValueUTF8Template);
 						if (dummy == NULL) goto loser;
 						break;
 					case SECURITY_CATEGORY_VALUE_TYPE_INTEGER:
@@ -1054,7 +1062,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 						tempSecurityCategoryValue.data[2] = (unsigned char) (tempSecurityCategoryValueInteger>>8 & 0xFF);
 						tempSecurityCategoryValue.data[3] = (unsigned char) (tempSecurityCategoryValueInteger & 0xFF);
 						tempSecurityCategoryValue.len = 4;
-						dummy = SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, SEC_IntegerTemplate);
+						dummy = SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, securityCategoryValueIntegerTemplate);
 						PORT_Free(tempSecurityCategoryValue.data);
 						if (dummy == NULL) goto loser;
 						break;
