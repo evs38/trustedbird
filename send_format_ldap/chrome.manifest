@@ -15,7 +15,7 @@
 #
 # The Initial Developer of the Original Code is
 #   BT Global Services / Etat francais Ministere de la Defense
-# Portions created by the Initial Developer are Copyright (C) 2002
+# Portions created by the Initial Developer are Copyright (C) 2008
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
@@ -36,7 +36,7 @@
 # ***** END LICENSE BLOCK *****
 
 content	send_format_ldap	content/
-locale	send_format_ldap	fr	locale/fr/
 locale	send_format_ldap	en	locale/en-US/
+locale	send_format_ldap	fr	locale/fr/
 skin	send_format_ldap	classic/1.0	skin/
 overlay	chrome://messenger/content/messengercompose/messengercompose.xul	chrome://send_format_ldap/content/messengercompose/messengercompose_overlay.xul
