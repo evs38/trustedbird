@@ -15,7 +15,7 @@
 #
 # The Initial Developer of the Original Code is
 #   BT Global Services / Etat francais Ministere de la Defense
-# Portions created by the Initial Developer are Copyright (C) 2002
+# Portions created by the Initial Developer are Copyright (C) 2008
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
@@ -37,6 +37,6 @@
 # ***** END LICENSE BLOCK *****
 
 content	check_recipients	content/
-locale	check_recipients fr	locale/fr-FR/
 locale	check_recipients en	locale/en-US/
+locale	check_recipients fr	locale/fr-FR/
 overlay	chrome://messenger/content/messengercompose/messengercompose.xul	chrome://check_recipients/content/messengercomposeOverlay.xul
