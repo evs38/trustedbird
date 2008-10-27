@@ -429,7 +429,7 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 												value += securityLabelElement->id.securityCategories[i]->securityCategoryValue.data[k];
 											}
 											if (value < 10000000) {
-												int ret = snprintf(tempsecurityCategories + len, 7, "%d", value);
+												int ret = sprintf(tempsecurityCategories + len, "%d", value);
 												if (ret > 0) len += ret;
 											}
 										} else { /* UTF-8 and other types: direct copy */
