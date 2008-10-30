@@ -37,7 +37,7 @@
 
 <overlay id="securityLabelTreeColOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabel.js" />
-	<script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabelTreeCol.js" />
+	<script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabelTreeColOverlay.js" />
 	<tree id="threadTree">
 		<treecols id="threadCols">
 			<splitter class="tree-splitter" />
