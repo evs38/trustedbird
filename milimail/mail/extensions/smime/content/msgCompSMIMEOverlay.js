@@ -255,16 +255,19 @@ function signMessage()
 function showSecurityLabelDialog() {
 	window.openDialog('chrome://messenger-smime/content/securityLabelDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=500,height=350');
 	
-	securityLabelSetUIStatusBar(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
-	
 	/* make sure we have a cert name for signing */
 	if (gSMFields.securityPolicyIdentifier != "") {
 		var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
 		if (!signingCertName) {
 			gSMFields.securityPolicyIdentifier = "";
+			gSMFields.securityClassification = "";
+			gSMFields.privacyMark = "";
+			gSMFields.securityCategories = "";
 			showNeedSetupInfo();
 			return;
 		}
+
+		securityLabelSetUIStatusBar(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
 
 		// Enable signing if disable
 		if (!gSMFields.signMessage) signMessage();
