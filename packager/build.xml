@@ -299,6 +299,9 @@
 		<exec executable="make"
 		      dir="${local.build.dir}/mozilla"
 		      failonerror="true">
+			<!-- Workaround multiple crashes in xulrunner in Ubuntu 8.10 and later
+			where "-D_FORTIFY_SOURCE=2" is set by default in GCC -->
+			<arg value="CPPFLAGS=-U_FORTIFY_SOURCE" />
 			<arg value="-f" />
 			<arg value="client.mk" />
 			<arg value="build" />
