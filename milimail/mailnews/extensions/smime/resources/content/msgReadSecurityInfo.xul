@@ -121,13 +121,13 @@
             <label id="securityLabelSecurityPolicyIdentifierLabel" value="&securityLabel.securityPolicyIdentifier.name;" />
             <description id="securityLabelSecurityPolicyIdentifierValue"/>
           </row>
-          <row align="center" id="securityLabelSecurityClassificationRow" collapsed="true">
-            <label id="securityLabelSecurityClassificationLabel" value="&securityLabel.securityClassification.name;" />
-            <description id="securityLabelSecurityClassificationValue"/>
-          </row>
           <row align="center" id="securityLabelPrivacyMarkRow" collapsed="true">
             <label id="securityLabelPrivacyMarkLabel" value="&securityLabel.privacyMark.name;" />
             <description id="securityLabelPrivacyMarkValue"/>
+          </row>
+          <row align="center" id="securityLabelSecurityClassificationRow" collapsed="true">
+            <label id="securityLabelSecurityClassificationLabel" value="&securityLabel.securityClassification.name;" />
+            <description id="securityLabelSecurityClassificationValue"/>
           </row>
           <row align="center" id="securityLabelSecurityCategoriesRow" collapsed="true">
             <label id="securityLabelSecurityCategoriesLabel" value="&securityLabel.securityCategories.name;" />

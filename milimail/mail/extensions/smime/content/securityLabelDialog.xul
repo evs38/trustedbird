@@ -68,12 +68,6 @@
 				</menulist>
 			</row>
 			<row align="center">
-				<label value="&securityLabel.securityClassification.name;" />
-				<menulist id="securityLabelSecurityClassificationMenuList" oncommand="securityLabelDialogOnSecurityClassification();">
-					<menupopup />
-				</menulist>
-			</row>
-			<row align="center">
         		<label control="securityLabelPrivacyMarkTextbox" value="&securityLabel.privacyMark.name;" />
         		<vbox>
 					<textbox id="securityLabelPrivacyMarkTextbox" />
@@ -81,6 +75,12 @@
 						<menupopup />
 					</menulist>
 				</vbox>
+			</row>
+			<row align="center">
+				<label value="&securityLabel.securityClassification.name;" />
+				<menulist id="securityLabelSecurityClassificationMenuList" oncommand="securityLabelDialogOnSecurityClassification();">
+					<menupopup />
+				</menulist>
 			</row>
 			<row>
 	        	<label value="&securityLabel.securityCategories.name;" />
