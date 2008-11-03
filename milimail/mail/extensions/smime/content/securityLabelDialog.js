@@ -277,9 +277,13 @@ function securityLabelDialogSetControls() {
 		document.getElementById("securityLabelSecurityCategoriesListbox").disabled = false;
 
 		/* Security Categories for all classifications */
-		var list1 = securityLabelSecurityCategoriesList[selectedPolicyIdentifier]["all"];
+		var list1;
+		if (securityLabelSecurityCategoriesList[selectedPolicyIdentifier]) list1 = securityLabelSecurityCategoriesList[selectedPolicyIdentifier]["all"];
+		
 		/* Security Categories for selected classification */
-		var list2 = securityLabelSecurityCategoriesList[selectedPolicyIdentifier][document.getElementById("securityLabelSecurityClassificationMenuList").value];
+		var list2;
+		if (securityLabelSecurityCategoriesList[selectedPolicyIdentifier]) list2 = securityLabelSecurityCategoriesList[selectedPolicyIdentifier][document.getElementById("securityLabelSecurityClassificationMenuList").value];
+		
 		if (list1 != undefined || list2 != undefined) {
 			document.getElementById("securityLabelSecurityCategoriesButtonAdd").disabled = false;
 		} else {
