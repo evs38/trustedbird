@@ -38,7 +38,7 @@
 <!DOCTYPE overlay SYSTEM "chrome://notifications_viewer/locale/default.dtd">
 
 <dialog id="notifications_viewerPrefsDialog"
-	title="Notifications Viewer Preferences"
+	title="&PrefsDialog.title;"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	buttons="accept, cancel"
 	onload=" prefDialogBox.initPrefDialog();"
@@ -70,8 +70,8 @@
 						<hbox flex="1">
 							<checkbox id="considerTimeout" oncommand="prefDialogBox.enableTimeOut();" label="&PrefsDialog.labelconsiderTimeout;" flex="1" />
 						</hbox>
-						<hbox>
-							<label style="width:100%">&PrefsDialog.timeOut;:</label>
+						<hbox align="center">
+							<label style="width:100%">&PrefsDialog.timeOut;</label>
 							<textbox id="timeOut" style="width:100%"/>
 						</hbox>
 					</groupbox>

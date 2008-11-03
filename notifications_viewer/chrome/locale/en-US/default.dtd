@@ -40,10 +40,11 @@
 <!ENTITY colMDNDeleted "Deleted">
 <!ENTITY colMDNDeletedTooltip "Click to sort by notifications (deleted)">
 <!ENTITY contextMenuLabel "View notifications">
+<!ENTITY PrefsDialog.title "Notifications Viewer Preferences">
 <!ENTITY PrefsDialog.generalities "Generalities">
 <!ENTITY PrefsDialog.groupBoxtimeOut "Delivery deadlines">
 <!ENTITY PrefsDialog.labelconsiderTimeout "Consider the delivery deadlines">
-<!ENTITY PrefsDialog.timeOut "Time (hours)">
+<!ENTITY PrefsDialog.timeOut "Time (hours):">
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Notification Messages">
 <!ENTITY PrefsDialog.markRead "Mark read">
 <!ENTITY PrefsDialog.moveNotification "Add the notification in the thread of the associated message">

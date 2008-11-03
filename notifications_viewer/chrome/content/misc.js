@@ -276,7 +276,7 @@ var prefDialogBox = {
 	parseMdnDsn: function() {
 		var parseDSN=document.getElementById("parseDSN").checked;
 		var parseMDN=document.getElementById("parseMDN").checked;
-		document.getElementById("timeOut").disabled=!parseDSN;
+		document.getElementById("timeOut").disabled=!(parseDSN && document.getElementById("considerTimeout").checked);
 		document.getElementById("considerTimeout").disabled=!parseDSN;
 		document.getElementById("columnDelivered").disabled=!parseDSN;
 
