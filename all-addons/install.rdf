@@ -38,7 +38,7 @@
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <rdf:Description about="urn:mozilla:install-manifest">
-    <em:id>trustedbird-addons@trustedbird.org</em:id>
+    <em:id>all-addons@trustedbird.org</em:id>
     <em:name>Trustedbird Add-ons</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Olivier BRUN</em:creator>
@@ -55,6 +55,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Install several Trustedbird add-ons.</em:description>
+    <em:description>Meta-package with several Trustedbird add-ons.</em:description>
   </rdf:Description>
 </rdf:RDF>
