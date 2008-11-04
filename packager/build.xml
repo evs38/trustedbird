@@ -405,7 +405,7 @@
 	<target name="package-addons"
 	        description="Get add-ons from SVN and create packages"
 	        depends="clean-addons">
-		<foreach list="${addon.list},all-trustedbird-addons"
+		<foreach list="${addon.list},all-addons"
 		         target="-package-addon"
 		         param="local.addon.tempname" />
 	</target>
@@ -595,10 +595,10 @@
 			</else>
 		</if>
 
-		<!-- Only for add-on 'all-trustedbird-addons': copy all already built add-ons -->
+		<!-- Only for special add-on 'all-addons': copy all already built add-ons -->
 		<if>
 			<equals arg1="${local.addon.name}"
-			        arg2="all-trustedbird-addons" />
+			        arg2="all-addons" />
 			<then>
 				<copy todir="${local.build.dir}/${local.addon.name}/">
 					<fileset dir="${local.dist.dir}">
