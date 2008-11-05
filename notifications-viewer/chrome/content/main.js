@@ -52,7 +52,7 @@ var mMsgAsDsnReq=new ManageMsgAsDN();
 /**
 	Check Preferences
 */
-function checkPref() {
+function notificationsViewerCheckPref() {
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-summary");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-mdn-displayed-summary");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-mdn-deleted-summary");
@@ -61,7 +61,7 @@ function checkPref() {
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-flags");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-tags");
 	srv.preferences.setCharPref(srv.extensionKey+".version",srv.extensionVersion);
-	srv.logSrv("checkPref()");
+	srv.logSrv("notificationsViewerCheckPref()");
 
 	// Fix incompatibility with thunderbird configuration( "Move message to Sent Folder")
 	var key="mail.incorporate.return_receipt";
@@ -139,7 +139,7 @@ function main() {
 		pluginUpdated(srv.preferences.getCharPref(srv.extensionKey+".version"),srv.extensionVersion);
 
 	// check pref
-	checkPref();
+	notificationsViewerCheckPref();
 	// Adds a listener which will be called only when a message is added to the folder
 	notifyInit();
 	// our column
