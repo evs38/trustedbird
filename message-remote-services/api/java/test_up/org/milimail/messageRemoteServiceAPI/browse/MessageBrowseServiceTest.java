@@ -51,6 +51,7 @@ import org.milimail.messageRemoteServiceAPI.stubs.CFolderHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFoldersHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdrsHolder;
+import org.omg.CORBA.StringHolder;
 
 public class MessageBrowseServiceTest extends TestCase {
 
@@ -140,4 +141,60 @@ public class MessageBrowseServiceTest extends TestCase {
 			}
 		}
 	}
+	
+	public void testGetBody() throws Exception {
+		CFoldersHolder foldersHolder = new CFoldersHolder();
+		CFolderHolder folderHolder = new CFolderHolder();
+		browseService.GetRootFolder(account, folderHolder);
+
+		browseService.GetAllFolders(folderHolder.value, foldersHolder);
+		
+		
+		
+		CFolder folder = foldersHolder.value[0];
+		
+		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
+		browseService.GetMessageHdrs(folder, hdrHolder);
+		
+		CMessageHdr[] hdrs = hdrHolder.value;
+		
+		for (int i = 0; i < hdrs.length; i++) {
+			CMessageHdr hdr = hdrs[i];
+			System.out.println(hdr.uri + " " + hdr.subject);
+			StringHolder bodyHolder = new StringHolder();
+			browseService.GetBody(hdr, bodyHolder);
+			
+			String body = bodyHolder.value;
+			System.out.println(body);
+		}
+		
+	}
+	
+	/**
+	 * @throws Exception
+	 */
+	public void testGetMessageSource() throws Exception {
+		
+		CFoldersHolder foldersHolder = new CFoldersHolder();
+		CFolderHolder folderHolder = new CFolderHolder();
+		browseService.GetRootFolder(account, folderHolder);
+
+		browseService.GetAllFolders(folderHolder.value, foldersHolder);
+		
+		CFolder folder = foldersHolder.value[0];
+		
+		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
+		browseService.GetMessageHdrs(folder, hdrHolder);
+		
+		for (int i = 0; i < hdrHolder.value.length; i++) {
+			CMessageHdr hdr = hdrHolder.value[i];
+			System.out.println("Message URI / Subject : " + hdr.uri + " / " + hdr.subject);
+			StringHolder sourceHolder = new StringHolder();
+			browseService.GetSourceMessage(hdr.uri, sourceHolder);
+			System.out.println("Source : " + sourceHolder.value);
+			
+		}		
+		
+	}
+
 }

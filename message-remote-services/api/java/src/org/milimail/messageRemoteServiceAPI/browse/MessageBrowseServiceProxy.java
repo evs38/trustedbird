@@ -6,8 +6,10 @@ import org.milimail.messageRemoteServiceAPI.stubs.CFolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFolderHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFoldersHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CInternalServerException;
+import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdrsHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageBrowseService;
+import org.omg.CORBA.StringHolder;
 
 public class MessageBrowseServiceProxy {
 	
@@ -41,6 +43,16 @@ public class MessageBrowseServiceProxy {
 		}
 	}
 	
+	public void GetBody(CMessageHdr hdr, StringHolder body)
+			throws InternalServerException {
+		try {
+			service.GetBody(hdr, body);
+		} catch (CInternalServerException e) {
+			throw new InternalServerException(e);
+		}
+
+}
+
 	
 
 }
