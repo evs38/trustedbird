@@ -41,26 +41,26 @@
 */
 
 exception CInternalServerException {
-	string cause;
+    string cause;
 };
 
 struct CAccount {
-	string serverHostName;
-	
-	string key;
+    string serverHostName;
+    
+    string key;
 };
 
 typedef sequence<CAccount> CAccounts;
 
 interface AccountService {
-	
-	CAccounts GetAllAccounts() raises (CInternalServerException);
-	
+    
+    CAccounts GetAllAccounts() raises (CInternalServerException);
+    
 };
 
 struct CHeader {
-	string key;
-	string value;
+    string key;
+    string value;
 };
 
 typedef sequence<CHeader> CHeaders;
@@ -68,57 +68,59 @@ typedef sequence<CHeader> CHeaders;
 typedef sequence<string> Addresses;
 
 struct CSecurity {
-	boolean isSigned;
-	boolean isCrypted;
+    boolean isSigned;
+    boolean isCrypted;
 };
 
 struct CDSNType {
-	boolean isReturnFullHDRRequested;
-	boolean isOnSuccessRequested;
-	boolean isOnFailureRequested;
-	boolean isOnDelayRequested;
-	boolean isNeverRequested;
+    boolean isReturnFullHDRRequested;
+    boolean isOnSuccessRequested;
+    boolean isOnFailureRequested;
+    boolean isOnDelayRequested;
+    boolean isNeverRequested;
 
 };
 
 struct CNotification {
-	boolean isDSNRequested;
-	CDSNType DSNType;
-	boolean isMDNReadRequested;
+    boolean isDSNRequested;
+    CDSNType DSNType;
+    boolean isMDNReadRequested;
 };
 
 struct CAttachment {
-	string dirPath;
-	string fileName;
-	string mimeType;
+    string dirPath;
+    string fileName;
+    string mimeType;
 };
 
 typedef sequence<CAttachment> CAttachments;
 
 struct CMessage {
-	Addresses recipients_to;
-	Addresses recipients_cc;
-	Addresses recipients_bcc;
-	CNotification notification;
-	string subject;
-	string body;
-	string uuid;
-	CSecurity security;
-	CHeaders p_headers;
-	CAttachments p_attachments;
+    Addresses recipients_to;
+    Addresses recipients_cc;
+    Addresses recipients_bcc;
+    CNotification notification;
+    string subject;
+    string body;
+    string uuid;
+    CSecurity security;
+    CHeaders p_headers;
+    CAttachments p_attachments;
 };
 
 interface MessageSendListener {
-	void OnStop(in string id, in boolean success);
+    void OnStop(in string id, in boolean success);
 };
 
 interface MessageComposeService {
 
-	void SendMessage(in CAccount p_account, in CMessage p_message, in MessageSendListener p_listener, in boolean openComposeWindowOnBadFormat) raises (CInternalServerException);
+    void SendMessage(in CAccount p_account, in CMessage p_message, in MessageSendListener p_listener, in boolean openComposeWindowOnBadFormat) raises (CInternalServerException);
 };
 
 struct CMessageHdr {
         string id;
+        unsigned long key;
+        string uri;
         string author;
         string subject;
         Addresses recipients;
@@ -139,9 +141,9 @@ struct CFolder {
 typedef sequence<CFolder> CFolders;
 
 interface MessageBrowseService {
-		void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder) raises (CInternalServerException);
-		void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders) raises (CInternalServerException);
+        void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder) raises (CInternalServerException);
+        void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders) raises (CInternalServerException);
         void GetMessageHdrs(in CFolder p_folder, out CMessageHdrs p_messageHdrs) raises (CInternalServerException);
+        void GetBody(in CMessageHdr p_messageHdr, out string body) raises (CInternalServerException);
+        void GetSourceMessage(in string uri, out string source) raises (CInternalServerException);
 };
-
-
