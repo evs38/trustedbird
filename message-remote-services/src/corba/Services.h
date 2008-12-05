@@ -1445,8 +1445,8 @@ public:
   void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
   void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders);
   void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs);
-  void GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener);
-  void GetSourceMessage(const char* uri, ::CORBA::String_out source);
+  void GetSourceMessage(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener);
+  void GetSourceMessage2(const char* uri, ::CORBA::String_out source);
 
   inline _objref_MessageBrowseService()  { _PR_setobj(0); }  // nil
   _objref_MessageBrowseService(omniIOR*, omniIdentity*);
@@ -1483,8 +1483,8 @@ public:
   virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder) = 0;
   virtual void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders) = 0;
   virtual void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs) = 0;
-  virtual void GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener) = 0;
-  virtual void GetSourceMessage(const char* uri, ::CORBA::String_out source) = 0;
+  virtual void GetSourceMessage(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener) = 0;
+  virtual void GetSourceMessage2(const char* uri, ::CORBA::String_out source) = 0;
   
 public:  // Really protected, workaround for xlC
   virtual _CORBA_Boolean _dispatch(omniCallHandle&);

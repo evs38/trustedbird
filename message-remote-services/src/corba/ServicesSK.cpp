@@ -1763,13 +1763,13 @@ _0RL_lcfn_14edc9663ea08cf8_f0000000(omniCallDescriptor* cd, omniServant* svnt)
   _0RL_cd_14edc9663ea08cf8_e0000000* tcd = (_0RL_cd_14edc9663ea08cf8_e0000000*)cd;
   _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
 #ifdef HAS_Cplusplus_catch_exception_by_base
-  impl->GetBody(*tcd->arg_0, tcd->arg_1);
+  impl->GetSourceMessage(*tcd->arg_0, tcd->arg_1);
 #else
   if (!cd->is_upcall())
-    impl->GetBody(*tcd->arg_0, tcd->arg_1);
+    impl->GetSourceMessage(*tcd->arg_0, tcd->arg_1);
   else {
     try {
-      impl->GetBody(*tcd->arg_0, tcd->arg_1);
+      impl->GetSourceMessage(*tcd->arg_0, tcd->arg_1);
     }
     catch(CInternalServerException& ex) {
       throw omniORB::StubUserException(ex._NP_duplicate());
@@ -1782,9 +1782,9 @@ _0RL_lcfn_14edc9663ea08cf8_f0000000(omniCallDescriptor* cd, omniServant* svnt)
 
 }
 
-void _objref_MessageBrowseService::GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener)
+void _objref_MessageBrowseService::GetSourceMessage(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener)
 {
-  _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_f0000000, "GetBody", 8);
+  _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_f0000000, "GetSourceMessage", 17);
   _call_desc.arg_0 = &(CMessageHdr&) p_messageHdr;
   _call_desc.arg_1 = p_sourceMessageListener;
 
@@ -1872,13 +1872,13 @@ _0RL_lcfn_14edc9663ea08cf8_11000000(omniCallDescriptor* cd, omniServant* svnt)
   _0RL_cd_14edc9663ea08cf8_01000000* tcd = (_0RL_cd_14edc9663ea08cf8_01000000*)cd;
   _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
 #ifdef HAS_Cplusplus_catch_exception_by_base
-  impl->GetSourceMessage(tcd->arg_0, tcd->arg_1.out());
+  impl->GetSourceMessage2(tcd->arg_0, tcd->arg_1.out());
 #else
   if (!cd->is_upcall())
-    impl->GetSourceMessage(tcd->arg_0, tcd->arg_1.out());
+    impl->GetSourceMessage2(tcd->arg_0, tcd->arg_1.out());
   else {
     try {
-      impl->GetSourceMessage(tcd->arg_0, tcd->arg_1.out());
+      impl->GetSourceMessage2(tcd->arg_0, tcd->arg_1.out());
     }
     catch(CInternalServerException& ex) {
       throw omniORB::StubUserException(ex._NP_duplicate());
@@ -1891,9 +1891,9 @@ _0RL_lcfn_14edc9663ea08cf8_11000000(omniCallDescriptor* cd, omniServant* svnt)
 
 }
 
-void _objref_MessageBrowseService::GetSourceMessage(const char* uri, ::CORBA::String_out source)
+void _objref_MessageBrowseService::GetSourceMessage2(const char* uri, ::CORBA::String_out source)
 {
-  _0RL_cd_14edc9663ea08cf8_01000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_11000000, "GetSourceMessage", 17);
+  _0RL_cd_14edc9663ea08cf8_01000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_11000000, "GetSourceMessage2", 18);
   _call_desc.arg_0 = uri;
 
   _invoke(_call_desc);
@@ -1954,17 +1954,17 @@ _impl_MessageBrowseService::_dispatch(omniCallHandle& _handle)
     return 1;
   }
 
-  if( omni::strMatch(op, "GetBody") ) {
+  if( omni::strMatch(op, "GetSourceMessage") ) {
 
-    _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_f0000000, "GetBody", 8, 1);
+    _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_f0000000, "GetSourceMessage", 17, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if( omni::strMatch(op, "GetSourceMessage") ) {
+  if( omni::strMatch(op, "GetSourceMessage2") ) {
 
-    _0RL_cd_14edc9663ea08cf8_01000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_11000000, "GetSourceMessage", 17, 1);
+    _0RL_cd_14edc9663ea08cf8_01000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_11000000, "GetSourceMessage2", 18, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;

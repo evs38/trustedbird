@@ -314,7 +314,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 
 }
 
- void MessageBrowseService_i::GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener)
+ void MessageBrowseService_i::GetSourceMessage(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener)
  {
 	nsCOMPtr<nsIMsgMessageService> msgService;
 
@@ -379,7 +379,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 
 #define EMPTY_MESSAGE_LINE(buf) (buf[0] == '\r' || buf[0] == '\n' || buf[0] == '\0' || buf[0] == '\t')
 
- void MessageBrowseService_i::GetSourceMessage(const char* uri,
+ void MessageBrowseService_i::GetSourceMessage2(const char* uri,
 		::CORBA::String_out source) {
 
 	nsCOMPtr<nsIMsgDBHdr> hdr;

@@ -148,6 +148,6 @@ interface MessageBrowseService {
         void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder) raises (CInternalServerException);
         void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders) raises (CInternalServerException);
         void GetMessageHdrs(in CFolder p_folder, out CMessageHdrs p_messageHdrs) raises (CInternalServerException);
-        void GetBody(in CMessageHdr p_messageHdr, in SourceMessageListener p_sourceMessageListener) raises (CInternalServerException);
-        void GetSourceMessage(in string uri, out string source) raises (CInternalServerException);
+        void GetSourceMessage(in CMessageHdr p_messageHdr, in SourceMessageListener p_sourceMessageListener) raises (CInternalServerException);
+        void GetSourceMessage2(in string uri, out string source) raises (CInternalServerException);
 };
