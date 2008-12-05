@@ -44,20 +44,20 @@ public class MessageBrowseServiceProxy {
 		}
 	}
 	
-	public void GetBody(CMessageHdr hdr, SourceMessageListener sourceMessageListener)
+	public void GetSourceMessage(CMessageHdr hdr, SourceMessageListener sourceMessageListener)
 			throws InternalServerException {
 		try {
-			service.GetBody(hdr, sourceMessageListener);
+			service.GetSourceMessage(hdr, sourceMessageListener);
 		} catch (CInternalServerException e) {
 			throw new InternalServerException(e);
 		}
 
 	}
 
-	public void GetSourceMessage(String uri, StringHolder source)
+	public void GetSourceMessage2(String uri, StringHolder source)
 			throws InternalServerException {
 		try {
-			service.GetSourceMessage(uri, source);
+			service.GetSourceMessage2(uri, source);
 		} catch (CInternalServerException e) {
 			throw new InternalServerException(e);
 		}
