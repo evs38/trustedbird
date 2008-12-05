@@ -114,6 +114,9 @@ NS_IMETHODIMP MessageRemoteService::Start() {
   messageComposeService = new MessageComposeService_i();
   INFO("MessageComposeService Service created");
 
+  messageBrowseService = new MessageBrowseService_i();
+  INFO("MessageBrowseService Service created");
+
   //Print IOR
   INFO("IOR AccountService is printed");
   CORBA::Object_var accountService_obj = accountService->_this();
@@ -129,6 +132,11 @@ NS_IMETHODIMP MessageRemoteService::Start() {
   NS_ENSURE_SUCCESS(rv, rv);
   //messageComposeService->_remove_ref();
 
+  INFO("IOR MessageBrowseService is printed");
+  CORBA::Object_var browseService_obj = messageBrowseService->_this();
+  CORBA::String_var browseService_sior(orb->object_to_string(browseService_obj));
+  rv = SaveServiceIOR((char*)browseService_sior,"MessageBrowseService.ior");
+  NS_ENSURE_SUCCESS(rv, rv);
 
   INFO("ORB main Thread is created");
   //Launch Thread

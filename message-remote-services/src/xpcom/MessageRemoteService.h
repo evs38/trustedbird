@@ -40,6 +40,7 @@
 #include "IMessageRemoteService.h"
 #include "AccountService_i.h"
 #include "MessageComposeService_i.h"
+#include "MessageBrowseService_i.h"
 #include <omniORB4/CORBA.h>
 #include "prthread.h"
 #include "MRSLogger.h"
@@ -74,6 +75,7 @@ private:
   PRThread * orbThread;
   AccountService_i * accountService;
   MessageComposeService_i * messageComposeService;
+  MessageBrowseService_i * messageBrowseService;
   PRBool isStarted;
 
   MRSLogger logger;

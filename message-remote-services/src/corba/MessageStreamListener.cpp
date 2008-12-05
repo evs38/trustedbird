@@ -45,8 +45,6 @@ NS_IMPL_ISUPPORTS1(MessageStreamListener,nsIStreamListener)
 nsresult MessageStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset,
 		PRUint32 aCount) {
-	cout << "MessageStreamListener::OnDataAvailable" << endl;
-
 	nsCAutoString content;
 
 	char buf[aCount];
@@ -62,17 +60,18 @@ nsresult MessageStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		aCount -= ret;
 	}
 
-	cout << "OnDataAvailable : size : " << aCount << endl;
-	cout << "DATA : " << content.get() << endl;
+	p_sourceMessageListener->OnLoad(content.get());
 
+	return NS_OK;
 
 }
 
 nsresult MessageStreamListener::OnStartRequest(nsIRequest* aRequest, nsISupports* aContext) {
+	m_done = PR_FALSE;
 	return NS_OK;
 }
 
 nsresult MessageStreamListener::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext, nsresult rv) {
-
+	m_done = PR_TRUE;
 	return NS_OK;
 }

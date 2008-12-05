@@ -39,24 +39,17 @@
 
 #include "nsIStreamListener.h"
 #include "nsIInputStream.h"
+#include "Services.h"
 
 class MessageStreamListener : public nsIStreamListener
 {
 public :
-	/*NS_IMETHOD OnDataAvailable(nsIRequest *aRequest,
-	nsISupports *aContext,
-	nsIInputStream *aInputStream,
-    PRUint32 aOffset,
-	PRUint32 aCount);*/
-
-    //NS_DECL_ISUPPORTS
-   // NS_DECL_NSISTREAMLISTENER
-    //NS_DECL_NSIREQUESTOBSERVER
-
-	// nsISupports interface
 	NS_DECL_ISUPPORTS
 
-    MessageStreamListener(){};
+    MessageStreamListener(SourceMessageListener_ptr p_sourceMessageListener):
+    	p_sourceMessageListener(p_sourceMessageListener){
+		m_done = PR_FALSE;
+	};
 
     virtual ~MessageStreamListener(){}
 
@@ -68,8 +61,13 @@ public :
 
     NS_IMETHOD OnStopRequest(nsIRequest* aRequest, nsISupports* aContext, nsresult rv);
 
-private :
+    PRBool IsDone() {
+        return m_done;
+    }
 
+private :
+	SourceMessageListener_ptr p_sourceMessageListener;
+	PRBool m_done;
 };
 
 #endif /*MESSAGESTREAMLISTENER_H_*/

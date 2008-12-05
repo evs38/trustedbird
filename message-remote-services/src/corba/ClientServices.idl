@@ -37,3 +37,7 @@
 interface MessageSendListener {
 	void OnStop(in string id, in boolean success);
 };
+
+interface SourceMessageListener {
+    void OnLoad(in string source);
+};

@@ -53,7 +53,7 @@ public:
 
 	virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
 
-	virtual void GetBody(const CMessageHdr& p_messageHdr, ::CORBA::String_out body);
+	virtual void GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener);
 
 	virtual void GetSourceMessage(const char* uri, ::CORBA::String_out source);
 

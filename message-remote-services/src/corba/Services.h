@@ -1274,6 +1274,113 @@ private:
   CFolders_out& operator=(const CFolders_var&);
 };
 
+#ifndef __SourceMessageListener__
+#define __SourceMessageListener__
+
+class SourceMessageListener;
+class _objref_SourceMessageListener;
+class _impl_SourceMessageListener;
+
+typedef _objref_SourceMessageListener* SourceMessageListener_ptr;
+typedef SourceMessageListener_ptr SourceMessageListenerRef;
+
+class SourceMessageListener_Helper {
+public:
+  typedef SourceMessageListener_ptr _ptr_type;
+
+  static _ptr_type _nil();
+  static _CORBA_Boolean is_nil(_ptr_type);
+  static void release(_ptr_type);
+  static void duplicate(_ptr_type);
+  static void marshalObjRef(_ptr_type, cdrStream&);
+  static _ptr_type unmarshalObjRef(cdrStream&);
+};
+
+typedef _CORBA_ObjRef_Var<_objref_SourceMessageListener, SourceMessageListener_Helper> SourceMessageListener_var;
+typedef _CORBA_ObjRef_OUT_arg<_objref_SourceMessageListener,SourceMessageListener_Helper > SourceMessageListener_out;
+
+#endif
+
+// interface SourceMessageListener
+class SourceMessageListener {
+public:
+  // Declarations for this interface type.
+  typedef SourceMessageListener_ptr _ptr_type;
+  typedef SourceMessageListener_var _var_type;
+
+  static _ptr_type _duplicate(_ptr_type);
+  static _ptr_type _narrow(::CORBA::Object_ptr);
+  static _ptr_type _unchecked_narrow(::CORBA::Object_ptr);
+  
+  static _ptr_type _nil();
+
+  static inline void _marshalObjRef(_ptr_type, cdrStream&);
+
+  static inline _ptr_type _unmarshalObjRef(cdrStream& s) {
+    omniObjRef* o = omniObjRef::_unMarshal(_PD_repoId,s);
+    if (o)
+      return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
+    else
+      return _nil();
+  }
+
+  static _core_attr const char* _PD_repoId;
+
+  // Other IDL defined within this scope.
+  
+};
+
+class _objref_SourceMessageListener :
+  public virtual ::CORBA::Object,
+  public virtual omniObjRef
+{
+public:
+  void OnLoad(const char* source);
+
+  inline _objref_SourceMessageListener()  { _PR_setobj(0); }  // nil
+  _objref_SourceMessageListener(omniIOR*, omniIdentity*);
+
+protected:
+  virtual ~_objref_SourceMessageListener();
+
+  
+private:
+  virtual void* _ptrToObjRef(const char*);
+
+  _objref_SourceMessageListener(const _objref_SourceMessageListener&);
+  _objref_SourceMessageListener& operator = (const _objref_SourceMessageListener&);
+  // not implemented
+
+  friend class SourceMessageListener;
+};
+
+class _pof_SourceMessageListener : public _OMNI_NS(proxyObjectFactory) {
+public:
+  inline _pof_SourceMessageListener() : _OMNI_NS(proxyObjectFactory)(SourceMessageListener::_PD_repoId) {}
+  virtual ~_pof_SourceMessageListener();
+
+  virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
+  virtual _CORBA_Boolean is_a(const char*) const;
+};
+
+class _impl_SourceMessageListener :
+  public virtual omniServant
+{
+public:
+  virtual ~_impl_SourceMessageListener();
+
+  virtual void OnLoad(const char* source) = 0;
+  
+public:  // Really protected, workaround for xlC
+  virtual _CORBA_Boolean _dispatch(omniCallHandle&);
+
+private:
+  virtual void* _ptrToInterface(const char*);
+  virtual const char* _mostDerivedRepoId();
+  
+};
+
+
 #ifndef __MessageBrowseService__
 #define __MessageBrowseService__
 
@@ -1338,7 +1445,7 @@ public:
   void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
   void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders);
   void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs);
-  void GetBody(const CMessageHdr& p_messageHdr, ::CORBA::String_out body);
+  void GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener);
   void GetSourceMessage(const char* uri, ::CORBA::String_out source);
 
   inline _objref_MessageBrowseService()  { _PR_setobj(0); }  // nil
@@ -1376,7 +1483,7 @@ public:
   virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder) = 0;
   virtual void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders) = 0;
   virtual void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs) = 0;
-  virtual void GetBody(const CMessageHdr& p_messageHdr, ::CORBA::String_out body) = 0;
+  virtual void GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener) = 0;
   virtual void GetSourceMessage(const char* uri, ::CORBA::String_out source) = 0;
   
 public:  // Really protected, workaround for xlC
@@ -1427,6 +1534,18 @@ public:
   }
 };
 
+class POA_SourceMessageListener :
+  public virtual _impl_SourceMessageListener,
+  public virtual ::PortableServer::ServantBase
+{
+public:
+  virtual ~POA_SourceMessageListener();
+
+  inline ::SourceMessageListener_ptr _this() {
+    return (::SourceMessageListener_ptr) _do_this(::SourceMessageListener::_PD_repoId);
+  }
+};
+
 class POA_MessageBrowseService :
   public virtual _impl_MessageBrowseService,
   public virtual ::PortableServer::ServantBase
@@ -1464,6 +1583,12 @@ MessageSendListener::_marshalObjRef(::MessageSendListener_ptr obj, cdrStream& s)
 
 inline void
 MessageComposeService::_marshalObjRef(::MessageComposeService_ptr obj, cdrStream& s) {
+  omniObjRef::_marshal(obj->_PR_getobj(),s);
+}
+
+
+inline void
+SourceMessageListener::_marshalObjRef(::SourceMessageListener_ptr obj, cdrStream& s) {
   omniObjRef::_marshal(obj->_PR_getobj(),s);
 }
 
