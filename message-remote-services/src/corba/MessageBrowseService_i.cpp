@@ -371,6 +371,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	      getter_AddRefs(eventQueue));
 	ENSURE_SUCCESS(rv,"Cannot get GetThreadEventQueue nsIEventQueueService");
 
+	//loop until loading is not complete
 	while (!msgStreamListener->IsDone()) {
 	    eventQueue->ProcessPendingEvents();
 	}
