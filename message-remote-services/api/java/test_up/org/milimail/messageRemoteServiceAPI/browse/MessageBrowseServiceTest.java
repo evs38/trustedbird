@@ -46,11 +46,13 @@ import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
+import org.milimail.messageRemoteServiceAPI.listeners.SourceMessageListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.stubs.CFolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFolderHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFoldersHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdrsHolder;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListener;
 import org.omg.CORBA.StringHolder;
 
 public class MessageBrowseServiceTest extends TestCase {
@@ -58,10 +60,11 @@ public class MessageBrowseServiceTest extends TestCase {
 	private AccountServiceProxy accountService;
 	private Account account;
 	private MessageBrowseServiceProxy browseService;
-
+	private SourceMessageListener sourceMessageListener;
+	private ServiceCreator serviceCreator;
+	
 	protected void setUp() throws Exception {
-		ServiceCreator serviceCreator = API.init();
-
+		serviceCreator = API.init();
 		accountService = serviceCreator.createAccountService();
 		browseService = serviceCreator.createBrowseService();
 		account = setUpAccount();
@@ -79,9 +82,16 @@ public class MessageBrowseServiceTest extends TestCase {
 	
 	public void testGetMessageHdr() throws Exception {
 		CMessageHdrsHolder hdrsHolder = new CMessageHdrsHolder();
-		CFolder folder = new CFolder();
-		folder.uri = "imap://users2@localhost/INBOX";
-		folder.name = "";
+		CFoldersHolder foldersHolder = new CFoldersHolder();
+		CFolderHolder folderHolder = new CFolderHolder();
+		browseService.GetRootFolder(account, folderHolder);
+		
+		browseService.GetAllFolders(folderHolder.value, foldersHolder);
+		assertNotNull(foldersHolder);
+		
+		CFolder[] folders = foldersHolder.value;
+		CFolder folder = folders[0];
+		
 		browseService.GetMessageHdrs(folder, hdrsHolder);
 		
 		CMessageHdr[] hdrs = hdrsHolder.value;
@@ -149,23 +159,19 @@ public class MessageBrowseServiceTest extends TestCase {
 
 		browseService.GetAllFolders(folderHolder.value, foldersHolder);
 		
-		
-		
 		CFolder folder = foldersHolder.value[0];
 		
 		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
 		browseService.GetMessageHdrs(folder, hdrHolder);
 		
 		CMessageHdr[] hdrs = hdrHolder.value;
-		
+
 		for (int i = 0; i < hdrs.length; i++) {
 			CMessageHdr hdr = hdrs[i];
 			System.out.println(hdr.uri + " " + hdr.subject);
-			StringHolder bodyHolder = new StringHolder();
-			browseService.GetBody(hdr, bodyHolder);
+			sourceMessageListener = serviceCreator.createSourceMessageListener(new SourceMessageListenerServantConsole());
 			
-			String body = bodyHolder.value;
-			System.out.println(body);
+			browseService.GetBody(hdr, sourceMessageListener);
 		}
 		
 	}

@@ -48,9 +48,13 @@ import org.milimail.messageRemoteServiceAPI.stubs.MessageComposeServiceHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListenerHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListenerPOA;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListener;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListenerHelper;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListenerPOA;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
+import org.omg.PortableServer.Servant;
 
 public class ServiceCreator {
 
@@ -58,27 +62,13 @@ public class ServiceCreator {
 
 	public ServiceCreator(ORB orb) {
 		this.orb = orb;
-
-		
-
 	}
 
-	public MessageSendListener createMessageSendListener(MessageSendListenerPOA sendListenerPOA) {
+	public MessageSendListener createMessageSendListener(MessageSendListenerPOA sendListenerPOA) throws ServiceCreationException {
 
-		POA rootpoa = null;
 		org.omg.CORBA.Object ref = null;
+		ref = performCorbaResolution(sendListenerPOA);
 		
-		try {
-			rootpoa = POAHelper.narrow(orb
-					.resolve_initial_references("RootPOA"));
-
-			rootpoa.the_POAManager().activate();
-
-			ref = rootpoa.servant_to_reference(sendListenerPOA);
-		} catch (Exception e) {
-			new ServiceCreationException(e);
-		}
-
 		MessageSendListener sendListener = MessageSendListenerHelper
 				.narrow(ref);
 		
@@ -125,5 +115,32 @@ public class ServiceCreator {
 		org.omg.CORBA.Object obj = orb.string_to_object(ior);
 		return new MessageBrowseServiceProxy(MessageBrowseServiceHelper
 				.narrow(obj));
+	}
+	
+	public SourceMessageListener createSourceMessageListener(SourceMessageListenerPOA sourceMessageListenerPOA) throws ServiceCreationException {
+		org.omg.CORBA.Object ref = null;
+		ref = performCorbaResolution(sourceMessageListenerPOA);
+
+		SourceMessageListener sourceMessageListener = SourceMessageListenerHelper
+				.narrow(ref);
+		
+		return sourceMessageListener;
+	}
+
+	private org.omg.CORBA.Object performCorbaResolution(
+			Servant servant) throws ServiceCreationException {
+		org.omg.CORBA.Object ref = null;
+		POA rootpoa;
+		try {
+			rootpoa = POAHelper.narrow(orb
+					.resolve_initial_references("RootPOA"));
+
+			rootpoa.the_POAManager().activate();
+
+			ref = rootpoa.servant_to_reference(servant);
+		} catch (Exception e) {
+			throw new ServiceCreationException(e);
+		}
+		return ref;
 	}
 }
