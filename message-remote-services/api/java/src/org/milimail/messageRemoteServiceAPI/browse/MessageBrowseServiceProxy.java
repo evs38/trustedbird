@@ -54,6 +54,17 @@ public class MessageBrowseServiceProxy {
 
 	}
 
+	public void GetBody(CMessageHdr hdr,
+			SourceMessageListener sourceMessageListener)
+			throws InternalServerException {
+		try {
+			service.GetBody(hdr, sourceMessageListener);
+		} catch (CInternalServerException e) {
+			throw new InternalServerException(e);
+		}
+
+	}
+	
 	public void GetSourceMessage2(String uri, StringHolder source)
 			throws InternalServerException {
 		try {

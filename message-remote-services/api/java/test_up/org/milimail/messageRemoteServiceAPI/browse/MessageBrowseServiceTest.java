@@ -176,11 +176,8 @@ public class MessageBrowseServiceTest extends TestCase {
 		
 	}
 	
-	/**
-	 * @throws Exception
-	 */
-	public void testGetSourceMessage2() throws Exception {
-		
+	
+	public void testGetBody() throws Exception {
 		CFoldersHolder foldersHolder = new CFoldersHolder();
 		CFolderHolder folderHolder = new CFolderHolder();
 		browseService.GetRootFolder(account, folderHolder);
@@ -192,15 +189,14 @@ public class MessageBrowseServiceTest extends TestCase {
 		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
 		browseService.GetMessageHdrs(folder, hdrHolder);
 		
-		for (int i = 0; i < hdrHolder.value.length; i++) {
-			CMessageHdr hdr = hdrHolder.value[i];
-			System.out.println("Message URI / Subject : " + hdr.uri + " / " + hdr.subject);
-			StringHolder sourceHolder = new StringHolder();
-			browseService.GetSourceMessage2(hdr.uri, sourceHolder);
-			System.out.println("Source : " + sourceHolder.value);
-			
-		}		
+		CMessageHdr[] hdrs = hdrHolder.value;
+
+		for (int i = 0; i < hdrs.length; i++) {
+			CMessageHdr hdr = hdrs[i];
+			System.out.println(hdr.uri + " " + hdr.subject);
+			sourceMessageListener = serviceCreator.createSourceMessageListener(new SourceMessageListenerServantConsole());
+			browseService.GetBody(hdr, sourceMessageListener);
+		}
 		
 	}
-
 }
