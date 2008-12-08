@@ -55,6 +55,8 @@ public:
 
 	virtual void GetSourceMessage(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener);
 
+	virtual void GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener);
+
 	virtual void GetSourceMessage2(const char* uri, ::CORBA::String_out source);
 
 private:

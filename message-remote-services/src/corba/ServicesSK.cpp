@@ -1901,6 +1901,43 @@ void _objref_MessageBrowseService::GetSourceMessage2(const char* uri, ::CORBA::S
 
 
 }
+// Local call call-back function.
+static void
+_0RL_lcfn_14edc9663ea08cf8_21000000(omniCallDescriptor* cd, omniServant* svnt)
+{
+  _0RL_cd_14edc9663ea08cf8_e0000000* tcd = (_0RL_cd_14edc9663ea08cf8_e0000000*)cd;
+  _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
+#ifdef HAS_Cplusplus_catch_exception_by_base
+  impl->GetBody(*tcd->arg_0, tcd->arg_1);
+#else
+  if (!cd->is_upcall())
+    impl->GetBody(*tcd->arg_0, tcd->arg_1);
+  else {
+    try {
+      impl->GetBody(*tcd->arg_0, tcd->arg_1);
+    }
+    catch(CInternalServerException& ex) {
+      throw omniORB::StubUserException(ex._NP_duplicate());
+    }
+
+
+  }
+#endif
+
+
+}
+
+void _objref_MessageBrowseService::GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener)
+{
+  _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_21000000, "GetBody", 8);
+  _call_desc.arg_0 = &(CMessageHdr&) p_messageHdr;
+  _call_desc.arg_1 = p_sourceMessageListener;
+
+  _invoke(_call_desc);
+
+
+
+}
 _pof_MessageBrowseService::~_pof_MessageBrowseService() {}
 
 
@@ -1965,6 +2002,14 @@ _impl_MessageBrowseService::_dispatch(omniCallHandle& _handle)
   if( omni::strMatch(op, "GetSourceMessage2") ) {
 
     _0RL_cd_14edc9663ea08cf8_01000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_11000000, "GetSourceMessage2", 18, 1);
+    
+    _handle.upcall(this,_call_desc);
+    return 1;
+  }
+
+  if( omni::strMatch(op, "GetBody") ) {
+
+    _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_21000000, "GetBody", 8, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;

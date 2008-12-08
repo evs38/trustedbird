@@ -340,23 +340,6 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 			nsIMsgMessageService), msgService, PROXY_SYNC | PROXY_ALWAYS,
 			getter_AddRefs(pMsgServiceProxy));
 
-	nsCOMPtr<nsIURI> url;
-
-	rv = msgService->GetUrlForUri(p_messageHdr.uri, getter_AddRefs(url),
-					nsnull);
-	ENSURE_SUCCESS(rv, "Cannot get GetUrlForUri nsIMsgMessageService");
-
-	nsCOMPtr<nsIMimeStreamConverter> mimeConverter = do_CreateInstance(
-			NS_MAILNEWS_MIME_STREAM_CONVERTER_CONTRACTID, &rv);
-	ENSURE_SUCCESS(rv, "Cannot create nsIMimeStreamConverter");
-
-	nsCOMPtr<nsIStreamListener> streamListener = do_QueryInterface(
-			mimeConverter);
-
-	nsCOMPtr<nsIScriptableInputStream> inputStream = do_CreateInstance(
-			"@mozilla.org/scriptableinputstream;1", &rv);
-	ENSURE_SUCCESS(rv, "Cannot create nsIScriptableInputStream");
-
 	nsCOMPtr<MessageStreamListener> msgStreamListener = new MessageStreamListener(p_sourceMessageListener);
 
 	rv = pMsgServiceProxy->DisplayMessage(p_messageHdr.uri, msgStreamListener,
@@ -365,6 +348,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 
 	nsCOMPtr<nsIEventQueueService> pEventQService = do_GetService(
 	      NS_EVENTQUEUESERVICE_CONTRACTID, &rv);
+	ENSURE_SUCCESS(rv, "Cannot get service nsIEventQueueService");
 
 	nsCOMPtr<nsIEventQueue> eventQueue;
 	rv = pEventQService->GetThreadEventQueue(NS_UI_THREAD,
@@ -377,6 +361,86 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	}
 }
 
+ void MessageBrowseService_i::GetBody(const CMessageHdr& p_messageHdr, SourceMessageListener_ptr p_sourceMessageListener)
+  {
+ 	nsCOMPtr<nsIMsgMessageService> msgService;
+
+ 	nsresult rv;
+ 	nsCOMPtr<nsIMessenger> messenger = do_CreateInstance(
+ 			"@mozilla.org/messenger;1", &rv);
+ 	rv = messenger->MessageServiceFromURI(p_messageHdr.uri, getter_AddRefs(
+ 			msgService));
+ 	ENSURE_SUCCESS(rv, "Cannot create nsIMsgMessageService");
+
+ 	nsCOMPtr<nsIInputStream> messageStream = do_CreateInstance(
+ 			"@mozilla.org/network/sync-stream-listener;1", &rv);
+ 	ENSURE_SUCCESS(rv, "Cannot create nsIInputStream");
+
+ 	nsCOMPtr<nsIProxyObjectManager> proxyObjMgr = do_GetService(
+ 			"@mozilla.org/xpcomproxy;1", &rv);
+ 	ENSURE_SUCCESS(rv, "Cannot get nsIProxyObjectManager");
+
+ 	nsCOMPtr<nsIMsgMessageService> pMsgServiceProxy;
+ 	ENSURE_SUCCESS(rv, "Cannot get GetProxyForObject nsIMsgMessageService");
+
+ 	rv = proxyObjMgr->GetProxyForObject(NS_UI_THREAD_EVENTQ, NS_GET_IID(
+ 			nsIMsgMessageService), msgService, PROXY_SYNC | PROXY_ALWAYS,
+ 			getter_AddRefs(pMsgServiceProxy));
+
+ 	nsCOMPtr<nsIURI> url;
+
+ 	rv = msgService->GetUrlForUri(p_messageHdr.uri, getter_AddRefs(url),
+ 					nsnull);
+ 	ENSURE_SUCCESS(rv, "Cannot get GetUrlForUri nsIMsgMessageService");
+
+ 	nsCOMPtr<nsIStreamConverter> m_mime_parser = do_CreateInstance(
+ 			NS_MAILNEWS_MIME_STREAM_CONVERTER_CONTRACTID, &rv);
+ 	ENSURE_SUCCESS(rv, "Cannot create nsIMimeStreamConverter");
+
+ 	//libmime converter
+ 	nsCOMPtr<nsIMimeStreamConverter> mimeConverter = do_QueryInterface(
+ 			m_mime_parser, &rv);
+ 	ENSURE_SUCCESS(rv, "Cannot cast nsIMimeStreamConverter on nsIStreamConverter");
+
+ 	if (mimeConverter) {
+ 		mimeConverter->SetMimeOutputType(nsMimeOutput::nsMimeMessageDecrypt);
+ 		mimeConverter->SetForwardInline(PR_FALSE);
+ 		mimeConverter->SetIdentity(nsnull);
+ 		mimeConverter->SetOriginalMsgURI(nsnull);
+ 	}
+
+ 	nsCOMPtr<MessageStreamListener> msgStreamListener = new MessageStreamListener(p_sourceMessageListener);
+
+ 	nsCOMPtr<nsIChannel> dummyChannel;
+ 	rv = NS_NewInputStreamChannel(getter_AddRefs(dummyChannel), url, nsnull);
+ 	ENSURE_SUCCESS(rv, "Cannot create NS_NewInputStreamChannel for nsIChannel");
+
+ 	m_mime_parser->AsyncConvertData(
+ 		    "message/rfc822",
+ 		    "message/rfc822",
+ 		    msgStreamListener, dummyChannel);
+
+ 	nsCOMPtr<nsIStreamListener> inputConvertedListener = do_QueryInterface(m_mime_parser, &rv);
+ 	ENSURE_SUCCESS(rv, "Cannot cast nsIStreamListener on nsIStreamConverter");
+
+ 	rv = pMsgServiceProxy->DisplayMessage(p_messageHdr.uri, inputConvertedListener,
+ 			nsnull, nsnull, nsnull, nsnull);
+ 	ENSURE_SUCCESS(rv, "Cannot get DisplayMessage nsIMsgMessageService");
+
+ 	nsCOMPtr<nsIEventQueueService> pEventQService = do_GetService(
+ 	      NS_EVENTQUEUESERVICE_CONTRACTID, &rv);
+ 	ENSURE_SUCCESS(rv, "Cannot get service nsIEventQueueService");
+
+ 	nsCOMPtr<nsIEventQueue> eventQueue;
+ 	rv = pEventQService->GetThreadEventQueue(NS_UI_THREAD,
+ 	      getter_AddRefs(eventQueue));
+ 	ENSURE_SUCCESS(rv,"Cannot get GetThreadEventQueue nsIEventQueueService");
+
+ 	//loop until loading is not complete
+ 	while (!msgStreamListener->IsDone()) {
+ 	    eventQueue->ProcessPendingEvents();
+ 	}
+ }
 
 #define EMPTY_MESSAGE_LINE(buf) (buf[0] == '\r' || buf[0] == '\n' || buf[0] == '\0' || buf[0] == '\t')
 
