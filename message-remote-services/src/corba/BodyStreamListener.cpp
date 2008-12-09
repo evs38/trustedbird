@@ -44,6 +44,9 @@
 #include "nsIDOMNamedNodeMap.h"
 #include "nsMsgUtils.h"
 #include "Utils.h"
+#include "nsReadLine.h"
+
+
 #include <iostream>
 
 using namespace std;
@@ -54,18 +57,30 @@ nsresult BodyStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset,
 		PRUint32 aCount) {
 	nsCAutoString content;
+	nsCAutoString line;
+	nsLineBuffer<char> * lineBuffer;
+	nsresult rv = NS_InitLineBuffer(&lineBuffer);
+	PRBool moreData=PR_TRUE;
+	PRUint32 len = aCount;
 
-	char buf[aCount];
-	PRUint32 ret, size;
-	nsresult rv;
+	PRBool inBody = PR_FALSE;
 
-	while(aCount)
+	while (len> 0 && moreData)
 	{
-		size = PR_MIN(aCount, sizeof(buf));
-		rv = aInputStream->Read(buf, size, &ret);
-		content.Append(buf,ret);
+		NS_ReadLine(aInputStream, lineBuffer,line,&moreData);
+		cout << "line : " << line.get() << endl;
+		len -= MSG_LINEBREAK_LEN;
+		len -= line.Length();
 
-		aCount -= ret;
+		if (line.IsEmpty()) {
+			inBody = PR_TRUE;
+			continue;
+		}
+
+		if (inBody) {
+			content+=line;
+			content+="\n";
+		}
 	}
 
 	m_bodyListener->OnLoad(content.get());
