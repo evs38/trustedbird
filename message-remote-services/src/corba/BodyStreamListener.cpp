@@ -35,14 +35,22 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "MessageStreamListener.h"
+#include "BodyStreamListener.h"
 #include "nsString.h"
+#include "nsIDOMParser.h"
+#include "nsIDOMNodeList.h"
+#include "nsIDOMNode.h"
+#include "nsIDOMDocument.h"
+#include "nsIDOMNamedNodeMap.h"
+#include "nsMsgUtils.h"
+#include "Utils.h"
 #include <iostream>
+
 using namespace std;
 
-NS_IMPL_ISUPPORTS1(MessageStreamListener,nsIStreamListener)
+NS_IMPL_ISUPPORTS1(BodyStreamListener,nsIStreamListener)
 
-nsresult MessageStreamListener::OnDataAvailable(nsIRequest *aRequest,
+nsresult BodyStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset,
 		PRUint32 aCount) {
 	nsCAutoString content;
@@ -60,18 +68,20 @@ nsresult MessageStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		aCount -= ret;
 	}
 
-	p_sourceMessageListener->OnLoad(content.get());
+	m_bodyListener->OnLoad(content.get());
 
 	return NS_OK;
 
 }
 
-nsresult MessageStreamListener::OnStartRequest(nsIRequest* aRequest, nsISupports* aContext) {
+
+
+nsresult BodyStreamListener::OnStartRequest(nsIRequest* aRequest, nsISupports* aContext) {
 	m_done = PR_FALSE;
 	return NS_OK;
 }
 
-nsresult MessageStreamListener::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext, nsresult rv) {
+nsresult BodyStreamListener::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext, nsresult rv) {
 	m_done = PR_TRUE;
 	return NS_OK;
 }

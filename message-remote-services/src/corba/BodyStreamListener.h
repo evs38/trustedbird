@@ -34,24 +34,24 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-#ifndef MESSAGESTREAMLISTENER_H_
-#define MESSAGESTREAMLISTENER_H_
+#ifndef BODYSTREAMLISTENER_H_
+#define BODYSTREAMLISTENER_H_
 
 #include "nsIStreamListener.h"
 #include "nsIInputStream.h"
 #include "Services.h"
 
-class MessageStreamListener : public nsIStreamListener
+class BodyStreamListener : public nsIStreamListener
 {
 public :
 	NS_DECL_ISUPPORTS
 
-    MessageStreamListener(SourceMessageListener_ptr p_sourceMessageListener):
-    	p_sourceMessageListener(p_sourceMessageListener){
+	BodyStreamListener(BodyListener_ptr p_bodyListener):
+		m_bodyListener(p_bodyListener){
 		m_done = PR_FALSE;
 	};
 
-    virtual ~MessageStreamListener(){}
+    virtual ~BodyStreamListener(){}
 
     NS_IMETHOD OnDataAvailable(nsIRequest *aRequest,
     		nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset,
@@ -66,8 +66,10 @@ public :
     }
 
 private :
-	SourceMessageListener_ptr p_sourceMessageListener;
+
+	BodyListener_ptr m_bodyListener;
 	PRBool m_done;
+
 };
 
-#endif /*MESSAGESTREAMLISTENER_H_*/
+#endif /*BODYSTREAMLISTENER_H_*/

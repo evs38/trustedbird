@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is mozilla.org code.
+ * The Original Code is BT Global Services / Etat francais Ministere de la Defense
  *
  * The Initial Developer of the Original Code is
  * Netscape Communications Corporation.
@@ -34,26 +34,43 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-interface MessageSendListener {
-	void OnStop(in string id, in boolean success);
+#ifndef HEADERSSTREAMLISTENER_H_
+#define HEADERSSTREAMLISTENER_H_
+
+#include "nsIStreamListener.h"
+#include "nsIInputStream.h"
+#include "Services.h"
+
+class HeadersStreamListener : public nsIStreamListener
+{
+public :
+	NS_DECL_ISUPPORTS
+
+	HeadersStreamListener(HeadersListener_ptr p_headersListener):
+		m_headersListener(p_headersListener){
+		m_done = PR_FALSE;
+	};
+
+    virtual ~HeadersStreamListener(){}
+
+    NS_IMETHOD OnDataAvailable(nsIRequest *aRequest,
+    		nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset,
+    		PRUint32 aCount);
+
+    NS_IMETHOD OnStartRequest(nsIRequest* aRequest, nsISupports* aContext);
+
+    NS_IMETHOD OnStopRequest(nsIRequest* aRequest, nsISupports* aContext, nsresult rv);
+
+    PRBool IsDone() {
+        return m_done;
+    }
+
+    NS_IMETHOD DecodeXMLOutput(const char * aBuff, PRUint32 aCount, CHeaders ** aHeaders);
+
+private :
+	HeadersListener_ptr m_headersListener;
+	PRBool m_done;
+
 };
 
-struct CHeader {
-    string key;
-    string value;
-};
-
-typedef sequence<CHeader> CHeaders;
-
-interface SourceListener {
-    void OnLoad(in string source);
-};
-
-interface BodyListener {
-    void OnLoad(in string source);
-};
-
-interface HeadersListener {
-    void OnLoad(in CHeaders p_headers);
-};
-
+#endif /*HEADERSSTREAMLISTENER_H_*/
