@@ -42,12 +42,25 @@ import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
 import org.milimail.messageRemoteServiceAPI.browse.MessageBrowseServiceProxy;
 import org.milimail.messageRemoteServiceAPI.compose.MessageComposeServiceProxy;
 import org.milimail.messageRemoteServiceAPI.exceptions.ServiceCreationException;
+import org.milimail.messageRemoteServiceAPI.listeners.BodyListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.stubs.AccountServiceHelper;
+import org.milimail.messageRemoteServiceAPI.stubs.BodyListener;
+import org.milimail.messageRemoteServiceAPI.stubs.BodyListenerHelper;
+import org.milimail.messageRemoteServiceAPI.stubs.BodyListenerPOA;
+import org.milimail.messageRemoteServiceAPI.stubs.BrowseMessageListener;
+import org.milimail.messageRemoteServiceAPI.stubs.BrowseMessageListenerHelper;
+import org.milimail.messageRemoteServiceAPI.stubs.BrowseMessageListenerPOA;
+import org.milimail.messageRemoteServiceAPI.stubs.HeadersListener;
+import org.milimail.messageRemoteServiceAPI.stubs.HeadersListenerHelper;
+import org.milimail.messageRemoteServiceAPI.stubs.HeadersListenerPOA;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageBrowseServiceHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageComposeServiceHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListenerHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListenerPOA;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceListener;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceListenerHelper;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceListenerPOA;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListener;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListenerHelper;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListenerPOA;
@@ -117,16 +130,44 @@ public class ServiceCreator {
 				.narrow(obj));
 	}
 	
-	public SourceMessageListener createSourceMessageListener(SourceMessageListenerPOA sourceMessageListenerPOA) throws ServiceCreationException {
+	public SourceListener createSourceMessageListener(
+			SourceListenerPOA sourceListenerPOA)
+			throws ServiceCreationException {
 		org.omg.CORBA.Object ref = null;
-		ref = performCorbaResolution(sourceMessageListenerPOA);
+		ref = performCorbaResolution(sourceListenerPOA);
 
-		SourceMessageListener sourceMessageListener = SourceMessageListenerHelper
+		SourceListener sourceListener = SourceListenerHelper
 				.narrow(ref);
-		
-		return sourceMessageListener;
+
+		return sourceListener;
 	}
 
+	public BodyListener createBodyMessageListener(
+			BodyListenerPOA bodyListenerPOA)
+			throws ServiceCreationException {
+
+		org.omg.CORBA.Object ref = null;
+		ref = performCorbaResolution(bodyListenerPOA);
+
+		BodyListener bodyListener = BodyListenerHelper
+				.narrow(ref);
+
+		return bodyListener;
+	}
+
+	public HeadersListener createHeadersMessageListener(
+			HeadersListenerPOA headersListenerPOA)
+			throws ServiceCreationException {
+
+		org.omg.CORBA.Object ref = null;
+		ref = performCorbaResolution(headersListenerPOA);
+
+		HeadersListener headersListener = HeadersListenerHelper
+				.narrow(ref);
+
+		return headersListener;
+	}
+	
 	private org.omg.CORBA.Object performCorbaResolution(
 			Servant servant) throws ServiceCreationException {
 		org.omg.CORBA.Object ref = null;

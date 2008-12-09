@@ -46,22 +46,27 @@ import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
+import org.milimail.messageRemoteServiceAPI.listeners.BodyListenerServantConsole;
+import org.milimail.messageRemoteServiceAPI.listeners.HeadersListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.listeners.SourceMessageListenerServantConsole;
+import org.milimail.messageRemoteServiceAPI.stubs.BodyListener;
 import org.milimail.messageRemoteServiceAPI.stubs.CFolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFolderHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFoldersHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdrsHolder;
-import org.milimail.messageRemoteServiceAPI.stubs.SourceMessageListener;
-import org.omg.CORBA.StringHolder;
+import org.milimail.messageRemoteServiceAPI.stubs.HeadersListener;
+import org.milimail.messageRemoteServiceAPI.stubs.SourceListener;
 
 public class MessageBrowseServiceTest extends TestCase {
 
 	private AccountServiceProxy accountService;
 	private Account account;
 	private MessageBrowseServiceProxy browseService;
-	private SourceMessageListener sourceMessageListener;
+	private SourceListener sourceMessageListener;
+	private BodyListener bodyMessageListener;
 	private ServiceCreator serviceCreator;
+	private HeadersListener headersListener;
 	
 	protected void setUp() throws Exception {
 		serviceCreator = API.init();
@@ -194,9 +199,34 @@ public class MessageBrowseServiceTest extends TestCase {
 		for (int i = 0; i < hdrs.length; i++) {
 			CMessageHdr hdr = hdrs[i];
 			System.out.println(hdr.uri + " " + hdr.subject);
-			sourceMessageListener = serviceCreator.createSourceMessageListener(new SourceMessageListenerServantConsole());
-			browseService.GetBody(hdr, sourceMessageListener);
+			bodyMessageListener = serviceCreator.createBodyMessageListener(new BodyListenerServantConsole());
+			browseService.GetBody(hdr, bodyMessageListener);
 		}
 		
 	}
+	
+	public void testGetHeaders() throws Exception {
+		CFoldersHolder foldersHolder = new CFoldersHolder();
+		CFolderHolder folderHolder = new CFolderHolder();
+		browseService.GetRootFolder(account, folderHolder);
+
+		browseService.GetAllFolders(folderHolder.value, foldersHolder);
+		
+		CFolder folder = foldersHolder.value[0];
+		
+		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
+		browseService.GetMessageHdrs(folder, hdrHolder);
+		
+		CMessageHdr[] hdrs = hdrHolder.value;
+
+		for (int i = 0; i < hdrs.length; i++) {
+			CMessageHdr hdr = hdrs[i];
+			System.out.println(hdr.uri + " " + hdr.subject);
+			headersListener = serviceCreator.createHeadersMessageListener(new HeadersListenerServantConsole());
+			browseService.GetHeaders(hdr, headersListener);
+		}
+		
+	}
+	
+	
 }
