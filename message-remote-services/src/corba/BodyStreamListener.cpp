@@ -62,20 +62,31 @@ nsresult BodyStreamListener::OnDataAvailable(nsIRequest *aRequest,
 
 	nsLineBuffer<char> * lineBuffer;
 	nsresult rv = NS_InitLineBuffer(&lineBuffer);
+	ENSURE_SUCCESS(rv, "Cannot call NS_InitLineBuffer on nsLineBuffer");
+
 	PRBool moreData=PR_TRUE;
 	PRUint32 len = aCount;
-
 	PRBool inBody = PR_FALSE;
 	PRBool endBodyReached = PR_FALSE;
 	PRBool lookingForBoundary = PR_FALSE;
 	PRBool haveBoundary = PR_FALSE;
+	PRBool boundaryDetected = PR_FALSE;
+	PRBool boundaryDeclared = PR_FALSE;
 
-	while (len> 0 && moreData)
+	while (len > 0 && moreData)
 	{
+		rv = NS_ReadLine(aInputStream, lineBuffer, line, &moreData);
+		//non blocking Bug
+		//ENSURE_SUCCESS(rv, "Cannot call NS_ReadLine on nsIInputStream");
 
-		NS_ReadLine(aInputStream, lineBuffer, line, &moreData);
 		len -= MSG_LINEBREAK_LEN;
 		len -= line.Length();
+
+		if (FindInReadable(NS_LITERAL_CSTRING("multipart/"), line,
+				                                nsCaseInsensitiveCStringComparator()))
+		{
+			lookingForBoundary = PR_TRUE;
+		}
 
 		if (lookingForBoundary) {
 			 PRInt32 boundaryIndex = line.Find("boundary=", PR_TRUE /* ignore case*/);
@@ -94,42 +105,37 @@ nsresult BodyStreamListener::OnDataAvailable(nsIRequest *aRequest,
 				boundary.Append(Substring(line, boundaryIndex, endBoundaryIndex
 						- boundaryIndex));
 				haveBoundary = PR_TRUE;
+				boundaryDeclared = PR_TRUE;
 				lookingForBoundary = PR_FALSE;
-				cout << "BOUNDARY FOUND = <" << boundary.get() << ">" <<endl;
 				continue;
 			}
 		}
 
-		if (FindInReadable(NS_LITERAL_CSTRING("multipart/"), line,
-		                                nsCaseInsensitiveCStringComparator()))
-		{
-			   lookingForBoundary = PR_TRUE;
-			   continue;
-		}
-
 		if (haveBoundary) {
-				cout << "SEARCHING boudary" << line.get() << endl;
 			if (line.Equals(boundary)) {
 				haveBoundary = PR_FALSE;
-				cout << "SKIP BOUNDARY" << endl;
-				continue;
-			} else
+				boundaryDetected = PR_TRUE;
+			}
 				continue;
 		}
 
 		if (line.IsEmpty()) {
-			cout << "INBODY 1 = Line empty after boundary detection, skip it" << endl;
-			inBody = PR_TRUE;
-			continue;
+			if (boundaryDeclared && (!boundaryDetected)) {
+				continue;
+			}
+			else {
+				inBody = PR_TRUE;
+				continue;
+			}
 		}
 
 		if (inBody) {
 
-			if (line.Equals(boundary)){
+			if (!boundary.IsEmpty() && line.Equals(boundary)){
 				endBodyReached = PR_TRUE;
-				cout << "endBodyReached 1 = boundary detection in body, stop" << endl;
 				break;
 			}
+
 			content+=line;
 			content+="\n";
 		}
