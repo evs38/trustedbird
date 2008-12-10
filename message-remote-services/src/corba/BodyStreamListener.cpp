@@ -58,26 +58,78 @@ nsresult BodyStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		PRUint32 aCount) {
 	nsCAutoString content;
 	nsCAutoString line;
+	nsCAutoString boundary;
+
 	nsLineBuffer<char> * lineBuffer;
 	nsresult rv = NS_InitLineBuffer(&lineBuffer);
 	PRBool moreData=PR_TRUE;
 	PRUint32 len = aCount;
 
 	PRBool inBody = PR_FALSE;
+	PRBool endBodyReached = PR_FALSE;
+	PRBool lookingForBoundary = PR_FALSE;
+	PRBool haveBoundary = PR_FALSE;
 
 	while (len> 0 && moreData)
 	{
-		NS_ReadLine(aInputStream, lineBuffer,line,&moreData);
-		cout << "line : " << line.get() << endl;
+
+		NS_ReadLine(aInputStream, lineBuffer, line, &moreData);
 		len -= MSG_LINEBREAK_LEN;
 		len -= line.Length();
 
+		if (lookingForBoundary) {
+			 PRInt32 boundaryIndex = line.Find("boundary=", PR_TRUE /* ignore case*/);
+			 if (boundaryIndex != kNotFound)
+			 {
+				//after "boundary=" characters
+				boundaryIndex += 9;
+				 if (line[boundaryIndex] == '\"')
+				          boundaryIndex++;
+
+				PRInt32 endBoundaryIndex = line.RFindChar('"');
+				if (endBoundaryIndex == kNotFound)
+					endBoundaryIndex = line.Length();
+
+				boundary.Assign("--");
+				boundary.Append(Substring(line, boundaryIndex, endBoundaryIndex
+						- boundaryIndex));
+				haveBoundary = PR_TRUE;
+				lookingForBoundary = PR_FALSE;
+				cout << "BOUNDARY FOUND = <" << boundary.get() << ">" <<endl;
+				continue;
+			}
+		}
+
+		if (FindInReadable(NS_LITERAL_CSTRING("multipart/"), line,
+		                                nsCaseInsensitiveCStringComparator()))
+		{
+			   lookingForBoundary = PR_TRUE;
+			   continue;
+		}
+
+		if (haveBoundary) {
+				cout << "SEARCHING boudary" << line.get() << endl;
+			if (line.Equals(boundary)) {
+				haveBoundary = PR_FALSE;
+				cout << "SKIP BOUNDARY" << endl;
+				continue;
+			} else
+				continue;
+		}
+
 		if (line.IsEmpty()) {
+			cout << "INBODY 1 = Line empty after boundary detection, skip it" << endl;
 			inBody = PR_TRUE;
 			continue;
 		}
 
 		if (inBody) {
+
+			if (line.Equals(boundary)){
+				endBodyReached = PR_TRUE;
+				cout << "endBodyReached 1 = boundary detection in body, stop" << endl;
+				break;
+			}
 			content+=line;
 			content+="\n";
 		}
