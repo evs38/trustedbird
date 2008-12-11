@@ -57,6 +57,7 @@
 #include "nsMsgMimeCID.h"
 #include "BodyStreamListener.h"
 #include "HeadersStreamListener.h"
+#include "SourceStreamListener.h"
 #include <iostream>
 
 using namespace std;
@@ -160,6 +161,8 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	nsCOMPtr<nsIRDFResource> resource;
 	rv = rdf->GetResource(nsCAutoString(p_folder.uri), getter_AddRefs(
 			resource));
+	ENSURE_SUCCESS(rv, "Cannot GetResource on nsIRDFResource");
+
 	pFolder = do_QueryInterface(resource, &rv);
 	ENSURE_SUCCESS(rv, "Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
 
@@ -181,8 +184,10 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 
 		nsCOMPtr<nsISupports> pEntry;
 		rv = pSimpleEnumerator->GetNext(getter_AddRefs(pEntry));
-		ENSURE_SUCCESS(rv, "Cannot GetNext");
-		nsCOMPtr<nsIMsgDBHdr> pMsgDBHdr(do_QueryInterface(pEntry));
+		ENSURE_SUCCESS(rv, "Cannot GetNext on nsISimpleEnumerator");
+		nsCOMPtr<nsIMsgDBHdr> pMsgDBHdr(do_QueryInterface(pEntry, &rv));
+		ENSURE_SUCCESS(rv, "Cannot cast to nsIMsgDBHdr");
+
 		CMessageHdr cMessageHdr;
 
 		//ID Message
@@ -310,7 +315,8 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	ENSURE_SUCCESS(rv, "Cannot GetResource on nsIMsgFolder rootFolder");
 
 	pFolder = do_QueryInterface(resource, &rv);
-	ENSURE_SUCCESS(rv, "Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
+	ENSURE_SUCCESS(rv,
+			"Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
 
 	if (pFolder == nsnull)
 		throw CInternalServerException("root Folder not found, bad uri");
@@ -326,35 +332,35 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	PRBool moreFolders;
 	nsAdapterEnumerator *simpleEnumerator = new nsAdapterEnumerator(subFolders);
 
-	 CFolders * cFolders = new CFolders();
+	CFolders * cFolders = new CFolders();
 
-	 unsigned int i = 0;
-	 while (NS_SUCCEEDED(simpleEnumerator->HasMoreElements(&moreFolders)) && moreFolders) {
-		 nsCOMPtr<nsISupports> child;
-		 rv = simpleEnumerator->GetNext(getter_AddRefs(child));
-		 ENSURE_SUCCESS(rv, "Cannot GetNext on simpleEnumerator subFolders");
-		 nsCOMPtr <nsIMsgFolder> childFolder = do_QueryInterface(child, &rv);
-		 ENSURE_SUCCESS(rv, "Cannot cast simpleEnumerator to nsIMsgFolder");
+	unsigned int i = 0;
+	while (NS_SUCCEEDED(simpleEnumerator->HasMoreElements(&moreFolders))
+			&& moreFolders) {
+		nsCOMPtr<nsISupports> child;
+		rv = simpleEnumerator->GetNext(getter_AddRefs(child));
+		ENSURE_SUCCESS(rv, "Cannot GetNext on simpleEnumerator subFolders");
+		nsCOMPtr<nsIMsgFolder> childFolder = do_QueryInterface(child, &rv);
+		ENSURE_SUCCESS(rv, "Cannot cast simpleEnumerator to nsIMsgFolder");
 
-		 PRUnichar * n;
-		 childFolder->GetName(&n);
-		 nsAutoString folderString;
-		 folderString.Adopt(n);
+		PRUnichar * n;
+		childFolder->GetName(&n);
+		nsAutoString folderString;
+		folderString.Adopt(n);
 
-		 CFolder cFolder;
-		 cFolder.name = NS_ConvertUTF16toUTF8(
-				 folderString).get();
-		 cFolders->length(i+1);
+		CFolder cFolder;
+		cFolder.name = NS_ConvertUTF16toUTF8(folderString).get();
+		cFolders->length(i + 1);
 
-		 char * uri;
-		 childFolder->GetURI(&uri);
-		 cFolder.uri = uri;
+		char * uri;
+		childFolder->GetURI(&uri);
+		cFolder.uri = uri;
 
-	     (*cFolders)[i++] = cFolder;
-	 }
+		(*cFolders)[i++] = cFolder;
+	}
 
-	 p_folders = cFolders;
- }
+	p_folders = cFolders;
+}
 
  void MessageBrowseService_i::GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder)
  {
@@ -422,9 +428,9 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 			nsIMsgMessageService), msgService, PROXY_SYNC | PROXY_ALWAYS,
 			getter_AddRefs(pMsgServiceProxy));
 
-	/*nsCOMPtr<MessageStreamListener> msgStreamListener = new MessageStreamListener(p_sourceMessageListener);
+	nsCOMPtr<SourceStreamListener> sourceStreamListener = new SourceStreamListener(p_sourceMessageListener);
 
-	rv = pMsgServiceProxy->DisplayMessage(p_messageHdr.uri, msgStreamListener,
+	rv = pMsgServiceProxy->DisplayMessage(p_messageHdr.uri, sourceStreamListener,
 			nsnull, nsnull, nsnull, nsnull);
 	ENSURE_SUCCESS(rv, "Cannot get DisplayMessage nsIMsgMessageService");
 
@@ -438,9 +444,9 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	ENSURE_SUCCESS(rv,"Cannot get GetThreadEventQueue nsIEventQueueService");
 
 	//loop until loading is not complete
-	while (!msgStreamListener->IsDone()) {
+	while (!sourceStreamListener->IsDone()) {
 	    eventQueue->ProcessPendingEvents();
-	} */
+	}
 }
 
  void MessageBrowseService_i::GetBody(const CMessageHdr& p_messageHdr, BodyListener_ptr p_bodyListener)
