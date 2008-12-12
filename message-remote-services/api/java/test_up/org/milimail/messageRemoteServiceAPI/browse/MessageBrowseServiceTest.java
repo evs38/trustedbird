@@ -38,6 +38,8 @@ package org.milimail.messageRemoteServiceAPI.browse;
 
 import java.util.List;
 
+import javax.mail.internet.MimeMessage;
+
 import junit.framework.TestCase;
 
 import org.milimail.messageRemoteServiceAPI.account.Account;
@@ -46,16 +48,13 @@ import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
-import org.milimail.messageRemoteServiceAPI.listeners.BodyListenerServantConsole;
-import org.milimail.messageRemoteServiceAPI.listeners.HeadersListenerServantConsole;
+import org.milimail.messageRemoteServiceAPI.listeners.AbstractMimeMessageListener;
 import org.milimail.messageRemoteServiceAPI.listeners.SourceMessageListenerServantConsole;
-import org.milimail.messageRemoteServiceAPI.stubs.BodyListener;
 import org.milimail.messageRemoteServiceAPI.stubs.CFolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFolderHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFoldersHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdrsHolder;
-import org.milimail.messageRemoteServiceAPI.stubs.HeadersListener;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceListener;
 
 public class MessageBrowseServiceTest extends TestCase {
@@ -64,9 +63,7 @@ public class MessageBrowseServiceTest extends TestCase {
 	private Account account;
 	private MessageBrowseServiceProxy browseService;
 	private SourceListener sourceMessageListener;
-	private BodyListener bodyMessageListener;
 	private ServiceCreator serviceCreator;
-	private HeadersListener headersListener;
 	
 	protected void setUp() throws Exception {
 		serviceCreator = API.init();
@@ -89,19 +86,19 @@ public class MessageBrowseServiceTest extends TestCase {
 		CMessageHdrsHolder hdrsHolder = new CMessageHdrsHolder();
 		CFoldersHolder foldersHolder = new CFoldersHolder();
 		CFolderHolder folderHolder = new CFolderHolder();
-		browseService.GetRootFolder(account, folderHolder);
+		browseService.getRootFolder(account, folderHolder);
 		
-		browseService.GetAllFolders(folderHolder.value, foldersHolder);
+		browseService.getAllFolders(folderHolder.value, foldersHolder);
 		assertNotNull(foldersHolder);
 		
 		CFolder[] folders = foldersHolder.value;
 		CFolder folder = folders[0];
 		
-		browseService.GetMessageHdrs(folder, hdrsHolder);
+		browseService.getMessageHdrs(folder, hdrsHolder);
 		
 		CMessageHdr[] hdrs = hdrsHolder.value;
 		for (int i = 0; i < hdrs.length; i++) {
-			
+			assertNotNull(hdrs[i]);
 			String recipients = "";
 			for (int j = 0; j < hdrs[i].recipients.length; j++) {
 				recipients +=hdrs[i].recipients[j] + ",";
@@ -127,9 +124,10 @@ public class MessageBrowseServiceTest extends TestCase {
 	
 	public void testGetRootFolder() throws Exception {
 		CFolderHolder folderHolder = new CFolderHolder();
-		browseService.GetRootFolder(account, folderHolder);
+		browseService.getRootFolder(account, folderHolder);
 		
 		CFolder folder = folderHolder.value;
+		assertNotNull(folder);
 		System.out.println("rootFolder name : " + folder.name);
 		System.out.println("rootFolder uri : " + folder.uri);
 	}
@@ -138,9 +136,9 @@ public class MessageBrowseServiceTest extends TestCase {
 	public void testGetAllFolders() throws Exception {
 		CFoldersHolder folders = new CFoldersHolder();
 		CFolderHolder folderHolder = new CFolderHolder();
-		browseService.GetRootFolder(account, folderHolder);
+		browseService.getRootFolder(account, folderHolder);
 		
-		browseService.GetAllFolders(folderHolder.value, folders);
+		browseService.getAllFolders(folderHolder.value, folders);
 		assertNotNull(folders);
 		
 		CFolder[] afolders = folders.value;
@@ -149,7 +147,7 @@ public class MessageBrowseServiceTest extends TestCase {
 			System.out.println("Folder " + i + " : " + afolders[i].name + " " + afolders[i].uri);
 			CFoldersHolder folders2 = new CFoldersHolder();
 
-			browseService.GetAllFolders(afolders[i], folders2);
+			browseService.getAllFolders(afolders[i], folders2);
 			
 			for (int j = 0; j < folders2.value.length; j++) {
 				System.out.println("Folder " + j + " : " + folders2.value[j].name);
@@ -160,14 +158,14 @@ public class MessageBrowseServiceTest extends TestCase {
 	public void testGetSourceMessage() throws Exception {
 		CFoldersHolder foldersHolder = new CFoldersHolder();
 		CFolderHolder folderHolder = new CFolderHolder();
-		browseService.GetRootFolder(account, folderHolder);
+		browseService.getRootFolder(account, folderHolder);
 
-		browseService.GetAllFolders(folderHolder.value, foldersHolder);
+		browseService.getAllFolders(folderHolder.value, foldersHolder);
 		
 		CFolder folder = foldersHolder.value[0];
 		
 		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
-		browseService.GetMessageHdrs(folder, hdrHolder);
+		browseService.getMessageHdrs(folder, hdrHolder);
 		
 		CMessageHdr[] hdrs = hdrHolder.value;
 
@@ -175,58 +173,46 @@ public class MessageBrowseServiceTest extends TestCase {
 			CMessageHdr hdr = hdrs[i];
 			System.out.println(hdr.uri + " " + hdr.subject);
 			sourceMessageListener = serviceCreator.createSourceMessageListener(new SourceMessageListenerServantConsole());
+			browseService.getSource(hdr, sourceMessageListener);
+		}
+		
+	}
+	
+	
+	public void testGetMimeMessage() throws Exception {
+		CFoldersHolder foldersHolder = new CFoldersHolder();
+		CFolderHolder folderHolder = new CFolderHolder();
+		browseService.getRootFolder(account, folderHolder);
+
+		browseService.getAllFolders(folderHolder.value, foldersHolder);
+		
+		CFolder folder = foldersHolder.value[0];
+		
+		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
+		browseService.getMessageHdrs(folder, hdrHolder);
+		
+		CMessageHdr[] hdrs = hdrHolder.value;
+
+		for (int i = 0; i < hdrs.length; i++) {
+			CMessageHdr hdr = hdrs[i];
+			System.out.println(hdr.uri + " " + hdr.subject);
+			sourceMessageListener = serviceCreator.createSourceMessageListener(new AbstractMimeMessageListener() {
 			
-			browseService.GetSourceMessage(hdr, sourceMessageListener);
+				@Override
+				public void onLoad(MimeMessage mimeMessage) {
+					assertNotNull(mimeMessage);
+					try {
+						assertTrue(mimeMessage.getContent().toString().length() > 0);
+					} catch (Exception e){
+						fail();
+					}
+				}
+			});
+			
+			browseService.getDecryptedSource(hdr, sourceMessageListener);
+		
 		}
 		
-	}
-	
-	
-	public void testGetBody() throws Exception {
-		CFoldersHolder foldersHolder = new CFoldersHolder();
-		CFolderHolder folderHolder = new CFolderHolder();
-		browseService.GetRootFolder(account, folderHolder);
-
-		browseService.GetAllFolders(folderHolder.value, foldersHolder);
 		
-		CFolder folder = foldersHolder.value[0];
-		
-		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
-		browseService.GetMessageHdrs(folder, hdrHolder);
-		
-		CMessageHdr[] hdrs = hdrHolder.value;
-
-		for (int i = 0; i < hdrs.length; i++) {
-			CMessageHdr hdr = hdrs[i];
-			System.out.println(hdr.uri + " " + hdr.subject);
-			bodyMessageListener = serviceCreator.createBodyMessageListener(new BodyListenerServantConsole());
-			browseService.GetBody(hdr, bodyMessageListener);
-		}
-		
-	}
-	
-	public void testGetHeaders() throws Exception {
-		CFoldersHolder foldersHolder = new CFoldersHolder();
-		CFolderHolder folderHolder = new CFolderHolder();
-		browseService.GetRootFolder(account, folderHolder);
-
-		browseService.GetAllFolders(folderHolder.value, foldersHolder);
-		
-		CFolder folder = foldersHolder.value[0];
-		
-		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
-		browseService.GetMessageHdrs(folder, hdrHolder);
-		
-		CMessageHdr[] hdrs = hdrHolder.value;
-
-		for (int i = 0; i < hdrs.length; i++) {
-			CMessageHdr hdr = hdrs[i];
-			System.out.println(hdr.uri + " " + hdr.subject);
-			headersListener = serviceCreator.createHeadersMessageListener(new HeadersListenerServantConsole());
-			browseService.GetHeaders(hdr, headersListener);
-		}
-		
-	}
-	
-	
+	}	
 }
