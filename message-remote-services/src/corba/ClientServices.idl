@@ -38,22 +38,7 @@ interface MessageSendListener {
 	void OnStop(in string id, in boolean success);
 };
 
-struct CHeader {
-    string key;
-    string value;
-};
-
-typedef sequence<CHeader> CHeaders;
 
 interface SourceListener {
     void OnLoad(in string source);
 };
-
-interface BodyListener {
-    void OnLoad(in string source);
-};
-
-interface HeadersListener {
-    void OnLoad(in CHeaders p_headers);
-};
-

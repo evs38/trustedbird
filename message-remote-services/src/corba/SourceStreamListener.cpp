@@ -55,10 +55,9 @@ nsresult SourceStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		PRUint32 aCount) {
 	nsCAutoString content;
 
-	char buf[aCount];
+	char buf[512];
 	PRUint32 ret, size;
 	nsresult rv;
-	PRUint32 count = aCount;
 
 	while(aCount)
 	{

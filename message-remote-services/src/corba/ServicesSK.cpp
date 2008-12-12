@@ -1260,417 +1260,6 @@ _impl_SourceListener::_mostDerivedRepoId()
   return ::SourceListener::_PD_repoId;
 }
 
-BodyListener_ptr BodyListener_Helper::_nil() {
-  return ::BodyListener::_nil();
-}
-
-::CORBA::Boolean BodyListener_Helper::is_nil(::BodyListener_ptr p) {
-  return ::CORBA::is_nil(p);
-
-}
-
-void BodyListener_Helper::release(::BodyListener_ptr p) {
-  ::CORBA::release(p);
-}
-
-void BodyListener_Helper::marshalObjRef(::BodyListener_ptr obj, cdrStream& s) {
-  ::BodyListener::_marshalObjRef(obj, s);
-}
-
-BodyListener_ptr BodyListener_Helper::unmarshalObjRef(cdrStream& s) {
-  return ::BodyListener::_unmarshalObjRef(s);
-}
-
-void BodyListener_Helper::duplicate(::BodyListener_ptr obj) {
-  if( obj && !obj->_NP_is_nil() )  omni::duplicateObjRef(obj);
-}
-
-BodyListener_ptr
-BodyListener::_duplicate(::BodyListener_ptr obj)
-{
-  if( obj && !obj->_NP_is_nil() )  omni::duplicateObjRef(obj);
-  return obj;
-}
-
-BodyListener_ptr
-BodyListener::_narrow(::CORBA::Object_ptr obj)
-{
-  if( !obj || obj->_NP_is_nil() || obj->_NP_is_pseudo() ) return _nil();
-  _ptr_type e = (_ptr_type) obj->_PR_getobj()->_realNarrow(_PD_repoId);
-  return e ? e : _nil();
-}
-
-
-BodyListener_ptr
-BodyListener::_unchecked_narrow(::CORBA::Object_ptr obj)
-{
-  if( !obj || obj->_NP_is_nil() || obj->_NP_is_pseudo() ) return _nil();
-  _ptr_type e = (_ptr_type) obj->_PR_getobj()->_uncheckedNarrow(_PD_repoId);
-  return e ? e : _nil();
-}
-
-BodyListener_ptr
-BodyListener::_nil()
-{
-#ifdef OMNI_UNLOADABLE_STUBS
-  static _objref_BodyListener _the_nil_obj;
-  return &_the_nil_obj;
-#else
-  static _objref_BodyListener* _the_nil_ptr = 0;
-  if( !_the_nil_ptr ) {
-    omni::nilRefLock().lock();
-    if( !_the_nil_ptr ) {
-      _the_nil_ptr = new _objref_BodyListener;
-      registerNilCorbaObject(_the_nil_ptr);
-    }
-    omni::nilRefLock().unlock();
-  }
-  return _the_nil_ptr;
-#endif
-}
-
-const char* BodyListener::_PD_repoId = "IDL:BodyListener:1.0";
-
-
-_objref_BodyListener::~_objref_BodyListener() {
-  
-}
-
-
-_objref_BodyListener::_objref_BodyListener(omniIOR* ior, omniIdentity* id) :
-   omniObjRef(::BodyListener::_PD_repoId, ior, id, 1)
-   
-   
-{
-  _PR_setobj(this);
-}
-
-void*
-_objref_BodyListener::_ptrToObjRef(const char* id)
-{
-  if( id == ::BodyListener::_PD_repoId )
-    return (::BodyListener_ptr) this;
-  
-  if( id == ::CORBA::Object::_PD_repoId )
-    return (::CORBA::Object_ptr) this;
-
-  if( omni::strMatch(id, ::BodyListener::_PD_repoId) )
-    return (::BodyListener_ptr) this;
-  
-  if( omni::strMatch(id, ::CORBA::Object::_PD_repoId) )
-    return (::CORBA::Object_ptr) this;
-
-  return 0;
-}
-
-// Local call call-back function.
-static void
-_0RL_lcfn_14edc9663ea08cf8_80000000(omniCallDescriptor* cd, omniServant* svnt)
-{
-  _0RL_cd_14edc9663ea08cf8_60000000* tcd = (_0RL_cd_14edc9663ea08cf8_60000000*)cd;
-  _impl_BodyListener* impl = (_impl_BodyListener*) svnt->_ptrToInterface(BodyListener::_PD_repoId);
-  impl->OnLoad(tcd->arg_0);
-
-
-}
-
-void _objref_BodyListener::OnLoad(const char* source)
-{
-  _0RL_cd_14edc9663ea08cf8_60000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_80000000, "OnLoad", 7);
-  _call_desc.arg_0 = source;
-
-  _invoke(_call_desc);
-
-
-
-}
-_pof_BodyListener::~_pof_BodyListener() {}
-
-
-omniObjRef*
-_pof_BodyListener::newObjRef(omniIOR* ior, omniIdentity* id)
-{
-  return new ::_objref_BodyListener(ior, id);
-}
-
-
-::CORBA::Boolean
-_pof_BodyListener::is_a(const char* id) const
-{
-  if( omni::ptrStrMatch(id, ::BodyListener::_PD_repoId) )
-    return 1;
-  
-  return 0;
-}
-
-const _pof_BodyListener _the_pof_BodyListener;
-
-_impl_BodyListener::~_impl_BodyListener() {}
-
-
-::CORBA::Boolean
-_impl_BodyListener::_dispatch(omniCallHandle& _handle)
-{
-  const char* op = _handle.operation_name();
-
-  if( omni::strMatch(op, "OnLoad") ) {
-
-    _0RL_cd_14edc9663ea08cf8_60000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_80000000, "OnLoad", 7, 1);
-    
-    _handle.upcall(this,_call_desc);
-    return 1;
-  }
-
-
-  return 0;
-}
-
-void*
-_impl_BodyListener::_ptrToInterface(const char* id)
-{
-  if( id == ::BodyListener::_PD_repoId )
-    return (::_impl_BodyListener*) this;
-  
-  if( id == ::CORBA::Object::_PD_repoId )
-    return (void*) 1;
-
-  if( omni::strMatch(id, ::BodyListener::_PD_repoId) )
-    return (::_impl_BodyListener*) this;
-  
-  if( omni::strMatch(id, ::CORBA::Object::_PD_repoId) )
-    return (void*) 1;
-  return 0;
-}
-
-const char*
-_impl_BodyListener::_mostDerivedRepoId()
-{
-  return ::BodyListener::_PD_repoId;
-}
-
-HeadersListener_ptr HeadersListener_Helper::_nil() {
-  return ::HeadersListener::_nil();
-}
-
-::CORBA::Boolean HeadersListener_Helper::is_nil(::HeadersListener_ptr p) {
-  return ::CORBA::is_nil(p);
-
-}
-
-void HeadersListener_Helper::release(::HeadersListener_ptr p) {
-  ::CORBA::release(p);
-}
-
-void HeadersListener_Helper::marshalObjRef(::HeadersListener_ptr obj, cdrStream& s) {
-  ::HeadersListener::_marshalObjRef(obj, s);
-}
-
-HeadersListener_ptr HeadersListener_Helper::unmarshalObjRef(cdrStream& s) {
-  return ::HeadersListener::_unmarshalObjRef(s);
-}
-
-void HeadersListener_Helper::duplicate(::HeadersListener_ptr obj) {
-  if( obj && !obj->_NP_is_nil() )  omni::duplicateObjRef(obj);
-}
-
-HeadersListener_ptr
-HeadersListener::_duplicate(::HeadersListener_ptr obj)
-{
-  if( obj && !obj->_NP_is_nil() )  omni::duplicateObjRef(obj);
-  return obj;
-}
-
-HeadersListener_ptr
-HeadersListener::_narrow(::CORBA::Object_ptr obj)
-{
-  if( !obj || obj->_NP_is_nil() || obj->_NP_is_pseudo() ) return _nil();
-  _ptr_type e = (_ptr_type) obj->_PR_getobj()->_realNarrow(_PD_repoId);
-  return e ? e : _nil();
-}
-
-
-HeadersListener_ptr
-HeadersListener::_unchecked_narrow(::CORBA::Object_ptr obj)
-{
-  if( !obj || obj->_NP_is_nil() || obj->_NP_is_pseudo() ) return _nil();
-  _ptr_type e = (_ptr_type) obj->_PR_getobj()->_uncheckedNarrow(_PD_repoId);
-  return e ? e : _nil();
-}
-
-HeadersListener_ptr
-HeadersListener::_nil()
-{
-#ifdef OMNI_UNLOADABLE_STUBS
-  static _objref_HeadersListener _the_nil_obj;
-  return &_the_nil_obj;
-#else
-  static _objref_HeadersListener* _the_nil_ptr = 0;
-  if( !_the_nil_ptr ) {
-    omni::nilRefLock().lock();
-    if( !_the_nil_ptr ) {
-      _the_nil_ptr = new _objref_HeadersListener;
-      registerNilCorbaObject(_the_nil_ptr);
-    }
-    omni::nilRefLock().unlock();
-  }
-  return _the_nil_ptr;
-#endif
-}
-
-const char* HeadersListener::_PD_repoId = "IDL:HeadersListener:1.0";
-
-
-_objref_HeadersListener::~_objref_HeadersListener() {
-  
-}
-
-
-_objref_HeadersListener::_objref_HeadersListener(omniIOR* ior, omniIdentity* id) :
-   omniObjRef(::HeadersListener::_PD_repoId, ior, id, 1)
-   
-   
-{
-  _PR_setobj(this);
-}
-
-void*
-_objref_HeadersListener::_ptrToObjRef(const char* id)
-{
-  if( id == ::HeadersListener::_PD_repoId )
-    return (::HeadersListener_ptr) this;
-  
-  if( id == ::CORBA::Object::_PD_repoId )
-    return (::CORBA::Object_ptr) this;
-
-  if( omni::strMatch(id, ::HeadersListener::_PD_repoId) )
-    return (::HeadersListener_ptr) this;
-  
-  if( omni::strMatch(id, ::CORBA::Object::_PD_repoId) )
-    return (::CORBA::Object_ptr) this;
-
-  return 0;
-}
-
-// Proxy call descriptor class. Mangled signature:
-//  void_i_cCHeaders
-class _0RL_cd_14edc9663ea08cf8_90000000
-  : public omniCallDescriptor
-{
-public:
-  inline _0RL_cd_14edc9663ea08cf8_90000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
-     omniCallDescriptor(lcfn, op_, oplen, 0, 0, 0, upcall)
-  {
-    
-  }
-  
-  void marshalArguments(cdrStream&);
-  void unmarshalArguments(cdrStream&);
-
-    
-  
-  CHeaders_var arg_0_;
-  const CHeaders* arg_0;
-};
-
-void _0RL_cd_14edc9663ea08cf8_90000000::marshalArguments(cdrStream& _n)
-{
-  (const CHeaders&) *arg_0 >>= _n;
-
-}
-
-void _0RL_cd_14edc9663ea08cf8_90000000::unmarshalArguments(cdrStream& _n)
-{
-  arg_0_ = new CHeaders;
-  (CHeaders&)arg_0_ <<= _n;
-  arg_0 = &arg_0_.in();
-
-}
-
-// Local call call-back function.
-static void
-_0RL_lcfn_14edc9663ea08cf8_a0000000(omniCallDescriptor* cd, omniServant* svnt)
-{
-  _0RL_cd_14edc9663ea08cf8_90000000* tcd = (_0RL_cd_14edc9663ea08cf8_90000000*)cd;
-  _impl_HeadersListener* impl = (_impl_HeadersListener*) svnt->_ptrToInterface(HeadersListener::_PD_repoId);
-  impl->OnLoad(*tcd->arg_0);
-
-
-}
-
-void _objref_HeadersListener::OnLoad(const CHeaders& p_headers)
-{
-  _0RL_cd_14edc9663ea08cf8_90000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_a0000000, "OnLoad", 7);
-  _call_desc.arg_0 = &(CHeaders&) p_headers;
-
-  _invoke(_call_desc);
-
-
-
-}
-_pof_HeadersListener::~_pof_HeadersListener() {}
-
-
-omniObjRef*
-_pof_HeadersListener::newObjRef(omniIOR* ior, omniIdentity* id)
-{
-  return new ::_objref_HeadersListener(ior, id);
-}
-
-
-::CORBA::Boolean
-_pof_HeadersListener::is_a(const char* id) const
-{
-  if( omni::ptrStrMatch(id, ::HeadersListener::_PD_repoId) )
-    return 1;
-  
-  return 0;
-}
-
-const _pof_HeadersListener _the_pof_HeadersListener;
-
-_impl_HeadersListener::~_impl_HeadersListener() {}
-
-
-::CORBA::Boolean
-_impl_HeadersListener::_dispatch(omniCallHandle& _handle)
-{
-  const char* op = _handle.operation_name();
-
-  if( omni::strMatch(op, "OnLoad") ) {
-
-    _0RL_cd_14edc9663ea08cf8_90000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_a0000000, "OnLoad", 7, 1);
-    
-    _handle.upcall(this,_call_desc);
-    return 1;
-  }
-
-
-  return 0;
-}
-
-void*
-_impl_HeadersListener::_ptrToInterface(const char* id)
-{
-  if( id == ::HeadersListener::_PD_repoId )
-    return (::_impl_HeadersListener*) this;
-  
-  if( id == ::CORBA::Object::_PD_repoId )
-    return (void*) 1;
-
-  if( omni::strMatch(id, ::HeadersListener::_PD_repoId) )
-    return (::_impl_HeadersListener*) this;
-  
-  if( omni::strMatch(id, ::CORBA::Object::_PD_repoId) )
-    return (void*) 1;
-  return 0;
-}
-
-const char*
-_impl_HeadersListener::_mostDerivedRepoId()
-{
-  return ::HeadersListener::_PD_repoId;
-}
-
 MessageBrowseService_ptr MessageBrowseService_Helper::_nil() {
   return ::MessageBrowseService::_nil();
 }
@@ -1776,11 +1365,11 @@ _objref_MessageBrowseService::_ptrToObjRef(const char* id)
 
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cCAccount_o_cCFolder_e_cCInternalServerException
-class _0RL_cd_14edc9663ea08cf8_b0000000
+class _0RL_cd_14edc9663ea08cf8_80000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_14edc9663ea08cf8_b0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_14edc9663ea08cf8_80000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 1, upcall)
   {
     
@@ -1800,13 +1389,13 @@ public:
   CFolder_var arg_1;
 };
 
-void _0RL_cd_14edc9663ea08cf8_b0000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_80000000::marshalArguments(cdrStream& _n)
 {
   (const CAccount&) *arg_0 >>= _n;
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_b0000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_80000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new CAccount;
   (CAccount&)arg_0_ <<= _n;
@@ -1814,24 +1403,24 @@ void _0RL_cd_14edc9663ea08cf8_b0000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_b0000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_80000000::marshalReturnedValues(cdrStream& _n)
 {
   (const CFolder&) arg_1 >>= _n;
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_b0000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_80000000::unmarshalReturnedValues(cdrStream& _n)
 {
   arg_1 = new CFolder;
   (CFolder&)arg_1 <<= _n;
 
 }
 
-const char* const _0RL_cd_14edc9663ea08cf8_b0000000::_user_exns[] = {
+const char* const _0RL_cd_14edc9663ea08cf8_80000000::_user_exns[] = {
   CInternalServerException::_PD_repoId
 };
 
-void _0RL_cd_14edc9663ea08cf8_b0000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
+void _0RL_cd_14edc9663ea08cf8_80000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
 {
   if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
     CInternalServerException _ex;
@@ -1850,9 +1439,9 @@ void _0RL_cd_14edc9663ea08cf8_b0000000::userException(cdrStream& s, _OMNI_NS(IOP
 
 // Local call call-back function.
 static void
-_0RL_lcfn_14edc9663ea08cf8_c0000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_14edc9663ea08cf8_90000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_14edc9663ea08cf8_b0000000* tcd = (_0RL_cd_14edc9663ea08cf8_b0000000*)cd;
+  _0RL_cd_14edc9663ea08cf8_80000000* tcd = (_0RL_cd_14edc9663ea08cf8_80000000*)cd;
   _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
 #ifdef HAS_Cplusplus_catch_exception_by_base
   impl->GetRootFolder(*tcd->arg_0, tcd->arg_1.out());
@@ -1876,7 +1465,7 @@ _0RL_lcfn_14edc9663ea08cf8_c0000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void _objref_MessageBrowseService::GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder)
 {
-  _0RL_cd_14edc9663ea08cf8_b0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_c0000000, "GetRootFolder", 14);
+  _0RL_cd_14edc9663ea08cf8_80000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_90000000, "GetRootFolder", 14);
   _call_desc.arg_0 = &(CAccount&) p_account;
 
   _invoke(_call_desc);
@@ -1886,11 +1475,11 @@ void _objref_MessageBrowseService::GetRootFolder(const CAccount& p_account, CFol
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cCFolder_o_cCFolders_e_cCInternalServerException
-class _0RL_cd_14edc9663ea08cf8_d0000000
+class _0RL_cd_14edc9663ea08cf8_a0000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_14edc9663ea08cf8_d0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_14edc9663ea08cf8_a0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 1, upcall)
   {
     
@@ -1910,13 +1499,13 @@ public:
   CFolders_var arg_1;
 };
 
-void _0RL_cd_14edc9663ea08cf8_d0000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_a0000000::marshalArguments(cdrStream& _n)
 {
   (const CFolder&) *arg_0 >>= _n;
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_d0000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_a0000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new CFolder;
   (CFolder&)arg_0_ <<= _n;
@@ -1924,24 +1513,24 @@ void _0RL_cd_14edc9663ea08cf8_d0000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_d0000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_a0000000::marshalReturnedValues(cdrStream& _n)
 {
   (const CFolders&) arg_1 >>= _n;
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_d0000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_a0000000::unmarshalReturnedValues(cdrStream& _n)
 {
   arg_1 = new CFolders;
   (CFolders&)arg_1 <<= _n;
 
 }
 
-const char* const _0RL_cd_14edc9663ea08cf8_d0000000::_user_exns[] = {
+const char* const _0RL_cd_14edc9663ea08cf8_a0000000::_user_exns[] = {
   CInternalServerException::_PD_repoId
 };
 
-void _0RL_cd_14edc9663ea08cf8_d0000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
+void _0RL_cd_14edc9663ea08cf8_a0000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
 {
   if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
     CInternalServerException _ex;
@@ -1960,9 +1549,9 @@ void _0RL_cd_14edc9663ea08cf8_d0000000::userException(cdrStream& s, _OMNI_NS(IOP
 
 // Local call call-back function.
 static void
-_0RL_lcfn_14edc9663ea08cf8_e0000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_14edc9663ea08cf8_b0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_14edc9663ea08cf8_d0000000* tcd = (_0RL_cd_14edc9663ea08cf8_d0000000*)cd;
+  _0RL_cd_14edc9663ea08cf8_a0000000* tcd = (_0RL_cd_14edc9663ea08cf8_a0000000*)cd;
   _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
 #ifdef HAS_Cplusplus_catch_exception_by_base
   impl->GetAllFolders(*tcd->arg_0, tcd->arg_1.out());
@@ -1986,7 +1575,7 @@ _0RL_lcfn_14edc9663ea08cf8_e0000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void _objref_MessageBrowseService::GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders)
 {
-  _0RL_cd_14edc9663ea08cf8_d0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_e0000000, "GetAllFolders", 14);
+  _0RL_cd_14edc9663ea08cf8_a0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_b0000000, "GetAllFolders", 14);
   _call_desc.arg_0 = &(CFolder&) p_rootFolder;
 
   _invoke(_call_desc);
@@ -1996,11 +1585,11 @@ void _objref_MessageBrowseService::GetAllFolders(const CFolder& p_rootFolder, CF
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cCFolder_o_cCMessageHdrs_e_cCInternalServerException
-class _0RL_cd_14edc9663ea08cf8_f0000000
+class _0RL_cd_14edc9663ea08cf8_c0000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_14edc9663ea08cf8_f0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_14edc9663ea08cf8_c0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 1, upcall)
   {
     
@@ -2020,13 +1609,13 @@ public:
   CMessageHdrs_var arg_1;
 };
 
-void _0RL_cd_14edc9663ea08cf8_f0000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_c0000000::marshalArguments(cdrStream& _n)
 {
   (const CFolder&) *arg_0 >>= _n;
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_f0000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_c0000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new CFolder;
   (CFolder&)arg_0_ <<= _n;
@@ -2034,24 +1623,24 @@ void _0RL_cd_14edc9663ea08cf8_f0000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_f0000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_c0000000::marshalReturnedValues(cdrStream& _n)
 {
   (const CMessageHdrs&) arg_1 >>= _n;
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_f0000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_c0000000::unmarshalReturnedValues(cdrStream& _n)
 {
   arg_1 = new CMessageHdrs;
   (CMessageHdrs&)arg_1 <<= _n;
 
 }
 
-const char* const _0RL_cd_14edc9663ea08cf8_f0000000::_user_exns[] = {
+const char* const _0RL_cd_14edc9663ea08cf8_c0000000::_user_exns[] = {
   CInternalServerException::_PD_repoId
 };
 
-void _0RL_cd_14edc9663ea08cf8_f0000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
+void _0RL_cd_14edc9663ea08cf8_c0000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
 {
   if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
     CInternalServerException _ex;
@@ -2070,9 +1659,9 @@ void _0RL_cd_14edc9663ea08cf8_f0000000::userException(cdrStream& s, _OMNI_NS(IOP
 
 // Local call call-back function.
 static void
-_0RL_lcfn_14edc9663ea08cf8_01000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_14edc9663ea08cf8_d0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_14edc9663ea08cf8_f0000000* tcd = (_0RL_cd_14edc9663ea08cf8_f0000000*)cd;
+  _0RL_cd_14edc9663ea08cf8_c0000000* tcd = (_0RL_cd_14edc9663ea08cf8_c0000000*)cd;
   _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
 #ifdef HAS_Cplusplus_catch_exception_by_base
   impl->GetMessageHdrs(*tcd->arg_0, tcd->arg_1.out());
@@ -2096,7 +1685,7 @@ _0RL_lcfn_14edc9663ea08cf8_01000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void _objref_MessageBrowseService::GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs)
 {
-  _0RL_cd_14edc9663ea08cf8_f0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_01000000, "GetMessageHdrs", 15);
+  _0RL_cd_14edc9663ea08cf8_c0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_d0000000, "GetMessageHdrs", 15);
   _call_desc.arg_0 = &(CFolder&) p_folder;
 
   _invoke(_call_desc);
@@ -2106,11 +1695,11 @@ void _objref_MessageBrowseService::GetMessageHdrs(const CFolder& p_folder, CMess
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cCMessageHdr_i_cSourceListener_e_cCInternalServerException
-class _0RL_cd_14edc9663ea08cf8_11000000
+class _0RL_cd_14edc9663ea08cf8_e0000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_14edc9663ea08cf8_11000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_14edc9663ea08cf8_e0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 1, upcall)
   {
     
@@ -2129,14 +1718,14 @@ public:
   SourceListener_ptr arg_1;
 };
 
-void _0RL_cd_14edc9663ea08cf8_11000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_e0000000::marshalArguments(cdrStream& _n)
 {
   (const CMessageHdr&) *arg_0 >>= _n;
   SourceListener::_marshalObjRef(arg_1,_n);
 
 }
 
-void _0RL_cd_14edc9663ea08cf8_11000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_14edc9663ea08cf8_e0000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new CMessageHdr;
   (CMessageHdr&)arg_0_ <<= _n;
@@ -2146,11 +1735,11 @@ void _0RL_cd_14edc9663ea08cf8_11000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-const char* const _0RL_cd_14edc9663ea08cf8_11000000::_user_exns[] = {
+const char* const _0RL_cd_14edc9663ea08cf8_e0000000::_user_exns[] = {
   CInternalServerException::_PD_repoId
 };
 
-void _0RL_cd_14edc9663ea08cf8_11000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
+void _0RL_cd_14edc9663ea08cf8_e0000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
 {
   if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
     CInternalServerException _ex;
@@ -2169,18 +1758,18 @@ void _0RL_cd_14edc9663ea08cf8_11000000::userException(cdrStream& s, _OMNI_NS(IOP
 
 // Local call call-back function.
 static void
-_0RL_lcfn_14edc9663ea08cf8_21000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_14edc9663ea08cf8_f0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_14edc9663ea08cf8_11000000* tcd = (_0RL_cd_14edc9663ea08cf8_11000000*)cd;
+  _0RL_cd_14edc9663ea08cf8_e0000000* tcd = (_0RL_cd_14edc9663ea08cf8_e0000000*)cd;
   _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
 #ifdef HAS_Cplusplus_catch_exception_by_base
-  impl->GetSourceMessage(*tcd->arg_0, tcd->arg_1);
+  impl->GetSource(*tcd->arg_0, tcd->arg_1);
 #else
   if (!cd->is_upcall())
-    impl->GetSourceMessage(*tcd->arg_0, tcd->arg_1);
+    impl->GetSource(*tcd->arg_0, tcd->arg_1);
   else {
     try {
-      impl->GetSourceMessage(*tcd->arg_0, tcd->arg_1);
+      impl->GetSource(*tcd->arg_0, tcd->arg_1);
     }
     catch(CInternalServerException& ex) {
       throw omniORB::StubUserException(ex._NP_duplicate());
@@ -2193,9 +1782,9 @@ _0RL_lcfn_14edc9663ea08cf8_21000000(omniCallDescriptor* cd, omniServant* svnt)
 
 }
 
-void _objref_MessageBrowseService::GetSourceMessage(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener)
+void _objref_MessageBrowseService::GetSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener)
 {
-  _0RL_cd_14edc9663ea08cf8_11000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_21000000, "GetSourceMessage", 17);
+  _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_f0000000, "GetSource", 10);
   _call_desc.arg_0 = &(CMessageHdr&) p_messageHdr;
   _call_desc.arg_1 = p_sourceListener;
 
@@ -2204,83 +1793,20 @@ void _objref_MessageBrowseService::GetSourceMessage(const CMessageHdr& p_message
 
 
 }
-// Proxy call descriptor class. Mangled signature:
-//  void_i_cCMessageHdr_i_cHeadersListener_e_cCInternalServerException
-class _0RL_cd_14edc9663ea08cf8_31000000
-  : public omniCallDescriptor
-{
-public:
-  inline _0RL_cd_14edc9663ea08cf8_31000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
-     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 1, upcall)
-  {
-    
-  }
-  
-  void marshalArguments(cdrStream&);
-  void unmarshalArguments(cdrStream&);
-
-    
-  void userException(cdrStream&,_OMNI_NS(IOP_C)*,const char*);
-  static const char* const _user_exns[];
-
-  CMessageHdr_var arg_0_;
-  const CMessageHdr* arg_0;
-  HeadersListener_var arg_1_;
-  HeadersListener_ptr arg_1;
-};
-
-void _0RL_cd_14edc9663ea08cf8_31000000::marshalArguments(cdrStream& _n)
-{
-  (const CMessageHdr&) *arg_0 >>= _n;
-  HeadersListener::_marshalObjRef(arg_1,_n);
-
-}
-
-void _0RL_cd_14edc9663ea08cf8_31000000::unmarshalArguments(cdrStream& _n)
-{
-  arg_0_ = new CMessageHdr;
-  (CMessageHdr&)arg_0_ <<= _n;
-  arg_0 = &arg_0_.in();
-  arg_1_ = HeadersListener::_unmarshalObjRef(_n);
-  arg_1 = arg_1_.in();
-
-}
-
-const char* const _0RL_cd_14edc9663ea08cf8_31000000::_user_exns[] = {
-  CInternalServerException::_PD_repoId
-};
-
-void _0RL_cd_14edc9663ea08cf8_31000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
-{
-  if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
-    CInternalServerException _ex;
-    _ex <<= s;
-    if (iop_client) iop_client->RequestCompleted();
-    throw _ex;
-  }
-
-
-  else {
-    if (iop_client) iop_client->RequestCompleted(1);
-    OMNIORB_THROW(UNKNOWN,UNKNOWN_UserException,
-                  (::CORBA::CompletionStatus)s.completion());
-  }
-}
-
 // Local call call-back function.
 static void
-_0RL_lcfn_14edc9663ea08cf8_41000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_14edc9663ea08cf8_01000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_14edc9663ea08cf8_31000000* tcd = (_0RL_cd_14edc9663ea08cf8_31000000*)cd;
+  _0RL_cd_14edc9663ea08cf8_e0000000* tcd = (_0RL_cd_14edc9663ea08cf8_e0000000*)cd;
   _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
 #ifdef HAS_Cplusplus_catch_exception_by_base
-  impl->GetHeaders(*tcd->arg_0, tcd->arg_1);
+  impl->GetDecryptedSource(*tcd->arg_0, tcd->arg_1);
 #else
   if (!cd->is_upcall())
-    impl->GetHeaders(*tcd->arg_0, tcd->arg_1);
+    impl->GetDecryptedSource(*tcd->arg_0, tcd->arg_1);
   else {
     try {
-      impl->GetHeaders(*tcd->arg_0, tcd->arg_1);
+      impl->GetDecryptedSource(*tcd->arg_0, tcd->arg_1);
     }
     catch(CInternalServerException& ex) {
       throw omniORB::StubUserException(ex._NP_duplicate());
@@ -2293,111 +1819,11 @@ _0RL_lcfn_14edc9663ea08cf8_41000000(omniCallDescriptor* cd, omniServant* svnt)
 
 }
 
-void _objref_MessageBrowseService::GetHeaders(const CMessageHdr& p_messageHdr, HeadersListener_ptr p_headersListener)
+void _objref_MessageBrowseService::GetDecryptedSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener)
 {
-  _0RL_cd_14edc9663ea08cf8_31000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_41000000, "GetHeaders", 11);
+  _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_01000000, "GetDecryptedSource", 19);
   _call_desc.arg_0 = &(CMessageHdr&) p_messageHdr;
-  _call_desc.arg_1 = p_headersListener;
-
-  _invoke(_call_desc);
-
-
-
-}
-// Proxy call descriptor class. Mangled signature:
-//  void_i_cCMessageHdr_i_cBodyListener_e_cCInternalServerException
-class _0RL_cd_14edc9663ea08cf8_51000000
-  : public omniCallDescriptor
-{
-public:
-  inline _0RL_cd_14edc9663ea08cf8_51000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
-     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 1, upcall)
-  {
-    
-  }
-  
-  void marshalArguments(cdrStream&);
-  void unmarshalArguments(cdrStream&);
-
-    
-  void userException(cdrStream&,_OMNI_NS(IOP_C)*,const char*);
-  static const char* const _user_exns[];
-
-  CMessageHdr_var arg_0_;
-  const CMessageHdr* arg_0;
-  BodyListener_var arg_1_;
-  BodyListener_ptr arg_1;
-};
-
-void _0RL_cd_14edc9663ea08cf8_51000000::marshalArguments(cdrStream& _n)
-{
-  (const CMessageHdr&) *arg_0 >>= _n;
-  BodyListener::_marshalObjRef(arg_1,_n);
-
-}
-
-void _0RL_cd_14edc9663ea08cf8_51000000::unmarshalArguments(cdrStream& _n)
-{
-  arg_0_ = new CMessageHdr;
-  (CMessageHdr&)arg_0_ <<= _n;
-  arg_0 = &arg_0_.in();
-  arg_1_ = BodyListener::_unmarshalObjRef(_n);
-  arg_1 = arg_1_.in();
-
-}
-
-const char* const _0RL_cd_14edc9663ea08cf8_51000000::_user_exns[] = {
-  CInternalServerException::_PD_repoId
-};
-
-void _0RL_cd_14edc9663ea08cf8_51000000::userException(cdrStream& s, _OMNI_NS(IOP_C)* iop_client, const char* repoId)
-{
-  if ( omni::strMatch(repoId, CInternalServerException::_PD_repoId) ) {
-    CInternalServerException _ex;
-    _ex <<= s;
-    if (iop_client) iop_client->RequestCompleted();
-    throw _ex;
-  }
-
-
-  else {
-    if (iop_client) iop_client->RequestCompleted(1);
-    OMNIORB_THROW(UNKNOWN,UNKNOWN_UserException,
-                  (::CORBA::CompletionStatus)s.completion());
-  }
-}
-
-// Local call call-back function.
-static void
-_0RL_lcfn_14edc9663ea08cf8_61000000(omniCallDescriptor* cd, omniServant* svnt)
-{
-  _0RL_cd_14edc9663ea08cf8_51000000* tcd = (_0RL_cd_14edc9663ea08cf8_51000000*)cd;
-  _impl_MessageBrowseService* impl = (_impl_MessageBrowseService*) svnt->_ptrToInterface(MessageBrowseService::_PD_repoId);
-#ifdef HAS_Cplusplus_catch_exception_by_base
-  impl->GetBody(*tcd->arg_0, tcd->arg_1);
-#else
-  if (!cd->is_upcall())
-    impl->GetBody(*tcd->arg_0, tcd->arg_1);
-  else {
-    try {
-      impl->GetBody(*tcd->arg_0, tcd->arg_1);
-    }
-    catch(CInternalServerException& ex) {
-      throw omniORB::StubUserException(ex._NP_duplicate());
-    }
-
-
-  }
-#endif
-
-
-}
-
-void _objref_MessageBrowseService::GetBody(const CMessageHdr& p_messageHdr, BodyListener_ptr p_bodyListener)
-{
-  _0RL_cd_14edc9663ea08cf8_51000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_61000000, "GetBody", 8);
-  _call_desc.arg_0 = &(CMessageHdr&) p_messageHdr;
-  _call_desc.arg_1 = p_bodyListener;
+  _call_desc.arg_1 = p_sourceListener;
 
   _invoke(_call_desc);
 
@@ -2435,7 +1861,7 @@ _impl_MessageBrowseService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "GetRootFolder") ) {
 
-    _0RL_cd_14edc9663ea08cf8_b0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_c0000000, "GetRootFolder", 14, 1);
+    _0RL_cd_14edc9663ea08cf8_80000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_90000000, "GetRootFolder", 14, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2443,7 +1869,7 @@ _impl_MessageBrowseService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "GetAllFolders") ) {
 
-    _0RL_cd_14edc9663ea08cf8_d0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_e0000000, "GetAllFolders", 14, 1);
+    _0RL_cd_14edc9663ea08cf8_a0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_b0000000, "GetAllFolders", 14, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2451,31 +1877,23 @@ _impl_MessageBrowseService::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "GetMessageHdrs") ) {
 
-    _0RL_cd_14edc9663ea08cf8_f0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_01000000, "GetMessageHdrs", 15, 1);
+    _0RL_cd_14edc9663ea08cf8_c0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_d0000000, "GetMessageHdrs", 15, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if( omni::strMatch(op, "GetSourceMessage") ) {
+  if( omni::strMatch(op, "GetSource") ) {
 
-    _0RL_cd_14edc9663ea08cf8_11000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_21000000, "GetSourceMessage", 17, 1);
+    _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_f0000000, "GetSource", 10, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if( omni::strMatch(op, "GetHeaders") ) {
+  if( omni::strMatch(op, "GetDecryptedSource") ) {
 
-    _0RL_cd_14edc9663ea08cf8_31000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_41000000, "GetHeaders", 11, 1);
-    
-    _handle.upcall(this,_call_desc);
-    return 1;
-  }
-
-  if( omni::strMatch(op, "GetBody") ) {
-
-    _0RL_cd_14edc9663ea08cf8_51000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_61000000, "GetBody", 8, 1);
+    _0RL_cd_14edc9663ea08cf8_e0000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_01000000, "GetDecryptedSource", 19, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2515,10 +1933,6 @@ POA_MessageSendListener::~POA_MessageSendListener() {}
 POA_MessageComposeService::~POA_MessageComposeService() {}
 
 POA_SourceListener::~POA_SourceListener() {}
-
-POA_BodyListener::~POA_BodyListener() {}
-
-POA_HeadersListener::~POA_HeadersListener() {}
 
 POA_MessageBrowseService::~POA_MessageBrowseService() {}
 

@@ -55,8 +55,6 @@
 #include "nsIStreamConverter.h"
 #include "nsIMimeStreamConverter.h"
 #include "nsMsgMimeCID.h"
-#include "BodyStreamListener.h"
-#include "HeadersStreamListener.h"
 #include "SourceStreamListener.h"
 #include <iostream>
 
@@ -67,87 +65,6 @@ MessageBrowseService_i::MessageBrowseService_i() {
 
 MessageBrowseService_i::~MessageBrowseService_i() {
 }
-
-void MessageBrowseService_i::GetHeaders(const CMessageHdr& p_messageHdr, HeadersListener_ptr p_headerListener)
-{
- 	nsCOMPtr<nsIMsgMessageService> msgService;
-
- 	nsresult rv;
- 	nsCOMPtr<nsIMessenger> messenger = do_CreateInstance(
- 			"@mozilla.org/messenger;1", &rv);
- 	rv = messenger->MessageServiceFromURI(p_messageHdr.uri, getter_AddRefs(
- 			msgService));
- 	ENSURE_SUCCESS(rv, "Cannot create nsIMsgMessageService");
-
- 	nsCOMPtr<nsIInputStream> messageStream = do_CreateInstance(
- 			"@mozilla.org/network/sync-stream-listener;1", &rv);
- 	ENSURE_SUCCESS(rv, "Cannot create nsIInputStream");
-
- 	nsCOMPtr<nsIProxyObjectManager> proxyObjMgr = do_GetService(
- 			"@mozilla.org/xpcomproxy;1", &rv);
- 	ENSURE_SUCCESS(rv, "Cannot get nsIProxyObjectManager");
-
- 	nsCOMPtr<nsIMsgMessageService> pMsgServiceProxy;
- 	ENSURE_SUCCESS(rv, "Cannot get GetProxyForObject nsIMsgMessageService");
-
- 	rv = proxyObjMgr->GetProxyForObject(NS_UI_THREAD_EVENTQ, NS_GET_IID(
- 			nsIMsgMessageService), msgService, PROXY_SYNC | PROXY_ALWAYS,
- 			getter_AddRefs(pMsgServiceProxy));
-
- 	nsCOMPtr<nsIURI> url;
-
- 	rv = msgService->GetUrlForUri(p_messageHdr.uri, getter_AddRefs(url),
- 					nsnull);
- 	ENSURE_SUCCESS(rv, "Cannot get GetUrlForUri nsIMsgMessageService");
-
- 	nsCOMPtr<nsIStreamConverter> m_mime_parser = do_CreateInstance(
- 			NS_MAILNEWS_MIME_STREAM_CONVERTER_CONTRACTID, &rv);
- 	ENSURE_SUCCESS(rv, "Cannot create nsIMimeStreamConverter");
-
- 	//libmime converter
- 	nsCOMPtr<nsIMimeStreamConverter> mimeConverter = do_QueryInterface(
- 			m_mime_parser, &rv);
- 	ENSURE_SUCCESS(rv, "Cannot cast nsIMimeStreamConverter on nsIStreamConverter");
-
- 	if (mimeConverter) {
- 		mimeConverter->SetMimeOutputType(nsMimeOutput::nsMimeMessageHeaderDisplay);
- 		mimeConverter->SetForwardInline(PR_FALSE);
- 		mimeConverter->SetIdentity(nsnull);
- 		mimeConverter->SetOriginalMsgURI(nsnull);
- 	}
-
- 	nsCOMPtr<HeadersStreamListener> msgStreamListener = new HeadersStreamListener(p_headerListener);
-
- 	nsCOMPtr<nsIChannel> dummyChannel;
- 	rv = NS_NewInputStreamChannel(getter_AddRefs(dummyChannel), url, nsnull);
- 	ENSURE_SUCCESS(rv, "Cannot create NS_NewInputStreamChannel for nsIChannel");
-
- 	m_mime_parser->AsyncConvertData(
- 		    "message/rfc822",
- 		    "message/rfc822",
- 		    msgStreamListener, dummyChannel);
-
- 	nsCOMPtr<nsIStreamListener> inputConvertedListener = do_QueryInterface(m_mime_parser, &rv);
- 	ENSURE_SUCCESS(rv, "Cannot cast nsIStreamListener on nsIStreamConverter");
-
- 	rv = pMsgServiceProxy->DisplayMessage(p_messageHdr.uri, inputConvertedListener,
- 			nsnull, nsnull, nsnull, nsnull);
- 	ENSURE_SUCCESS(rv, "Cannot get DisplayMessage nsIMsgMessageService");
-
- 	nsCOMPtr<nsIEventQueueService> pEventQService = do_GetService(
- 	      NS_EVENTQUEUESERVICE_CONTRACTID, &rv);
- 	ENSURE_SUCCESS(rv, "Cannot get service nsIEventQueueService");
-
- 	nsCOMPtr<nsIEventQueue> eventQueue;
- 	rv = pEventQService->GetThreadEventQueue(NS_UI_THREAD,
- 	      getter_AddRefs(eventQueue));
- 	ENSURE_SUCCESS(rv,"Cannot get GetThreadEventQueue nsIEventQueueService");
-
- 	//loop until loading is not complete
- 	while (!msgStreamListener->IsDone()) {
- 	    eventQueue->ProcessPendingEvents();
- 	}
- }
 
 void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 		CMessageHdrs_out p_messageHdrs)
@@ -402,7 +319,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 
 }
 
- void MessageBrowseService_i::GetSourceMessage(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceMessageListener)
+ void MessageBrowseService_i::GetSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceMessageListener)
  {
 	nsCOMPtr<nsIMsgMessageService> msgService;
 
@@ -449,7 +366,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
 	}
 }
 
- void MessageBrowseService_i::GetBody(const CMessageHdr& p_messageHdr, BodyListener_ptr p_bodyListener)
+ void MessageBrowseService_i::GetDecryptedSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener)
   {
  	nsCOMPtr<nsIMsgMessageService> msgService;
 
@@ -497,7 +414,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
  		mimeConverter->SetOriginalMsgURI(nsnull);
  	}
 
- 	nsCOMPtr<BodyStreamListener> msgStreamListener = new BodyStreamListener(p_bodyListener);
+ 	nsCOMPtr<SourceStreamListener> sourceStreamListener = new SourceStreamListener(p_sourceListener);
 
  	nsCOMPtr<nsIChannel> dummyChannel;
  	rv = NS_NewInputStreamChannel(getter_AddRefs(dummyChannel), url, nsnull);
@@ -506,7 +423,7 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
  	m_mime_parser->AsyncConvertData(
  		    "message/rfc822",
  		    "message/rfc822",
- 		    msgStreamListener, dummyChannel);
+ 		   sourceStreamListener, dummyChannel);
 
  	nsCOMPtr<nsIStreamListener> inputConvertedListener = do_QueryInterface(m_mime_parser, &rv);
  	ENSURE_SUCCESS(rv, "Cannot cast nsIStreamListener on nsIStreamConverter");
@@ -525,81 +442,8 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
  	ENSURE_SUCCESS(rv,"Cannot get GetThreadEventQueue nsIEventQueueService");
 
  	//loop until loading is not complete
- 	while (!msgStreamListener->IsDone()) {
+ 	while (!sourceStreamListener->IsDone()) {
  	    eventQueue->ProcessPendingEvents();
  	}
  }
 
-#define EMPTY_MESSAGE_LINE(buf) (buf[0] == '\r' || buf[0] == '\n' || buf[0] == '\0' || buf[0] == '\t')
-
- void MessageBrowseService_i::GetSourceMessage2(const char* uri,
-		::CORBA::String_out source) {
-
-	nsCOMPtr<nsIMsgDBHdr> hdr;
-	nsresult rv = GetMsgDBHdrFromURI(uri, getter_AddRefs(hdr));
-	ENSURE_SUCCESS(rv, "Cannot GetMsgDBHdrFromURI");
-
-	if (!hdr)
-		cout << "NOT Found" << endl;
-
-	nsCOMPtr<nsIMsgFolder> folder;
-	hdr->GetFolder(getter_AddRefs(folder));
-
-	nsCOMPtr<nsIInputStream> inputStream;
-	nsCOMPtr<nsILocalFile> localFile;
-	folder->GetFilePath(getter_AddRefs(localFile));
-	nsCOMPtr<nsIFileInputStream> fileStream = do_CreateInstance(
-			NS_LOCALFILEINPUTSTREAM_CONTRACTID, &rv);
-
-	rv = fileStream->Init(localFile, PR_RDONLY, 0664, PR_FALSE); //just have to read the messages
-	inputStream = do_QueryInterface(fileStream);
-
-	PRUint32 messageOffset;
-	PRUint32 lineCount;
-
-	nsCOMPtr<nsILineInputStream> fileLineStream =
-			do_QueryInterface(inputStream);
-	hdr->GetMessageOffset(&messageOffset);
-	hdr->GetLineCount(&lineCount);
-
-	nsCOMPtr<nsISeekableStream> seekableStream = do_QueryInterface(inputStream);
-	seekableStream->Seek(PR_SEEK_SET, messageOffset);
-
-	PRBool hasMore = PR_TRUE;
-	nsCAutoString curLine;
-	PRBool inMessageBody = PR_FALSE;
-
-	/*while (hasMore) // advance past message headers
-	{
-		nsresult rv = fileLineStream->ReadLine(curLine, &hasMore);
-		if (NS_FAILED(rv) || EMPTY_MESSAGE_LINE(curLine))
-			break;
-	}
-*/
-	PRUint32 msgSize;
-	hdr->GetMessageSize(&msgSize);
-	cout << "messageOffset : " << messageOffset << endl;
-	cout << "lineCount : " << lineCount << endl;
-
-	//   char *body = (char*) PORT_Alloc (msgSize + 1);
-	nsCAutoString body;
-	PRUint32 lineCountParsed = 0;
-	//for (hasMore = PR_TRUE; lineCount >= 0 && hasMore && NS_SUCCEEDED(rv); lineCount--)
-	while (hasMore == PR_TRUE && (lineCountParsed < lineCount)) {
-		rv = fileLineStream->ReadLine(curLine, &hasMore);
-		//if (!EMPTY_MESSAGE_LINE(curLine))
-		lineCountParsed++;
-		if (NS_FAILED(rv)) {
-			cout << "Readline failed" << endl;
-			break;
-		}
-
-		curLine.Append(CRLF);
-
-		body += curLine.get();
-
-	}
-
-	source = body.get();
-
-}

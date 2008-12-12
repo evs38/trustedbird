@@ -144,19 +144,10 @@ interface SourceListener {
     void OnLoad(in string source);
 };
 
-interface BodyListener {
-    void OnLoad(in string source);
-};
-
-interface HeadersListener {
-    void OnLoad(in CHeaders p_headers);
-};
-
 interface MessageBrowseService {
         void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder) raises (CInternalServerException);
         void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders) raises (CInternalServerException);
         void GetMessageHdrs(in CFolder p_folder, out CMessageHdrs p_messageHdrs) raises (CInternalServerException);
-        void GetSourceMessage(in CMessageHdr p_messageHdr, in SourceListener p_sourceListener) raises (CInternalServerException);
-        void GetHeaders(in CMessageHdr p_messageHdr, in HeadersListener p_headersListener) raises (CInternalServerException);
-        void GetBody(in CMessageHdr p_messageHdr, in BodyListener p_bodyListener) raises (CInternalServerException);
+        void GetSource(in CMessageHdr p_messageHdr, in SourceListener p_sourceListener) raises (CInternalServerException);
+        void GetDecryptedSource(in CMessageHdr p_messageHdr, in SourceListener p_sourceListener) raises (CInternalServerException);
 };

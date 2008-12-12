@@ -53,13 +53,9 @@ public:
 
 	virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
 
-	virtual void GetSourceMessage(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener);
+	virtual void GetSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener);
 
-	virtual void GetBody(const CMessageHdr& p_messageHdr, BodyListener_ptr p_bodyListener);
-
-	virtual void GetHeaders(const CMessageHdr& p_messageHdr, HeadersListener_ptr p_headerListener);
-
-	virtual void GetSourceMessage2(const char* uri, ::CORBA::String_out source);
+	virtual void GetDecryptedSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener);
 
 private:
 
