@@ -146,8 +146,10 @@ interface SourceListener {
 
 interface MessageBrowseService {
         void GetRootFolder(in CAccount p_account, out CFolder p_rootFolder) raises (CInternalServerException);
+        void GetLocalFolder(out CFolder p_localFolder) raises (CInternalServerException);
         void GetAllFolders(in CFolder p_rootFolder, out CFolders p_folders) raises (CInternalServerException);
         void GetMessageHdrs(in CFolder p_folder, out CMessageHdrs p_messageHdrs) raises (CInternalServerException);
         void GetSource(in CMessageHdr p_messageHdr, in SourceListener p_sourceListener) raises (CInternalServerException);
         void GetDecryptedSource(in CMessageHdr p_messageHdr, in SourceListener p_sourceListener) raises (CInternalServerException);
+        void GetNewMessages(in CFolder p_Folder) raises (CInternalServerException);
 };

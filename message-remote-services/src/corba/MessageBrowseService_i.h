@@ -57,6 +57,9 @@ public:
 
 	virtual void GetDecryptedSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener);
 
+	virtual void GetNewMessages(const CFolder& p_Folder);
+
+	virtual void GetLocalFolder(CFolder_out p_localFolder);
 private:
 
 	virtual void Adapt(const char * recipients, Addresses& addresses);

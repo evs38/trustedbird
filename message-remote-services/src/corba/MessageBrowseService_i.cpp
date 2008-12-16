@@ -447,3 +447,58 @@ void MessageBrowseService_i::GetMessageHdrs(const CFolder& p_folder,
  	}
  }
 
+ void MessageBrowseService_i::GetNewMessages(const CFolder& p_Folder)
+ {
+	nsresult rv;
+	nsCOMPtr<nsIRDFService> rdf = do_GetService(
+			"@mozilla.org/rdf/rdf-service;1", &rv);
+	ENSURE_SUCCESS(rv, "Cannot GetService for nsIRDFService");
+
+	nsCOMPtr<nsIMsgFolder> pFolder;
+
+	nsCOMPtr<nsIRDFResource> resource;
+	rv = rdf->GetResource(nsCAutoString(p_Folder.uri), getter_AddRefs(
+					resource));
+	ENSURE_SUCCESS(rv, "Cannot GetResource on nsIRDFResource");
+
+	pFolder = do_QueryInterface(resource, &rv);
+	ENSURE_SUCCESS(rv, "Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
+
+	rv = pFolder->GetNewMessages(nsnull, nsnull);
+	ENSURE_SUCCESS(rv, "Cannot GetNewMessages on nsIMsgFolder");
+}
+
+ void MessageBrowseService_i::GetLocalFolder(CFolder_out p_localFolder)
+ {
+	nsresult rv;
+	nsCOMPtr<nsIRDFService> rdf = do_GetService(
+			"@mozilla.org/rdf/rdf-service;1", &rv);
+	ENSURE_SUCCESS(rv, "Cannot GetService for nsIRDFService");
+
+	nsCOMPtr<nsIRDFResource> resource;
+	rv = rdf->GetResource(nsCAutoString("mailbox://nobody@Local%20Folders"), getter_AddRefs(
+						resource));
+	ENSURE_SUCCESS(rv, "Cannot GetResource on nsIRDFResource");
+
+	nsCOMPtr<nsIMsgFolder> pFolder;
+	pFolder = do_QueryInterface(resource, &rv);
+	ENSURE_SUCCESS(rv, "Cannot do_QueryInterface on nsIRDFResource to nsIMsgFolder");
+
+	CFolder * cFolder = new CFolder();
+
+	PRUnichar * n;
+	rv = pFolder->GetName(&n);
+	ENSURE_SUCCESS(rv, "Cannot GetName on nsIMsgFolder");
+	nsAutoString folderString;
+	folderString.Adopt(n);
+
+	cFolder->name = NS_ConvertUTF16toUTF8(folderString).get();
+	char * uri;
+
+	rv = pFolder->GetURI(&uri);
+	ENSURE_SUCCESS(rv, "Cannot GetURI on nsIMsgFolder");
+
+	cFolder->uri = uri;
+	p_localFolder = cFolder;
+
+}
