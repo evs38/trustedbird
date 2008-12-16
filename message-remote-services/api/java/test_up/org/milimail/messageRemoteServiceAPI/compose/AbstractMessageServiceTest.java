@@ -43,6 +43,7 @@ import junit.framework.TestCase;
 
 import org.milimail.messageRemoteServiceAPI.account.Account;
 import org.milimail.messageRemoteServiceAPI.account.AccountServiceProxy;
+import org.milimail.messageRemoteServiceAPI.browse.MessageBrowseServiceProxy;
 import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.init.API;
@@ -53,16 +54,19 @@ import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 public abstract class AbstractMessageServiceTest extends TestCase {
 	protected MessageComposeServiceProxy composeService;
 	protected AccountServiceProxy accountService;
+	protected MessageBrowseServiceProxy browseService;
 	protected MessageSendListener messageListener;
 	protected Account account;
 	protected String testPath;
     protected String[] to = { "user2@test.milimail.org" };
+    protected ServiceCreator serviceCreator;
 	protected void setUp() throws Exception {
-		ServiceCreator serviceCreator = API.init();
+		serviceCreator = API.init();
 		composeService = serviceCreator.createMessageComposeService();
 		accountService = serviceCreator.createAccountService();
 		messageListener = serviceCreator
 				.createMessageSendListener(new MessageSendListenerServantConsole());
+		browseService = serviceCreator.createBrowseService();
 		account = setUpAccount();
 		testPath = new File("./res/test").getCanonicalPath();
 	}

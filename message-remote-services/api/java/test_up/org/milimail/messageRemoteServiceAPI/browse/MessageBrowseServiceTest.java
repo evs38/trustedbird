@@ -132,26 +132,46 @@ public class MessageBrowseServiceTest extends TestCase {
 		System.out.println("rootFolder uri : " + folder.uri);
 	}
 	
+	public void testGetLocalFolder() throws Exception {
+		CFolderHolder folderHolder = new CFolderHolder();
+		browseService.getLocalFolder(folderHolder);
+		
+		CFolder folder = folderHolder.value;
+		assertNotNull(folder);
+		System.out.println("local name : " + folder.name);
+		System.out.println("local uri : " + folder.uri);
+	}
 	
-	public void testGetAllFolders() throws Exception {
-		CFoldersHolder folders = new CFoldersHolder();
+public void testGetAllImapFolders() throws Exception {
+		
 		CFolderHolder folderHolder = new CFolderHolder();
 		browseService.getRootFolder(account, folderHolder);
 		
-		browseService.getAllFolders(folderHolder.value, folders);
-		assertNotNull(folders);
+		printFolders(folderHolder.value);
+	}
+	
+	public void testGetAllLocalFolders() throws Exception {
 		
+		CFolderHolder folderHolder = new CFolderHolder();
+		browseService.getLocalFolder(folderHolder);
+		
+		printFolders(folderHolder.value);
+	}
+
+	private void printFolders(CFolder folder)
+			throws InternalServerException {
+		
+		CFoldersHolder folders = new CFoldersHolder();
+		browseService.getAllFolders(folder, folders);
 		CFolder[] afolders = folders.value;
 		
 		for (int i = 0; i < afolders.length; i++) {
+			assertNotNull(afolders[i].name);
+			assertNotNull(afolders[i].uri);
+			assertTrue(afolders[i].uri.length() > 0);
+			assertTrue(afolders[i].name.length() > 0);
 			System.out.println("Folder " + i + " : " + afolders[i].name + " " + afolders[i].uri);
-			CFoldersHolder folders2 = new CFoldersHolder();
-
-			browseService.getAllFolders(afolders[i], folders2);
-			
-			for (int j = 0; j < folders2.value.length; j++) {
-				System.out.println("Folder " + j + " : " + folders2.value[j].name);
-			}
+			printFolders(afolders[i]);
 		}
 	}
 	
@@ -187,12 +207,12 @@ public class MessageBrowseServiceTest extends TestCase {
 		browseService.getAllFolders(folderHolder.value, foldersHolder);
 		
 		CFolder folder = foldersHolder.value[0];
-		
+		System.out.println(folder.name);
 		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
 		browseService.getMessageHdrs(folder, hdrHolder);
 		
 		CMessageHdr[] hdrs = hdrHolder.value;
-
+		
 		for (int i = 0; i < hdrs.length; i++) {
 			CMessageHdr hdr = hdrs[i];
 			System.out.println(hdr.uri + " " + hdr.subject);

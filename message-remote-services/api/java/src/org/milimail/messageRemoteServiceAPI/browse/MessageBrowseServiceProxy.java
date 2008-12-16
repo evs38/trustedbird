@@ -46,6 +46,16 @@ public class MessageBrowseServiceProxy {
 		}
 	}
 
+	public void getLocalFolder(CFolderHolder folder)
+			throws InternalServerException {
+		try {
+			service.GetLocalFolder(folder);
+		} catch (CInternalServerException e) {
+			throw new InternalServerException(e);
+		}
+	}
+
+	
 	public void getSource(CMessageHdr hdr, SourceListener sourceListener)
 			throws InternalServerException {
 		try {
@@ -65,5 +75,14 @@ public class MessageBrowseServiceProxy {
 		}
 
 	}
+	
+	public void getNewMessages(CFolder folder)
+			throws InternalServerException {
+		try {
+			service.GetNewMessages(folder);
+		} catch (CInternalServerException e) {
+			throw new InternalServerException(e);
+		}
 
+}
 }
