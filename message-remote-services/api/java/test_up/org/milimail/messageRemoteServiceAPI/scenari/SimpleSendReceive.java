@@ -2,21 +2,20 @@ package org.milimail.messageRemoteServiceAPI.scenari;
 
 import java.util.List;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
 import org.milimail.messageRemoteServiceAPI.account.Account;
+import org.milimail.messageRemoteServiceAPI.browse.Folder;
+import org.milimail.messageRemoteServiceAPI.browse.FolderHolder;
+import org.milimail.messageRemoteServiceAPI.browse.FoldersHolder;
+import org.milimail.messageRemoteServiceAPI.browse.MessageHandler;
+import org.milimail.messageRemoteServiceAPI.browse.MessageHandlersHolder;
 import org.milimail.messageRemoteServiceAPI.compose.AbstractMessageServiceTest;
 import org.milimail.messageRemoteServiceAPI.compose.Message;
 import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.listeners.AbstractMimeMessageListener;
-import org.milimail.messageRemoteServiceAPI.stubs.CFolder;
-import org.milimail.messageRemoteServiceAPI.stubs.CFolderHolder;
-import org.milimail.messageRemoteServiceAPI.stubs.CFoldersHolder;
-import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
-import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdrsHolder;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceListener;
 
 public class SimpleSendReceive extends AbstractMessageServiceTest {
@@ -33,7 +32,7 @@ public class SimpleSendReceive extends AbstractMessageServiceTest {
 		message.setTo(to);
 		
 		
-		CMessageHdr hdr = sendAndReceiveHandler(message);
+		MessageHandler hdr = sendAndReceiveHandler(message);
 		
 		sourceMessageListener = serviceCreator
 				.createSourceMessageListener(new AbstractMimeMessageListener() {
@@ -59,35 +58,33 @@ public class SimpleSendReceive extends AbstractMessageServiceTest {
 		
 	}
 
-	private CMessageHdr sendAndReceiveHandler(Message message)
+	private MessageHandler sendAndReceiveHandler(Message message)
 			throws InternalServerException, InterruptedException,
 			CommunicationException {
 		composeService.sendMessage(account, message, messageListener);
 
 		
-		CFoldersHolder foldersHolder = new CFoldersHolder();
-		CFolderHolder folderHolder = new CFolderHolder();
+		FoldersHolder foldersHolder = new FoldersHolder();
+		FolderHolder folderHolder = new FolderHolder();
 		
 		List<Account> accountsDest = accountService.GetAllAccounts();
 		Account accountDest = accountsDest.get(1);
 		
 		browseService.getRootFolder(accountDest, folderHolder);
 
-		browseService.getAllFolders(folderHolder.value, foldersHolder);
+		browseService.getAllFolders(folderHolder.getValue(), foldersHolder);
 		
-		CFolder folder = foldersHolder.value[0];
+		Folder folder = foldersHolder.getValue()[0];
 		
 		Thread.sleep(1000);
 		browseService.getNewMessages(folder);
 		Thread.sleep(1000);
-		CMessageHdrsHolder hdrHolder = new CMessageHdrsHolder();
-		browseService.getMessageHdrs(folder, hdrHolder);
+		MessageHandlersHolder hdrHolder = new MessageHandlersHolder();
+		browseService.getMessageHandlers(folder, hdrHolder);
 		
-		CMessageHdr[] hdrs = hdrHolder.value;
+		MessageHandler[] handlers = hdrHolder.getValue();
 		
-		assertTrue(hdrs.length == 1);
-		
-		CMessageHdr hdr = hdrs[0];
-		return hdr;
+		MessageHandler handler = handlers[0];
+		return handler;
 	}
 }
