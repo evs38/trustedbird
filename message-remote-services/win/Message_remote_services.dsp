@@ -42,8 +42,8 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MT /W3 /Gm /GX /Od /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /Gm /GX /Od /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "WIN32" /D "NDEBUG" /D "_WINSTATIC" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /D "DSN" /YX /FD /c
+# ADD BASE CPP /nologo /MT /W3 /GX /Od /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Od /I "..\lib\omniORB-4.1.2\include" /I "..\src\corba" /I "..\src\xpcom" /D "WIN32" /D "NDEBUG" /D "_WINSTATIC" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MESSAGE_REMOTE_SERVICES_EXPORTS" /D "__WIN32__" /D "__x86__" /D _WIN32_WINNT=0x0400 /D "__NT__" /D __OSVERSION__=4 /D "MOZILLA_INTERNAL_API" /D "XP_WIN" /D "DSN" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 omniORB4.lib omniDynamic4.lib omnithread.lib xpcomglue_s.lib xpcom.lib xpcom_core.lib plc4.lib nspr4.lib plds4.lib ws2_32.lib mswsock.lib advapi32.lib /nologo /dll /machine:I386 /out:"Release/libMessageRemoteService.dll" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
+# ADD LINK32 omniORB4.lib omniDynamic4.lib omnithread.lib xpcomglue_s.lib xpcom.lib xpcom_core.lib plc4.lib nspr4.lib plds4.lib msgbsutl_s.lib ws2_32.lib mswsock.lib advapi32.lib /nologo /dll /machine:I386 /out:"Release/libMessageRemoteService.dll" /libpath:"..\lib\omniORB-4.1.2\lib\x86_win32"
 # SUBTRACT LINK32 /verbose /debug /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "Message_remote_services - Win32 Debug"
@@ -98,6 +98,14 @@ SOURCE=..\src\corba\AccountService_i.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\corba\MessageBrowseService_i.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\corba\MessageBrowseService_i.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\corba\MessageComposeService_i.cpp
 # End Source File
 # Begin Source File
@@ -114,11 +122,19 @@ SOURCE=..\src\xpcom\MessageRemoteServiceModule.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\corba\MRSLogger.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\corba\ServicesSK.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\corba\MRSLogger.cpp
+SOURCE=..\src\corba\SourceStreamListener.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\corba\SourceStreamListener.h
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -146,15 +162,15 @@ SOURCE=..\src\xpcom\MessageRemoteService.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\corba\MRSLogger.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\corba\Services.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\src\corba\Utils.h
-# End Source File
-# Begin Source File
-SOURCE=..\src\corba\MRSLogger.h
-
 # End Source File
 # End Group
 # Begin Group "Resource Files"
