@@ -37,11 +37,6 @@
 
 #include "SourceStreamListener.h"
 #include "nsString.h"
-#include "nsIDOMParser.h"
-#include "nsIDOMNodeList.h"
-#include "nsIDOMNode.h"
-#include "nsIDOMDocument.h"
-#include "nsIDOMNamedNodeMap.h"
 #include "nsMsgUtils.h"
 #include "Utils.h"
 #include <iostream>
