@@ -185,7 +185,7 @@
         <env key="PATH"
              path="${env.PATH};${env.vc6sdk}\Common\MSDev98\Bin;${env.vc6sdk}\VC98\Bin" />
         <env key="include"
-             path="${env.vc6sdk}\VC98\INCLUDE;${env.vc6sdk}\VC98\ATL\INCLUDE;${env.sdki}\xpcom;${env.sdki}\msgcompose;${env.sdki}\nspr;${env.sdki}\msgbase;${env.sdki}\msgcompose;${env.sdki}\mailnews;${env.sdki}\string;${env.sdki}\necko;${env.sdki}\msgdb;${env.sdki}\msgbaseutil;${env.sdki}\appshell;${env.sdki}\dom;${env.sdki}\msgsmime;${env.sdki}\pref" />
+             path="${env.vc6sdk}\VC98\INCLUDE;${env.vc6sdk}\VC98\ATL\INCLUDE;${env.sdki}\xpcom;${env.sdki}\msgcompose;${env.sdki}\nspr;${env.sdki}\msgbase;${env.sdki}\msgcompose;${env.sdki}\mailnews;${env.sdki}\string;${env.sdki}\necko;${env.sdki}\msgdb;${env.sdki}\msgbaseutil;${env.sdki}\appshell;${env.sdki}\dom;${env.sdki}\msgsmime;${env.sdki}\pref;${env.sdki}\rdf;${env.sdki}\mime" />
         <env key="lib" path="${env.vc6sdk}\VC98\lib;${env.sdk}\lib" />
         <arg value="/c" />
         <arg value="build.bat" />
