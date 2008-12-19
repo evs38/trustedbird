@@ -52,13 +52,15 @@ import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServant
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 
 public abstract class AbstractMessageServiceTest extends TestCase {
+	private static final String MAIL_ADDRESS = "user2@test.milimail.org";
+	
 	protected MessageComposeServiceProxy composeService;
 	protected AccountServiceProxy accountService;
 	protected MessageBrowseServiceProxy browseService;
 	protected MessageSendListener messageListener;
 	protected Account account;
 	protected String testPath;
-    protected String[] to = { "user2@test.milimail.org" };
+    protected String[] to = { MAIL_ADDRESS };
     protected ServiceCreator serviceCreator;
 	protected void setUp() throws Exception {
 		serviceCreator = API.init();
