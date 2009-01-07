@@ -85,6 +85,7 @@
     <javac srcdir="test_up" destdir="classes_test_up" encoding="UTF-8">
       <classpath>
         <fileset dir="lib"/>
+        <fileset dir="lib/javamail"/>
         <fileset dir="tools"/>
         <fileset dir="dist/mrs-java"/>
       </classpath>
@@ -94,6 +95,7 @@
     <javac srcdir="test_down" destdir="classes_test_down"  encoding="UTF-8">
       <classpath>
         <fileset dir="lib"/>
+        <fileset dir="lib/javamail"/>
         <fileset dir="tools"/>
         <fileset dir="dist/mrs-java"/>
       </classpath>
@@ -126,6 +128,7 @@
         <fileset dir="tools"/>
         <pathelement location="classes_test_down" />
         <fileset dir="lib"/>
+        <fileset dir="lib/javamail"/>
         <fileset dir="dist/mrs-java"/>
       </classpath>
       <formatter type="plain" />
@@ -140,26 +143,74 @@
 
 
   <!-- ================================= 
-	          target: test_up              
+	          target: test_up_send              
 	         ================================= -->
-  <target name="test_up" depends="compile-tests" description="--> Launch All test">
+  <target name="test_up_send" depends="compile-tests" description="--> Launch All test">
     <echo>Test Up begins</echo>
     <junit printsummary="no" fork="yes" haltonfailure="yes" haltonerror="yes">
       <classpath>
         <fileset dir="tools"/>
         <pathelement location="classes_test_up" />
         <fileset dir="lib"/>
+        <fileset dir="lib/javamail"/>
         <fileset dir="dist/mrs-java"/>
       </classpath>
       <formatter type="plain" />
       <batchtest fork="no">
         <fileset dir="test_up">
-          <include name="**/*Test*.java"/>
+          <include name="**/*MessageServiceTest*.java"/>
           <exclude name="**/Abstract*"/>
         </fileset>
       </batchtest>
     </junit>
-    <echo>Test Up finished with success</echo>
+    <echo>Test Up Send finished with success</echo>
   </target>
 
+  <!-- ================================= 
+                 target: test_up_browse            
+                ================================= -->
+  <target name="test_up_browse" depends="compile-tests" description="--> Launch All test">
+    <echo>Test Up begins</echo>
+    <junit printsummary="no" fork="yes" haltonfailure="yes" haltonerror="yes">
+      <classpath>
+        <fileset dir="tools"/>
+        <pathelement location="classes_test_up" />
+        <fileset dir="lib"/>
+        <fileset dir="lib/javamail"/>
+        <fileset dir="dist/mrs-java"/>
+      </classpath>
+      <formatter type="plain" />
+      <batchtest fork="no">
+        <fileset dir="test_up">
+          <include name="**/*BrowseServiceTest*.java"/>
+          <exclude name="**/Abstract*"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <echo>Test Up Browse finished with success</echo>
+  </target>
+
+  <!-- ================================= 
+                   target: test_up_scenari             
+                  ================================= -->
+  <target name="test_up_scenari" depends="compile-tests" description="--> Launch All test">
+    <echo>Test Up begins</echo>
+    <junit printsummary="no" fork="yes" haltonfailure="yes" haltonerror="yes">
+      <classpath>
+        <fileset dir="tools"/>
+        <pathelement location="classes_test_up" />
+        <fileset dir="lib"/>
+        <fileset dir="lib/javamail"/>
+        <fileset dir="dist/mrs-java"/>
+      </classpath>
+      <formatter type="plain" />
+      <batchtest fork="no">
+        <fileset dir="test_up">
+          <include name="**/*SendReceive*.java"/>
+          <exclude name="**/Abstract*"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <echo>Test Up Scenari finished with success</echo>
+  </target>
 </project>
