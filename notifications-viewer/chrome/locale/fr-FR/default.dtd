@@ -41,7 +41,7 @@
 <!ENTITY colMDNDeletedTooltip "Cliquez pour trier par notifications (effacé)">
 <!ENTITY contextMenuLabel "Visualiser les notifications">
 <!ENTITY PrefsDialog.title "Préférences Notifications Viewer">
-<!ENTITY PrefsDialog.generalities "Généralités">
+<!ENTITY PrefsDialog.generalities "Général">
 <!ENTITY PrefsDialog.groupBoxtimeOut "Délai de livraison">
 <!ENTITY PrefsDialog.labelconsiderTimeout "Prendre en considération le délai de livraison">
 <!ENTITY PrefsDialog.timeOut "Délai (en heures) :">
