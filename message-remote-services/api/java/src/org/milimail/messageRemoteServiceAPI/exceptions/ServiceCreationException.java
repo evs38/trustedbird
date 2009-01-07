@@ -36,6 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.exceptions;
 
+/**
+ * This error represent an error when creating service stub to access
+ * the Thunderbird embedding Services
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class ServiceCreationException extends Exception {
 
 	public ServiceCreationException() {

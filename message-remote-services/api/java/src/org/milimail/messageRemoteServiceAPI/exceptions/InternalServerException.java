@@ -36,6 +36,10 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.exceptions;
 
+/**
+ * This class represents an error in the Thunderbird Process
+ * @author Olivier PARNIERE BT France
+ */
 import org.milimail.messageRemoteServiceAPI.stubs.CInternalServerException;
 
 public class InternalServerException extends Exception {
