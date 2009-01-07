@@ -40,7 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
-
+/**
+ * This Class test The Message Compose Service
+ * @author Olivier PARNIERE
+ *
+ */
 public class MessageServiceTest extends AbstractMessageServiceTest {
 	
 	public void testSendMessage() throws Exception{

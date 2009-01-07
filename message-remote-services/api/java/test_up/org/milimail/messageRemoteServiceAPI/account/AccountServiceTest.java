@@ -42,7 +42,11 @@ import junit.framework.TestCase;
 
 import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
-
+/**
+ * This Class tests The Account Service 
+ * @author Olivier PARNIERE
+ *
+ */
 public class AccountServiceTest extends TestCase {
 	private AccountServiceProxy accountService;
 

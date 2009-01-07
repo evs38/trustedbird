@@ -52,6 +52,11 @@ import org.milimail.messageRemoteServiceAPI.listeners.AbstractMimeMessageListene
 import org.milimail.messageRemoteServiceAPI.listeners.SourceMessageListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceListener;
 
+/**
+ * This Class The Message Browse Service 
+ * @author Olivier PARNIERE
+ *
+ */
 public class MessageBrowseServiceTest extends TestCase {
 
 	private AccountServiceProxy accountService;
@@ -146,8 +151,8 @@ public class MessageBrowseServiceTest extends TestCase {
 		assertTrue(folder.getUri().length() > 0);
 	}
 	
-public void testGetAllImapFolders() throws Exception {
-		
+	public void testGetAllImapFolders() throws Exception {
+
 		FolderHolder folderHolder = new FolderHolder();
 		browseService.getRootFolder(account, folderHolder);
 		printFolders(folderHolder.getValue());

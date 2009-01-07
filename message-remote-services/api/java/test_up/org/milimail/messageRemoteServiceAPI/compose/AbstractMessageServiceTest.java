@@ -50,7 +50,11 @@ import org.milimail.messageRemoteServiceAPI.init.API;
 import org.milimail.messageRemoteServiceAPI.init.ServiceCreator;
 import org.milimail.messageRemoteServiceAPI.listeners.MessageSendListenerServantConsole;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
-
+/**
+ * This Abstract Class concentrate common used in all Junit Test Case
+ * @author Olivier PARNIERE
+ *
+ */
 public abstract class AbstractMessageServiceTest extends TestCase {
 	private static final String MAIL_ADDRESS = "user2@test.milimail.org";
 	

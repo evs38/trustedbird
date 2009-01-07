@@ -21,7 +21,12 @@ import org.milimail.messageRemoteServiceAPI.exceptions.CommunicationException;
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.listeners.AbstractMimeMessageListener;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceListener;
-
+/**
+ * Simple Scenario which send a mail and try to get it from Thunderbird
+ * The Destination Inbox Folder must be empty
+ * @author Olivier PARNIERE
+ *
+ */
 public class SimpleSendReceive extends AbstractMessageServiceTest {
 
 	private SourceListener sourceMessageListener;
@@ -145,8 +150,5 @@ public class SimpleSendReceive extends AbstractMessageServiceTest {
 				});
 		
 		browseService.getDecryptedSource(hdr, sourceMessageListener);
-		
-	
-	
 	}
 }

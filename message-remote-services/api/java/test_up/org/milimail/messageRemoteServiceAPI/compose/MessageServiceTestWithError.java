@@ -41,7 +41,11 @@ import java.util.List;
 
 import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 
-
+/**
+ * This Class checks the error returned by Message Compose Service 
+ * @author oparnier
+ *
+ */
 public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 
 	public void testSendMessageWithoutTo() {
