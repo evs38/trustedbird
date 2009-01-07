@@ -41,7 +41,12 @@ import org.milimail.messageRemoteServiceAPI.exceptions.InternalServerException;
 import org.milimail.messageRemoteServiceAPI.stubs.CInternalServerException;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageBrowseService;
 import org.milimail.messageRemoteServiceAPI.stubs.SourceListener;
-
+/**
+ * This Class is a proxy to access the Browse Service of Thunderbird MRS XPI
+ * It is used to browse mail of a running thunderbird
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class MessageBrowseServiceProxy {
 
 	private MessageBrowseService service;

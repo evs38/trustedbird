@@ -38,7 +38,12 @@
 package org.milimail.messageRemoteServiceAPI.compose;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CDSNType;
-
+/**
+ * This Class represents different DSN types to request in return to the mail
+ * See RFC 1891
+ * @author Olivier PARNIERE
+ *
+ */
 public class DSNType {
 	private CDSNType type;
 	

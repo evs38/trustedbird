@@ -38,7 +38,11 @@ package org.milimail.messageRemoteServiceAPI.browse;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CFolder;
 import org.milimail.messageRemoteServiceAPI.stubs.CFoldersHolder;
-
+/**
+ * This class represents a Holder for an array of Mail Folder in Thunderbird 
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class FoldersHolder {
 	private CFoldersHolder holder;
 	

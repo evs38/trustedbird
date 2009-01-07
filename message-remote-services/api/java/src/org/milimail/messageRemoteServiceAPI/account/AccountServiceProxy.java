@@ -46,7 +46,11 @@ import org.milimail.messageRemoteServiceAPI.stubs.CAccount;
 import org.milimail.messageRemoteServiceAPI.stubs.CInternalServerException;
 
 import org.omg.CORBA.COMM_FAILURE;
-
+/**
+ * This Class is a proxy to access the Account Service of Thunderbird MRS XPI
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class AccountServiceProxy {
 	private AccountService accountService;
 

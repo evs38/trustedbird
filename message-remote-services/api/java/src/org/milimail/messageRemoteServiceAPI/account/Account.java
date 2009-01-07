@@ -37,7 +37,12 @@
 package org.milimail.messageRemoteServiceAPI.account;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CAccount;
-
+/**
+ * Class represents a Thunderbird Account (not a profile)
+ * An account is linked to a mail server
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class Account {
 
 	private CAccount account;

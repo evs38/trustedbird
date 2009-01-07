@@ -42,6 +42,12 @@ import org.milimail.messageRemoteServiceAPI.stubs.CInternalServerException;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageComposeService;
 import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
 
+/**
+ * This proxy gives access to Compose Service of Thunderbird
+ * The user can use its method to send Message to Thunderbird
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class MessageComposeServiceProxy {
 
 	private MessageComposeService service;

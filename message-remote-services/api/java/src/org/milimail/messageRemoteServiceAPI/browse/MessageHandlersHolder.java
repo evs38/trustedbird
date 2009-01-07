@@ -38,7 +38,11 @@ package org.milimail.messageRemoteServiceAPI.browse;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdrsHolder;
-
+/**
+ * This class represents a Handler for a collection of a nsIMsgHdr in Thunderbird 
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class MessageHandlersHolder {
 	private CMessageHdrsHolder holder;
 	

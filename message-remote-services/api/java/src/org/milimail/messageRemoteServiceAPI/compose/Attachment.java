@@ -37,7 +37,12 @@
 package org.milimail.messageRemoteServiceAPI.compose;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CAttachment;
-
+/**
+ * This Class represents an Attachment that can be added to a message
+ * It uses the path to the file ta attach
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class Attachment {
 	private CAttachment attachment;
 

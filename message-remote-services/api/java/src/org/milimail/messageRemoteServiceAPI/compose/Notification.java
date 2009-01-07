@@ -38,7 +38,11 @@ package org.milimail.messageRemoteServiceAPI.compose;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CDSNType;
 import org.milimail.messageRemoteServiceAPI.stubs.CNotification;
-
+/**
+ * This class permit to ask DSN or MDN for a message
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class Notification {
 	private CNotification notification;
 	

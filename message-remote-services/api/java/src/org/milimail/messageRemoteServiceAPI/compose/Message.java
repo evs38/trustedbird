@@ -46,7 +46,12 @@ import org.milimail.messageRemoteServiceAPI.stubs.CHeader;
 import org.milimail.messageRemoteServiceAPI.stubs.CMessage;
 import org.milimail.messageRemoteServiceAPI.stubs.CNotification;
 import org.milimail.messageRemoteServiceAPI.stubs.CSecurity;
-
+/**
+ * This class represents a Message To send to thunderbird
+ * 
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class Message {
 	private CMessage message;
 

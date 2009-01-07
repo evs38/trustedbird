@@ -37,7 +37,12 @@
 package org.milimail.messageRemoteServiceAPI.compose;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CHeader;
-
+/**
+ * This Class represents an Mime Header to add to the mail
+ * 
+ * @author Olivier PARNIERE
+ *
+ */
 public class Header {
 	
 	private CHeader header;

@@ -35,7 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.compose;
-
+/**
+ * This class permits to ask security cryptographic to message
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class Security {
 	private boolean isSigned;
 	private boolean isCrypted;

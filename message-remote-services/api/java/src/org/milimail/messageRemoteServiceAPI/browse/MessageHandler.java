@@ -37,7 +37,11 @@
  package org.milimail.messageRemoteServiceAPI.browse;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CMessageHdr;
-
+/**
+ * This class represents a Mail Handler for a nsIMsgHdr in Thunderbird 
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class MessageHandler {
 	private CMessageHdr hdr;
 

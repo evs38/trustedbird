@@ -37,7 +37,11 @@
 package org.milimail.messageRemoteServiceAPI.browse;
 
 import org.milimail.messageRemoteServiceAPI.stubs.CFolder;
-
+/**
+ * This class represents a Mail Folder in Thunderbird 
+ * @author Olivier PARNIERE BT France
+ *
+ */
 public class Folder {
 	private CFolder folder;
 	
