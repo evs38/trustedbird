@@ -43,7 +43,7 @@
 			 em:maxVersion="2.0.*" />
 	<RDF:Description RDF:about="urn:mozilla:install-manifest"
 			 em:id="notificationsviewer@milimail.org"
-			 em:description="Displays and summarizes MDN and DSN notifications attached to messages"
+			 em:description="Displays and summarizes MDN and DSN notifications"
 			 em:version="__VERSION__"
 			 em:type="2"
 			 em:name="Notifications Viewer"
