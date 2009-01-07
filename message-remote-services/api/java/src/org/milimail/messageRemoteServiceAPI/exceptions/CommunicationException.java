@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.milimail.messageRemoteServiceAPI.exceptions;
 /**
- * This class represent an error of communication
+ * This class represents an error of communication
  * between the java process and the Thunderbird process
  * @author Olivier PARNIERE BT France
  *
