@@ -133,18 +133,19 @@ var notifyListener = {
 			return;
 		}
 
-		// Check if this message is new
-		if (header.flags & MSG_FLAG_NEW) {
-			var nViewerTag=header.getStringProperty("x-nviewer-tags");
-			// if not already parsed
-			if (nViewerTag.length==0) { // parse message source only if this header is not tagged
-				header.setStringProperty("x-nviewer-tags","WORKING"); // tag
-				this.getMsgSrc(header);
-			}
+		var nViewerTag=header.getStringProperty("x-nviewer-tags");
+		// if not already parsed
+		if (nViewerTag.length==0) { // parse message source only if this header is not tagged
+			header.setStringProperty("x-nviewer-tags","WORKING"); // tag
+			this.getMsgSrc(header);
 		}
 	},
-	itemDeleted : function(aMove, aSrcItems, aDestFolder) {},
-	itemMoveCopyCompleted : function(item, property, oldValue, newValue) {},
+	itemDeleted : function(item) {},
+	itemMoveCopyCompleted : function(aMove, aSrcItems, aDestFolder) {
+		for (var i = 0; i < aSrcItems.Count(); i++) {
+			this.itemAdded(aSrcItems.GetElementAt(i));
+		}
+	},
 	folderRenamed : function(aOrigFolder, aNewFolder) {},
 
 	/**
