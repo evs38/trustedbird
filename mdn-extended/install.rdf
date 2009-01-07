@@ -58,6 +58,6 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Handles the 'Delete' receipt. Note: the standard release of Thunderbird handles only 'Read' receipt.</em:description>
+    <em:description>Handles the 'Delete' return receipt in addition to 'Read' already in Thunderbird.</em:description>
   </rdf:Description>
 </rdf:RDF>
