@@ -46,8 +46,8 @@
 <!ENTITY PrefsDialog.labelconsiderTimeout "Consider the delivery deadlines">
 <!ENTITY PrefsDialog.timeOut "Time (hours):">
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Notification Messages">
-<!ENTITY PrefsDialog.markRead "Mark read">
-<!ENTITY PrefsDialog.moveNotification "Add the notification in the thread of the associated message">
+<!ENTITY PrefsDialog.markRead "Mark notification as read">
+<!ENTITY PrefsDialog.moveNotification "Move notification to the thread of the associated message">
 <!ENTITY PrefsDialog.display "Display">
 <!ENTITY PrefsDialog.display.notificationsDisplayTextAndIcons "Display notifications with">
 <!ENTITY PrefsDialog.display.textOnly "Text only">

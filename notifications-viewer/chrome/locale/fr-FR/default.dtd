@@ -46,8 +46,8 @@
 <!ENTITY PrefsDialog.labelconsiderTimeout "Prendre en considération le délai de livraison">
 <!ENTITY PrefsDialog.timeOut "Délai (en heures) :">
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Messages de notification">
-<!ENTITY PrefsDialog.markRead "Marquer comme lu">
-<!ENTITY PrefsDialog.moveNotification "Ajouter la notification dans le fil du message d'origine">
+<!ENTITY PrefsDialog.markRead "Marquer la notification comme lue">
+<!ENTITY PrefsDialog.moveNotification "Déplacer la notification dans le fil du message d'origine">
 <!ENTITY PrefsDialog.display "Affichage">
 <!ENTITY PrefsDialog.display.notificationsDisplayTextAndIcons "Afficher les notifications avec">
 <!ENTITY PrefsDialog.display.textOnly "Texte seulement">
