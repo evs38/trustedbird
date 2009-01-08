@@ -40,7 +40,9 @@
 #include "nsIServiceManager.h"
 #include "Services.h"
 #include "nsString.h"
-
+/*!
+ * Corba MessageBrowseServicePOA Implementation
+ */
 class MessageBrowseService_i : public POA_MessageBrowseService
 {
 public:
@@ -48,17 +50,44 @@ public:
 	virtual ~MessageBrowseService_i();
 
 	virtual void GetMessageHdrs(const CFolder& p_folder, CMessageHdrs_out p_messageHdrs);
-
+	/*!
+	 * This method is used to get all children folders
+	 * \param p_rootFolder the father folder
+	 * \param p_folders this children folders found
+	 */
 	virtual void GetAllFolders(const CFolder& p_rootFolder, CFolders_out p_folders);
 
+	/*!
+	 *  This method is used to get the Inbox folder of the current profile.
+	 *  \param p_localFolder is the holder which is the local folder found)
+	 */
 	virtual void GetRootFolder(const CAccount& p_account, CFolder_out p_rootFolder);
 
+	/*!
+	 * This method is used to get raw source content for a MessageHandler
+	 * \param p_messageHdr the handler
+	 * \param p_sourceListener the Listener which is called by thunderbird with content
+	 */
 	virtual void GetSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener);
 
+	/*!
+	 * This method is used to get decrypted source content for a MessageHandler
+	 * \param p_messageHdr the handler
+	 * \param p_sourceListener the Listener which is called by thunderbird with content
+	 */
 	virtual void GetDecryptedSource(const CMessageHdr& p_messageHdr, SourceListener_ptr p_sourceListener);
 
+	/*!
+	 * This is used to force Thunderbird to fetch new messages from the server
+	 * It can be used if the option Imap Idle is disabled
+	 * \param p_Folder is the folder to fetch
+	 */
 	virtual void GetNewMessages(const CFolder& p_Folder);
 
+	/*!
+	*  This method is used to get the Local folder of the current profile.
+	*  \param p_localFolder is the holder which is the local folder found)
+	*/
 	virtual void GetLocalFolder(CFolder_out p_localFolder);
 private:
 
