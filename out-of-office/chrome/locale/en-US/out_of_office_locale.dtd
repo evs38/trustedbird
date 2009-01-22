@@ -47,17 +47,17 @@
 
 <!-- Locales for Out Of Office Dialog -->
 <!ENTITY outofoffice.list.title "Out of Office Account List">
-<!ENTITY outofoffice.description "Configure the notification or redirection for your Accounts">
+<!ENTITY outofoffice.description "Configure a vacation notification and/or redirection">
 
-<!ENTITY outofoffice.settings.title "Out of Office Settings for the Account">
-<!ENTITY outofoffice.redirection "Redirection">
+<!ENTITY outofoffice.settings.title "Out of Office Settings for account">
+<!ENTITY outofoffice.redirection "Activate a redirection">
 <!ENTITY outofoffice.redirection.key "R">
-<!ENTITY outofoffice.destination.address "Destination Address">
+<!ENTITY outofoffice.destination.address "Forward message to:">
 <!ENTITY outofoffice.destination.address.key "D">
-<!ENTITY outofoffice.keep.message "Keep message in the user inbox">
+<!ENTITY outofoffice.keep.message "Keep a copy of the message in the inbox">
 <!ENTITY outofoffice.keep.message.key "K">
 
-<!ENTITY outofoffice.notification "Notification">
+<!ENTITY outofoffice.notification "Activate a vacation notification">
 <!ENTITY outofoffice.notification.key "N">
 
 <!ENTITY outofoffice.activation "Activate my Out of Office settings.">

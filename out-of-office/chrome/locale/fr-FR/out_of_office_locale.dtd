@@ -47,17 +47,17 @@
 
 <!-- Locales for Out Of Office Dialog -->
 <!ENTITY outofoffice.list.title "Liste des Comptes pour les Paramètres d'Absence">
-<!ENTITY outofoffice.description "Configure pour vos comptes une notification d'absence ou une redirection de message">
+<!ENTITY outofoffice.description "Configure une notification d'absence et/ou une redirection de message">
 
 <!ENTITY outofoffice.settings.title "Paramètres d'Absence pour le Compte">
-<!ENTITY outofoffice.redirection "Redirection">
+<!ENTITY outofoffice.redirection "Activer une redirection">
 <!ENTITY outofoffice.redirection.key "R">
-<!ENTITY outofoffice.destination.address "Adresse de Destination">
-<!ENTITY outofoffice.destination.address.key "D">
-<!ENTITY outofoffice.keep.message "Conserver le message dans la boîte aux lettres de l'utilisateur">
+<!ENTITY outofoffice.destination.address "Faire suivre le message à :">
+<!ENTITY outofoffice.destination.address.key "F">
+<!ENTITY outofoffice.keep.message "Conserver une copie du message dans la boîte de réception">
 <!ENTITY outofoffice.keep.message.key "C">
 
-<!ENTITY outofoffice.notification "Notification">
+<!ENTITY outofoffice.notification "Activer une notification d'absence">
 <!ENTITY outofoffice.notification.key "N">
 
 <!ENTITY outofoffice.activation "Activer mes paramètres d'absence.">
