@@ -1,4 +1,4 @@
-<!ENTITY pane.title							"Security Label">
+<!ENTITY pane.title							"Security Labels">
 <!ENTITY securityLabel.location				"Location of label with triple wrapping">
 <!ENTITY securityLabel.bothSignatures		"Inner and outer signatures">
 <!ENTITY securityLabel.innerSignatureOnly	"Inner signature only">
