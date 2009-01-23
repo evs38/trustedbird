@@ -26,14 +26,14 @@
 <!ENTITY options.login.password.remember "Remember Password">
 <!ENTITY options.login.password.remember.key "R">
 
-<!ENTITY options.host.label "Ignore IMAP Settings">
-<!ENTITY options.host.key "I">
-<!ENTITY options.host.hostname.label "Hostname">
-<!ENTITY options.host.hostname.key "h">
-<!ENTITY options.host.port.label "Port">
-<!ENTITY options.host.port.key "o">
+<!ENTITY options.host.label "Customize Settings">
+<!ENTITY options.host.key "C">
+<!ENTITY options.host.hostname.label "Hostname:">
+<!ENTITY options.host.hostname.key "H">
+<!ENTITY options.host.port.label "Port:">
+<!ENTITY options.host.port.key "P">
 <!ENTITY options.host.port.default "Default: 2000">
-<!ENTITY options.host.tls.key "t">
+<!ENTITY options.host.tls.key "U">
 <!ENTITY options.host.tls "use TLS, if available">
 
 <!ENTITY options.misc "Miscellaneous Settings">

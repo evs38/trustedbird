@@ -398,7 +398,7 @@ Services.prototype = {
 		}
 		if( email == undefined || email == null || email == "" ){
 			if( log == true ) {
-				this.warningSrv( "The Email Address is null or emty.");
+				this.warningSrv( "The Email Address is null or empty.");
 			}
 			return false;
 		}
@@ -430,7 +430,7 @@ Services.prototype = {
 		}
 		if( email == undefined || email == null || email == "" ){
 			if( log == true ) {
-				this.warningSrv( "The Email Address is null or emty.");
+				this.warningSrv( "The Email Address is null or empty.");
 			}
 			return null;
 		}

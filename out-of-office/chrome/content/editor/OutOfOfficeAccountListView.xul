@@ -100,23 +100,23 @@
 				<rows>
 					<row align="center">
 						<hbox pack="end"><label id="lblHost" value="&options.info.servername;"/></hbox>
-						<textbox id="txtDispHostname" class="plain"/>
+						<textbox id="txtDispHostname" class="plain" readonly="true" />
 					</row>
 					<row align="center">
 						<hbox pack="end"><label id="lblPort" value="&options.info.port;"/></hbox>
-						<textbox id="txtDispPort" class="plain"/>
+						<textbox id="txtDispPort" class="plain" readonly="true" />
 					</row>
 					<row align="center">
 						<hbox pack="end"><label id="lblAuth" value="&options.info.auth;"/></hbox>
-						<textbox id="txtDispAuth" class="plain"/>
+						<textbox id="txtDispAuth" class="plain" readonly="true" />
 					</row>          
 					<row align="center">
 						<hbox pack="end"><label id="lblUserName" value="&options.info.username;"/></hbox>
-						<textbox id="txtDispUserName" class="plain"/>
+						<textbox id="txtDispUserName" class="plain" readonly="true" />
 					</row>
 					<row align="center">
 						<hbox pack="end"><label id="lblTLS" value="&options.info.secure;"/></hbox>
-						<textbox id="txtDispTLS" class="plain"/>
+						<textbox id="txtDispTLS" class="plain" readonly="true" />
 					</row>
 				</rows>
 			</grid>

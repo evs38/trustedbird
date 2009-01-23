@@ -147,10 +147,10 @@ OutOfOfficeAccountTreeView.prototype.getCellText
     	var information  = new String("");
 	 	if( this.accounts[row].isEnabled() ){
 	    	if(this.accounts[row].isConnectRequest() == false){
-	    		information =  " [" + globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.list.tree.account.norequest;" ) + "]";
+	    		//information =  " [" + globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.list.tree.account.norequest;" ) + "]";
 	    	}
 	 	} else {
-	 		information =  " [" + globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.list.tree.account.noactivate;" ) + "]";
+	 		//information =  " [" + globalServices.localizeString( "out_of_office_locale.properties", "&outofoffice.list.tree.account.noactivate;" ) + "]";
 	 	}
         return this.accounts[row].getDescription() + information;
     }

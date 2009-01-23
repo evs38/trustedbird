@@ -26,14 +26,14 @@
 <!ENTITY options.login.password.remember "Se souvenir du mot de passe">
 <!ENTITY options.login.password.remember.key "s">
 
-<!ENTITY options.host.label "Ignorer les Paramètres IMAP">
+<!ENTITY options.host.label "Personnaliser les Paramètres">
 <!ENTITY options.host.key "I">
-<!ENTITY options.host.hostname.label "Nom du host">
-<!ENTITY options.host.hostname.key "h">
-<!ENTITY options.host.port.label "Port">
-<!ENTITY options.host.port.key "o">
-<!ENTITY options.host.port.default "Défaut: 2000">
-<!ENTITY options.host.tls.key "t">
+<!ENTITY options.host.hostname.label "Nom du Serveur :">
+<!ENTITY options.host.hostname.key "N">
+<!ENTITY options.host.port.label "Port :">
+<!ENTITY options.host.port.key "P">
+<!ENTITY options.host.port.default "Défaut : 2000">
+<!ENTITY options.host.tls.key "U">
 <!ENTITY options.host.tls "Utiliser TLS, si disponible">
 
 <!ENTITY options.misc "Paramètres Généraux">
@@ -58,11 +58,11 @@
 
 <!ENTITY options.proxyauth.caption "Proxy Authorization">
 
-<!ENTITY options.info.servername "Nom du Serveur:">
-<!ENTITY options.info.port "Port:">
-<!ENTITY options.info.secure "Connexion Sécurisée:">
-<!ENTITY options.info.username "Utilisateur:">
-<!ENTITY options.info.auth "Identification:">
+<!ENTITY options.info.servername "Nom du Serveur :">
+<!ENTITY options.info.port "Port :">
+<!ENTITY options.info.secure "Connexion Sécurisée :">
+<!ENTITY options.info.username "Utilisateur :">
+<!ENTITY options.info.auth "Identification :">
 
 
 <!-- Menu entries -->

@@ -36,7 +36,7 @@
    - ***** END LICENSE BLOCK ***** -->
    
 <!-- Account Settings entries for Out Of Office Sieve server parameters -->
-<!ENTITY outofoffice.pane.title "Sieve Server Settings...">
+<!ENTITY outofoffice.pane.title "Sieve Settings">
 
 <!-- Menu entries for Out Of Office -->
 <!ENTITY outofoffice.menu.parameters "Out Of Office Settings...">

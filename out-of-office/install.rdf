@@ -57,7 +57,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Provides vacation notifications and redirections using a Sieve server.</em:description>
+    <em:description>Setup vacation notifications and redirections using Sieve.</em:description>
 
   </rdf:Description>
 </rdf:RDF>
