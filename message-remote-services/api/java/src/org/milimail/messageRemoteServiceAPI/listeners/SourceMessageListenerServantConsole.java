@@ -4,9 +4,9 @@ import org.milimail.messageRemoteServiceAPI.stubs.SourceListenerPOA;
 
 public class SourceMessageListenerServantConsole extends SourceListenerPOA {
 
-	public void OnLoad(String source) {
-	
-		System.out.println(source);
+	public void OnLoad(byte[] source) {
+		String sourceString = new String(source);
+		System.out.println(sourceString);
 		
 	}
 
