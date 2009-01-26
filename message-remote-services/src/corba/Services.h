@@ -1274,6 +1274,115 @@ private:
   CFolders_out& operator=(const CFolders_var&);
 };
 
+class octetSeq_var;
+
+class octetSeq : public _CORBA_Unbounded_Sequence_Octet {
+public:
+  typedef octetSeq_var _var_type;
+  inline octetSeq() {}
+  inline octetSeq(const octetSeq& _s)
+    : _CORBA_Unbounded_Sequence_Octet(_s) {}
+
+  inline octetSeq(_CORBA_ULong _max)
+    : _CORBA_Unbounded_Sequence_Octet(_max) {}
+  inline octetSeq(_CORBA_ULong _max, _CORBA_ULong _len, ::CORBA::Octet* _val, _CORBA_Boolean _rel=0)
+    : _CORBA_Unbounded_Sequence_Octet(_max, _len, _val, _rel) {}
+
+
+
+  inline octetSeq& operator = (const octetSeq& _s) {
+    _CORBA_Unbounded_Sequence_Octet::operator=(_s);
+    return *this;
+  }
+};
+
+class octetSeq_out;
+
+class octetSeq_var {
+public:
+  inline octetSeq_var() : _pd_seq(0) {}
+  inline octetSeq_var(octetSeq* _s) : _pd_seq(_s) {}
+  inline octetSeq_var(const octetSeq_var& _s) {
+    if( _s._pd_seq )  _pd_seq = new octetSeq(*_s._pd_seq);
+    else              _pd_seq = 0;
+  }
+  inline ~octetSeq_var() { if( _pd_seq )  delete _pd_seq; }
+    
+  inline octetSeq_var& operator = (octetSeq* _s) {
+    if( _pd_seq )  delete _pd_seq;
+    _pd_seq = _s;
+    return *this;
+  }
+  inline octetSeq_var& operator = (const octetSeq_var& _s) {
+    if( _s._pd_seq ) {
+      if( !_pd_seq )  _pd_seq = new octetSeq;
+      *_pd_seq = *_s._pd_seq;
+    } else if( _pd_seq ) {
+      delete _pd_seq;
+      _pd_seq = 0;
+    }
+    return *this;
+  }
+  inline ::CORBA::Octet& operator [] (_CORBA_ULong _s) {
+    return (*_pd_seq)[_s];
+  }
+
+
+
+  inline octetSeq* operator -> () { return _pd_seq; }
+  inline const octetSeq* operator -> () const { return _pd_seq; }
+#if defined(__GNUG__)
+  inline operator octetSeq& () const { return *_pd_seq; }
+#else
+  inline operator const octetSeq& () const { return *_pd_seq; }
+  inline operator octetSeq& () { return *_pd_seq; }
+#endif
+    
+  inline const octetSeq& in() const { return *_pd_seq; }
+  inline octetSeq&       inout()    { return *_pd_seq; }
+  inline octetSeq*&      out() {
+    if( _pd_seq ) { delete _pd_seq; _pd_seq = 0; }
+    return _pd_seq;
+  }
+  inline octetSeq* _retn() { octetSeq* tmp = _pd_seq; _pd_seq = 0; return tmp; }
+    
+  friend class octetSeq_out;
+  
+private:
+  octetSeq* _pd_seq;
+};
+
+class octetSeq_out {
+public:
+  inline octetSeq_out(octetSeq*& _s) : _data(_s) { _data = 0; }
+  inline octetSeq_out(octetSeq_var& _s)
+    : _data(_s._pd_seq) { _s = (octetSeq*) 0; }
+  inline octetSeq_out(const octetSeq_out& _s) : _data(_s._data) {}
+  inline octetSeq_out& operator = (const octetSeq_out& _s) {
+    _data = _s._data;
+    return *this;
+  }
+  inline octetSeq_out& operator = (octetSeq* _s) {
+    _data = _s;
+    return *this;
+  }
+  inline operator octetSeq*&()  { return _data; }
+  inline octetSeq*& ptr()       { return _data; }
+  inline octetSeq* operator->() { return _data; }
+
+  inline ::CORBA::Octet& operator [] (_CORBA_ULong _i) {
+    return (*_data)[_i];
+  }
+
+
+
+  octetSeq*& _data;
+
+private:
+  octetSeq_out();
+  octetSeq_out& operator=(const octetSeq_var&);
+};
+
 #ifndef __SourceListener__
 #define __SourceListener__
 
@@ -1335,7 +1444,7 @@ class _objref_SourceListener :
   public virtual omniObjRef
 {
 public:
-  void OnLoad(const char* source);
+  void OnLoad(const octetSeq& source);
 
   inline _objref_SourceListener()  { _PR_setobj(0); }  // nil
   _objref_SourceListener(omniIOR*, omniIdentity*);
@@ -1369,7 +1478,7 @@ class _impl_SourceListener :
 public:
   virtual ~_impl_SourceListener();
 
-  virtual void OnLoad(const char* source) = 0;
+  virtual void OnLoad(const octetSeq& source) = 0;
   
 public:  // Really protected, workaround for xlC
   virtual _CORBA_Boolean _dispatch(omniCallHandle&);

@@ -39,6 +39,8 @@ interface MessageSendListener {
 };
 
 
+typedef sequence<octet> octetSeq;
+
 interface SourceListener {
-    void OnLoad(in string source);
+    void OnLoad(in octetSeq source);
 };

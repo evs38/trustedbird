@@ -1142,7 +1142,7 @@ _objref_SourceListener::_ptrToObjRef(const char* id)
 }
 
 // Proxy call descriptor class. Mangled signature:
-//  void_i_cstring
+//  void_i_coctetSeq
 class _0RL_cd_14edc9663ea08cf8_60000000
   : public omniCallDescriptor
 {
@@ -1158,20 +1158,21 @@ public:
 
     
   
-  ::CORBA::String_var arg_0_;
-  const char* arg_0;
+  octetSeq_var arg_0_;
+  const octetSeq* arg_0;
 };
 
 void _0RL_cd_14edc9663ea08cf8_60000000::marshalArguments(cdrStream& _n)
 {
-  _n.marshalString(arg_0,0);
+  (const octetSeq&) *arg_0 >>= _n;
 
 }
 
 void _0RL_cd_14edc9663ea08cf8_60000000::unmarshalArguments(cdrStream& _n)
 {
-  arg_0_ = _n.unmarshalString(0);
-  arg_0 = arg_0_.in();
+  arg_0_ = new octetSeq;
+  (octetSeq&)arg_0_ <<= _n;
+  arg_0 = &arg_0_.in();
 
 }
 
@@ -1181,15 +1182,15 @@ _0RL_lcfn_14edc9663ea08cf8_70000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_14edc9663ea08cf8_60000000* tcd = (_0RL_cd_14edc9663ea08cf8_60000000*)cd;
   _impl_SourceListener* impl = (_impl_SourceListener*) svnt->_ptrToInterface(SourceListener::_PD_repoId);
-  impl->OnLoad(tcd->arg_0);
+  impl->OnLoad(*tcd->arg_0);
 
 
 }
 
-void _objref_SourceListener::OnLoad(const char* source)
+void _objref_SourceListener::OnLoad(const octetSeq& source)
 {
   _0RL_cd_14edc9663ea08cf8_60000000 _call_desc(_0RL_lcfn_14edc9663ea08cf8_70000000, "OnLoad", 7);
-  _call_desc.arg_0 = source;
+  _call_desc.arg_0 = &(octetSeq&) source;
 
   _invoke(_call_desc);
 

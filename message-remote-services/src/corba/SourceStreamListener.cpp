@@ -58,12 +58,19 @@ nsresult SourceStreamListener::OnDataAvailable(nsIRequest *aRequest,
 	{
 		size = PR_MIN(aCount, sizeof(buf));
 		rv = aInputStream->Read(buf, size, &ret);
-		content.Append(buf,ret);
-
+		content.Append(buf, ret);
 		aCount -= ret;
 	}
 
-	m_SourceListener->OnLoad(content.get());
+	octetSeq buffout (size);
+
+	//convert to corba octet array
+	for (int i = 0; i < size; i++)
+	{
+		buffout[i] = buf[i];
+	}
+
+	m_SourceListener->OnLoad(buffout);
 
 	return NS_OK;
 
