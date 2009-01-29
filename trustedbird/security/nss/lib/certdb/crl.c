@@ -737,7 +737,7 @@ crl_storeCRL (PK11SlotInfo *slot,char *url,
         }
 
         /* if we have a url in the database, use that one */
-        if (oldCrl->url) {
+        if (oldCrl->url && !url) {
 	    url = oldCrl->url;
         }
 
