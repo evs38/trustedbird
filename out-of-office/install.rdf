@@ -42,7 +42,7 @@
     <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
 
     <em:id>out.of.office@milimail.org</em:id>
-    <em:name>Out Of Office for Accounts</em:name>
+    <em:name>Out Of Office</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Olivier BRUN</em:creator>
 
