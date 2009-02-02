@@ -15,7 +15,7 @@
 <!ENTITY menu_securitySign.label "Digitally Sign This Message">
 <!ENTITY menu_securitySign.accesskey "S">
 
-<!ENTITY menu_securitySignedReceiptRequest.label "Signed Receipt Request">
+<!ENTITY menu_securitySignedReceiptRequest.label "Request a Signed Receipt">
 <!ENTITY menu_securitySignedReceiptRequest.accesskey "R">
 
 <!ENTITY menu_securityTripleWrap.label "Triple Wrap This Message">
