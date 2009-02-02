@@ -265,7 +265,7 @@ function updateData(bSaveAndValidate)
 	if(bSaveAndValidate == true){	// Retrieve and validate value from control ID
 		gOutOfOfficeManager.getSettings().setDataFromFields(	
 			globalServices.getBooleanValue('outofofficeRedirectionCheckbox') ,
-			globalServices.getStringValue('addressCol2#1') ,
+			globalServices.getShortAddressMailFrom(globalServices.getStringValue('addressCol2#1')) ,
 		//	globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ,
 			globalServices.getBooleanValue('outofofficeKeepMessageCheckbox') ,
 			globalServices.getBooleanValue('outofofficeNotificationCheckbox') ,

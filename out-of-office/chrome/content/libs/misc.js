@@ -637,22 +637,6 @@ Services.prototype = {
 		 */
 
 		var displayName="";
-		if( matchArray.length > 3 ){ // Update the display name value
-			displayName = matchArray[matchArray.length - 3];
-			// See if "display name" is valid
-			displayName = displayName.trim();
-			
-			//domainPat
-			if (displayName.match(userPat)==null) {
-				// user is not valid
-				if( log == true ) {
-					this.logSrv("Dump displayName='" + displayName + "'." );
-					this.warningSrv("The display name of your email before the address doesn't seem to be valid.");
-				}
-				return null;
-			}
-
-		}
 		if( matchArray.length < 3 ){
 			return null;	// Not enough parameter in the array then the mail address is not correct.
 		}
