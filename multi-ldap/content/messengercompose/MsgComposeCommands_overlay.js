@@ -328,10 +328,7 @@ function setupLdapAutocompleteSession() {
                     if (autoCompleteWidget)
                     {
                       autoCompleteWidget.addSession(LDAPSession);
-                      // ldap searches don't insert a default entry with the default domain appended to it
-                      // so reduce the minimum results for a popup to 2 in this case. 
-                      autoCompleteWidget.minResultsForPopup = 2;
-
+                      autoCompleteWidget.minResultsForPopup = 1;
                     }
                  }
                 gSessionsAdded[k]=true;

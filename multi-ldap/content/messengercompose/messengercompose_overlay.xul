@@ -41,6 +41,6 @@
     <script type="application/x-javascript" src="chrome://milimail-multi-ldap/content/libtrustedbird.js"/>
     <script type="application/x-javascript" src="chrome://milimail-multi-ldap/content/messengercompose/MsgComposeCommands_overlay.js"/>
   
-    <textbox id="addressCol2#1" autoFill="true" autoFillAfterMatch="true"/>
+    <textbox id="addressCol2#1" autoFill="false" autoFillAfterMatch="false"/>
 
 </overlay>
