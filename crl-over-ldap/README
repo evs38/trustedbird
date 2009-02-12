@@ -11,6 +11,12 @@ This add-on is written in XUL and Javascript.
 Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
 
 
+== Architecture ==
+
+This add-on is built around Mozilla components @mozilla.org/network/ldap-connection;1 for
+LDAP management and @mozilla.org/security/crlmanager;1 for importing CRLs into the database. 
+
+== Files/functions description ==
 
 content/messenger_overlay.xul
 content/messenger_overlay.js
@@ -43,5 +49,7 @@ content/libtrustedbird.js
 	Debug and LDAP functions library.
 
 locale/en-US/ldapCrlFetchDialog.dtd
+locale/en-US/ldapCrlFetchDialog.properties
 locale/fr/ldapCrlFetchDialog.dtd
-	Localized strings for content/ldapCrlFetchDialog.xul.
+locale/fr/ldapCrlFetchDialog.properties
+	Localized strings for content/ldapCrlFetchDialog.xul and content/ldapCrlFetchDialog.js.
