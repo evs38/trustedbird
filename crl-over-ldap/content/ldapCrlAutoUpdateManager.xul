@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
@@ -12,15 +12,15 @@
    - for the specific language governing rights and limitations under the
    - License.
    -
-   - The Original Code is Mozilla Communicator
+   - The Original Code is mozilla.org Code.
    -
    - The Initial Developer of the Original Code is
    -   BT Global Services / Etat francais Ministere de la Defense
-   - Portions created by the Initial Developer are Copyright (C) 2002
+   - Portions created by the Initial Developer are Copyright (C) 2009
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
-   -   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+   -   Raphael Fairise / BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,23 +35,8 @@
    - the terms of any one of the MPL, the GPL or the LGPL.
    -
    - ***** END LICENSE BLOCK ***** -->
-
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-
-<!DOCTYPE dialog SYSTEM "chrome://crl_over_ldap/locale/crlFetchingStatus.dtd">
-
-<dialog
-    id="crl_over_ldap_crlFetchingStatus"
-    title="&title.label;"
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    buttons="cancel"
-    buttonlabelcancel="&stop.label;"
-    ondialogcancel="return crl_over_ldap_onDialogCancelFetchingStatuts();"
-    onload="crl_over_ldap_onLoadCrlFetchingStatuts();">
-
-    <script type="application/x-javascript" src="chrome://crl_over_ldap/content/crlFetchingStatuts.js"/>
-
-    <description>&info.message;</description>
-
-    <progressmeter id="crl_over_ldap_progressmeter" mode="undetermined"/>
-</dialog>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="ldapCrlAutoUpdateManager"
+	onload="ldapCrlAutoUpdateManagerOnLoad();">
+   	<script type="application/x-javascript" src="chrome://crl_over_ldap/content/ldapCrlAutoUpdateManager.js" />
+</window>

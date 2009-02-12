@@ -19,7 +19,6 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Eric Ballet Baz / BT Global Services / Etat francais Ministere de la Defense
  *   Raphael Fairise / BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -36,46 +35,45 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* Add-on hook: replace the original function */
-var initializeSelection_orig = initializeSelection;
-initializeSelection = function() {
-	/* Call original function */
-	initializeSelection_orig();
-	
-	/* Increase input box size */
-	document.getElementById("nextUpdateDay").setAttribute("width", "40");
-	document.getElementById("nextUpdateFreq").setAttribute("width", "40");
-	
-	if (crl && crl.lastFetchURL && crl.lastFetchURL.indexOf("ldap://") == 0) {
-		/* Create new checkbox for LDAP URL auto-update */
-		var node = document.getElementById("enableCheckBox").cloneNode(false);
-		node.id = "enableCheckBoxLdap";
-		document.getElementById("enableCheckBox").parentNode.insertBefore(node, document.getElementById("enableCheckBox"));
-		document.getElementById("enableCheckBox").setAttribute("hidden", "true");
-		
-		try {
-			var isEnabled = prefBranch.getBoolPref("security.crl.autoupdate.enableLdap." + crl.nameInDb);
-			document.getElementById("enableCheckBoxLdap").checked = isEnabled;
-		} catch(exception) {
-			document.getElementById("enableCheckBoxLdap").checked = false;
-		}
+/*
+ * This module manages auto-update of LDAP CRLs.
+ * It launches, just after Thunderbird start and periodically, a module to
+ * fetch CRLs from LDAP directories.
+ */
 
-		/* Allow only frequency-based update timing */
-		document.getElementById("timeBasedBox").setAttribute("hidden", "true");
-		document.getElementById("nextUpdateFreq").removeAttribute("disabled");
-		updateTypeRadio.selectedItem = freqBasedRadio;
-	}
+var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+jsLoader.loadSubScript("chrome://crl_over_ldap/content/libtrustedbird.js");
+
+
+/* Add-on hook: replace the original function */
+var OnLoadMessenger_orig = OnLoadMessenger;
+OnLoadMessenger = function() {
+	
+	/* Call original function */
+	OnLoadMessenger_orig();
+	
+	var autoUpdateLauncher = new ldapCrlAutoUpdateLauncher();
+	
+	/* Launch first update */
+	setTimeout(function() {autoUpdateLauncher.launchManager()}, 5000);
 }
 
 
-/* Add-on hook: replace the original function */
-var onAccept_orig = onAccept;
-onAccept = function() {
-	/* Call original function */
-	onAccept_orig();
-	
-	if (document.getElementById("enableCheckBoxLdap")) {
-		prefBranch.setBoolPref("security.crl.autoupdate.enableLdap." + crl.nameInDb, document.getElementById("enableCheckBoxLdap").checked);
-		prefBranch.setBoolPref("security.crl.autoupdate.enable." + crl.nameInDb, document.getElementById("enableCheckBoxLdap").checked);
-	}
+function ldapCrlAutoUpdateLauncher() {
+	this.ldapCrlAutoUpdateManagerWindow = null;
+}
+
+ldapCrlAutoUpdateLauncher.prototype.launchManager = function() {
+	var objThis = this;
+	trustedBird_dump("* ldapCrlAutoUpdateLauncher.launchManager");
+
+	/* Launch update manager in a hidden window */
+	if (this.ldapCrlAutoUpdateManagerWindow) this.ldapCrlAutoUpdateManagerWindow.close();
+	this.ldapCrlAutoUpdateManagerWindow = window.openDialog("chrome://crl_over_ldap/content/ldapCrlAutoUpdateManager.xul", "", null);
+
+	/* Close hidden window to free memory used by ldap-connection component */
+	setTimeout(function() {objThis.ldapCrlAutoUpdateManagerWindow.close();}, 60000);
+
+	/* Schedule next check (one day later) */
+	setTimeout(function() {objThis.launchManager();}, 86400000);
 }

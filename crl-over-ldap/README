@@ -1,0 +1,47 @@
+CRL over LDAP
+-------------
+
+This add-on for Mozilla Thunderbird allows importing Certificate Revocation Lists (CRL)
+from LDAP directories.
+It adds the support of LDAP URLs in the import window of the CRL manager
+and schedules auto-updates of these CRLs.
+
+This add-on is written in XUL and Javascript.
+
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
+
+
+
+content/messenger_overlay.xul
+content/messenger_overlay.js
+	Schedule and launch every day a ldapCrlAutoUpdateManager (hidden window).
+
+content/ldapCrlAutoUpdateManager.xul
+content/ldapCrlAutoUpdateManager.js
+	Hidden window which launches a LDAP query for all CRLs to update in database.
+
+content/ldapCrlManager.js
+	importCrlFromLdapMessage: handle LDAP response message and import/update the CRL
+	into database.
+
+content/crlManager_overlay.xul
+content/crlManager_overlay.js
+	Add a test in original ImportCRL and UpdateCRL functions (launched by CRL manager window)
+	to identify and process LDAP URLs.
+	Open a ldapCrlFetchDialog window in case of LDAP URLs.
+
+content/ldapCrlFetchDialog.xul
+content/ldapCrlFetchDialog.js
+	Dialog with a progress meter which launches a new LDAP query and imports fetched CRL
+	with importCrlFromLdapMessage.
+
+content/pref-crlupdate_overlay.xul
+content/pref-crlupdate_overlay.js
+	Slightly modified dialog controls for CRLs from LDAP.
+
+content/libtrustedbird.js
+	Debug and LDAP functions library.
+
+locale/en-US/ldapCrlFetchDialog.dtd
+locale/fr/ldapCrlFetchDialog.dtd
+	Localized strings for content/ldapCrlFetchDialog.xul.
