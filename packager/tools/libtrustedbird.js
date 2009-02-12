@@ -15,10 +15,11 @@
  *
  * The Initial Developer of the Original Code is
  *   BT Global Services / Etat francais Ministere de la Defense
- * Portions created by the Initial Developer are Copyright (C) 1998-2001
+ * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Raphael Fairise / BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -341,7 +342,7 @@ function trustedBird_prefService_removeObserver(domain, observer) {
  **********************************/
 
 /**
- * Get global or account-specific LDAP directory list
+ * Get global or account-specific LDAP directory list from preferences database
  * Works with or without Multi-LDAP add-on
  * @param identityKey Key of current account identity (optional)
  * @return Array of directories
@@ -395,6 +396,185 @@ function trustedBird_LDAP_getDirectoryList(identityKey) {
 	if (directoryList != "") directoryListArray = directoryList.split(',');
 	
 	return directoryListArray;
+}
+
+/**
+ * getProxyOnUIThread
+ * @param aObject
+ * @param aInterface
+ * @return Proxy for aObject
+ */
+function trustedBird_getProxyOnUIThread(aObject, aInterface) {
+	var eventQSvc = Components.classes["@mozilla.org/event-queue-service;1"].getService(Components.interfaces.nsIEventQueueService);
+	var uiQueue = eventQSvc.getSpecialEventQueue(Components.interfaces.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
+	var proxyMgr = Components.classes["@mozilla.org/xpcomproxy;1"].getService(Components.interfaces.nsIProxyObjectManager);
+	
+	return proxyMgr.getProxyForObject(uiQueue, aInterface, aObject, 5); // 5 == PROXY_ALWAYS | PROXY_SYNC
+}
+
+/**
+ * LDAP query object 
+ */
+function trustedBird_ldapQuery() {
+	this.ldapURL = null;
+	this.ldapConnection = null;
+	this.ldapOperation = null;
+	this.ldapEndCallback = null;
+	this.ldapEndCallbackParameter = null;
+	this.ldapMessageCallback = null;
+	this.ldapMessageCallbackParameter = null;
+	this.error = trustedBird_ldapQuery.DATA_ERROR;
+}
+
+/* Error codes */
+trustedBird_ldapQuery.NO_ERROR = 0;
+trustedBird_ldapQuery.CONNECT_ERROR = 1;
+trustedBird_ldapQuery.SEARCH_ERROR = 2;
+trustedBird_ldapQuery.DATA_ERROR = 3;
+
+/**
+ * Launch a LDAP query
+ * @param aLdapUri LDAP URI
+ * @param aLdapEndCallback Callback function to handle end of query (error, aLdapEndCallbackParameter)
+ * @param aLdapEndCallbackParameter
+ * @param aLdapMessageCallback Callback function to handle LDAP response (nsILDAPURL, nsILDAPMessage, aLdapMessageCallbackParameter, return true if received data is correct)
+ * @param aLdapMessageCallbackParameter
+ * @return True if query has been successfully launched
+ */
+trustedBird_ldapQuery.prototype.launch = function(aLdapUri, aLdapEndCallback, aLdapEndCallbackParameter, aLdapMessageCallback, aLdapMessageCallbackParameter) {
+	this.ldapEndCallback = aLdapEndCallback;
+	this.ldapEndCallbackParameter = aLdapEndCallbackParameter;
+	this.ldapMessageCallback = aLdapMessageCallback;
+	this.ldapMessageCallbackParameter = aLdapMessageCallbackParameter;
+	
+	try {
+		this.ldapURL = Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
+		this.ldapURL.spec = aLdapUri;
+	} catch (e) {
+		trustedBird_dump("Error trustedBird_ldapQuery.launch incorrect URI:" + e);
+		return false;
+	}
+	
+	try {
+		this.ldapConnection = Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
+		this.ldapConnection.init(
+			this.ldapURL.asciiHost,
+			this.ldapURL.port,
+			this.ldapURL.options & this.ldapURL.OPT_SECURE,
+			null,
+			trustedBird_getProxyOnUIThread(this, Components.interfaces.nsILDAPMessageListener),
+			null,
+			Components.interfaces.nsILDAPConnection.VERSION3);
+		
+	} catch (e) {
+		trustedBird_dump("Error trustedBird_ldapQuery.launch: " + e);
+		return false;
+	}
+	
+	return true;
+}
+
+/**
+ * Launch bind operation
+ */
+trustedBird_ldapQuery.prototype.bind = function() {
+	if (this.ldapConnection == null) return;
+	
+	try {
+		this.ldapOperation = Components.classes["@mozilla.org/network/ldap-operation;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPOperation);
+		
+		this.ldapOperation.init(
+			this.ldapConnection,
+			trustedBird_getProxyOnUIThread(this, Components.interfaces.nsILDAPMessageListener),
+			null);
+	
+		this.ldapOperation.simpleBind("");
+		return true;
+	} catch (e) {
+		trustedBird_dump("Error trustedBird_ldapQuery.search: " + e);
+	}
+	
+	return false;
+}
+
+/**
+ * Launch search operation
+ */
+trustedBird_ldapQuery.prototype.search = function() {
+	if (this.ldapConnection == null) return false;
+
+	try {
+		var nbAttributes = new Object;
+		
+		delete this.ldapOperation;
+		this.ldapOperation = Components.classes["@mozilla.org/network/ldap-operation;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPOperation);
+		
+		this.ldapOperation.init(
+			this.ldapConnection,
+			trustedBird_getProxyOnUIThread(this, Components.interfaces.nsILDAPMessageListener),
+			null);
+
+		this.ldapOperation.searchExt(
+    		this.ldapURL.dn,
+    		this.ldapURL.scope,
+    		this.ldapURL.filter,
+			0,
+			this.ldapURL.getAttributes(new Object),
+			0,
+			0);
+
+		return true;
+    } catch (e) {
+    	trustedBird_dump("Error trustedBird_ldapQuery.search: " + e);
+    }
+    
+    return false;
+}
+
+trustedBird_ldapQuery.prototype.QueryInterface = function(iid) {
+	if (iid.equals(Components.interfaces.nsISupports) || iid.equals(Components.interfaces.nsILDAPMessageListener)) return this;
+
+    Components.returnCode = Components.results.NS_ERROR_NO_INTERFACE;
+    return null;
+}
+
+trustedBird_ldapQuery.prototype.onLDAPInit = function(aConnection, aStatus) {
+	if (this.bind()) return;
+	
+	if (this.ldapEndCallback) this.ldapEndCallback(trustedBird_ldapQuery.CONNECT_ERROR, this.ldapEndCallbackParameter);
+}
+
+trustedBird_ldapQuery.prototype.onLDAPMessage = function(aMessage) {
+	switch (aMessage.type) {
+		case Components.interfaces.nsILDAPMessage.RES_BIND:
+			trustedBird_dump("trustedBird_ldapMessageListener.onLDAPMessage: RES_BIND");
+			if (aMessage.errorCode == Components.interfaces.nsILDAPErrors.SUCCESS) {
+				if (this.search()) return;
+			} else {
+				trustedBird_dump("Error trustedBird_ldapMessageListener.onLDAPMessage RES_BIND: (" + aMessage.errorCode + ") " + aMessage.errorMessage);
+			}
+			if (this.ldapEndCallback) this.ldapEndCallback(trustedBird_ldapQuery.SEARCH_ERROR, this.ldapEndCallbackParameter);
+			return;
+			break;
+		
+		case Components.interfaces.nsILDAPMessage.RES_SEARCH_ENTRY:
+			trustedBird_dump("trustedBird_ldapMessageListener.onLDAPMessage: RES_SEARCH_ENTRY");
+			if (aMessage.errorCode == Components.interfaces.nsILDAPErrors.SUCCESS) {
+				if (!this.ldapMessageCallback || this.ldapMessageCallback(this.ldapURL, aMessage, this.ldapMessageCallbackParameter)) {
+					this.error = trustedBird_ldapQuery.NO_ERROR;
+				}
+				return;
+			} else {
+				trustedBird_dump("Error trustedBird_ldapMessageListener.onLDAPMessage RES_SEARCH_ENTRY: (" + aMessage.errorCode + ") " + aMessage.errorMessage);
+			}
+			break;
+
+		case Components.interfaces.nsILDAPMessage.RES_SEARCH_RESULT:
+			trustedBird_dump("trustedBird_ldapMessageListener.onLDAPMessage: RES_SEARCH_RESULT");
+			break;
+	}
+	
+	if (this.ldapEndCallback) this.ldapEndCallback(this.error, this.ldapEndCallbackParameter);
 }
 
 
