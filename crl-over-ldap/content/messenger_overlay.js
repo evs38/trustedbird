@@ -55,7 +55,7 @@ OnLoadMessenger = function() {
 	var autoUpdateLauncher = new ldapCrlAutoUpdateLauncher();
 	
 	/* Launch first update */
-	setTimeout(function() {autoUpdateLauncher.launchManager()}, 5000);
+	setTimeout(function() {autoUpdateLauncher.launchManager()}, 1000);
 }
 
 
@@ -69,7 +69,7 @@ ldapCrlAutoUpdateLauncher.prototype.launchManager = function() {
 
 	/* Launch update manager in a hidden window */
 	if (this.ldapCrlAutoUpdateManagerWindow) this.ldapCrlAutoUpdateManagerWindow.close();
-	this.ldapCrlAutoUpdateManagerWindow = window.openDialog("chrome://crl_over_ldap/content/ldapCrlAutoUpdateManager.xul", "", null);
+	this.ldapCrlAutoUpdateManagerWindow = window.openDialog("chrome://crl_over_ldap/content/ldapCrlAutoUpdateManager.xul", "ldapCrlAutoUpdateManager", "dependent=yes");
 
 	/* Close hidden window to free memory used by ldap-connection component */
 	setTimeout(function() {objThis.ldapCrlAutoUpdateManagerWindow.close();}, 60000);

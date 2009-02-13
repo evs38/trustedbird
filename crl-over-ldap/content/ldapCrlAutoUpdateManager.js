@@ -57,6 +57,8 @@ function ldapCrlAutoUpdateManagerOnLoad() {
 	var crlManager = Components.classes["@mozilla.org/security/crlmanager;1"].getService(Components.interfaces.nsICRLManager);
 	var crls = crlManager.getCrls();
 	
+	var queryLaunched = false;
+	
 	for (var i = 0; i < crls.length; i++) {
 		var crlEntry = crls.queryElementAt(i, Components.interfaces.nsICRLInfo);
 		var ldapAutoUpdateEnabledString = "security.crl.autoupdate.enableLdap." + crlEntry.nameInDb;
@@ -88,9 +90,12 @@ function ldapCrlAutoUpdateManagerOnLoad() {
 				if (!ldapQuery.launch(url, ldapCrlAutoUpdateManagerEndCallback, crlEntry.nameInDb, importCrlFromLdapMessage, "." + crlEntry.nameInDb)) {
 					trustedBird_dump("Error launching LDAP query " + url);
 				}
+				queryLaunched = true;
 			}
 		}
 	}
+	
+	if (!queryLaunched) window.close();
 }
 
 /**
