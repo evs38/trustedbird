@@ -79,3 +79,27 @@ onAccept = function() {
 		prefBranch.setBoolPref("security.crl.autoupdate.enable." + crl.nameInDb, document.getElementById("enableCheckBoxLdap").checked);
 	}
 }
+
+/* Add-on hook: replace the original function to fix a crash */
+function validatePrefs() {
+	var dayCnt = (document.getElementById("nextUpdateDay")).value;
+	var freqCnt = (document.getElementById("nextUpdateFreq")).value;
+	
+	var tmp = parseFloat(dayCnt);
+	if(!(tmp > 0.0)){
+		alert(bundle.GetStringFromName("crlAutoUpdateDayCntError"));
+		return false;
+	}
+	/* Crash fixed: replace current value with float value */
+	document.getElementById("nextUpdateDay").value = tmp;
+	
+	tmp = parseFloat(freqCnt);
+	if(!(tmp > 0.0)){
+		alert(bundle.GetStringFromName("crlAutoUpdtaeFreqCntError"));
+		return false;
+	}
+	/* Crash fixed: replace current value with float value */
+	document.getElementById("nextUpdateFreq").value = tmp;
+	
+	return true;
+}
