@@ -40,9 +40,6 @@ var securityLabelSecurityClassificationList = [];
 var securityLabelPrivacyMarkList = [];
 var securityLabelSecurityCategoriesList = [];
 
-var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
-jsLoader.loadSubScript("chrome://messenger/content/io.js");
-
 var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
 var gStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
 
@@ -134,30 +131,57 @@ function securityLabelReadProfiles() {
 		securityLabelPrivacyMarkList = [];
 		securityLabelSecurityCategoriesList = [];
 		                                           
-		var dir = DirIO.get("ProfD"); /* Profile directory */
+		/* Get profile directory */
+		var dir = Components.classes["@mozilla.org/file/directory_service;1"].createInstance(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
 		dir.append("securityLabel");
-		var dirList = DirIO.read(dir);
-		for (i in dirList) {
-			var fileContents = FileIO.read(dirList[i], "UTF-8");
-			if (fileContents != false) {
+		if (dir.isDirectory()) {
+			/* Read directory contents */
+			var entries = dir.directoryEntries;
+			var dirList = [];
+			while (entries.hasMoreElements()) {
+			  var entry = entries.getNext();
+			  entry.QueryInterface(Components.interfaces.nsIFile);
+			  dirList.push(entry);
+			}
+
+			for (i in dirList) {
 				try {
-					var domParser = new DOMParser();
-					var dom = domParser.parseFromString(fileContents, "text/xml");
-					if (dom.documentElement.nodeName == "securityLabel") {
-						var policy = _parseSecurityPolicyIdentifier(dom);
-						if (policy != false) {
-							securityLabelSecurityPolicyList[policy[0]] = policy[1];
-							securityLabelSecurityClassificationList[policy[0]] = _parseSecurityClassification(dom);
-							securityLabelPrivacyMarkList[policy[0]] = _parsePrivacyMark(dom);
-							securityLabelSecurityCategoriesList[policy[0]] = _parseSecurityCategories(dom);
+					if (dirList[i].isFile() && dirList[i].leafName.match(/\.xml$/) != null) {
+						dump("S/MIME Security Label: reading profile " + dirList[i].leafName + "...\n");
+
+						/* Read file */
+						var fiStream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+						var siStream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
+						fiStream.init(dirList[i], 1, 0, false);
+						siStream.init(fiStream);
+						var data = new String();
+						data += siStream.read(-1);
+						siStream.close();
+						fiStream.close();
+						var uniConv = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+						uniConv.charset = "UTF-8";
+						var fileContents = uniConv.ConvertToUnicode(data);
+						
+						if (fileContents != false) {
+							/* Parse file contents */
+							var domParser = new DOMParser();
+							var dom = domParser.parseFromString(fileContents, "text/xml");
+							if (dom.documentElement.nodeName == "securityLabel") {
+								var policy = _parseSecurityPolicyIdentifier(dom);
+								if (policy != false) {
+									securityLabelSecurityPolicyList[policy[0]] = policy[1];
+									securityLabelSecurityClassificationList[policy[0]] = _parseSecurityClassification(dom);
+									securityLabelPrivacyMarkList[policy[0]] = _parsePrivacyMark(dom);
+									securityLabelSecurityCategoriesList[policy[0]] = _parseSecurityCategories(dom);
+								}
+							}
 						}
 					}
 				} catch (e) {
-					dump("S/MIME Security Label: error while reading profile\n");
+					dump("S/MIME Security Label: error while reading " + dirList[i].leafName + "\n");
 				}
 			}
 		}
-		
 		_securityLabelReadProfilesDone = true;
 	}
 }
