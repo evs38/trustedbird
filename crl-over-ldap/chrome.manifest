@@ -35,10 +35,9 @@
 #
 # ***** END LICENSE BLOCK *****
 
-content	crl_over_ldap	content/
-locale	crl_over_ldap	en	locale/en-US/
-locale  crl_over_ldap	fr	locale/fr/
-skin	crl_over_ldap	classic/1.0	skin/
+content	crl_over_ldap	chrome/content/
+locale	crl_over_ldap	en	chrome/locale/en/
+locale  crl_over_ldap	fr	chrome/locale/fr/
 overlay chrome://pippki/content/crlManager.xul		chrome://crl_over_ldap/content/crlManager_overlay.xul
 overlay chrome://pippki/content/pref-crlupdate.xul	chrome://crl_over_ldap/content/pref-crlupdate_overlay.xul
 overlay chrome://messenger/content/messenger.xul	chrome://crl_over_ldap/content/messenger_overlay.xul
