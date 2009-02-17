@@ -405,11 +405,25 @@ function trustedBird_LDAP_getDirectoryList(identityKey) {
  * @return Proxy for aObject
  */
 function trustedBird_getProxyOnUIThread(aObject, aInterface) {
-	var eventQSvc = Components.classes["@mozilla.org/event-queue-service;1"].getService(Components.interfaces.nsIEventQueueService);
-	var uiQueue = eventQSvc.getSpecialEventQueue(Components.interfaces.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
+	var mainThread;
+	try {
+		mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
+	} catch(e) {
+		var eventQSvc = Components.classes["@mozilla.org/event-queue-service;1"].getService(Components.interfaces.nsIEventQueueService);
+		mainThread = eventQSvc.getSpecialEventQueue(Components.interfaces.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
+	}
+	
 	var proxyMgr = Components.classes["@mozilla.org/xpcomproxy;1"].getService(Components.interfaces.nsIProxyObjectManager);
 	
-	return proxyMgr.getProxyForObject(uiQueue, aInterface, aObject, 5); // 5 == PROXY_ALWAYS | PROXY_SYNC
+	return proxyMgr.getProxyForObject(mainThread, aInterface, aObject, 5); // 5 == PROXY_ALWAYS | PROXY_SYNC
+}
+
+/**
+ * Get Mozilla platform version
+ * @return Platform version
+ */
+function trustedBird_getPlatformVersion() {
+	return Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo).platformVersion;
 }
 
 /**
@@ -457,15 +471,24 @@ trustedBird_ldapQuery.prototype.launch = function(aLdapUri, aLdapEndCallback, aL
 	
 	try {
 		this.ldapConnection = Components.classes["@mozilla.org/network/ldap-connection;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPConnection);
-		this.ldapConnection.init(
-			this.ldapURL.asciiHost,
-			this.ldapURL.port,
-			this.ldapURL.options & this.ldapURL.OPT_SECURE,
-			null,
-			trustedBird_getProxyOnUIThread(this, Components.interfaces.nsILDAPMessageListener),
-			null,
-			Components.interfaces.nsILDAPConnection.VERSION3);
 		
+		if (trustedBird_getPlatformVersion() >= "1.9") {
+			this.ldapConnection.init(
+					this.ldapURL,
+					null,
+					trustedBird_getProxyOnUIThread(this, Components.interfaces.nsILDAPMessageListener),
+					null,
+					Components.interfaces.nsILDAPConnection.VERSION3);
+		} else {
+			this.ldapConnection.init(
+				this.ldapURL.asciiHost,
+				this.ldapURL.port,
+				this.ldapURL.options & this.ldapURL.OPT_SECURE,
+				null,
+				trustedBird_getProxyOnUIThread(this, Components.interfaces.nsILDAPMessageListener),
+				null,
+				Components.interfaces.nsILDAPConnection.VERSION3);
+		}		
 	} catch (e) {
 		trustedBird_dump("Error trustedBird_ldapQuery.launch: " + e);
 		return false;
