@@ -63,19 +63,19 @@ public class MessageHandler {
 		this.hdr = hdr;
 	}
 	
-	String getAuthor(){
+	public String getAuthor(){
 		return hdr.author;
 	}
 	
-	String[] getCCRecipients(){
+	public String[] getCCRecipients(){
 		return hdr.ccRecipients;
 	}
 	
-	String getCharset(){
+	public String getCharset(){
 		return hdr.charset;
 	}
 	
-	String getId(){
+	public String getId(){
 		return hdr.id;
 	}
 	
@@ -83,23 +83,23 @@ public class MessageHandler {
 		return hdr.isRead;
 	}
 	
-	int getKey(){
+	public int getKey(){
 		return hdr.key;
 	}
 	
-	String[] getRecipients(){
+	public String[] getRecipients(){
 		return hdr.recipients;
 	}
 	
-	int getSize(){
+	public int getSize(){
 		return hdr.size;
 	}
 	
-	String getSubject(){
+	public String getSubject(){
 		return hdr.subject;
 	}
 	
-	String getURI(){
+	public String getURI(){
 		return hdr.uri;
 	}
 
