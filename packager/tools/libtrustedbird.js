@@ -462,8 +462,12 @@ trustedBird_ldapQuery.prototype.launch = function(aLdapUri, aLdapEndCallback, aL
 	this.ldapMessageCallbackParameter = aLdapMessageCallbackParameter;
 	
 	try {
-		this.ldapURL = Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
-		this.ldapURL.spec = aLdapUri;
+		if (trustedBird_getPlatformVersion() >= "1.9") {
+			this.ldapURL = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService).newURI(aLdapUri, null, null).QueryInterface(Components.interfaces.nsILDAPURL);
+		} else {
+			this.ldapURL = Components.classes["@mozilla.org/network/ldap-url;1"].createInstance().QueryInterface(Components.interfaces.nsILDAPURL);
+			this.ldapURL.spec = aLdapUri;
+		}
 	} catch (e) {
 		trustedBird_dump("Error trustedBird_ldapQuery.launch incorrect URI:" + e);
 		return false;
