@@ -131,7 +131,7 @@ public class Message {
 	}
 
 	public void setSecurity(Security security) {
-		message.security.isCrypted = security.isCrypted();
+		message.security.isCrypted = security.isEncrypted();
 		message.security.isSigned = security.isSigned();
 	}
 

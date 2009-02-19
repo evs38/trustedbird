@@ -42,11 +42,11 @@ package org.milimail.messageRemoteServiceAPI.compose;
  */
 public class Security {
 	private boolean isSigned;
-	private boolean isCrypted;
+	private boolean isEncrypted;
 	
 	public Security() {
 		isSigned = false;
-		isCrypted = false;
+		isEncrypted = false;
 	}
 	
 	public boolean isSigned() {
@@ -55,16 +55,16 @@ public class Security {
 	public void setSigned(boolean isSigned) {
 		this.isSigned = isSigned;
 	}
-	public boolean isCrypted() {
-		return isCrypted;
+	public boolean isEncrypted() {
+		return isEncrypted;
 	}
-	public void setCrypted(boolean isCrypted) {
-		this.isCrypted = isCrypted;
+	public void setEncrypted(boolean isEncrypted) {
+		this.isEncrypted = isEncrypted;
 	}
 
-	public Security(boolean isSigned, boolean isCrypted) {
+	public Security(boolean isSigned, boolean isEncrypted) {
 		super();
 		this.isSigned = isSigned;
-		this.isCrypted = isCrypted;
+		this.isEncrypted = isEncrypted;
 	}
 }

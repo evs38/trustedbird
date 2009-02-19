@@ -98,7 +98,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		Message message = new Message();
 		
 		Security security = new Security();
-		security.setCrypted(true);
+		security.setEncrypted(true);
 		message.setSecurity(security);
 		
 		message.setSubject("Subject from API: Crypted");
@@ -115,7 +115,7 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		Message message = new Message();
 		
 		Security security = new Security();
-		security.setCrypted(true);
+		security.setEncrypted(true);
 		security.setSigned(true);
 		message.setSecurity(security);
 		
