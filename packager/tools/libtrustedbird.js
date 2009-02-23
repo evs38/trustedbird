@@ -55,7 +55,10 @@ function _trustedBird_dump_load() {
 function trustedBird_dump(message) {
 	if (!_trustedBird_dump_showInConsole_loaded) _trustedBird_dump_load();
 	
-	if (_trustedBird_dump_showInConsole) dump(message + "\n");
+	if (_trustedBird_dump_showInConsole) {
+		dump(message + "\n");
+		Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService).logStringMessage(message);
+	}
 }
 
 /**
