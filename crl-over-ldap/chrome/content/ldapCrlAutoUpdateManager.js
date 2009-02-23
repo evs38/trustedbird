@@ -52,7 +52,7 @@ jsLoader.loadSubScript("chrome://crl_over_ldap/content/ldapCrlManager.js");
  * - import updated CRL in database
  */
 function ldapCrlAutoUpdateManagerOnLoad() {
-	trustedBird_dump("* ldapCrlAutoUpdateManagerOnLoad");
+	trustedBird_dump("ldapCrlAutoUpdateManagerOnLoad");
 	
 	var crlManager = Components.classes["@mozilla.org/security/crlmanager;1"].getService(Components.interfaces.nsICRLManager);
 	var crls = crlManager.getCrls();
@@ -102,7 +102,7 @@ function ldapCrlAutoUpdateManagerOnLoad() {
 				/* Get URL from preferences */
 				var url = trustedBird_prefService_getCharPref("security.crl.autoupdate.url." + crlEntry.nameInDb);
 				if (url == "") continue;
-				trustedBird_dump("* ldapCrlAutoUpdateManagerOnLoad URL=" + url);
+				trustedBird_dump("ldapCrlAutoUpdateManagerOnLoad URL=" + url);
 				
 				var ldapQuery = new trustedBird_ldapQuery();
 				if (!ldapQuery.launch(url, ldapCrlAutoUpdateManagerEndCallback, crlEntry.nameInDb, importCrlFromLdapMessage, "." + crlEntry.nameInDb)) {

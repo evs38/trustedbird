@@ -48,7 +48,7 @@ jsLoader.loadSubScript("chrome://crl_over_ldap/content/libtrustedbird.js");
  * @return True if received CRL has been correctly imported
  */
 function importCrlFromLdapMessage(aLdapURL, aLdapMessage, aNameInDb, aSilent) {
-	trustedBird_dump("* importCrlFromLdapMessage (" + aLdapURL.spec + ")");
+	trustedBird_dump("importCrlFromLdapMessage (" + aLdapURL.spec + ")");
 
 	if (aSilent == undefined) aSilent = true;
 	

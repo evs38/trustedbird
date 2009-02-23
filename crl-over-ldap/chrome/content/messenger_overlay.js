@@ -65,7 +65,7 @@ function ldapCrlAutoUpdateLauncher() {
 
 ldapCrlAutoUpdateLauncher.prototype.launchManager = function() {
 	var objThis = this;
-	trustedBird_dump("* ldapCrlAutoUpdateLauncher.launchManager");
+	trustedBird_dump("ldapCrlAutoUpdateLauncher.launchManager");
 
 	/* Launch update manager in a hidden window */
 	if (this.ldapCrlAutoUpdateManagerWindow) this.ldapCrlAutoUpdateManagerWindow.close();
