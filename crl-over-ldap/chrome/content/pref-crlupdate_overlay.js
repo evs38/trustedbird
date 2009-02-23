@@ -73,7 +73,10 @@ var onAccept_orig = onAccept;
 onAccept = function() {
 	/* Call original function */
 	onAccept_orig();
-	
+
+	/* Mozilla/NSS bug 371522 temporary workaround until fix is integrated */
+	if (crl.lastFetchURL != "") prefBranch.setCharPref("security.crl.autoupdate.urlCopy." + crl.nameInDb, crl.lastFetchURL);
+
 	if (document.getElementById("enableCheckBoxLdap")) {
 		prefBranch.setBoolPref("security.crl.autoupdate.enableLdap." + crl.nameInDb, document.getElementById("enableCheckBoxLdap").checked);
 		prefBranch.setBoolPref("security.crl.autoupdate.enable." + crl.nameInDb, document.getElementById("enableCheckBoxLdap").checked);

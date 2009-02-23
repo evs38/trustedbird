@@ -61,6 +61,24 @@ function ldapCrlAutoUpdateManagerOnLoad() {
 	
 	for (var i = 0; i < crls.length; i++) {
 		var crlEntry = crls.queryElementAt(i, Components.interfaces.nsICRLInfo);
+		
+		/*
+		 * Mozilla/NSS bug 371522 temporary workaround until fix is integrated into NSS
+		 * Verify all URLs prefs and replace them with their copy if empty
+		 * (LDAP URLs and HTTP/FTP ones)
+		 */
+		var currentUrl;
+		var urlCopy;
+		currentUrl = trustedBird_prefService_getCharPref("security.crl.autoupdate.url." + crlEntry.nameInDb);
+		if (currentUrl == "") {
+			var urlCopy = trustedBird_prefService_getCharPref("security.crl.autoupdate.urlCopy." + crlEntry.nameInDb);
+			if (urlCopy != "") {
+				trustedBird_dump("Fixing URL for CRL \"" + crlEntry.nameInDb + "\" (see Mozilla/NSS bug 371522)");
+				trustedBird_prefService_setCharPref("security.crl.autoupdate.url." + crlEntry.nameInDb, urlCopy);
+			}
+		}
+		
+		
 		var ldapAutoUpdateEnabledString = "security.crl.autoupdate.enableLdap." + crlEntry.nameInDb;
 		
 		if (trustedBird_prefService_getBoolPref(ldapAutoUpdateEnabledString)) {

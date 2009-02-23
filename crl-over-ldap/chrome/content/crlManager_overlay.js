@@ -94,6 +94,11 @@ function DeleteCrlSelected_ldap() {
 		prefBranch.clearUserPref("security.crl.autoupdate.enableLdap." + id);
 	} catch(e) {}
 	
+	try {
+		/* Mozilla/NSS bug 371522 temporary workaround until fix is integrated */
+		prefBranch.clearUserPref("security.crl.autoupdate.urlCopy." + id);
+	} catch(e) {}
+	
 	/* Call original function */
 	DeleteCrlSelected();
 }
