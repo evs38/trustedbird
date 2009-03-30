@@ -370,17 +370,13 @@ function syncMessageDb(header) {
 	
 	/* Don't get updated data if last check is less than 5s ago */
 	var currentDate= (new Date()).getTime();
-	if ((currentDate - syncDate) < 5000) {
-		//dump("syncMessageDb: last check too recent, don't update\n");
-		return;
-	}
+	if ((currentDate - syncDate) < 5000) return;
 	
 	header.setStringProperty("x-nviewer-sync-date", currentDate);
 	
 	/* Get last update date from notification db */
 	var lastUpdate = notificationDbHandler.getMessageField(header.messageId, "lastUpdate");
 		
-	//dump("* syncMessageDb: syncDate="+syncDate+" lastUpdate="+lastUpdate+"   already synced="+(syncDate > lastUpdate)+"\n");
 	/* Don't sync if data are already up-to-date */
 	if (syncDate >= lastUpdate) return;
 	
@@ -420,7 +416,6 @@ function saveNotificationDataInMessageDb(notificationData, header) {
 	if (!header) return false;
 	
 	srv.logSrv("Saving notification data for message " + header.messageId + " into message db.");
-	header.setStringProperty("x-nviewer-seen", "request");
 	header.setStringProperty("x-nviewer-sync-date", (new Date()).getTime());
 	header.setStringProperty("x-nviewer-to", notificationData.getDeliveredToProperty());
 	header.setStringProperty("x-nviewer-status", notificationData.getStatusProperty());
@@ -446,7 +441,8 @@ function isSentMessage(header) {
 	if (senderEmailAddress == "") return false;
 	
 	for (var i = 0; i < accountManager.allIdentities.Count(); i++) {
-		if (accountManager.allIdentities.GetElementAt(i).email == senderEmailAddress) return true;
+		var identity = accountManager.allIdentities.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgIdentity);
+		if (identity.email == senderEmailAddress) return true;
 	}
 	
 	return false;

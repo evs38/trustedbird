@@ -278,11 +278,9 @@ var notifyListener = {
 			
 			/* Get timeout value */
 			var timeout = 0;
-			//if (srv.preferences.getBoolPref(srv.extensionKey + ".enabled_timeout")) {
-				timeout = parseInt(srv.preferences.getIntPref(srv.extensionKey + ".timeout"));
-				timeout *= 60; /* Convert in seconds */
-				if (timeout < 0) timeout = 0;
-			//}
+			timeout = parseInt(srv.preferences.getIntPref(srv.extensionKey + ".timeout"));
+			timeout *= 60; /* Convert in seconds */
+			if (timeout < 0) timeout = 0;
 			
 			/* Initialize or update notification data with recipient list */
 			for (var i in recipientsListArray) {
@@ -292,6 +290,8 @@ var notifyListener = {
 			/* Save notification data into db */
 			saveNotificationData(notificationData, header.messageId, header);
 						
+			header.setStringProperty("x-nviewer-seen", "request");
+
 			return true;
 		}
 		
