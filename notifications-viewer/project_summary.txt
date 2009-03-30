@@ -1,2 +1,0 @@
-Notifications Viewer is a plugin for mozilla-thunderbird (1.5 - 3.0.*) that allows you to view the Delivery Status Notifications (DSN) and Message Disposition Notification (MDN). Ref: RFC3461 and RFC3464 (DSN), RFC3798 (MDN).
-

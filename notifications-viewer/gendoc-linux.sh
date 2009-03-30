@@ -8,16 +8,16 @@
 # Daniel Rocher - 2008-02-20
 
 # path for JSDoc
-JsDocPath="/home/daniel/utilitaires/JSDoc/jsdoc.pl"
+JsDocPath="/home/raph/download/JSDoc/jsdoc.pl"
 
 # Project logo
 logoPath="./chrome/skin/notificationsviewer.png"
 
 # project summary file
-projectSummary="project_summary.txt"
+projectSummary="README"
 
 # document files
-files="./"
+files="./chrome/content/"
 
 # output directory
 outputDirectory="doc"

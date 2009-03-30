@@ -113,10 +113,10 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;boolean</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#allDsnReceived">allDsnReceived</A></B></CODE>
+   <CODE>&nbsp;Object</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#checkDelay">checkDelay</A></B></CODE>
    <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All DSN were received</TD>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
    </TR>
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
@@ -155,31 +155,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;number</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#FLAG_TIMEOUT">FLAG_TIMEOUT</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<pre>b ...1 Time out </pre></TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;number</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#FLAG_VERSION">FLAG_VERSION</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;customProperties Version
-		<pre>b 001.</TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;number</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#flagsProperty">flagsProperty</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-flags property</TD>
-   </TR>
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;string</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#mdnDeletedSummaryProperty">mdnDeletedSummaryProperty</A></B></CODE>
    <BR>
@@ -207,6 +182,14 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;Object</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#messageDate">messageDate</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&nbsp;Object</CODE></FONT></TD>
    <TD><CODE><B><A HREF="#regExpCache">regExpCache</A></B></CODE>
    <BR>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regular expressions cache</TD>
@@ -215,7 +198,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE>&nbsp;string</CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#statusProperty">statusProperty</A></B></CODE>
+   <TD><CODE><B><A HREF="#status">status</A></B></CODE>
    <BR>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-nviewer-status property ("good","middle", "bad")
 		<p>
@@ -223,6 +206,38 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 		<ul>
 			<li><a href="#getStatusProperty">getStatusProperty()</a>
 		</ul></TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&nbsp;Object</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#timedOut">timedOut</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&lt;static&gt; &nbsp;Object</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#!s!DSN_REQUEST">DSN_REQUEST</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&lt;static&gt; &nbsp;Object</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#!s!MDN_REQUEST">MDN_REQUEST</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+   </TR>
+   
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+   <CODE>&lt;static&gt; &nbsp;Object</CODE></FONT></TD>
+   <TD><CODE><B><A HREF="#!s!NO_REQUEST">NO_REQUEST</A></B></CODE>
+   <BR>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
    </TR>
    
 
@@ -247,7 +262,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TD>
       <CODE>
 	 <B>
-	    <A HREF="#customProperties()">customProperties</A></B>(&lt;string&gt; deliveredToProperty,&lt;string&gt; statusProperty,&lt;string&gt; dsnSummaryProperty,&lt;string&gt; flagsProperty,&lt;string&gt; mdnDisplayedSummaryProperty,&lt;string&gt; mdnDeletedSummaryProperty)
+	    <A HREF="#customProperties()">customProperties</A></B>(&lt;string&gt; deliveredToProperty)
       </CODE>
       <BR>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -255,7 +270,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	<p>
 	<pre>
 	<b>field separator: ";"
-	row separator: "\n\t"</b>
+	row separator: ":"</b>
 
 
       </TD>
@@ -285,7 +300,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#addDeliveredTo">addDeliveredTo</A></B>(&lt;string&gt; finalRecipient,&lt;number&gt; flags)
+	       <A HREF="#addDeliveredTo">addDeliveredTo</A></B>(&lt;string&gt; finalRecipient, &lt;number&gt; timeoutDelay, &lt;number&gt; requests)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -302,7 +317,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#addDsnReport">addDsnReport</A></B>(&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; dveryReport,&lt;string&gt; messageId)
+	       <A HREF="#addDsnReport">addDsnReport</A></B>(&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; dveryReport, &lt;string&gt; messageId)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -319,11 +334,45 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#addMdnReport">addMdnReport</A></B>(&lt;<a href="mdnReport.html">mdnReport</a>&gt; report,&lt;string&gt; messageId)
+	       <A HREF="#addMdnReport">addMdnReport</A></B>(&lt;<a href="mdnReport.html">mdnReport</a>&gt; report, &lt;string&gt; messageId)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	 Change properties with the <a href="mdnReport.html#">mdnReport</a> object
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&nbsp;Object</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#getAllNotificationsMessageId">getAllNotificationsMessageId</A></B>()
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&nbsp;string</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#getCheckDelay">getCheckDelay</A></B>()
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 
       </TD>
    </TR>
 
@@ -354,23 +403,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	 <CODE>
 	    <B>
 	       <A HREF="#getDsnSummaryProperty">getDsnSummaryProperty</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;string</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getFlagsProperty">getFlagsProperty</A></B>()
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -449,17 +481,17 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
-	    <CODE>&nbsp;void</CODE>
+	    <CODE>&nbsp;string</CODE>
 	 </FONT>
       </TD>
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#setMsgAsExpired">setMsgAsExpired</A></B>()
+	       <A HREF="#getTimedOut">getTimedOut</A></B>()
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 set message as expired.
+	 
       </TD>
    </TR>
 
@@ -482,11 +514,11 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TABLE>
 
    
-   <A NAME="allDsnReceived"><!-- --></A>
-   <H3>allDsnReceived</H3>
-   <PRE>boolean&nbsp;<B>allDsnReceived</B></PRE>
+   <A NAME="checkDelay"><!-- --></A>
+   <H3>checkDelay</H3>
+   <PRE>Object&nbsp;<B>checkDelay</B></PRE>
    <UL>
-   All DSN were received
+   
    
    </UL>
    <HR>
@@ -528,34 +560,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </UL>
    <HR>
    
-   <A NAME="FLAG_TIMEOUT"><!-- --></A>
-   <H3>FLAG_TIMEOUT</H3>
-   <PRE>number&nbsp;<B>FLAG_TIMEOUT</B></PRE>
-   <UL>
-   <pre>b ...1 Time out </pre>
-   
-   </UL>
-   <HR>
-   
-   <A NAME="FLAG_VERSION"><!-- --></A>
-   <H3>FLAG_VERSION</H3>
-   <PRE>number&nbsp;<B>FLAG_VERSION</B></PRE>
-   <UL>
-   customProperties Version
-		<pre>b 001. version 1
-   
-   </UL>
-   <HR>
-   
-   <A NAME="flagsProperty"><!-- --></A>
-   <H3>flagsProperty</H3>
-   <PRE>number&nbsp;<B>flagsProperty</B></PRE>
-   <UL>
-   x-nviewer-flags property
-   
-   </UL>
-   <HR>
-   
    <A NAME="mdnDeletedSummaryProperty"><!-- --></A>
    <H3>mdnDeletedSummaryProperty</H3>
    <PRE>string&nbsp;<B>mdnDeletedSummaryProperty</B></PRE>
@@ -584,6 +588,15 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </UL>
    <HR>
    
+   <A NAME="messageDate"><!-- --></A>
+   <H3>messageDate</H3>
+   <PRE>Object&nbsp;<B>messageDate</B></PRE>
+   <UL>
+   
+   
+   </UL>
+   <HR>
+   
    <A NAME="regExpCache"><!-- --></A>
    <H3>regExpCache</H3>
    <PRE>Object&nbsp;<B>regExpCache</B></PRE>
@@ -593,9 +606,9 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </UL>
    <HR>
    
-   <A NAME="statusProperty"><!-- --></A>
-   <H3>statusProperty</H3>
-   <PRE>string&nbsp;<B>statusProperty</B></PRE>
+   <A NAME="status"><!-- --></A>
+   <H3>status</H3>
+   <PRE>string&nbsp;<B>status</B></PRE>
    <UL>
    x-nviewer-status property ("good","middle", "bad")
 		<p>
@@ -603,6 +616,42 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 		<ul>
 			<li><a href="#getStatusProperty">getStatusProperty()</a>
 		</ul>
+   
+   </UL>
+   <HR>
+   
+   <A NAME="timedOut"><!-- --></A>
+   <H3>timedOut</H3>
+   <PRE>Object&nbsp;<B>timedOut</B></PRE>
+   <UL>
+   
+   
+   </UL>
+   <HR>
+   
+   <A NAME="!s!DSN_REQUEST"><!-- --></A>
+   <H3>DSN_REQUEST</H3>
+   <PRE>&lt;static&gt;&nbsp;Object&nbsp;<B>DSN_REQUEST</B></PRE>
+   <UL>
+   
+   
+   </UL>
+   <HR>
+   
+   <A NAME="!s!MDN_REQUEST"><!-- --></A>
+   <H3>MDN_REQUEST</H3>
+   <PRE>&lt;static&gt;&nbsp;Object&nbsp;<B>MDN_REQUEST</B></PRE>
+   <UL>
+   
+   
+   </UL>
+   <HR>
+   
+   <A NAME="!s!NO_REQUEST"><!-- --></A>
+   <H3>NO_REQUEST</H3>
+   <PRE>&lt;static&gt;&nbsp;Object&nbsp;<B>NO_REQUEST</B></PRE>
+   <UL>
+   
    
    </UL>
    <HR>
@@ -624,7 +673,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 
 <A NAME="customProperties()"><!-- --></A><H3>
 customProperties</H3>
-<PRE><B>customProperties</B>(&lt;string&gt; deliveredToProperty,&lt;string&gt; statusProperty,&lt;string&gt; dsnSummaryProperty,&lt;string&gt; flagsProperty,&lt;string&gt; mdnDisplayedSummaryProperty,&lt;string&gt; mdnDeletedSummaryProperty)</PRE>
+<PRE><B>customProperties</B>(&lt;string&gt; deliveredToProperty)</PRE>
 
 
 <UL>
@@ -632,11 +681,13 @@ customProperties</H3>
 	<p>
 	<pre>
 	<b>field separator: ";"
-	row separator: "\n\t"</b>
+	row separator: ":"</b>
 
-	<b>fields:                   type</b>
+	First row: messageDate
+	<b>Next rows fields:                   type</b>
 	final recipient           string
-	flags                     number
+	timeout                   number
+	requests                  number
 	DSN Count                 number
 	DSN                       string
 	DSN message-Id            string
@@ -644,20 +695,13 @@ customProperties</H3>
 	MDN                       string
 	MDN message-Id            string
 
-	final recipient;flags;DSN Count[;DSN;DSN message-Id]*;MDN Count[;MDN;MDN message-Id]*
+	final recipient;timeout;requests;DSN Count[;DSN;DSN message-Id]*;MDN Count[;MDN;MDN message-Id]*
 	</pre>
 	example:
 	<pre>
-	daniel&#64;vraimentbidon.org;0;1;delivered;&#60;123456&#64;vraimentbidon.org&#62;;1;displayed;&#60;AZERG&#64;vraimentbidon.org&#62;\n\t
-	sersim&#64;vraimentbidon.org;1;1;delivered;&#60;543211&#64;vraimentbidon.org&#62;;2;displayed;&#60;GBI4E&#64;vraimentbidon.org&#62;;deleted;&#60;AZT564&#64;vraimentbidon.org&#62;
-	</pre>
-	<p>
-	format for flagsProperty (<i>x-nviewer-flags</i>) property:
-	<p>
-	<b>NOT FROZEN</b>
-	<pre>
-	b ...x  time out (global)
-	b xxx.  customProperties version
+	1238073625:
+	daniel&#64;vraimentbidon.org;0;3;1;delivered;&#60;123456&#64;vraimentbidon.org&#62;;1;displayed;&#60;AZERG&#64;vraimentbidon.org&#62;:
+	sersim&#64;vraimentbidon.org;0;3;1;delivered;&#60;543211&#64;vraimentbidon.org&#62;;2;displayed;&#60;GBI4E&#64;vraimentbidon.org&#62;;deleted;&#60;AZT564&#64;vraimentbidon.org&#62;
 	</pre>
 </UL>
 
@@ -666,22 +710,7 @@ customProperties</H3>
    <UL>
    <B>Parameters:</B>
    
-     <UL><CODE>deliveredToProperty</CODE> -  x-nviewer-to property 	
-     </UL>
-   
-     <UL><CODE>statusProperty</CODE> -  x-nviewer-status property ("good","middle", "bad") 	
-     </UL>
-   
-     <UL><CODE>dsnSummaryProperty</CODE> -  x-nviewer-dsn-summary property (number/total) 	
-     </UL>
-   
-     <UL><CODE>flagsProperty</CODE> -  x-nviewer-flags property	 	
-     </UL>
-   
-     <UL><CODE>mdnDisplayedSummaryProperty</CODE> -  x-nviewer-mdn-displayed-summary property (number/total) 	
-     </UL>
-   
-     <UL><CODE>mdnDeletedSummaryProperty</CODE> -  x-nviewer-mdn-deleted-summary property (number/total)
+     <UL><CODE>deliveredToProperty</CODE> -  x-nviewer-to property
      </UL>
    
    
@@ -719,7 +748,7 @@ customProperties</H3>
 
    <A NAME="addDeliveredTo"><!-- --></A>
    <H3>addDeliveredTo</H3>
-   <PRE><a href="DeliveredTo.html">DeliveredTo</a> <B>addDeliveredTo</B>(&lt;string&gt; finalRecipient,&lt;number&gt; flags)</PRE>
+   <PRE><a href="DeliveredTo.html">DeliveredTo</a> <B>addDeliveredTo</B>(&lt;string&gt; finalRecipient, &lt;number&gt; timeoutDelay, &lt;number&gt; requests)</PRE>
    
       <UL>create a <a href="DeliveredTo.html#">DeliveredTo</a> object if finalRecipient doesn't exist, otherwise update data</UL>
    
@@ -732,7 +761,10 @@ customProperties</H3>
      <UL><CODE>finalRecipient</CODE> -  final recipient 		
       </UL> 
    
-     <UL><CODE>flags</CODE> -  ( see <a href="DeliveredTo.html#">DeliveredTo</a>) 		
+     <UL><CODE>timeoutDelay</CODE> -  ( see <a href="DeliveredTo.html#">DeliveredTo</a>) 		
+      </UL> 
+   
+     <UL><CODE>requests</CODE> -  ( see <a href="DeliveredTo.html#">DeliveredTo</a>) 		
       </UL> 
    
    </UL>
@@ -755,7 +787,7 @@ customProperties</H3>
 
    <A NAME="addDsnReport"><!-- --></A>
    <H3>addDsnReport</H3>
-   <PRE>boolean <B>addDsnReport</B>(&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; dveryReport,&lt;string&gt; messageId)</PRE>
+   <PRE>boolean <B>addDsnReport</B>(&lt;<a href="deliveryReport.html">deliveryReport</a>&gt; dveryReport, &lt;string&gt; messageId)</PRE>
    
       <UL>Change properties with the <a href="deliveryReport.html#">deliveryReport</a> object</UL>
    
@@ -791,7 +823,7 @@ customProperties</H3>
 
    <A NAME="addMdnReport"><!-- --></A>
    <H3>addMdnReport</H3>
-   <PRE>boolean <B>addMdnReport</B>(&lt;<a href="mdnReport.html">mdnReport</a>&gt; report,&lt;string&gt; messageId)</PRE>
+   <PRE>boolean <B>addMdnReport</B>(&lt;<a href="mdnReport.html">mdnReport</a>&gt; report, &lt;string&gt; messageId)</PRE>
    
       <UL>Change properties with the <a href="mdnReport.html#">mdnReport</a> object</UL>
    
@@ -818,6 +850,45 @@ customProperties</H3>
          <b>false</b> if an error occurs 
         </UL>
    </UL>
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="getAllNotificationsMessageId"><!-- --></A>
+   <H3>getAllNotificationsMessageId</H3>
+   <PRE>Object <B>getAllNotificationsMessageId</B>()</PRE>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+   <UL>
+   <B>Returns:</B>
+        <UL>
+        Array of notifications messageId 
+        </UL>
+   </UL>
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="getCheckDelay"><!-- --></A>
+   <H3>getCheckDelay</H3>
+   <PRE>string <B>getCheckDelay</B>()</PRE>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
    
 
    <!-- ADDITIONAL ATTRIBUTES START -->
@@ -862,29 +933,6 @@ customProperties</H3>
    <B>Returns:</B>
         <UL>
          Return x-nviewer-dsn-summary property (number/total) 
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getFlagsProperty"><!-- --></A>
-   <H3>getFlagsProperty</H3>
-   <PRE>string <B>getFlagsProperty</B>()</PRE>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-         Return x-nviewer-flags property 
         </UL>
    </UL>
    
@@ -994,11 +1042,9 @@ customProperties</H3>
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
-   <A NAME="setMsgAsExpired"><!-- --></A>
-   <H3>setMsgAsExpired</H3>
-   <PRE>void <B>setMsgAsExpired</B>()</PRE>
-   
-      <UL>set message as expired. Undo not possible.</UL>
+   <A NAME="getTimedOut"><!-- --></A>
+   <H3>getTimedOut</H3>
+   <PRE>string <B>getTimedOut</B>()</PRE>
    
 
    <!-- METHOD PARAMETERS START -->
@@ -1078,6 +1124,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <FONT SIZE="-1">
 
 </FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Mon Sep 29 08:25:40 2008</div>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Mon Mar 30 10:52:01 2009</div>
 </BODY>
 </HTML>

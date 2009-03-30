@@ -19,6 +19,9 @@
  * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  * 
+ * Contributor(s):
+ *    Raphael Fairise / BT Global Services / Etat francais Ministere de la Defense
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -46,16 +49,15 @@
 	@constructor
 	@version 0.9.2
 	@author Daniel Rocher / Etat francais Ministere de la Defense
-	@param {string} finalRecipient final recipient
-	@param {number} flags flags for this object - <b>NOT FROZEN</b>
+	@param {string} finalRecipient Final recipient
+	@param {number} timeoutDelay Timeout for this recipient
+	@param {number} requests Notifications requested
 */
-function DeliveredTo (finalRecipient,flags) {
+function DeliveredTo (finalRecipient, timeoutDelay, requests) {
 	/** final recipient @type string */
 	this.finalRecipient = finalRecipient;
-	/** flags <b>(NOT FROZEN)</b> @type number */
-	this.flags = flags;
-	/** <pre>b ...1 Time out </pre> @type number */
-	this.FLAG_TIMEOUT= 0x1;
+	this.timeoutDelay = timeoutDelay;
+	this.requests = requests;
 	/** a DSN list @type Array */
 	this.dsnList = new Array();
 	/** a MDN list @type Array */
@@ -93,17 +95,18 @@ function mdnProperty (dispositionType,messageId) {
 }
 
 
-
 /**
 	format for deliveredToProperty (<i>x-nviewer-to</i>) property:
 	<p>
 	<pre>
 	<b>field separator: ";"
-	row separator: "\n\t"</b>
+	row separator: ":"</b>
 
-	<b>fields:                   type</b>
+	First row: messageDate
+	<b>Next rows fields:                   type</b>
 	final recipient           string
-	flags                     number
+	timeout                   number
+	requests                  number
 	DSN Count                 number
 	DSN                       string
 	DSN message-Id            string
@@ -111,34 +114,21 @@ function mdnProperty (dispositionType,messageId) {
 	MDN                       string
 	MDN message-Id            string
 
-	final recipient;flags;DSN Count[;DSN;DSN message-Id]*;MDN Count[;MDN;MDN message-Id]*
+	final recipient;timeout;requests;DSN Count[;DSN;DSN message-Id]*;MDN Count[;MDN;MDN message-Id]*
 	</pre>
 	example:
 	<pre>
-	daniel&#64;vraimentbidon.org;0;1;delivered;&#60;123456&#64;vraimentbidon.org&#62;;1;displayed;&#60;AZERG&#64;vraimentbidon.org&#62;\n\t
-	sersim&#64;vraimentbidon.org;1;1;delivered;&#60;543211&#64;vraimentbidon.org&#62;;2;displayed;&#60;GBI4E&#64;vraimentbidon.org&#62;;deleted;&#60;AZT564&#64;vraimentbidon.org&#62;
-	</pre>
-	<p>
-	format for flagsProperty (<i>x-nviewer-flags</i>) property:
-	<p>
-	<b>NOT FROZEN</b>
-	<pre>
-	b ...x  time out (global)
-	b xxx.  customProperties version
+	1238073625:
+	daniel&#64;vraimentbidon.org;0;3;1;delivered;&#60;123456&#64;vraimentbidon.org&#62;;1;displayed;&#60;AZERG&#64;vraimentbidon.org&#62;:
+	sersim&#64;vraimentbidon.org;0;3;1;delivered;&#60;543211&#64;vraimentbidon.org&#62;;2;displayed;&#60;GBI4E&#64;vraimentbidon.org&#62;;deleted;&#60;AZT564&#64;vraimentbidon.org&#62;
 	</pre>
 	@class manage custom properties
 	@constructor
 	@version 0.9.4
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 	@param {string} deliveredToProperty x-nviewer-to property
-	@param {string} statusProperty x-nviewer-status property ("good","middle", "bad")
-	@param {string} dsnSummaryProperty x-nviewer-dsn-summary property (number/total)
-	@param {string} flagsProperty x-nviewer-flags property	
-	@param {string} mdnDisplayedSummaryProperty x-nviewer-mdn-displayed-summary property (number/total)
-	@param {string} mdnDeletedSummaryProperty x-nviewer-mdn-deleted-summary property (number/total)
 */
-function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,flagsProperty,mdnDisplayedSummaryProperty,mdnDeletedSummaryProperty) {
-
+function customProperties(deliveredToProperty) {
 	/**
 		x-nviewer-to property
 		<p>
@@ -159,7 +149,7 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 		</ul>
 		@type string
 	*/
-	this.statusProperty=statusProperty;
+	this.status = "";
 
 	/**
 		x-nviewer-dsn-summary property (number/total)
@@ -170,7 +160,7 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 		</ul>
 		@type string
 	*/
-	this.dsnSummaryProperty=dsnSummaryProperty;
+	this.dsnSummaryProperty = "";
 
 	/**
 		x-nviewer-mdn-displayed-summary property (number/total)
@@ -181,7 +171,7 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 		</ul>
 		@type string
 	*/
-	this.mdnDisplayedSummaryProperty=mdnDisplayedSummaryProperty;
+	this.mdnDisplayedSummaryProperty = "";
 
 	/**
 		x-nviewer-mdn-deleted-summary property (number/total)
@@ -192,63 +182,45 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 		</ul>
 		@type string
 	*/
-	this.mdnDeletedSummaryProperty=mdnDeletedSummaryProperty;
+	this.mdnDeletedSummaryProperty = "";
 
 	/**
 		List of {@link DeliveredTo} object
 		@type Array
 	*/
-	this.deliveredToArray=new Array();
+	this.deliveredToArray = new Array();
 
 
-	flagsProperty=parseInt(flagsProperty);
-	if (isNaN(flagsProperty))
-		flagsProperty=0;
-	/**
-		x-nviewer-flags property
-		@type number
-	*/
-	this.flagsProperty=flagsProperty;
-
-	/** <pre>b ...1 Time out </pre> @type number */
-	this.FLAG_TIMEOUT= 0x1;
-
-	/**
-		customProperties Version
-		<pre>b 001. version 1
-		@type number
-	*/
-	this.FLAG_VERSION=0x2;
-
-	/**
-		All DSN were received
-		@type boolean
-	*/
-	this.allDsnReceived=false;
-
-	if (deliveredToProperty.length!=0) {
-		var tmpArray = deliveredToProperty.split("\n\t"); // get rows
-		for (var i =0 ; i < tmpArray.length ; i++ ) {
+	this.checkDelay = false;
+	this.timedOut = false;
+	
+	this.messageDate = 0;
+	
+	if (deliveredToProperty.length != 0) {
+		var tmpArray = deliveredToProperty.split(":"); // get rows
+		
+		this.messageDate = tmpArray[0];
+		
+		for (var i = 1 ; i < tmpArray.length; i++) {
 			var finalRecipient="";
 			var dsnCount=0;
 			var mdnCount=0;
-			var flags=0;
+			var timeoutDelay=0;
+			var requests=0;
 			var currentIndex=0;
 			var Values = tmpArray[i].split(";"); // get fields
 
-			if (Values.length>0)
-				finalRecipient=Values[0];
-	
-			if (Values.length>1)
-				flags=Values[1];
-
+			if (Values.length > 0) finalRecipient = Values[0];
+			if (Values.length > 1) timeoutDelay = Values[1];
+			if (Values.length > 2) requests = Values[2];
+			
 			if (this.regExpCache.validAddr.test(finalRecipient)) {
 				// create a new object for this recipient
-				var newDeliveredTo=this.addDeliveredTo(finalRecipient,flags);
+				var newDeliveredTo = this.addDeliveredTo(finalRecipient, timeoutDelay, requests);
 	
-				if (newDeliveredTo) { // if object's valid
+				if (newDeliveredTo) {
 					// now, get DSN
-					currentIndex=2;
+					currentIndex=3;
 					if (Values.length>currentIndex)
 						dsnCount=Values[currentIndex];
 
@@ -256,7 +228,7 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 					if (isNaN(dsnCount) || dsnCount<=0)
 						dsnCount=0;
 
-					for (var j=0; j < dsnCount ; j++ ) {
+					for (var j = 0; j < dsnCount; j++) {
 						currentIndex++;
 						var actionValue="";
 						var messageId="";
@@ -269,7 +241,7 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 							messageId=Values[currentIndex];
 
 						if (this.regExpCache.validAddr.test(messageId) && this.regExpCache.validDsnReport.test(actionValue))
-							newDeliveredTo.dsnList.push(new dsnProperty (actionValue,messageId));
+							newDeliveredTo.dsnList.push(new dsnProperty(actionValue, messageId));
 					}
 					// now, get mdn
 					currentIndex++;
@@ -280,7 +252,7 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 					if (isNaN(mdnCount) || mdnCount<=0)
 						mdnCount=0;
 
-					for (var j=0; j < mdnCount ; j++ ) {
+					for (var j = 0; j < mdnCount; j++) {
 						currentIndex++;
 						var dispositionType="";
 						var messageId="";
@@ -293,16 +265,21 @@ function customProperties(deliveredToProperty,statusProperty,dsnSummaryProperty,
 							messageId=Values[currentIndex];
 
 						if (this.regExpCache.validAddr.test(messageId) && this.regExpCache.validMdnReport.test(dispositionType))
-							newDeliveredTo.mdnList.push(new mdnProperty (dispositionType,messageId));
+							newDeliveredTo.mdnList.push(new mdnProperty(dispositionType, messageId));
 					}
 				}
 			}
 		}
 		// refresh data
-		this.calculateAllProperties();
+		this.updateProperties();
 	}
 }
 
+
+/* Requests */
+customProperties.NO_REQUEST = 0x0;
+customProperties.DSN_REQUEST = 0x1;
+customProperties.MDN_REQUEST = 0x2;
 
 
 customProperties.prototype = {
@@ -319,29 +296,32 @@ customProperties.prototype = {
 	/**
 		create a {@link DeliveredTo} object if finalRecipient doesn't exist, otherwise update data
 		@param {string} finalRecipient final recipient
-		@param {number} flags ( see {@link DeliveredTo})
+		@param {number} timeoutDelay ( see {@link DeliveredTo})
+		@param {number} requests ( see {@link DeliveredTo})
 		@return {DeliveredTo} a {@link DeliveredTo} object
 	*/
-	addDeliveredTo: function(finalRecipient,flags) {
+	addDeliveredTo: function(finalRecipient, timeoutDelay, requests) {
 
-		// test if address is correct
-		finalRecipient=getValidAddress(finalRecipient);
-		if (! finalRecipient) return false;
+		// Check if address is correct
+		finalRecipient = getValidAddress(finalRecipient);
+		if (!finalRecipient) return false;
 
-		// test if finalRecipient exist
-		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
-			if (this.deliveredToArray[i].finalRecipient==finalRecipient) {
-				// exist
-				// set only if flags changed
-				if (flags!=0x0)
-					this.deliveredToArray[i].flags=flags;
+		// Check if finalRecipient already exists
+		for (var i in this.deliveredToArray) {
+			if (this.deliveredToArray[i].finalRecipient == finalRecipient) {
+				// Already exists: update data
+				if (timeoutDelay > 0) this.deliveredToArray[i].timeoutDelay = timeoutDelay;
+				this.deliveredToArray[i].requests |= requests;
 				return this.deliveredToArray[i];
 			}
 		}
 
 		
-		// create new object
-		this.deliveredToArray.push(new DeliveredTo(finalRecipient,flags));
+		// Insert new recipient
+		this.deliveredToArray.push(new DeliveredTo(finalRecipient, timeoutDelay, requests));
+		
+		this.updateProperties();
+		
 		return this.getReportOf(finalRecipient);
 	},
 
@@ -352,7 +332,7 @@ customProperties.prototype = {
 		@param {string} messageId  message-id of notification
 		@return {boolean} <b>false</b> if an error occurs
 	*/
-	addDsnReport: function(dveryReport,messageId) {
+	addDsnReport: function(dveryReport, messageId) {
 		// check type
 		if (typeof(dveryReport)!="object") return false;
 		if (!dveryReport instanceof deliveryReport) return false;
@@ -373,18 +353,21 @@ customProperties.prototype = {
 		if (finalRecipientArray.length >1)
 			finalRecipient=finalRecipientArray[1].replace(this.regExpCache.trim, "");
 
-		var newDeliveredTo=this.addDeliveredTo(finalRecipient,0);
+		var newDeliveredTo=this.addDeliveredTo(finalRecipient, 0, customProperties.NO_REQUEST);
 
-		var result=false;
 		if (newDeliveredTo) {
-			newDeliveredTo.dsnList.push(new dsnProperty (actionValue,messageId));
-			result=true;
+			for (var i in newDeliveredTo.dsnList) {
+				if (newDeliveredTo.dsnList[i].actionValue == actionValue && newDeliveredTo.dsnList[i].messageId == messageId) {
+					/* Notification already exists */
+					return false;
+				}
+			}
+			newDeliveredTo.dsnList.push(new dsnProperty(actionValue, messageId));
+			this.updateProperties();
+			return true;
 		}
-
-		// refresh data
-		this.calculateAllProperties();
-
-		return result;
+		
+		return false;
 	},
 
 	/**
@@ -393,7 +376,7 @@ customProperties.prototype = {
 		@param {string} messageId  message-id of notification
 		@return {boolean} <b>false</b> if an error occurs
 	*/
-	addMdnReport: function(report,messageId) {
+	addMdnReport: function(report, messageId) {
 		// check type
 		if (typeof(report)!="object") return false;
 		if (!report instanceof mdnReport) return false;
@@ -413,18 +396,22 @@ customProperties.prototype = {
 		if (finalRecipientArray.length >1)
 			finalRecipient=finalRecipientArray[1].replace(this.regExpCache.trim, "");
 
-		var newDeliveredTo=this.addDeliveredTo(finalRecipient,0);
+		var newDeliveredTo=this.addDeliveredTo(finalRecipient, 0, customProperties.NO_REQUEST);
 
 		var result=false;
 		if (newDeliveredTo) {
-			newDeliveredTo.mdnList.push(new mdnProperty (dispositionType,messageId));
-			result=true;
+			for (var i in newDeliveredTo.mdnList) {
+				if (newDeliveredTo.mdnList[i].dispositionType == dispositionType && newDeliveredTo.mdnList[i].messageId == messageId) {
+					/* Notification already exists */
+					return false;
+				}
+			}
+			newDeliveredTo.mdnList.push(new mdnProperty(dispositionType, messageId));
+			this.updateProperties();
+			return true;
 		}
-
-		// refresh data
-		this.calculateAllProperties();
-
-		return result;
+		
+		return false;
 	},
 
 
@@ -434,47 +421,65 @@ customProperties.prototype = {
 		@private
 	*/
 		
-	calculateAllProperties: function() {
+	updateProperties: function() {
 		var numFailed=0;
 		var numRelayed=0;
 		var numDelivered=0;
 		var numDisplayed=0;
 		var numDeleted=0;
-		var numTimeOut=0;
 		var total=this.deliveredToArray.length;
-		var numFinalDsn=0;
-		var dsnPresent=false;
+		
+		var dsnRequest = false;
+		var mdnRequest = false;
+		
+		this.timedOut = false;
+		this.checkDelay = false;
+		
+		for (var i in this.deliveredToArray) {
 
-		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
-
-			// flags
-			if (this.deliveredToArray[i].flags & this.deliveredToArray[i].FLAG_TIMEOUT)
-				numTimeOut+=1;
-
-			// DSN
+			if (this.deliveredToArray[i].requests & customProperties.DSN_REQUEST) dsnRequest = true;
+			if (this.deliveredToArray[i].requests & customProperties.MDN_REQUEST) mdnRequest = true;
+			
+			/* DSN */
 			var isFailed=false;
 			var isRelayed=false;
 			var isDelivered=false;
 			var isDelayed=false;
-			for (var j=0; j < this.deliveredToArray[i].dsnList.length ; j++) {
-				// summary
-				var actionValue=this.deliveredToArray[i].dsnList[j].actionValue;
-				if ( (actionValue == "delivered") || (actionValue=="expanded")) isDelivered=true;
+			for (var j in this.deliveredToArray[i].dsnList) {
+				var actionValue = this.deliveredToArray[i].dsnList[j].actionValue;
+				if ((actionValue == "delivered") || (actionValue == "expanded")) isDelivered=true;
 				else if (actionValue == "failed") isFailed=true;
 				else if (actionValue == "relayed") isRelayed=true;
 				else if (actionValue == "delayed") isDelayed=true;
 			}
-
-			if (isFailed || isRelayed || isDelivered) numFinalDsn+=1; // all DSN received for this recipient
-			if (isFailed || isRelayed || isDelivered || isDelayed) dsnPresent=true;
+			
+			/* Check if DSN has been received for this recipient */
+			if ((dsnRequest && (isFailed || isRelayed || isDelivered)) || !dsnRequest) {
+				/* DSN received or no DSN requested: stop waiting for this recipient */
+				this.deliveredToArray[i].timeoutDelay = 0;
+			}
+			
+			
+			/* Check if a timeout is reached */
+			if (this.messageDate > 0 && this.deliveredToArray[i].timeoutDelay > 0) {
+				var now = parseInt((new Date()).getTime() / 1000);
+				if ((now - this.messageDate) > this.deliveredToArray[i].timeoutDelay) {
+					/* Delay expired for this recipient: set message as timed out */
+					this.timedOut = true;
+				} else {
+					/* Delay not expired for this recipient: check again later */
+					this.checkDelay = true;
+				}
+			}
+			
 			if (isFailed) numFailed+=1;
 			if (isRelayed) numRelayed+=1;
 			if (isDelivered) numDelivered+=1;
 
-			// MDN
+			/* MDN */
 			var isDisplayed=false;
 			var isDeleted=false;
-			for (var j=0; j < this.deliveredToArray[i].mdnList.length ; j++) {
+			for (var j in this.deliveredToArray[i].mdnList) {
 				var dispositionType=this.deliveredToArray[i].mdnList[j].dispositionType;
 				if (dispositionType == "displayed") isDisplayed=true;
 				else if (dispositionType == "deleted") isDeleted=true;
@@ -483,60 +488,32 @@ customProperties.prototype = {
 			if (isDeleted) numDeleted+=1;
 		}
 
-		// define flags
-		if (numTimeOut!=0)
-			this.flagsProperty=(this.flagsProperty & 0xE)+this.FLAG_TIMEOUT; //UNDO not possible
+		/* Define status */
+		if (numFailed > 0) this.status = "bad";
+		else if (numRelayed > 0) this.status = "middle";
+		else if (total == numDelivered) this.status = "good";
+		else this.status = "";
 
-		this.flagsProperty=(this.flagsProperty & 0x1)+this.FLAG_VERSION; // current version
-
-		// define status
-		if (numFailed!=0)
-			this.statusProperty="bad";
-		else if (numRelayed!=0)
-			this.statusProperty="middle";
-		else if (total == numDelivered)
-			this.statusProperty="good";
-		else this.statusProperty="";
-
-		// define summary
-		if (dsnPresent) this.dsnSummaryProperty= numDelivered+"/"+total;
-		if (numDisplayed!=0) this.mdnDisplayedSummaryProperty= numDisplayed+"/"+total;
-		if (numDeleted!=0) this.mdnDeletedSummaryProperty= numDeleted+"/"+total;
-
-		if (numFinalDsn==total)
-			this.allDsnReceived=true; // All DSN were received
-		else
-			this.allDsnReceived=false;
-	},
-
-
-	/**
-		set message as expired. Undo not possible.
-	*/
-	setMsgAsExpired: function() {
-		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
-			var expire=true;
-			for (var j=0; j < this.deliveredToArray[i].dsnList.length ; j++) {
-				// expired if <> failed, relayed, delivered, or expanded
-				if ((/delivered|relayed|failed|expanded/i).test(this.deliveredToArray[i].dsnList[j].actionValue)) {
-					expire=false;
-					break;
-				}
-			}
-			if (expire)
-				this.deliveredToArray[i].flags=this.deliveredToArray[i].FLAG_TIMEOUT;
+		/* Define summary */
+		if (dsnRequest) {
+			this.dsnSummaryProperty = (numDelivered + numRelayed) + "/" + total;
 		}
-		this.calculateAllProperties();
+		if (mdnRequest) {
+			this.mdnDisplayedSummaryProperty = numDisplayed + "/" + total;
+			if (numDeleted != 0) this.mdnDeletedSummaryProperty = numDeleted + "/" + total;
+		}
+
 	},
+
 
 	/**
 		@param {string} finalRecipient final recipient
 		@return {DeliveredTo} a {@link DeliveredTo} object or <b>null</b> if not exist
 	*/
 	getReportOf: function (finalRecipient) {
-		for (var i =0 ; i < this.deliveredToArray.length ; i++ ) {
+		for (var i = 0; i < this.deliveredToArray.length; i++) {
 			if (this.deliveredToArray[i].finalRecipient==finalRecipient) {
-				// exist
+				// Recipient exists
 				return this.deliveredToArray[i];
 			}
 		}
@@ -548,37 +525,59 @@ customProperties.prototype = {
 		@return {string} Return x-nviewer-to property
 	*/
 	getDeliveredToProperty: function() {
-		var Values="";
-		for (var i=0 ; i < this.deliveredToArray.length ; i++ ) {
-			var myDeliveryTo=this.deliveredToArray[i];
-			if (i>0) Values+="\n\t";
-			Values+=myDeliveryTo.finalRecipient+";"+myDeliveryTo.flags;
+		this.updateProperties();
+		
+		var Values = this.messageDate;
+		for (var i = 0; i < this.deliveredToArray.length; i++) {
+			var myDeliveryTo = this.deliveredToArray[i];
+			Values += ":";
+			Values += myDeliveryTo.finalRecipient;
+			Values += ";" + myDeliveryTo.timeoutDelay;
+			Values += ";" + myDeliveryTo.requests;
 
 			// DSN count
-			Values+=";"+myDeliveryTo.dsnList.length;
+			Values += ";" + myDeliveryTo.dsnList.length;
 
 			// now, add DSNs
-			for (var j=0; j < myDeliveryTo.dsnList.length ; j++) {
-				Values+=";"+myDeliveryTo.dsnList[j].actionValue+";"+myDeliveryTo.dsnList[j].messageId;
+			for (var j = 0; j < myDeliveryTo.dsnList.length; j++) {
+				Values += ";" + myDeliveryTo.dsnList[j].actionValue + ";" + myDeliveryTo.dsnList[j].messageId;
 			}
 
 			// MDN count
-			Values+=";"+myDeliveryTo.mdnList.length;
+			Values += ";" + myDeliveryTo.mdnList.length;
 
 			// now, add MDNs
-			for (var j=0; j < myDeliveryTo.mdnList.length ; j++) {
-				Values+=";"+myDeliveryTo.mdnList[j].dispositionType+";"+myDeliveryTo.mdnList[j].messageId;
+			for (var j = 0; j < myDeliveryTo.mdnList.length; j++) {
+				Values += ";" + myDeliveryTo.mdnList[j].dispositionType + ";" + myDeliveryTo.mdnList[j].messageId;
 			}
 		}
-		this.deliveredToProperty=Values;
+		
+		this.deliveredToProperty = Values;
 		return this.deliveredToProperty;
+	},
+
+	/**
+	 * @return Array of notifications messageId
+	 */
+	getAllNotificationsMessageId: function() {
+		var list = new Array();
+		
+		for (var i in this.deliveredToArray) {
+			for (var j in this.deliveredToArray[i].dsnList) {
+				if (list.indexOf(this.deliveredToArray[i].dsnList[j].messageId) == -1) list.push(this.deliveredToArray[i].dsnList[j].messageId);
+			}
+			for (var j in this.deliveredToArray[i].mdnList) {
+				if (list.indexOf(this.deliveredToArray[i].mdnList[j].messageId) == -1) list.push(this.deliveredToArray[i].mdnList[j].messageId);
+			}
+		}
+		return list;
 	},
 
 	/**
 		@return {string} Return x-nviewer-status property ("good" ,"bad" , "middle" or "")
 	*/
 	getStatusProperty: function() {
-		return this.statusProperty;
+		return this.status;
 	},
 
 	/**
@@ -589,10 +588,17 @@ customProperties.prototype = {
 	},
 
 	/**
-		@return {string} Return x-nviewer-flags property
+		@return {string} 
 	*/
-	getFlagsProperty: function() {
-		return (this.flagsProperty).toString();
+	getTimedOut: function() {
+		if (this.timedOut) return "yes"; else return "no";
+	},
+
+	/**
+	@return {string} 
+	*/
+	getCheckDelay: function() {
+		if (this.checkDelay) return "yes"; else return "no";
 	},
 
 	/**
@@ -615,31 +621,37 @@ customProperties.prototype = {
 		@return {string}
 	*/
 	getTxtProperties: function() {
+		this.updateProperties();
+		
 		var txt="\n\n";
-		txt+="Status:      "+this.statusProperty+"\n";
-		txt+="Flags:       "+this.flagsProperty+"\n";
+		txt+="Send date:   "+this.messageDate+"\n";
+		txt+="Status:      "+this.status+"\n";
+		txt+="Timeout:     "+this.timedOut+"\n";
+		txt+="Check delay: "+this.checkDelay+"\n";
 		txt+="DSN Summary: "+this.dsnSummaryProperty+"\n";
-		for (var i=0 ; i < this.deliveredToArray.length ; i++ ) {
-			txt+="\n";
-			txt+="   finalRecipient: "+this.deliveredToArray[i].finalRecipient+"\n";
-			txt+="   flags:          "+this.deliveredToArray[i].flags+"\n";
-			txt+="   DSN Count:      "+this.deliveredToArray[i].dsnList.length+"\n";
-			for (var j=0; j < this.deliveredToArray[i].dsnList.length ; j++) {
-				txt+="       actionValue:     "+this.deliveredToArray[i].dsnList[j].actionValue+"\n";
-				txt+="       messageId:       "+this.deliveredToArray[i].dsnList[j].messageId+"\n";
+		for (var i in this.deliveredToArray) {
+			txt += "\n";
+			txt += "   finalRecipient: " + this.deliveredToArray[i].finalRecipient + "\n";
+			txt += "   timeout:        " + this.deliveredToArray[i].timeoutDelay + "\n";
+			txt += "   requests:       ";
+			if (this.deliveredToArray[i].requests & customProperties.DSN_REQUEST) txt += "DSN ";
+			if (this.deliveredToArray[i].requests & customProperties.MDN_REQUEST) txt += "MDN ";
+			txt += "\n";
+			txt += "   DSN Count:      " + this.deliveredToArray[i].dsnList.length+"\n";
+			for (var j = 0; j < this.deliveredToArray[i].dsnList.length; j++) {
+				txt += "       actionValue:     " + this.deliveredToArray[i].dsnList[j].actionValue + "\n";
+				txt += "       messageId:       " + this.deliveredToArray[i].dsnList[j].messageId + "\n";
 			}
-			txt+="   MDN Count:      "+this.deliveredToArray[i].mdnList.length+"\n";
-			for (var j=0; j < this.deliveredToArray[i].mdnList.length ; j++) {
-				txt+="       dispositionType: "+this.deliveredToArray[i].mdnList[j].dispositionType+"\n";
-				txt+="       messageId:       "+this.deliveredToArray[i].mdnList[j].messageId+"\n";
+			txt += "   MDN Count:      " + this.deliveredToArray[i].mdnList.length+"\n";
+			for (var j = 0; j < this.deliveredToArray[i].mdnList.length; j++) {
+				txt += "       dispositionType: " + this.deliveredToArray[i].mdnList[j].dispositionType + "\n";
+				txt += "       messageId:       " + this.deliveredToArray[i].mdnList[j].messageId + "\n";
 			}
 		}
-		txt+="\n";
-		txt+="MDN displayed Summary: "+this.mdnDisplayedSummaryProperty+"\n";
-		txt+="MDN deleted Summary:   "+this.mdnDeletedSummaryProperty+"\n";
-		txt+="\n\n";
+		txt += "\n";
+		txt += "MDN displayed Summary: " + this.mdnDisplayedSummaryProperty + "\n";
+		txt += "MDN deleted Summary:   " + this.mdnDeletedSummaryProperty + "\n";
+		txt += "\n\n";
 		return txt;
 	}
 }
-
-

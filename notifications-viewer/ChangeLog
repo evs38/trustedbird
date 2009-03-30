@@ -1,0 +1,8 @@
+notifications-viewer (0.7.0)
+  * Store notification data in a SQLite database
+  * Fix losing notification data when message was moved from/to an IMAP folder
+  * Fix moving notification message when original message was not found
+  * Delivery delay can now be defined in minutes
+  * Messages with notification requests are now identified and registered in the database
+    when they are sent
+-- Raphael Fairise - Fri Mar 27 2009

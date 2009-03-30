@@ -42,9 +42,9 @@
 <!ENTITY contextMenuLabel "View notifications">
 <!ENTITY PrefsDialog.title "Notifications Viewer Preferences">
 <!ENTITY PrefsDialog.generalities "General">
-<!ENTITY PrefsDialog.groupBoxtimeOut "Delivery deadlines">
-<!ENTITY PrefsDialog.labelconsiderTimeout "Consider the delivery deadlines">
-<!ENTITY PrefsDialog.timeOut "Time (hours):">
+<!ENTITY PrefsDialog.groupBoxtimeOut "DSN Delivery Deadline">
+<!ENTITY PrefsDialog.labelconsiderTimeout "Mark messages when delivery delay has expired">
+<!ENTITY PrefsDialog.timeOut "Delivery delay (minutes):">
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Notification Messages">
 <!ENTITY PrefsDialog.markRead "Mark notification as read">
 <!ENTITY PrefsDialog.moveNotification "Move notification to the thread of the associated message">

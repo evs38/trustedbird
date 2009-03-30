@@ -128,11 +128,11 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#!s!checkPref">checkPref</A></B>()
+	       <A HREF="#!s!checkDelay">checkDelay</A></B>()
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Check Preferences
+	 
       </TD>
    </TR>
 
@@ -190,6 +190,40 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
+	    <CODE>&lt;static&gt;&nbsp;Object</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#!s!GetMsgFolderFromUri">GetMsgFolderFromUri</A></B>(uri, checkFolderAttributes)
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&lt;static&gt;&nbsp;Object</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#!s!GetResourceFromUri">GetResourceFromUri</A></B>(uri)
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
 	    <CODE>&lt;static&gt;&nbsp;string</CODE>
 	 </FONT>
       </TD>
@@ -203,6 +237,23 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	 return a valid address mail
 	<p>
 	Example: <Pre>getValidAddress("My Name&#60;my.name&#64;mydomain.org&#62;") // return my.name&#64;mydomain.org</pre>
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&lt;static&gt;&nbsp;boolean</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#!s!isSentMessage">isSentMessage</A></B>(&lt;nsIMsgDBHdr&gt; header)
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 Check if a message has been sent by the owner of current account
       </TD>
    </TR>
 
@@ -249,6 +300,23 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
+	       <A HREF="#!s!notificationsViewerCheckPref">notificationsViewerCheckPref</A></B>()
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 Check Preferences
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&lt;static&gt;&nbsp;void</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
 	       <A HREF="#!s!notifyInit">notifyInit</A></B>()
 	 </CODE>
 	 <BR>
@@ -277,17 +345,51 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
       <TD ALIGN="right" VALIGN="top" WIDTH="1%">
 	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;number</CODE>
+	    <CODE>&lt;static&gt;&nbsp;void</CODE>
 	 </FONT>
       </TD>
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#!s!sortDSNColumn">sortDSNColumn</A></B>(&lt;string&gt; Status,&lt;string&gt; flags)
+	       <A HREF="#!s!saveNotificationData">saveNotificationData</A></B>(&lt;<a href="customProperties.html">customProperties</a>&gt; notificationData, &lt;string&gt; messageId, &lt;nsIMsgDBHdr&gt; header)
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Sort the messages from the property "x-nviewer-status" and "x-nviewer-flags"
+	 Save notification data into message and notification databases
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&lt;static&gt;&nbsp;Object</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#!s!saveNotificationDataInMessageDb">saveNotificationDataInMessageDb</A></B>(&lt;<a href="customProperties.html">customProperties</a>&gt; notificationData, &lt;nsIMsgDBHdr&gt; header)
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 Save notification data into message database
+      </TD>
+   </TR>
+
+   <TR BGCOLOR="white" CLASS="TableRowColor">
+      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
+	 <FONT SIZE="-1">
+	    <CODE>&lt;static&gt;&nbsp;void</CODE>
+	 </FONT>
+      </TD>
+      <TD>
+	 <CODE>
+	    <B>
+	       <A HREF="#!s!syncMessageDb">syncMessageDb</A></B>(&lt;nsIMsgDBHdr&gt; header)
+	 </CODE>
+	 <BR>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 Check if notification data have been updated and save them into message db if needed
       </TD>
    </TR>
 
@@ -305,23 +407,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	 expand/collapse dsn header view
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;void</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!updateMsgList">updateMsgList</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Test if messages were expired
       </TD>
    </TR>
 
@@ -367,11 +452,9 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 
 <!-- One single method detail entry -->
 
-   <A NAME="!s!checkPref"><!-- --></A>
-   <H3>checkPref</H3>
-   <PRE>&lt;static&gt; void <B>checkPref</B>()</PRE>
-   
-      <UL>Check Preferences</UL>
+   <A NAME="!s!checkDelay"><!-- --></A>
+   <H3>checkDelay</H3>
+   <PRE>&lt;static&gt; void <B>checkDelay</B>()</PRE>
    
 
    <!-- METHOD PARAMETERS START -->
@@ -455,6 +538,38 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
+   <A NAME="!s!GetMsgFolderFromUri"><!-- --></A>
+   <H3>GetMsgFolderFromUri</H3>
+   <PRE>&lt;static&gt; Object <B>GetMsgFolderFromUri</B>(uri, checkFolderAttributes)</PRE>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="!s!GetResourceFromUri"><!-- --></A>
+   <H3>GetResourceFromUri</H3>
+   <PRE>&lt;static&gt; Object <B>GetResourceFromUri</B>(uri)</PRE>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
    <A NAME="!s!getValidAddress"><!-- --></A>
    <H3>getValidAddress</H3>
    <PRE>&lt;static&gt; string <B>getValidAddress</B>(&lt;string&gt; address)</PRE>
@@ -481,6 +596,39 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <B>Returns:</B>
         <UL>
          return a valid address mail or <b>null</b> 
+        </UL>
+   </UL>
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="!s!isSentMessage"><!-- --></A>
+   <H3>isSentMessage</H3>
+   <PRE>&lt;static&gt; boolean <B>isSentMessage</B>(&lt;nsIMsgDBHdr&gt; header)</PRE>
+   
+      <UL>Check if a message has been sent by the owner of current account</UL>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <UL>
+   <B>Parameters:</B>
+   
+     <UL><CODE>header</CODE> -  Header of a message  
+      </UL> 
+   
+   </UL>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+   <UL>
+   <B>Returns:</B>
+        <UL>
+         True if message has been sent by the owner of current account 
         </UL>
    </UL>
    
@@ -544,6 +692,24 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
+   <A NAME="!s!notificationsViewerCheckPref"><!-- --></A>
+   <H3>notificationsViewerCheckPref</H3>
+   <PRE>&lt;static&gt; void <B>notificationsViewerCheckPref</B>()</PRE>
+   
+      <UL>Check Preferences</UL>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
    <A NAME="!s!notifyInit"><!-- --></A>
    <H3>notifyInit</H3>
    <PRE>&lt;static&gt; void <B>notifyInit</B>()</PRE>
@@ -591,11 +757,11 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
 
-   <A NAME="!s!sortDSNColumn"><!-- --></A>
-   <H3>sortDSNColumn</H3>
-   <PRE>&lt;static&gt; number <B>sortDSNColumn</B>(&lt;string&gt; Status,&lt;string&gt; flags)</PRE>
+   <A NAME="!s!saveNotificationData"><!-- --></A>
+   <H3>saveNotificationData</H3>
+   <PRE>&lt;static&gt; void <B>saveNotificationData</B>(&lt;<a href="customProperties.html">customProperties</a>&gt; notificationData, &lt;string&gt; messageId, &lt;nsIMsgDBHdr&gt; header)</PRE>
    
-      <UL>Sort the messages from the property "x-nviewer-status" and "x-nviewer-flags"</UL>
+      <UL>Save notification data into message and notification databases</UL>
    
 
    <!-- METHOD PARAMETERS START -->
@@ -603,10 +769,68 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <UL>
    <B>Parameters:</B>
    
-     <UL><CODE>Status</CODE> -  ("bad", "middle", "good", or ""); 	
+     <UL><CODE>notificationData</CODE> -  Notification data to be saved  
       </UL> 
    
-     <UL><CODE>flags</CODE> -  (timeout, ...) 	
+     <UL><CODE>messageId</CODE> -  ID of the message  
+      </UL> 
+   
+     <UL><CODE>header</CODE> -  Header of the message (can be null if message is not known)   
+      </UL> 
+   
+   </UL>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="!s!saveNotificationDataInMessageDb"><!-- --></A>
+   <H3>saveNotificationDataInMessageDb</H3>
+   <PRE>&lt;static&gt; Object <B>saveNotificationDataInMessageDb</B>(&lt;<a href="customProperties.html">customProperties</a>&gt; notificationData, &lt;nsIMsgDBHdr&gt; header)</PRE>
+   
+      <UL>Save notification data into message database</UL>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <UL>
+   <B>Parameters:</B>
+   
+     <UL><CODE>notificationData</CODE> -  Notification data to be saved  
+      </UL> 
+   
+     <UL><CODE>header</CODE> -  Header of the message
+      </UL> 
+   
+   </UL>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+
+   <!-- ADDITIONAL ATTRIBUTES START -->
+   
+   <!-- ADDITIONAL ATTRIBUTES  END -->
+<HR>
+
+   <A NAME="!s!syncMessageDb"><!-- --></A>
+   <H3>syncMessageDb</H3>
+   <PRE>&lt;static&gt; void <B>syncMessageDb</B>(&lt;nsIMsgDBHdr&gt; header)</PRE>
+   
+      <UL>Check if notification data have been updated and save them into message db if needed</UL>
+   
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <UL>
+   <B>Parameters:</B>
+   
+     <UL><CODE>header</CODE> -  Message header   
       </UL> 
    
    </UL>
@@ -634,28 +858,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    
 
    <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="!s!updateMsgList"><!-- --></A>
-   <H3>updateMsgList</H3>
-   <PRE>&lt;static&gt; void <B>updateMsgList</B>()</PRE>
-   
-      <UL>Test if messages were expired</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <UL>   
-   <B>See:</B><UL>- <a href="ManageMsgAsDN.html#updateList">ManageMsgAsDN.updateList()</a></UL>
-   </UL>
    
    <!-- ADDITIONAL ATTRIBUTES  END -->
 <HR>
@@ -726,6 +928,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <FONT SIZE="-1">
 
 </FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Mon Sep 29 08:25:40 2008</div>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Mon Mar 30 10:52:01 2009</div>
 </BODY>
 </HTML>

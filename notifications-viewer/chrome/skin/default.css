@@ -54,14 +54,16 @@ treechildren::-moz-tree-row(bad,selected)
 /** DSN row - middle */
 treechildren::-moz-tree-row(middle)
 {
+	/*
 	border: 2px solid #ff7200;
 	background-color: #ffd4ba;
+	*/
 }
 
 /** DSN row - middle selected */
 treechildren::-moz-tree-row(middle,selected)
 {
-	background-color: #ff7200;
+	/*background-color: #ff7200;*/
 }
 
 /** DSN row - timeout */

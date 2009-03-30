@@ -280,12 +280,11 @@ findMsgDb.prototype = {
 				accountType = this.services.preferences.getCharPref("mail.server." +accountServer+".type");
 				accountHostname = this.services.preferences.getCharPref("mail.server."+accountServer+".hostname");
 				accountUsername = this.services.preferences.getCharPref("mail.server."+accountServer+".userName");
-	
+				
 				if (accountType == "imap")
 					accountURI = "imap://";
-				else if (accountType == "pop3")
+				else
 					accountURI = "mailbox://";
-				else continue;
 				accountURI=accountURI+escape(accountUsername)+"@"+ escape(accountHostname);
 				this.cacheAccountsURI.push(accountURI);
 			}
@@ -380,7 +379,7 @@ findMsgDb.prototype = {
 				return null;
 			}
 		}
-	
+		
 		// search from message-id or message-key ?
 		switch (this.flags & this.FLAG_TYPE_SEARCH) {
 			case 0x0:
@@ -429,5 +428,32 @@ findMsgDb.prototype = {
 	}
 }
 
+/* From /mail/base/content/widgetglue.js */
+function GetMsgFolderFromUri(uri, checkFolderAttributes)
+{
+    //dump("GetMsgFolderFromUri of " + uri + "\n");
+    var msgfolder = null;
+    try {
+        var resource = GetResourceFromUri(uri);
+        msgfolder = resource.QueryInterface(Components.interfaces.nsIMsgFolder);
+        if (checkFolderAttributes) {
+            if (!(msgfolder && (msgfolder.parent || msgfolder.isServer))) {
+                msgfolder = null;
+            }
+        }
+    }
+    catch (ex) {
+        //dump("failed to get the folder resource\n");
+    }
+    return msgfolder;
+}
 
+/* From /mail/base/content/widgetglue.js */
+function GetResourceFromUri(uri)
+{
+    var RDF = Components.classes['@mozilla.org/rdf/rdf-service;1'].getService();
+    RDF = RDF.QueryInterface(Components.interfaces.nsIRDFService);
+    var resource = RDF.GetResource(uri);
 
+    return resource;
+}

@@ -40,25 +40,6 @@
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */
 
-/**
-	Sort the messages from the property "x-nviewer-status" and "x-nviewer-flags"
-	@param {string} Status ("bad", "middle", "good", or "");
-	@param {string} flags (timeout, ...)
-	@return {number}
-*/
-function sortDSNColumn(Status,flags) {
-	if (srv.preferences.getBoolPref(srv.extensionKey+".enabled_timeout"))
-		if (parseInt(flags) & 0x1) //timeout
-			return 5;
-	switch(Status) {
-		case "bad": return 4;
-		case "middle": return 2;
-		case "good": return 1;
-		default: return 0;
-	}
-}
-
-
 
 /**
 	Custom DSN Column Handler
@@ -68,12 +49,28 @@ var columnHandlerDSN = {
 	getCellText: function(row, column) {
 		var key = gDBView.getKeyAt(row);
 		var hdr = gDBView.db.GetMsgHdrForKey(key);
+		
+		/* Parse message if unknown */
+		if (hdr.getStringProperty("x-nviewer-seen") == "") notifyListener.getMsgSrc(hdr, notifyListener.parseMsg);
+		
+		/* Sync message db if needed */
+		syncMessageDb(hdr);
+		
 		return hdr.getStringProperty("x-nviewer-dsn-summary");
 	},
 
 	getSortStringForRow: function(hdr) {
-		// Sort the messages from the property "x-nviewer-status" and "x-nviewer-flags"
-		return sortDSNColumn(hdr.getStringProperty("x-nviewer-status"),hdr.getStringProperty("x-nviewer-flags"));
+		var level = "0";
+		if (hdr.getStringProperty("x-nviewer-timedout") != "yes") {
+			switch (hdr.getStringProperty("x-nviewer-status")) {
+				case "bad": level = "1"; break;
+				case "middle": level = "2"; break;
+				case "good": level = "3"; break;
+				default: level = "4";
+			}
+		}
+		
+		return level + "-" + hdr.getStringProperty("x-nviewer-dsn-summary");
 	},
 	isString: function() {return true;},
 
@@ -82,15 +79,15 @@ var columnHandlerDSN = {
 	getRowProperties:  function(row, props){
 		var key = gDBView.getKeyAt(row);
 		var hdr = gDBView.db.GetMsgHdrForKey(key);
-		var statusP=hdr.getStringProperty("x-nviewer-status");
-		if (srv.preferences.getBoolPref(srv.extensionKey+".enabled_timeout")) {
+		
+		var statusP = hdr.getStringProperty("x-nviewer-status");
+		if (srv.preferences.getBoolPref(srv.extensionKey + ".enabled_timeout")) {
 			// if user want to consider timeout
-			var timeOutP=hdr.getStringProperty("x-nviewer-flags");
-			if (parseInt(timeOutP) & 0x1) //timeout
-				statusP="timeout";
+			var timedOut = hdr.getStringProperty("x-nviewer-timedout");
+			if (timedOut == "yes") statusP = "timeout";
 		}
 
-		if (statusP!=""){
+		if (statusP != "") {
 			var aserv=Components.classes["@mozilla.org/atom-service;1"].
 			getService(Components.interfaces.nsIAtomService);
 			props.AppendElement(aserv.getAtom(statusP)); // CSS
@@ -109,6 +106,13 @@ var columnHandlerMDNDisplayed = {
 	getCellText: function(row, column) {
 		var key = gDBView.getKeyAt(row);
 		var hdr = gDBView.db.GetMsgHdrForKey(key);
+		
+		/* Parse message if unknown */
+		if (hdr.getStringProperty("x-nviewer-seen") == "") notifyListener.getMsgSrc(hdr, notifyListener.parseMsg);
+		
+		/* Sync message db if needed */
+		syncMessageDb(hdr);
+		
 		return hdr.getStringProperty("x-nviewer-mdn-displayed-summary");
 	},
 	getSortStringForRow: function(hdr) {
@@ -129,6 +133,13 @@ var columnHandlerMDNDeleted = {
 	getCellText: function(row, column) {
 		var key = gDBView.getKeyAt(row);
 		var hdr = gDBView.db.GetMsgHdrForKey(key);
+		
+		/* Parse message if unknown */
+		if (hdr.getStringProperty("x-nviewer-seen") == "") notifyListener.getMsgSrc(hdr, notifyListener.parseMsg);
+		
+		/* Sync message db if needed */
+		syncMessageDb(hdr);
+		
 		return hdr.getStringProperty("x-nviewer-mdn-deleted-summary");
 	},
 	getSortStringForRow: function(hdr) {

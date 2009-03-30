@@ -89,7 +89,6 @@ var notificationsWidgets = {
 	cacheDeliveredTo : "",
 	cacheStatus : "",
 	cacheDsnSummary : "",
-	cacheFlags : "",
 	cacheMdnDisplayedSummary : "",
 	cacheMdnDeletedSummary : "",
 	enabledTimeout: null,
@@ -114,12 +113,11 @@ var notificationsWidgets = {
 			return false; // custom properties not present
 
 		this.cacheStatus=header.getStringProperty("x-nviewer-status");
-		this.cacheDsnSummary=header.getStringProperty("x-nviewer-dsn-summary");
-		this.cacheFlags=header.getStringProperty("x-nviewer-flags");
-		this.cacheMdnDisplayedSummary=header.getStringProperty("x-nviewer-mdn-displayed-summary");
-		this.cacheMdnDeletedSummary=header.getStringProperty("x-nviewer-mdn-deleted-summary");
-		this.cacheCustomProperties=new customProperties(this.cacheDeliveredTo ,this.cacheStatus, this.cacheDsnSummary, this.cacheFlags,this.cacheMdnDisplayedSummary,this.cacheMdnDeletedSummary);
-
+		this.cacheCustomProperties = new customProperties(this.cacheDeliveredTo);
+		this.cacheDsnSummary = this.cacheCustomProperties.getDsnSummaryProperty();
+		this.cacheMdnDisplayedSummary = this.cacheCustomProperties.getMdnDisplayedSummaryProperty();
+		this.cacheMdnDeletedSummary = this.cacheCustomProperties.getMdnDeletedSummaryProperty();
+			
 		// read user preferences
 		this.enabledTimeout=this.services.preferences.getBoolPref(this.services.extensionKey+".enabled_timeout");
 		this.notificationsDisplayTextAndIcons=this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons");
@@ -165,6 +163,8 @@ var notificationsWidgets = {
 		var headerView_labelDSN=this.services.tr("headerView_labelDSN");
 		var headerView_labelMDNDisplayed=this.services.tr("headerView_labelMDNDisplayed");
 		var headerView_labelMDNDeleted=this.services.tr("headerView_labelMDNDeleted");
+		
+		var headerView_labelDeliveryDelayExpired=this.services.tr("headerView_labelDeliveryDelayExpired");
 
 		var dsnHbox=document.createElement("hbox");
 		parentWidget.appendChild(dsnHbox);
@@ -173,19 +173,22 @@ var notificationsWidgets = {
 		var mdnDeletedHbox=document.createElement("hbox");
 		parentWidget.appendChild(mdnDeletedHbox);
 
-		// change color for DSN Summary
-		var classT= this.cacheStatus;
-		if (this.enabledTimeout) {
-			// if user want to consider timeout
-			if (parseInt(this.cacheFlags) & this.cacheCustomProperties.FLAG_TIMEOUT) //timeout
-				classT="timeout";
-		}
-
+		dsnHbox.appendChild(this.createLabel("titleHeader", "Notifications:   ", "nvHeaderName headerName"));
+		
 		// create labels
 		if (this.cacheDsnSummary.length>0) {
 			dsnHbox.appendChild(this.createLabel("dsnHeader",headerView_labelDSN+":","nvHeaderName headerName"));
-			dsnHbox.appendChild(this.createLabel("dsn-summary",this.cacheDsnSummary,"nvHeaderValue headerValue"));
-			document.getElementById("dsn-summary").setAttribute("class",classT+" nvHeaderValue headerValue");
+			
+			var classT= this.cacheStatus;
+			
+			var message = this.cacheDsnSummary;
+			if (this.enabledTimeout && this.cacheCustomProperties.getTimedOut() == "yes") {
+				message += " (" + headerView_labelDeliveryDelayExpired + ")";
+				classT = "timeout";
+			}
+			
+			dsnHbox.appendChild(this.createLabel("dsn-summary", message, "nvHeaderValue headerValue"));
+			document.getElementById("dsn-summary").setAttribute("class", classT + " nvHeaderValue headerValue");
 		}
 		if (this.cacheMdnDisplayedSummary.length>0) {
 			mdnDisplayedHbox.appendChild(this.createLabel("mdnDisplayedHeader",headerView_labelMDNDisplayed+":","nvHeaderName headerName"));
@@ -230,7 +233,6 @@ var notificationsWidgets = {
 			aRow.setAttribute("class","rowDetailNotifications");
 	
 			var finalRecipient=dlveryArray[i].finalRecipient;
-			var flags=dlveryArray[i].flags;
 	
 			// create label of recipient
 			aRow.appendChild(this.createLabel("",finalRecipient,""));
@@ -242,26 +244,6 @@ var notificationsWidgets = {
 			// create MDN hbox
 			var MdnHbox=document.createElement("hbox");
 			aRow.appendChild(MdnHbox);
-	
-			if (this.enabledTimeout) {
-				// if user want to consider timeout
-				var class_timeout="dsn_timeout";
-				if (flags & dlveryArray[i].FLAG_TIMEOUT) { //timeout 
-					var i18n_timeout=this.services.tr("dsn_timeout");
-
-					if (this.notificationsDisplayTextAndIcons & 0x2) { // if user want icon
-						// create image
-						var imageTimeOut = document.createElement("image");
-						imageTimeOut.setAttribute("class",class_timeout+"_img notifications_icones_timeout");
-						imageTimeOut.setAttribute("tooltiptext",i18n_timeout);
-						DsnHbox.appendChild(imageTimeOut);
-					}
-	
-					if (this.notificationsDisplayTextAndIcons & 0x1) { // if user want text
-						DsnHbox.appendChild(this.createLabel("",i18n_timeout,class_timeout));
-					}
-				}
-			}
 	
 			// DSN
 			for (var j=0 ; j < dlveryArray[i].dsnList.length ; j++) {
@@ -352,14 +334,12 @@ var notificationsWidgets = {
 			// message found
 			var folderUri = msgDBHdrFound.folder.URI;
 			var messageUri = msgDBHdrFound.folder.getUriForMsg(msgDBHdrFound);
-			window.openDialog("chrome://messenger/content/messageWindow.xul", "_blank","all,chrome,dialog=no,status,toolbar", messageUri, folderUri, null);
-			window.setCursor("auto");
-		}
-		else {
-			window.setCursor("auto");
+				
+			window.openDialog("chrome://messenger/content/messageWindow.xul", "_blank", "all,chrome,dialog=no,status,toolbar", messageUri, folderUri, null);
+		} else {
 			messageBox.warning(this.services.tr("Error"),this.services.tr("message_not_found"));
 		}
+		
+		window.setCursor("auto");
 	}
 }
-
-

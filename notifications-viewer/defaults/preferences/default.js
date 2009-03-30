@@ -44,10 +44,10 @@ pref("extensions.notifications_viewer.version","");
 // debug
 pref("extensions.notifications_viewer.debug",false);
 
-// include all accounts when searching original message-ID (default=false)
-pref("extensions.notifications_viewer.search_original_msgid.include_all_accounts",false);
+// include all accounts when searching original message-ID
+pref("extensions.notifications_viewer.search_original_msgid.include_all_accounts",true);
 
-// include trash folders when searching original message-ID (default=false)
+// include trash folders when searching original message-ID
 pref("extensions.notifications_viewer.search_original_msgid.include_trash_folders",false);
 
 // create a thread on the original message
@@ -59,11 +59,11 @@ pref("extensions.notifications_viewer.mark_notifications_as_read",true);
 // enabled or not message received timeout
 pref("extensions.notifications_viewer.enabled_timeout",false);
 
-// timeout
-pref("extensions.notifications_viewer.timeout",24);
+// timeout for DSN (minutes)
+pref("extensions.notifications_viewer.timeout",1);
 
 // interval, in seconds, between two requests to ManageMsgAsDN
-pref("extensions.notifications_viewer.check_msg_expired.interval",600);
+pref("extensions.notifications_viewer.check_msg_expired.interval",60);
 
 /* display notifications with icons and/or text
 	b.1 text (0x1)
@@ -79,7 +79,7 @@ pref("extensions.notifications_viewer.parse_mdn",true);
 
 
 // show/hide notifications on headerView
-pref("extensions.notifications_viewer.display_headerview",false);
+pref("extensions.notifications_viewer.display_headerview",true);
 
 // Ask again
 pref("extensions.notifications_viewer.ask_again.mail_incorporate_return_receipt",true);

@@ -36,7 +36,7 @@
 
 /**
 	@fileoverview
-	This file implements a listener which will be called only when a message is loaded (for be displayed)
+	This file implements a listener which will be called only when a message is loaded (to be displayed)
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */
 

@@ -45,11 +45,11 @@
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/mailParser.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/dsnParser.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/mdnParser.js" />
-	<script type="application/x-javascript" src="chrome://notifications_viewer/content/ManageMsgAsDN.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/customProperties.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/notifyNewMsg.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/windowDetailNotifications.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/main.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/notificationDb.js" />
 	<tree id="threadTree">
 		<treecols id="threadCols">
 			<splitter class="tree-splitter" />

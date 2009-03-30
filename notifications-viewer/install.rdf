@@ -34,25 +34,31 @@
    - 
    -  ***** END LICENSE BLOCK ***** -->
 
-<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
-	 xmlns:NC="http://home.netscape.com/NC-rdf#"
-	 xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-	<RDF:Description RDF:about="rdf:#$iOC3.1"
-			 em:id="{3550f703-e582-4d05-9a08-453d09bdfdc6}"
-			 em:minVersion="1.5"
-			 em:maxVersion="2.0.*" />
-	<RDF:Description RDF:about="urn:mozilla:install-manifest"
-			 em:id="notificationsviewer@milimail.org"
-			 em:description="Displays and summarizes MDN and DSN notifications"
-			 em:version="__VERSION__"
-			 em:type="2"
-			 em:name="Notifications Viewer"
-			 em:creator="DIRSIM - Marine Nationale"
-			 em:developer="Daniel Rocher / Etat francais Ministere de la Defense"
-			 em:homepageURL="http://www.milimail.org/milimail/index.php/Notifications_viewer"
-			 em:updateURL="__UPDATE_RDF_URL__"
-			 em:optionsURL="chrome://notifications_viewer/content/preferences.xul"
-			 em:iconURL="chrome://notifications_viewer/skin/notificationsviewer.png">
-		<em:targetApplication RDF:resource="rdf:#$iOC3.1"/>
-	</RDF:Description>
-</RDF:RDF>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+	<rdf:Description about="urn:mozilla:install-manifest">
+		<em:id>notificationsviewer@trustedbird.org</em:id>
+		<em:name>Notifications Viewer</em:name>
+		<em:version>__VERSION__</em:version>
+		<em:creator>DIRSIM - Marine Nationale</em:creator>
+		
+		<em:developer>Daniel Rocher / Etat francais Ministere de la Defense</em:developer>
+		<em:contributor>Raphael Fairise</em:contributor>
+		<em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
+		
+		<em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
+		<em:updateKey>__UPDATE_KEY__</em:updateKey>
+		
+		<em:optionsURL>chrome://notifications_viewer/content/preferences.xul</em:optionsURL>
+		<em:iconURL>chrome://notifications_viewer/skin/notificationsviewer.png</em:iconURL>
+		
+		<em:targetApplication>
+			<rdf:Description>
+				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+				<em:minVersion>2.0</em:minVersion>
+				<em:maxVersion>3.0.*</em:maxVersion>
+			</rdf:Description>
+		</em:targetApplication>
+		
+		<em:description>Identifies and displays the status of awaiting and received notifications for messages sent with notifications requests.</em:description>
+	</rdf:Description>
+</rdf:RDF>

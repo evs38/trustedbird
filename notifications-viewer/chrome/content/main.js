@@ -46,21 +46,24 @@
 
 var srv=new Services();
 
-// a list of messages that are associated with one or more DSN. update datas when messages were expired
-var mMsgAsDsnReq=new ManageMsgAsDN();
+var notificationDbHandler;
+
+window.addEventListener("load", main, false);
+
 
 /**
 	Check Preferences
 */
 function notificationsViewerCheckPref() {
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-sync-date");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-to");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-dsn-summary");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-mdn-displayed-summary");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-mdn-deleted-summary");
 	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-status");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-to");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-flags");
-	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-tags");
-	srv.preferences.setCharPref(srv.extensionKey+".version",srv.extensionVersion);
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-timedout");
+	srv.preferences.addWordIfNotExist("mailnews.customDBHeaders","x-nviewer-seen");
+	srv.preferences.setCharPref(srv.extensionKey + ".version", srv.extensionVersion);
 	srv.logSrv("notificationsViewerCheckPref()");
 
 	// Fix incompatibility with thunderbird configuration( "Move message to Sent Folder")
@@ -79,18 +82,6 @@ function notificationsViewerCheckPref() {
 			srv.preferences.setBoolPref(srv.extensionKey+".ask_again.mail_incorporate_return_receipt",!check.value);
 		}
 	}
-}
-
-
-window.addEventListener("load", main, false);
-
-
-/**
-	Test if messages were expired
-	@see ManageMsgAsDN#updateList
-*/
-function updateMsgList() {
-	mMsgAsDsnReq.updateList();
 }
 
 
@@ -127,7 +118,6 @@ function pluginUpdated(oldVersionNumber,currentVersionNumber) {
 	}
 }
 
-
 /**
  	Program entry (first time)
 */
@@ -142,10 +132,25 @@ function main() {
 	notificationsViewerCheckPref();
 	// Adds a listener which will be called only when a message is added to the folder
 	notifyInit();
-	// our column
+	
+	/* Define new columns in message list */
 	columnInit();
 
-	interval=srv.preferences.getIntPref(srv.extensionKey+".check_msg_expired.interval"); // in seconds
-	setTimeout("updateMsgList()",10000); // firs time (after 10s)
-	window.setInterval(updateMsgList, interval*1000);
+	/* Open notification database */
+	notificationDbHandler = new notificationDb();
+	
+	/* Start a background task to check delays when all DSN have not been received */
+	var checkDelayInterval = parseInt(srv.preferences.getIntPref(srv.extensionKey + ".check_msg_expired.interval")); // in seconds
+	if (checkDelayInterval < 60) checkDelayInterval = 60;
+	setInterval(checkDelay, checkDelayInterval * 1000);
+}
+
+function checkDelay() {
+	var list = notificationDbHandler.getCheckDelayList();
+	for (var i in list) {
+		var notificationData = new customProperties(list[i]["notificationData"]);
+		if (notificationData.getCheckDelay()) {
+			saveNotificationData(notificationData, list[i]["messageId"]);
+		}
+	}
 }

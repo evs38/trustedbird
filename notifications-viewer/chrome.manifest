@@ -38,8 +38,9 @@ content     notifications_viewer    chrome/content/
 
 overlay     chrome://messenger/content/messenger.xul           chrome://notifications_viewer/content/columns.xul
 overlay     chrome://messenger/content/msgHdrViewOverlay.xul   chrome://notifications_viewer/content/msgHdrViewOverlay.xul
+overlay		chrome://messenger/content/messengercompose/messengercompose.xul chrome://notifications_viewer/content/messengercompose_overlay.xul
 
 skin        notifications_viewer    classic/1.0    chrome/skin/
 
-locale      notifications_viewer    en-US      chrome/locale/en-US/
-locale      notifications_viewer    fr-FR      chrome/locale/fr-FR/
+locale      notifications_viewer    en      chrome/locale/en-US/
+locale      notifications_viewer    fr      chrome/locale/fr-FR/

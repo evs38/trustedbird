@@ -13,3 +13,4 @@ update.rdf
 notifications_viewer_listofmsg.cache
 diag/*
 *~
+debug

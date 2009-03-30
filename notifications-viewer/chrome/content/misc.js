@@ -52,7 +52,7 @@ function Services() {
 	/** @type string */
 	this.extensionKey="extensions."+this.extensionName;
 	/** define current version for this extension @type string */
-	this.extensionVersion="0.6.3";
+	this.extensionVersion="0.7.0";
 	/** preferences @type Preferences */
 	this.preferences=new Preferences();
 	/** set debug mode @type boolean */
@@ -354,6 +354,100 @@ function getValidAddress(address) {
 	return null;
 }
 
+/**
+* Check if notification data have been updated and save them into message db if needed
+* @param {nsIMsgDBHdr} header Message header
+*/
+function syncMessageDb(header) {
+	if (!header) return;
+	
+	/* If message is known as not having notification requests, stop here, otherwise try to get updated data from notification db */
+	var seen = header.getStringProperty("x-nviewer-seen");
+	if (seen != "request" && seen != "") return;
+		
+	/* Get last sync date from message db */
+	var syncDate = parseInt(header.getStringProperty("x-nviewer-sync-date"));
+	
+	/* Don't get updated data if last check is less than 5s ago */
+	var currentDate= (new Date()).getTime();
+	if ((currentDate - syncDate) < 5000) {
+		//dump("syncMessageDb: last check too recent, don't update\n");
+		return;
+	}
+	
+	header.setStringProperty("x-nviewer-sync-date", currentDate);
+	
+	/* Get last update date from notification db */
+	var lastUpdate = notificationDbHandler.getMessageField(header.messageId, "lastUpdate");
+		
+	//dump("* syncMessageDb: syncDate="+syncDate+" lastUpdate="+lastUpdate+"   already synced="+(syncDate > lastUpdate)+"\n");
+	/* Don't sync if data are already up-to-date */
+	if (syncDate >= lastUpdate) return;
+	
+	var messageData = notificationDbHandler.getMessageField(header.messageId, "notificationData");
+	if (messageData != "") {
+		var notificationData = new customProperties(messageData);
+		saveNotificationDataInMessageDb(notificationData, header);
+	}
+}
 
+/**
+* Save notification data into message and notification databases
+* @param {customProperties} notificationData Notification data to be saved
+* @param {string} messageId ID of the message
+* @param {nsIMsgDBHdr} header Header of the message (can be null if message is not known)
+*/
+function saveNotificationData(notificationData, messageId, header) {
+	/* Save notification data into message db if message is available */
+	if (header) {
+		saveNotificationDataInMessageDb(notificationData, header);
+	} else {
+		srv.logSrv("Message " + messageId + " NOT available. Notification data will be saved into message db later.");
+	}
+	
+	
+	/* Save notification data into notification db */
+	srv.logSrv("Save notification data into notification db: " + notificationData.getTxtProperties());
+	notificationDbHandler.updateMessage(messageId, notificationData.getDeliveredToProperty(), notificationData.getCheckDelay());
+}
 
+/**
+* Save notification data into message database
+* @param {customProperties} notificationData Notification data to be saved
+* @param {nsIMsgDBHdr} header Header of the message
+*/
+function saveNotificationDataInMessageDb(notificationData, header) {
+	if (!header) return false;
+	
+	srv.logSrv("Saving notification data for message " + header.messageId + " into message db.");
+	header.setStringProperty("x-nviewer-seen", "request");
+	header.setStringProperty("x-nviewer-sync-date", (new Date()).getTime());
+	header.setStringProperty("x-nviewer-to", notificationData.getDeliveredToProperty());
+	header.setStringProperty("x-nviewer-status", notificationData.getStatusProperty());
+	header.setStringProperty("x-nviewer-timedout", notificationData.getTimedOut());
+	header.setStringProperty("x-nviewer-dsn-summary", notificationData.getDsnSummaryProperty());
+	header.setStringProperty("x-nviewer-mdn-displayed-summary", notificationData.getMdnDisplayedSummaryProperty());
+	header.setStringProperty("x-nviewer-mdn-deleted-summary", notificationData.getMdnDeletedSummaryProperty());
+	
+	return true;
+}
 
+/**
+* Check if a message has been sent by the owner of current account
+*
+* @param {nsIMsgDBHdr} header Header of a message
+* @return {boolean} True if message has been sent by the owner of current account
+*/
+function isSentMessage(header) {
+	var accountManager = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
+	
+	var headerParserService = Components.classes["@mozilla.org/messenger/headerparser;1"].getService(Components.interfaces.nsIMsgHeaderParser);
+	var senderEmailAddress = headerParserService.extractHeaderAddressMailboxes(null, header.author);
+	if (senderEmailAddress == "") return false;
+	
+	for (var i = 0; i < accountManager.allIdentities.Count(); i++) {
+		if (accountManager.allIdentities.GetElementAt(i).email == senderEmailAddress) return true;
+	}
+	
+	return false;
+}
