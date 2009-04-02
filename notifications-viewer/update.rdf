@@ -47,6 +47,7 @@
                 <em:minVersion>2.0</em:minVersion>
                 <em:maxVersion>3.0.*</em:maxVersion>
                 <em:updateLink>__XPI_URL__</em:updateLink>
+                <em:updateHash>__UPDATE_HASH__</em:updateHash>
               </rdf:Description>
             </em:targetApplication>
           </rdf:Description>
