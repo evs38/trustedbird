@@ -644,3 +644,24 @@ function trustedBird_base64encode(arrayBytes) {
 
 	return out;
 }
+
+/**************************
+ ****** nsIMsgFolder ******
+ **************************/
+
+/* From /mail/base/content/widgetglue.js */
+function trustedBird_GetMsgFolderFromUri(uri, checkFolderAttributes) {
+	var msgfolder = null;
+	try {
+		var rdfService = Components.classes['@mozilla.org/rdf/rdf-service;1'].getService(Components.interfaces.nsIRDFService);
+		var resource = rdfService.GetResource(uri);
+		msgfolder = resource.QueryInterface(Components.interfaces.nsIMsgFolder);
+		if (checkFolderAttributes) {
+			if (!(msgfolder && (msgfolder.parent || msgfolder.isServer))) {
+				msgfolder = null;
+			}
+		}
+	} catch (ex) {
+	}
+	return msgfolder;
+}
