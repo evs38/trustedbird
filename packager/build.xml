@@ -502,6 +502,15 @@
 			</filterchain>
 		</loadfile>
 
+		<!-- Get update key (public key for signing updates) -->
+		<loadfile property="local.update.key"
+		          srcfile="updateKey"
+		          failonerror="false">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+
 		<!-- Get revision from SVN -->
 		<exec executable="sh"
 		      outputproperty="local.addon.revision"
@@ -561,6 +570,13 @@
 			<arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
 		</exec>
 
+		<!-- Add update key -->
+		<exec executable="${sed.name}" failonerror="true">
+			<arg value="-i" />
+			<arg value="s|__UPDATE_KEY__|${local.update.key}|" />
+			<arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+		</exec>
+
 		<!-- Add target platform -->
 		<exec executable="${sed.name}" failonerror="true">
 			<arg value="-i" />
@@ -574,11 +590,6 @@
 			<arg value="s|__XPI_URL__|${local.addon.path}/${local.addon.filename}|" />
 			<arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
 		</exec>
-
-		<!-- Copy update.rdf -->
-		<mkdir dir="${local.dist.dir}/updates/${local.addon.name}" />
-		<copy file="${local.build.dir}/${local.addon.name}/update.rdf"
-		      tofile="${local.dist.dir}/updates/${local.addon.name}/${local.addon.update.rdf.filename}" />
 
 		<!-- Call ant if available -->
 		<if>
@@ -624,6 +635,11 @@
 				     excludes="${addon.excludes}" />
 			</else>
 		</if>
+
+		<!-- Copy update.rdf -->
+		<mkdir dir="${local.dist.dir}/updates/${local.addon.name}" />
+		<copy file="${local.build.dir}/${local.addon.name}/update.rdf"
+		      tofile="${local.dist.dir}/updates/${local.addon.name}/${local.addon.update.rdf.filename}" />
 
 		<!-- Only for MRS: build and package client API -->
 		<if>
