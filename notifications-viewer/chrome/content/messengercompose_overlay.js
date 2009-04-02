@@ -38,10 +38,6 @@
 /* Observe send event in order to add a message header in case a DSN SUCCESS is requested */
 var nViewerSendObserver = {
 	observe: function(subject, topic, data) {
-		
-		var jsLoader =  Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
-		jsLoader.loadSubScript("chrome://notifications_viewer/content/libtrustedbird.js");
-		
 		try {
 			if (trustedBird_prefService_getBoolPref("mail.dsn.request_on_success_on")) {
 		 		if (gMsgCompose.compFields["DSN"]) gMsgCompose.compFields.otherRandomHeaders += "X-DSN: 1\r\n";

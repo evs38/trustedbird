@@ -37,5 +37,6 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <overlay id="notifications_viewer_messengercompose_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/libtrustedbird.js" />
     <script type="application/x-javascript" src="chrome://notifications_viewer/content/messengercompose_overlay.js" />
 </overlay>

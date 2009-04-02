@@ -118,6 +118,7 @@ var notifyListener = {
 	/**
 		called when a message is added to the folder
 	*/
+	msgAdded: function(item) { this.itemAdded(item); },
 	itemAdded: function(item) {
 		this.updateAllSentBox();
 		
@@ -142,18 +143,31 @@ var notifyListener = {
 			SetBusyCursor(window, false);
 		}
 	},
-	itemDeleted : function(item) {},
+	msgsMoveCopyCompleted : function(aMove, aSrcItems, aDestFolder) { this.itemMoveCopyCompleted(aMove, aSrcItems, aDestFolder); },
 	itemMoveCopyCompleted : function(aMove, aSrcItems, aDestFolder) {
-		for (var i = 0; i < aSrcItems.Count(); i++) {
-			var item = aSrcItems.GetElementAt(i);
-			var header = item.QueryInterface(Components.interfaces.nsIMsgDBHdr);
-			var findMsg = new findMsgDb(aDestFolder);
-			var newHeader = findMsg.searchByMsgId(header.messageId);
-			if (newHeader != null) this.itemAdded(newHeader);
+		try {
+			/* Thunderbird 3 */
+			var list = aSrcItems.QueryInterface(Components.interfaces.nsIArray);
+			for (var i = 0; i < list.length; i++) {
+				var header = list.queryElementAt(i, Components.interfaces.nsIMsgDBHdr);
+				var findMsg = new findMsgDb(aDestFolder);
+				var newHeader = findMsg.searchByMsgId(header.messageId);
+				if (newHeader != null) this.itemAdded(newHeader);
+			}
+		} catch (e) {
+			/* Thunderbird 2 */
+			var list = aSrcItems.QueryInterface(Components.interfaces.nsISupportsArray);
+			for (var i = 0; i < list.Count(); i++) {
+				var item = list.GetElementAt(i);
+				var header = item.QueryInterface(Components.interfaces.nsIMsgDBHdr);
+				var findMsg = new findMsgDb(aDestFolder);
+				var newHeader = findMsg.searchByMsgId(header.messageId);
+				if (newHeader != null) this.itemAdded(newHeader);
+			}
 		}
 	},
-	folderRenamed : function(aOrigFolder, aNewFolder) {},
-
+	msgsDeleted : function(aMsgs) {},
+	itemDeleted : function(aItem) {},
 	/**
 		Get message source
 		@param {nsIMsgDBHdr} header
@@ -429,12 +443,8 @@ var notifyListener = {
 			if (originalHeader) {
 				/* If notification is not already in correct thread */
 				if (header.folder.folderURL != originalHeader.folder.folderURL || header.threadParent != originalHeader.messageKey) {
-					var targetFolder = RDF.GetResource(originalHeader.folder.URI).QueryInterface(Components.interfaces.nsIMsgFolder);
+					var targetFolder = trustedBird_GetMsgFolderFromUri(originalHeader.folder.URI);
 					var properties = new Array();					
-					
-					
-					/* Mark this message as already seen by this add-on */
-					//properties.push(new propertyObj("X-NViewer-Seen", "yes"));
 					
 					/* Add notification in the thread of original message */
 					properties.push(new propertyObj("References", "<" + originalHeader.messageId + ">"));
@@ -466,19 +476,27 @@ var notifyListener = {
 		if (!targetDBFolder) return;
 
 		// create temporary file (.eml) with new header fields
-		var file=notifyListener.makeNewMsgSrc(msgDBHdr,msgSrc,properties);
+		var file = notifyListener.makeNewMsgSrc(msgDBHdr, msgSrc, properties);
 
-		var flags=msgDBHdr.flags;
+		var flags = msgDBHdr.flags;
 		var messageId = msgDBHdr.messageId;
 		var isRead = msgDBHdr.isRead;
-		var isFlagged=msgDBHdr.isFlagged;
+		var isFlagged = msgDBHdr.isFlagged;
 		
 		if (file) {
-			// remove old msgDbHdr. It's important to do that first
-			var list = Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
-			list.AppendElement(msgDBHdr);
-			msgDBHdr.folder.deleteMessages(list,msgWindow,true,true,null,false);
-
+			// remove old msgDbHdr. It's important to do that first. (why?)
+			
+			var list;
+			if (trustedBird_getPlatformVersion() >= "1.9") {
+				list = Components.classes["@mozilla.org/array;1"].createInstance(Components.interfaces.nsIMutableArray);
+				list.appendElement(msgDBHdr, false);
+			} else {
+				list = Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
+				list.AppendElement(msgDBHdr);
+			}
+			
+			msgDBHdr.folder.deleteMessages(list, msgWindow, true, true, null, false);
+			
 			// copy temporary file to folder
 			notifyListener.copyFileMessage(file,flags,messageId,targetDBFolder,isRead,isFlagged,0);
 		} else
@@ -498,21 +516,24 @@ var notifyListener = {
 	copyFileMessage: function (file,flags,messageId,targetDBFolder,isRead,isFlagged,count) {
 		srv.logSrv("notifyListener.copyFileMessage - file: "+file+" - target folder /"+targetDBFolder.prettyName + "/ (" + targetDBFolder.rootFolder.prettyName+ ")");
 
+		var fileTb2 = null;
+		var fileTb3 = null;
+		
 		try {
 			// TB 2.0.0.*
-			var fileSpec = Components.classes["@mozilla.org/filespec;1"].createInstance(Components.interfaces.nsIFileSpec);
-			fileSpec.nativePath =file;
+			fileTb2 = Components.classes["@mozilla.org/filespec;1"].createInstance(Components.interfaces.nsIFileSpec);
+			fileTb2.nativePath = file;
 		} catch (e) {
 			// TB 3.0.* (XPCOM 1.9)
-			var fileSpec = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
-			fileSpec.initWithPath(file);
+			fileTb3 = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+			fileTb3.initWithPath(file);
 		}
 		var copyService = Components.classes["@mozilla.org/messenger/messagecopyservice;1"].getService(Components.interfaces.nsIMsgCopyService);
 
 		count++;
 
-		// test if file exist
-		if (fileSpec.exists()) {
+		// test if file exists
+		if ((fileTb2 && fileTb2.exists()) || (fileTb3 && fileTb3.exists())) {
 			var serviceListener=notifyListener.newCopyServiceListener();
 			serviceListener.file = file;
 			serviceListener.messageId = messageId;
@@ -521,9 +542,13 @@ var notifyListener = {
 			serviceListener.isFlagged= isFlagged;
 
 			try {
-				copyService.CopyFileMessage(fileSpec, targetDBFolder, null, false, flags, serviceListener, msgWindow);
-			}
-			catch (e) { // copy failed
+				if (fileTb2) {
+					copyService.CopyFileMessage(fileTb2, targetDBFolder, null, false, flags, serviceListener, msgWindow);
+				} else if (fileTb3) {
+					copyService.CopyFileMessage(fileTb3, targetDBFolder, null, false, flags, "", serviceListener, msgWindow);
+				}
+			} catch (e) { // copy failed
+				dump(e+"\n");
 				if (count<10) { // try later, TB's busy
 					var delay=Math.round(1000*Math.random()+1500)*count; // a random delays
 					srv.warningSrv("notifyListener.copyFileMessage - TB's busy, try later (->"+delay+"ms). temporary file: "+file+" count : "+count);
@@ -682,5 +707,5 @@ var notifyListener = {
 function notifyInit() {
 	srv.logSrv("notifyInit()");
 	var notificationService = Components.classes["@mozilla.org/messenger/msgnotificationservice;1"].getService(Components.interfaces.nsIMsgFolderNotificationService);
-	notificationService.addListener(notifyListener);
+	notificationService.addListener(notifyListener, notificationService.allMsgNotifications);
 }

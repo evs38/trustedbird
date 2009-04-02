@@ -50,6 +50,7 @@
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/windowDetailNotifications.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/main.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/notificationDb.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/libtrustedbird.js" />
 	<tree id="threadTree">
 		<treecols id="threadCols">
 			<splitter class="tree-splitter" />
@@ -72,9 +73,14 @@
 		</treecols>
 	</tree>
 
-	<!-- Context menu -->
+	<!-- Context menu Thunderbird 2 -->
 	<menupopup id="threadPaneContext">
-		<menuitem id="notificationsContextMenu" label="&contextMenuLabel;" hidden="false" disabled="false" oncommand="displayNotifications.openWindow();" />
+		<menuitem id="notificationsContextMenuTb2" label="&contextMenuLabel;" hidden="false" disabled="false" oncommand="displayNotifications.openWindow();" />
+	</menupopup>
+	
+	<!-- Context menu Thunderbird 3 -->
+	<menupopup id="mailContext">
+		<menuitem id="notificationsContextMenuTb3" label="&contextMenuLabel;" hidden="false" disabled="false" oncommand="displayNotifications.openWindow();" />
 	</menupopup>
 	
 	<!-- Message menu -->

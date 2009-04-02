@@ -162,7 +162,8 @@ function columnInit() {
 	ObserverService.addObserver(notificationsViewerCreateDbObserver, "MsgCreateDBView", false);
 
 	// add a popupshowing event listener for menus
-	document.getElementById("threadPaneContext").addEventListener("popupshowing", contextPopupShowing, false); // context menu
+	if (document.getElementById("threadPaneContext")) document.getElementById("threadPaneContext").addEventListener("popupshowing", contextPopupShowing, false); // context menu Thunderbird 2
+	if (document.getElementById("mailContext")) document.getElementById("mailContext").addEventListener("popupshowing", contextPopupShowing, false); // context menu Thunderbird 3
 	document.getElementById("messageMenuPopup").addEventListener("popupshowing", contextPopupShowing, false); // message menu
 }
 
@@ -175,13 +176,16 @@ function contextPopupShowing() {
 		if (header) {
 			var xNviewer=header.getStringProperty("x-nviewer-to");
 			if (xNviewer.length>0) {
-				document.getElementById("notificationsContextMenu").removeAttribute("hidden");
+				if (document.getElementById("notificationsContextMenuTb2")) document.getElementById("notificationsContextMenuTb2").removeAttribute("hidden");
+				if (document.getElementById("notificationsContextMenuTb3")) document.getElementById("notificationsContextMenuTb3").removeAttribute("hidden");
 				document.getElementById("notificationsMenu").removeAttribute("hidden");
 				return;
 			}
 		}
 	} catch(e) {}
-	document.getElementById("notificationsContextMenu").setAttribute("hidden","true");
+	
+	if (document.getElementById("notificationsContextMenuTb2")) document.getElementById("notificationsContextMenuTb2").setAttribute("hidden","true");
+	if (document.getElementById("notificationsContextMenuTb3")) document.getElementById("notificationsContextMenuTb3").setAttribute("hidden","true");
 	document.getElementById("notificationsMenu").setAttribute("hidden","true");
 }
 

@@ -47,6 +47,7 @@
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/preferences.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/findMsgDb.js" />
 	<script type="application/x-javascript" src="chrome://notifications_viewer/content/msgHdrViewOverlay.js" />
+	<script type="application/x-javascript" src="chrome://notifications_viewer/content/libtrustedbird.js" />
 	
 	<hbox id="expandedHeaderView" class="header-part1 headerContainer" flex="1">
 		<vbox id="expandedHeaders" flex="1">

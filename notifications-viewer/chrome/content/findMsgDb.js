@@ -367,13 +367,13 @@ findMsgDb.prototype = {
 		}
 
 		try {
-			msgDB = folder.getMsgDatabase(null);
+			msgDB = folder.getDBFolderInfoAndDB(new Object());
 		} catch (ex) {
 			// update folder
 			try {
 				folder.startFolderLoading();
 				folder.updateFolder(null);
-				msgDB = folder.getMsgDatabase(null);
+				msgDB = folder.getDBFolderInfoAndDB(new Object());
 			}
 			catch (ex) {
 				return null;
@@ -417,7 +417,7 @@ findMsgDb.prototype = {
 			this.getAccountsURI();
 			for(var i = 0; i < this.cacheAccountsURI.length ; i++) {
 				this.services.logSrv("findMsgDb - Current account: "+this.cacheAccountsURI[i]);
-				folder = GetMsgFolderFromUri(this.cacheAccountsURI[i]).rootFolder;
+				folder = trustedBird_GetMsgFolderFromUri(this.cacheAccountsURI[i]).rootFolder;
 				msgHdr = this.searchInFolder(folder);
 				if (msgHdr) break; // found
 			}
@@ -426,34 +426,4 @@ findMsgDb.prototype = {
 			msgHdr = this.searchInFolder(this.startFolder);
 	return msgHdr;
 	}
-}
-
-/* From /mail/base/content/widgetglue.js */
-function GetMsgFolderFromUri(uri, checkFolderAttributes)
-{
-    //dump("GetMsgFolderFromUri of " + uri + "\n");
-    var msgfolder = null;
-    try {
-        var resource = GetResourceFromUri(uri);
-        msgfolder = resource.QueryInterface(Components.interfaces.nsIMsgFolder);
-        if (checkFolderAttributes) {
-            if (!(msgfolder && (msgfolder.parent || msgfolder.isServer))) {
-                msgfolder = null;
-            }
-        }
-    }
-    catch (ex) {
-        //dump("failed to get the folder resource\n");
-    }
-    return msgfolder;
-}
-
-/* From /mail/base/content/widgetglue.js */
-function GetResourceFromUri(uri)
-{
-    var RDF = Components.classes['@mozilla.org/rdf/rdf-service;1'].getService();
-    RDF = RDF.QueryInterface(Components.interfaces.nsIRDFService);
-    var resource = RDF.GetResource(uri);
-
-    return resource;
 }

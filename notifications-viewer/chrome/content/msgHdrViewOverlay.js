@@ -88,12 +88,13 @@ var msgHdrViewOverlay = {
 		if (! this.displayHeadersView)
 			return;
 
-		var msgViewIndex=gDBView.currentlyDisplayedMessage;
-		var msgKey=gDBView.getKeyAt (msgViewIndex );
-		var msgDBHdr=gDBView.msgFolder.GetMessageHeader ( msgKey );
+		try {
+			var msgViewIndex=gDBView.currentlyDisplayedMessage;
+			var msgKey=gDBView.getKeyAt (msgViewIndex );
+			var msgDBHdr=gDBView.msgFolder.GetMessageHeader ( msgKey );
 
-		if (msgDBHdr)
-			this.isNotifications = notificationsWidgets.init(msgDBHdr,false);
+			if (msgDBHdr) this.isNotifications = notificationsWidgets.init(msgDBHdr, false);
+		} catch (e) {}
 	},
 
 	/**

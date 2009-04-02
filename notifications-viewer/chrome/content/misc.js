@@ -437,7 +437,8 @@ function isSentMessage(header) {
 	var accountManager = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
 	
 	var headerParserService = Components.classes["@mozilla.org/messenger/headerparser;1"].getService(Components.interfaces.nsIMsgHeaderParser);
-	var senderEmailAddress = headerParserService.extractHeaderAddressMailboxes(null, header.author);
+	var senderEmailAddress = headerParserService.extractHeaderAddressMailboxes(null, header.author); /* Thunderbird 2 */
+	if (senderEmailAddress == "") senderEmailAddress = headerParserService.extractHeaderAddressMailboxes(header.author); /* Thunderbird 3 */
 	if (senderEmailAddress == "") return false;
 	
 	for (var i = 0; i < accountManager.allIdentities.Count(); i++) {

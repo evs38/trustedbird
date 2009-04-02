@@ -160,6 +160,7 @@ var notificationsWidgets = {
 		// remove childs
 		this.removeChilds(parentWidget);
 
+		var headerView_labelTitle=this.services.tr("headerView_labelTitle");
 		var headerView_labelDSN=this.services.tr("headerView_labelDSN");
 		var headerView_labelMDNDisplayed=this.services.tr("headerView_labelMDNDisplayed");
 		var headerView_labelMDNDeleted=this.services.tr("headerView_labelMDNDeleted");
@@ -173,11 +174,11 @@ var notificationsWidgets = {
 		var mdnDeletedHbox=document.createElement("hbox");
 		parentWidget.appendChild(mdnDeletedHbox);
 
-		dsnHbox.appendChild(this.createLabel("titleHeader", "Notifications:   ", "nvHeaderName headerName"));
+		dsnHbox.appendChild(this.createLabel("titleHeader", "[" + headerView_labelTitle + "]   ", "nvHeaderName headerName"));
 		
 		// create labels
 		if (this.cacheDsnSummary.length>0) {
-			dsnHbox.appendChild(this.createLabel("dsnHeader",headerView_labelDSN+":","nvHeaderName headerName"));
+			dsnHbox.appendChild(this.createLabel("dsnHeader", headerView_labelDSN, "nvHeaderName headerName"));
 			
 			var classT= this.cacheStatus;
 			
@@ -191,12 +192,12 @@ var notificationsWidgets = {
 			document.getElementById("dsn-summary").setAttribute("class", classT + " nvHeaderValue headerValue");
 		}
 		if (this.cacheMdnDisplayedSummary.length>0) {
-			mdnDisplayedHbox.appendChild(this.createLabel("mdnDisplayedHeader",headerView_labelMDNDisplayed+":","nvHeaderName headerName"));
+			mdnDisplayedHbox.appendChild(this.createLabel("mdnDisplayedHeader", "  " + headerView_labelMDNDisplayed, "nvHeaderName headerName"));
 			mdnDisplayedHbox.appendChild(this.createLabel("mdn-displayed-summary",this.cacheMdnDisplayedSummary,"nvHeaderValue headerValue"));
 		}
 		if (this.cacheMdnDeletedSummary.length>0) {
-			mdnDeletedHbox.appendChild(this.createLabel("mdnDeletedHeader",headerView_labelMDNDeleted+":","nvHeaderName headerName"));
-			mdnDeletedHbox.appendChild(this.createLabel("mdn-deleted-summary",this.cacheMdnDeletedSummary,"nvHeaderValue headerValue"));
+			mdnDeletedHbox.appendChild(this.createLabel("mdnDeletedHeader", "  " + headerView_labelMDNDeleted, "nvHeaderName headerName"));
+			mdnDeletedHbox.appendChild(this.createLabel("mdn-deleted-summary", this.cacheMdnDeletedSummary, "nvHeaderValue headerValue"));
 		}
 	},
 
