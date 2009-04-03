@@ -503,13 +503,13 @@
 		</loadfile>
 
 		<!-- Get update key (public key for signing updates) -->
-		<loadfile property="local.update.key"
-		          srcfile="updateKey"
-		          failonerror="false">
+		<loadfile property="local.update.key" srcfile="updateKey" failonerror="false">
 			<filterchain>
 				<striplinebreaks />
 			</filterchain>
 		</loadfile>
+		<!-- Empty update key if file not found -->
+		<property name="local.update.key" value="" />
 
 		<!-- Get revision from SVN -->
 		<exec executable="sh"
@@ -635,6 +635,21 @@
 				     excludes="${addon.excludes}" />
 			</else>
 		</if>
+
+		<!-- Get hash of XPI file -->
+		<exec executable="sh"
+		      outputproperty="local.update.hash"
+		      failonerror="true">
+			<arg value="${local.tools.dir}/getHash.sh" />
+			<arg value="${local.dist.dir}/${local.addon.filename}" />
+		</exec>
+
+		<!-- Add XPI hash -->
+		<exec executable="${sed.name}" failonerror="true">
+			<arg value="-i" />
+			<arg value="s|__UPDATE_HASH__|${local.update.hash}|" />
+			<arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
+		</exec>
 
 		<!-- Copy update.rdf -->
 		<mkdir dir="${local.dist.dir}/updates/${local.addon.name}" />
