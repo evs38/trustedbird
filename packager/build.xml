@@ -508,8 +508,8 @@
 				<striplinebreaks />
 			</filterchain>
 		</loadfile>
-		<!-- Empty update key if file not found -->
-		<property name="local.update.key" value="" />
+		<!-- Default update key if file not found -->
+		<property name="local.update.key" value="updates disabled" />
 
 		<!-- Get revision from SVN -->
 		<exec executable="sh"
