@@ -1,0 +1,8 @@
+Multi-LDAP
+----------
+
+This add-on for Mozilla Thunderbird permits to use several LDAP directories simultaneously for address autocompletion.
+
+This add-on is written in XUL and Javascript.
+
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
