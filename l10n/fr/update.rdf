@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    -   BT Global Services / Etat francais Ministere de la Defense
-   - Portions created by the Initial Developer are Copyright (C) 2002
+   - Portions created by the Initial Developer are Copyright (C) 2008
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -37,7 +37,7 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <em:creator>Olivier BRUN</em:creator>
+  <em:creator>Olivier Brun</em:creator>
   <rdf:Description rdf:about="urn:mozilla:item:trustedbird_l10n_fr@trustedbird.org">
     <em:updates>
       <rdf:Seq>
@@ -46,10 +46,12 @@
             <em:version>__VERSION__</em:version>
             <em:targetApplication>
               <rdf:Description>
+                <!-- Thunderbird -->
                 <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
                 <em:minVersion>2.0</em:minVersion>
                 <em:maxVersion>2.0.0.*</em:maxVersion>
                 <em:updateLink>__XPI_URL__</em:updateLink>
+                <em:updateHash>__UPDATE_HASH__</em:updateHash>
               </rdf:Description>
             </em:targetApplication>
           </rdf:Description>
