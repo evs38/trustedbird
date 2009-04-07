@@ -1,0 +1,16 @@
+mdn-extended (1.0.0)
+  * Tag version 1
+  * ChangeLog/README
+-- Apr 7 2009
+
+mdn-extended (0.1.3.0)
+  * Add update.rdf file to the extension. Manage the update functionnality
+
+mdn-extended (0.1.2.0)
+  * Fix for bug [#467] MDN module Bad comments in chrome.manifest file
+
+mdn-extended (0.1.1.0)
+  * Add description of the extension
+
+mdn-extended (0.1.0.0)
+  * First working release

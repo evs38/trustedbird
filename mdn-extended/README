@@ -1,0 +1,11 @@
+MDN extended
+------------
+
+This add-on for Mozilla Thunderbird allows the recipient of a message to send
+a return receipt (MDN: Message Disposition Notification) on message deletion.
+
+This add-on is written in XUL and Javascript.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
