@@ -33,6 +33,9 @@
    update.rdf linked to nightly builds):
    $ ant -Dnightly=1 build-all
 
+   Generate builds for addons.mozilla.org without updateURL/updateKey in install.rdf
+   $ ant -Damo=1 package-addons
+
    ================================= -->
 <project name="Trustedbird Packager" default="build-all">
 	<description>Build Trustedbird and add-ons</description>
@@ -555,6 +558,23 @@
 		<property name="local.addon.filename"
 		          value="${local.addon.name}_${local.addon.version}.xpi" />
 
+		<!-- Remove updateURL and updateKey for addons.mozilla.org -->
+		<if>
+			<isset property="amo" />
+			<then>
+				<exec executable="${sed.name}" failonerror="true">
+					<arg value="-i" />
+					<arg value="s|&lt;em:updateURL&gt;.*&lt;/em:updateURL&gt;||" />
+					<arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+				</exec>
+				<exec executable="${sed.name}" failonerror="true">
+					<arg value="-i" />
+					<arg value="s|&lt;em:updateKey&gt;.*&lt;/em:updateKey&gt;||" />
+					<arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+				</exec>
+			</then>
+		</if>
+		
 		<!-- Add version -->
 		<exec executable="${sed.name}" failonerror="true">
 			<arg value="-i" />
