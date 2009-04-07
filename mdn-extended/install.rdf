@@ -43,9 +43,11 @@
     <em:id>mdn_extended@milimail.org</em:id>
     <em:name>MDN Extended</em:name>
     <em:version>__VERSION__</em:version>
-    <em:creator>Eric Ballet Baz</em:creator>
 
+    <em:creator>Trustedbird/Milimail project</em:creator>
+    <em:developer>Eric Ballet Baz</em:developer>
     <em:contributor>Olivier Brun</em:contributor>
+
     <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
 
     <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
