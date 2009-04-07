@@ -1,8 +1,12 @@
+multi-ldap (1.0.0)
+  * Tag version 1
+  * ChangeLog/README
+-- Apr 7 2009
+
 multi-ldap (0.2.6)
   * Fix bug #4195: autocompletion issue from 2 directories
   * Fix bug #4095: fetching certificate from LDAP when sending an email
   * Refactoring
--- Raphael Fairise - Fri Apr 3 2009
 
 multi-ldap (0.2.5.0)
   * Add update.rdf file to the extension. Manage the update functionnality.
