@@ -38,5 +38,4 @@
 content	send_format_ldap	content/
 locale	send_format_ldap	en	locale/en-US/
 locale	send_format_ldap	fr	locale/fr/
-skin	send_format_ldap	classic/1.0	skin/
 overlay	chrome://messenger/content/messengercompose/messengercompose.xul	chrome://send_format_ldap/content/messengercompose/messengercompose_overlay.xul
