@@ -37,7 +37,7 @@
 # ***** END LICENSE BLOCK *****
 
 content	card_viewer_extended	chrome/content/
-locale	card_viewer_extended	en		locale/en/
-locale  card_viewer_extended	fr		locale/fr/
-locale  card_viewer_extended	de		locale/de/
+locale	card_viewer_extended	en		chrome/locale/en/
+locale  card_viewer_extended	fr		chrome/locale/fr/
+locale  card_viewer_extended	de		chrome/locale/de/
 overlay chrome://messenger/content/addressbook/abCardOverlay.xul	chrome://card_viewer_extended/content/abCardOverlay_overlay.xul
