@@ -47,6 +47,7 @@
     <em:creator>Trustedbird/Milimail project</em:creator>
     <em:creator>Eric Ballet Baz</em:creator>
     <em:contributor>Olivier Brun</em:contributor>
+    <em:contributor>Raphael Fairise</em:contributor>
 
     <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
     <em:iconURL>chrome://check_recipients/content/icons/logo_extension.png</em:iconURL>
