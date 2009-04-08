@@ -37,7 +37,7 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <em:creator>Olivier Brun</em:creator>
+  <em:creator>Trustedbird/Milimail project</em:creator>
   <rdf:Description rdf:about="urn:mozilla:extension:multildap@milimail.org">
     <em:updates>
       <rdf:Seq>
