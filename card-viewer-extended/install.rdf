@@ -40,18 +40,22 @@
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <rdf:Description  about="urn:mozilla:install-manifest">
 
-    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
-
     <em:id>card_viewer_extended@milimail.org</em:id>
     <em:name>Card Viewer Extended</em:name>
     <em:version>__VERSION__</em:version>
-    <em:creator>Eric BALLET BAZ</em:creator>
 
-    <em:contributor>Olivier BRUN</em:contributor>
-    <em:homepageURL>http://www.milimail.org/</em:homepageURL>
+    <em:creator>Trustedbird/Milimail project</em:creator>
+    <em:developer>Eric Ballet Baz</em:developer>
+    <em:contributor>Olivier Brun</em:contributor>
+
+    <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
+
+    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
+    <em:updateKey>__UPDATE_KEY__</em:updateKey>
 
     <em:targetApplication>
       <rdf:Description>
+        <!-- Thunderbird -->
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
         <em:minVersion>2.0</em:minVersion>
         <em:maxVersion>2.0.0.*</em:maxVersion>

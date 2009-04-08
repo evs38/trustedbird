@@ -1,0 +1,13 @@
+card-viewer-extended (1.0.0)
+  * Tag version 1
+  * ChangeLog/README
+-- Apr 8 2009
+
+card-viewer-extended (0.1.2.0)
+  * Add update.rdf
+
+card-viewer-extended (0.1.1.0)
+  * Fix bug [#469] Bad comments in chrome.manifest
+
+card-viewer-extended (0.1.0.0)
+  * First working release

@@ -1,0 +1,10 @@
+Card Viewer Extended
+--------------------
+
+This add-on for Mozilla Thunderbird adds a button in address book cards to fetch and display the certificate of a contact. For a local address book, the certificate is taken from the local certificate store and for a LDAP directory, it's fetched from the LDAP server. The key used to retrieve the certificate is the email address of the contact.
+
+This add-on is written in XUL and Javascript.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
