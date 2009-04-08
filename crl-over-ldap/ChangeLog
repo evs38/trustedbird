@@ -1,4 +1,8 @@
+crl-over-ldap (1.0.0)
+  * Tag version 1
+  * ChangeLog/README
+-- Apr 8 2009
+
 crl-over-ldap (0.2.0)
   * Add auto-update manager of LDAP CRLs
   * LDAP connection management in libtrustedbird
--- Raphael Fairise - Thu Feb 12 2009
