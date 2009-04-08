@@ -1,0 +1,15 @@
+check-recipients (1.0.0)
+  * Tag version 1
+  * ChangeLog/README
+-- Apr 8 2009
+
+check-recipients (0.1.3.0)
+  * Add update.rdf
+
+check-recipients (0.1.2.0)
+  * Rename icons files.
+  * Check recipients on local address book.
+  * Display all address books that have found the recipient.
+
+check-recipients (0.1.0.0)
+  * First working release

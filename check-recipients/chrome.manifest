@@ -36,7 +36,7 @@
 #
 # ***** END LICENSE BLOCK *****
 
-content	check_recipients	content/
-locale	check_recipients en	locale/en-US/
-locale	check_recipients fr	locale/fr-FR/
+content	check_recipients	chrome/content/
+locale	check_recipients en	chrome/locale/en-US/
+locale	check_recipients fr	chrome/locale/fr-FR/
 overlay	chrome://messenger/content/messengercompose/messengercompose.xul	chrome://check_recipients/content/messengercomposeOverlay.xul
