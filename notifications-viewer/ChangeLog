@@ -1,8 +1,13 @@
-notifications-viewer (0.7.0)
+notification-viewer (1.0.0)
+  * Tag version 1
+  * Rename add-on
+-- Apr 8 2009
+
+notification-viewer (0.7.0)
   * Store notification data in a SQLite database
   * Fix losing notification data when message was moved from/to an IMAP folder
   * Fix moving notification message when original message was not found
   * Delivery delay can now be defined in minutes
   * Messages with notification requests are now identified and registered in the database
     when they are sent
--- Raphael Fairise - Fri Mar 27 2009
+-- Mar 27 2009

@@ -36,13 +36,15 @@
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 	<rdf:Description about="urn:mozilla:install-manifest">
-		<em:id>notificationsviewer@trustedbird.org</em:id>
-		<em:name>Notifications Viewer</em:name>
+
+		<em:id>notificationviewer@trustedbird.org</em:id>
+		<em:name>Notification Viewer</em:name>
 		<em:version>__VERSION__</em:version>
-		<em:creator>DIRSIM - Marine Nationale</em:creator>
+		<em:creator>DIRSIM - Marine Nationale / Trustedbird/Milimail project</em:creator>
 		
 		<em:developer>Daniel Rocher / Etat francais Ministere de la Defense</em:developer>
 		<em:contributor>Raphael Fairise</em:contributor>
+
 		<em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
 		
 		<em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
@@ -56,7 +58,7 @@
 				<!-- Thunderbird -->
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
 				<em:minVersion>2.0</em:minVersion>
-				<em:maxVersion>3.0.*</em:maxVersion>
+				<em:maxVersion>3.0b2</em:maxVersion>
 			</rdf:Description>
 		</em:targetApplication>
 		

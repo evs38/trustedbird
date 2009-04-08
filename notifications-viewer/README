@@ -1,5 +1,5 @@
-Notifications Viewer
---------------------
+Notification Viewer
+-------------------
 
 This add-on for Mozilla Thunderbird identifies and displays the status of awaiting
 and received notifications for messages sent with notifications requests.
@@ -9,4 +9,7 @@ Identified notifications are:
 
 This add-on is written in XUL and JavaScript.
 
+DIRSIM - Marine Nationale
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
 Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
