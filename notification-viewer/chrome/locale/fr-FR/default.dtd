@@ -40,7 +40,7 @@
 <!ENTITY colMDNDeleted "Effacé">
 <!ENTITY colMDNDeletedTooltip "Cliquez pour trier par notifications (effacé)">
 <!ENTITY contextMenuLabel "Visualiser les notifications">
-<!ENTITY PrefsDialog.title "Préférences Notifications Viewer">
+<!ENTITY PrefsDialog.title "Préférences Notification Viewer">
 <!ENTITY PrefsDialog.generalities "Général">
 <!ENTITY PrefsDialog.groupBoxtimeOut "DSN : délai de distribution">
 <!ENTITY PrefsDialog.labelconsiderTimeout "Marquer les messages quand le délai de distribution a expiré">

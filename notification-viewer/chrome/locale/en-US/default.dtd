@@ -40,7 +40,7 @@
 <!ENTITY colMDNDeleted "Deleted">
 <!ENTITY colMDNDeletedTooltip "Click to sort by notifications (deleted)">
 <!ENTITY contextMenuLabel "View notifications">
-<!ENTITY PrefsDialog.title "Notifications Viewer Preferences">
+<!ENTITY PrefsDialog.title "Notification Viewer Preferences">
 <!ENTITY PrefsDialog.generalities "General">
 <!ENTITY PrefsDialog.groupBoxtimeOut "DSN Delivery Deadline">
 <!ENTITY PrefsDialog.labelconsiderTimeout "Mark messages when delivery delay has expired">
