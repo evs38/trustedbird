@@ -69,7 +69,7 @@ function notificationDb() {
 notificationDb.prototype.updateMessage = function(messageId, notificationData, checkDelay) {
 	if (this.connection == null) return false;
 	
-	trustedBird_dump("notificationDb.updateMessage(" + messageId + ", " + notificationData + ", " + checkDelay + ")");
+	//trustedBird_dump("notificationDb.updateMessage(" + messageId + ", " + notificationData + ", " + checkDelay + ")");
 	
 	var update = false;
 
