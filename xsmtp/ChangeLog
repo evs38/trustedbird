@@ -1,0 +1,27 @@
+xsmtp (0.5.3)
+  * ChangeLog/README
+-- Apr 9 2009
+
+xsmtp (0.5.2.0)
+  * Add update.rdf
+
+xsmtp (0.5.0.0)
+  * Fix [#508] Few errors with XSMTP extension
+
+xsmtp (0.4.0.0)
+  * Fix [#488] Interdire les pièces jointes lors de l'envoi d'un message flash
+  * Fix [#489] Message sonore à l'arrivée d'un message flash
+  * Fix [#490] Couleur différente pour les messages flash
+
+xsmtp (0.3.0.0)
+  * Major code refactoring.
+  * Added a strong validation engine.
+  * Fix [#406] No check in the edit box.
+  * Fix [#407] The character ':' is prohibited, text truncated
+  * Fix [#435] Allow the user to enter upper case characters in the Exempted-Address field
+  * Fix [#439] Last character of a string is lost when ':' is entered in a string
+  * Fix [#440] The MCA field accept 1;1; but doesn't accept ;1;1
+  * Fix [#454] Fields MCA or Distribution-codes still grayed with both empty
+
+xsmtp (0.2.0.0)
+  * First working release
