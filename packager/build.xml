@@ -515,13 +515,29 @@
 		<property name="local.update.key" value="updates disabled" />
 
 		<!-- Get revision from SVN -->
-		<exec executable="sh"
-		      outputproperty="local.addon.revision"
-		      failonerror="true">
-			<arg value="${local.tools.dir}/getLastChangedRev.sh" />
-			<arg value="${local.build.dir}/${local.addon.name}" />
-		</exec>
-
+		<if>
+			<equals arg1="${local.addon.name}"
+			        arg2="all-addons" />
+			<then>
+				<!-- Get last project revision for all-addons -->
+				<exec executable="sh"
+				      outputproperty="local.addon.revision"
+				      failonerror="true">
+					<arg value="${local.tools.dir}/getRevision.sh" />
+					<arg value="${local.build.dir}/${local.addon.name}" />
+				</exec>
+			</then>
+			<else>
+				<!-- Get last revision of the add-on -->
+				<exec executable="sh"
+				      outputproperty="local.addon.revision"
+				      failonerror="true">
+					<arg value="${local.tools.dir}/getLastChangedRev.sh" />
+					<arg value="${local.build.dir}/${local.addon.name}" />
+				</exec>
+			</else>
+		</if>
+		
 		<if>
 			<isset property="nightly" />
 			<then>
