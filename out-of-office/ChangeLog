@@ -1,0 +1,16 @@
+out-of-office (1.0.0)
+  * Tag version 1
+  * ChangeLog/README
+-- Apr 9 2009
+
+out-of-office (0.0.4.0-alpha)
+  * French localization fix
+
+out-of-office (0.0.4.0-alpha)
+  * [#3888] bug fix : Tools window suddenly disappears when sieve server cannot be contacted
+
+out-of-office (0.0.2.0-alpha)
+  * Internal bugs fix
+
+out-of-office (0.0.1.0-alpha)
+ * First working release

@@ -14,7 +14,7 @@ JsDocPath="/home/brunol/tools/JSDoc/jsdoc.pl"
 logoPath="./chrome/content/images/logo_extension.png"
 
 # project summary file
-projectSummary="project_summary.txt"
+projectSummary="README"
 
 # document files
 files="./"

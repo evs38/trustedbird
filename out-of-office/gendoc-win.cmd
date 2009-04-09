@@ -16,7 +16,7 @@ rem Project logo
 set logoPath=.\chrome\content\images\logo_extension.png
 
 rem project summary file
-set projectSummary=project_summary.txt
+set projectSummary=README
 
 rem document files
 set files=.\
