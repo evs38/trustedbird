@@ -1,0 +1,13 @@
+Message Remote Services
+-----------------------
+
+This add-on for Mozilla Thunderbird exposes remote services to external processes.
+A Java API to communicate with this add-on is available.
+An external Java program can use a running instance of Thunderbird installed on the same OS.
+
+This add-on is written in C++, XUL and Javascript.
+API is in Java.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
