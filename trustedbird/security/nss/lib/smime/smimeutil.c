@@ -797,6 +797,8 @@ SECStatus NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(const char* data, const uns
 	unsigned int itemCount;
 	unsigned char tempDER[5];
 	    
+	*outputLen = 0;
+    
 	/* Count number of dot in the string */
 	dotCount = 0;
 	for (i = 0; i < len; i++) {
@@ -814,13 +816,8 @@ SECStatus NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(const char* data, const uns
 	for (i = 0; i <= len; i++) { /* Analyze all characters + 1 loop at the end */
 		if (i == len || data[i] == '.') {
 			/* Store number */
-			if (n != 0) {
-				oid[itemCount++] = n;
-				n = 0;
-			} else {
-				PORT_Free(oid);
-				return SECFailure;
-			}
+			oid[itemCount++] = n;
+			n = 0;
 		} else if (data[i] >= '0' && data[i] <= '9') {
 			/* Add digit to number */
 			n *= 10;
@@ -847,7 +844,6 @@ SECStatus NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(const char* data, const uns
 	}
 	
 	/* Allocate DER-encoded buffer: 5 bytes by item maximum */
-    *outputLen = 0;
     *output = (unsigned char*) PORT_Alloc((itemCount * 5) * sizeof(unsigned char));
     if (*output == NULL) {
     	PORT_Free(oid);
@@ -860,16 +856,15 @@ SECStatus NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(const char* data, const uns
 	/* Next bytes */
 	for (i = 2; i < itemCount; i++) {
 		n = 0;
-		while (oid[i] > 0) {
-			if (n == 5) {/* 5 bytes by item maximum */
-				PORT_Free(oid);
-				return SECFailure;
-			}
-			tempDER[n] = oid[i] & 0x7F;
-			if (n != 0) tempDER[n] |= 0x80;
-			oid[i] >>= 7;
-			n++;
+		if (n == 5) {/* 5 bytes by item maximum */
+			PORT_Free(oid);
+			return SECFailure;
 		}
+		tempDER[n] = oid[i] & 0x7F;
+		if (n != 0) tempDER[n] |= 0x80;
+		oid[i] >>= 7;
+		n++;
+
 		for (k = 0; k < n; k++) {
 			(*output)[(*outputLen)++] = tempDER[n - 1 - k];
 		}
@@ -925,6 +920,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 		securityLabel[securityLabelItem] = (NSSCMSSecurityLabelElement*) PORT_Alloc(sizeof(NSSCMSSecurityLabelElement));
 		securityLabel[securityLabelItem]->selector = NSSCMSSecurityLabelElement_securityClassification;
 		
+		securityLabel[securityLabelItem]->id.securityClassification.len = 0;
 		securityLabel[securityLabelItem]->id.securityClassification.data = (unsigned char*) PORT_Alloc(4 * sizeof(unsigned char));
 		if (securityLabel[securityLabelItem]->id.securityClassification.data == NULL) goto loser;
 		securityLabel[securityLabelItem]->id.securityClassification.data[0] = 0;
@@ -944,6 +940,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char*
 		securityLabel[securityLabelItem] = (NSSCMSSecurityLabelElement*) PORT_Alloc(sizeof(NSSCMSSecurityLabelElement));
 		securityLabel[securityLabelItem]->selector = NSSCMSSecurityLabelElement_privacyMarkUTF8;
 		
+		securityLabel[securityLabelItem]->id.privacyMarkUTF8.len = 0;
 		securityLabel[securityLabelItem]->id.privacyMarkUTF8.data = (unsigned char*) PORT_Alloc(len * sizeof(unsigned char));
 		if (securityLabel[securityLabelItem]->id.privacyMarkUTF8.data == NULL) goto loser;
 		PORT_Memcpy(securityLabel[securityLabelItem]->id.privacyMarkUTF8.data, privacyMark, len);
