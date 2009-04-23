@@ -47,6 +47,9 @@ See http://developer.mozilla.org/en/docs/Windows_Build_Prerequisites
  $ ant package-addons
 
 === Signed updates (optional) ===
-Generate a public key from McCoy and put it in a new updateKey file in same folder as build.xml.
+Generate a public key from McCoy and put it in a new "updateKey" file in same folder as build.xml.
 It will be automatically inserted in install.rdf file of all add-ons.
+
+In order to use trustedbird.org key, copy "updateKey-trustedbird.org" file to "updateKey".
+
 Next, using McCoy, sign all dist/updates/*/update.rdf before publishing them.
