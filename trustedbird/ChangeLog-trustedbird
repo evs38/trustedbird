@@ -1,3 +1,6 @@
+trustedbird (-)
+  * Security Labels: fixed crash while parsing OID (bugs #4276 and #4277)
+
 trustedbird (0.3.0)
   * Added ChangeLog/README
   * Upgraded to Thunderbird 2.0.0.21
