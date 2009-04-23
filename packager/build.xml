@@ -648,11 +648,8 @@
 			        arg2="all-addons" />
 			<then>
 				<copy todir="${local.build.dir}/${local.addon.name}/">
-					<fileset dir="${local.dist.dir}">
-						<include name="*.xpi" />
-					</fileset>
+					<fileset dir="${local.dist.dir}" includes="*.xpi" excludes="mrs-* trustedbird-l10n-*" />
 				</copy>
-				<delete dir="${local.dist.dir}/updates/${local.addon.name}" />
 			</then>
 		</if>
 
