@@ -1,7 +1,7 @@
 Check Recipients
 ----------------
 
-This add-on for Mozilla Thunderbird checks for the existence of email addresses of all recipients in Compose message window through local address books and LDAP directories.
+This add-on for Mozilla Thunderbird checks the existence of email addresses of all recipients in Compose message window through local address books and LDAP directories.
 
 This add-on is written in XUL and Javascript.
 

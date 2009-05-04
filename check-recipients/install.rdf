@@ -64,7 +64,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Checks for the existence of email addresses of all recipients in Compose message window through local address books and LDAP directories.</em:description>
+    <em:description>Checks the existence of email addresses of all recipients in Compose message window through local address books and LDAP directories.</em:description>
     
   </rdf:Description>
 </rdf:RDF>
