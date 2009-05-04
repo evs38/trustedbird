@@ -62,6 +62,6 @@
 			</rdf:Description>
 		</em:targetApplication>
 		
-		<em:description>Identifies and displays the status of awaiting and received notifications for messages sent with notifications requests.</em:description>
+		<em:description>Identifies and displays the status of pending and received notifications for messages sent with notification requests.</em:description>
 	</rdf:Description>
 </rdf:RDF>
