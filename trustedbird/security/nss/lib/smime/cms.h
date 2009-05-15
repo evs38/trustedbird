@@ -756,7 +756,7 @@ NSS_CMSSignerInfo_AddMSSMIMEEncKeyPrefs(NSSCMSSignerInfo *signerinfo, CERTCertif
  * authenticated (i.e. signed) attributes of "signerinfo".
  */
 extern SECStatus
-NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char* securityPolicyIdentifier, PRInt32 securityClassification, const char* privacyMark, const char* securityCategories);
+NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char *securityPolicyIdentifier, PRInt32 securityClassification, const char *privacyMark, const char *securityCategories);
 
 /*
  * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value
@@ -764,31 +764,25 @@ NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char* sec
 extern SECStatus
 NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *signerinfo, NSSCMSSecurityLabel *securityLabel);
 
+/*
+ * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char *receiptsTo, unsigned char *uuid);
+
+/*
+ * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo);
+
 /* 
  * NSS_CMSSignerInfo_AddCounterSignature - countersign a signerinfo
  */
 extern SECStatus
 NSS_CMSSignerInfo_AddCounterSignature(NSSCMSSignerInfo *signerinfo,
 				    SECOidTag digestalg, CERTCertificate signingcert);
-
-/*
- * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the
- * authenticated (i.e. signed) attributes of "signerinfo".
- */
-extern SECStatus
-NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char* receiptsTo, unsigned char* uuid);
-
-/*
- * NSS_CMSSignerInfo_HasReceiptRequest - test if exists an S/MIME ReceiptRequest attr value
- */
-extern PRBool
-NSS_CMSSignerInfo_HasReceiptRequest(NSSCMSSignerInfo *signerinfo);
-
-/*
- * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest attr value
- */
-extern SECStatus
-NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, NSSCMSReceiptRequest *receiptRequest);
 
 /*
  * XXXX the following needs to be done in the S/MIME layer code

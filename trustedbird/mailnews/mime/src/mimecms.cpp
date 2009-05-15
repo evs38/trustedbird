@@ -356,10 +356,10 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
 
         // Handle SignedReceiptRequest
         nsXPIDLCString signedContentIdentifier;
-        nsXPIDLCString receiptsFrom;
+        PRInt32 receiptsFrom = -1;
         nsXPIDLCString receiptsTo;
-        msg->GetSignedReceiptRequest(getter_Copies(signedContentIdentifier), getter_Copies(receiptsFrom), getter_Copies(receiptsTo));
-        if (signedContentIdentifier && receiptsFrom && receiptsTo)
+        msg->GetSignedReceiptRequest(getter_Copies(signedContentIdentifier), &receiptsFrom, getter_Copies(receiptsTo));
+        if (signedContentIdentifier && (receiptsFrom == 0) && receiptsTo)
           proxySink->SignedRequestReceiptStatus(signedContentIdentifier, receiptsFrom, receiptsTo);
       }
     }

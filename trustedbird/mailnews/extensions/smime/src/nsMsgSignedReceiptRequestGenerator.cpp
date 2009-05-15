@@ -90,7 +90,7 @@ NS_IMETHODIMP nsMsgSignedReceiptRequestGenerator::Process(
     nsMsgKey key,
     nsIMimeHeaders *headers,
     const char *aSignedContentIdentifier,
-    const char *aReceiptsFrom,
+    const PRInt32 aReceiptsFrom,
     const char *aReceiptsTo)
 {
     nsresult rv = NS_OK;

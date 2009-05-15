@@ -964,8 +964,8 @@ NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *signerinfo, NSSCMSSecurityL
  * authenticated (i.e. signed) attributes of "signerinfo".
  */
 SECStatus
-NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char* receiptsTo, unsigned char* uuid) {
-
+NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char *receiptsTo, unsigned char *uuid)
+{
     NSSCMSAttribute *attr;
     SECItem *receiptRequest = NULL;
     void *mark;
@@ -976,44 +976,34 @@ NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char*
 
     receiptRequest = SECITEM_AllocItem(poolp, NULL, 0);
     if (receiptRequest == NULL)
-      goto loser;
+        goto loser;
 
     /* create new receiptRequest attribute */
     if (NSS_SMIMEUtil_CreateReceiptRequest(poolp, receiptRequest, receiptsTo, uuid) != SECSuccess)
-      goto loser;
+        goto loser;
 
     if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_RECEIPT_REQUEST, receiptRequest, PR_TRUE)) == NULL)
-      goto loser;
+        goto loser;
 
     if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
-      goto loser;
+        goto loser;
 
-    PORT_ArenaUnmark (poolp, mark);
+    PORT_ArenaUnmark(poolp, mark);
 
     return SECSuccess;
 
 loser:
-    PORT_ArenaRelease (poolp, mark);
+    PORT_ArenaRelease(poolp, mark);
     return SECFailure;
 }
 
 /*
- * NSS_CMSSignerInfo_HasReceiptRequest - test if exists an S/MIME ReceiptRequest attr value
- */
-PRBool
-NSS_CMSSignerInfo_HasReceiptRequest(NSSCMSSignerInfo *signerinfo) {
-    NSSCMSAttribute *attr;
-    attr = NSS_CMSAttributeArray_FindAttrByOidTag(signerinfo->authAttr, SEC_OID_SMIME_RECEIPT_REQUEST, PR_TRUE);
-    return (attr != NULL);
-}
-
-/*
- * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest values
  */
 SECStatus
-NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, NSSCMSReceiptRequest *receiptRequest) {
-
-    return NSS_SMIMEUtil_GetReceiptRequest(signerinfo, receiptRequest);
+NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo)
+{
+    return NSS_SMIMEUtil_GetReceiptRequest(signerinfo, aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo);
 }
 
 /*

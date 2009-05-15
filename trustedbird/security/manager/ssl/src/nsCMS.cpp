@@ -469,7 +469,7 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
 	return NS_OK;
 }
 
-NS_IMETHODIMP nsCMSMessage::GetSignedReceiptRequest(char ** aSignedContentIdentifier, char ** aReceiptsFrom, char ** aReceiptsTo)
+NS_IMETHODIMP nsCMSMessage::GetSignedReceiptRequest(char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo)
 {
 
   nsNSSShutDownPreventionLock locker;
@@ -481,49 +481,11 @@ NS_IMETHODIMP nsCMSMessage::GetSignedReceiptRequest(char ** aSignedContentIdenti
   NS_ENSURE_ARG(aReceiptsFrom);
   NS_ENSURE_ARG(aReceiptsTo);
 
-  NSSCMSSignerInfo *signerinfo = GetTopLevelSignerInfo();
-  if (!signerinfo)
+  NSSCMSSignerInfo *si = GetTopLevelSignerInfo();
+  if (!si)
     return NS_ERROR_FAILURE;
 
-  if (NSS_CMSSignerInfo_HasReceiptRequest(signerinfo)) {
-    NSSCMSReceiptRequest *receiptRequest = (NSSCMSReceiptRequest *) PORT_ZAlloc(sizeof(NSSCMSReceiptRequest));
-    if (receiptRequest == NULL) {
-      return NS_ERROR_OUT_OF_MEMORY;
-    }
-
-    if (NSS_CMSSignerInfo_GetReceiptRequest(signerinfo, receiptRequest) == SECSuccess)
-    {
-      // signedContentIdentifier
-      int len = receiptRequest->signedContentIdentifier.len;
-      *aSignedContentIdentifier = (char *) PORT_Alloc(len + 1);
-      if (*aSignedContentIdentifier == NULL) {
-        return NS_ERROR_OUT_OF_MEMORY;
-      }
-      PORT_Memcpy(*aSignedContentIdentifier, receiptRequest->signedContentIdentifier.data, len);
-      (*aSignedContentIdentifier)[len] = '\0';
-
-      // receiptsFrom
-      len = receiptRequest->receiptsFrom.len;
-      *aReceiptsFrom = (char *) PORT_Alloc(len + 1);
-      if (*aReceiptsFrom == NULL) {
-        return NS_ERROR_OUT_OF_MEMORY;
-      }
-      PORT_Memcpy(*aReceiptsFrom, receiptRequest->receiptsFrom.data, len);
-      (*aReceiptsFrom)[len] = '\0';
-
-      // receiptsTo
-      len = receiptRequest->receiptsTo.len;
-      *aReceiptsTo = (char *) PORT_Alloc(len + 1);
-      if (*aReceiptsTo == NULL) {
-        return NS_ERROR_OUT_OF_MEMORY;
-      }
-      PORT_Memcpy(*aReceiptsTo, receiptRequest->receiptsTo.data, len);
-      (*aReceiptsTo)[len] = '\0';
-    }
-
-    if (receiptRequest)
-      PORT_Free(receiptRequest);
-  }
+  NSS_CMSSignerInfo_GetReceiptRequest(si, aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo);
 
   return NS_OK;
 }

@@ -182,11 +182,19 @@ static const SEC_ASN1Template NSSCMSSecurityLabelTemplate[] = {
 
 
 /* ESS Signed Receipt Request */
+static const SEC_ASN1Template NSSCMSReceiptRequestReceiptsFromTemplate[] = {
+    { SEC_ASN1_INTEGER, 0, NULL },
+};
+
+static const SEC_ASN1Template NSSCMSReceiptRequestGeneralNamesTemplate[] = {
+    { SEC_ASN1_SEQUENCE_OF, 0, SEC_AnyTemplate },
+};
+
 static const SEC_ASN1Template NSSCMSReceiptRequestTemplate[] = {
     { SEC_ASN1_SEQUENCE, 0, NULL, sizeof(NSSCMSReceiptRequest) },
     { SEC_ASN1_OCTET_STRING, offsetof(NSSCMSReceiptRequest, signedContentIdentifier) },
-    { SEC_ASN1_INTEGER, offsetof(NSSCMSReceiptRequest, receiptsFrom) },
-    { SEC_ASN1_IA5_STRING, offsetof(NSSCMSReceiptRequest, receiptsTo)}, /* TODO : Handle SEQUENCE OF GeneralName */
+    { SEC_ASN1_CONTEXT_SPECIFIC | 0, offsetof(NSSCMSReceiptRequest, receiptsFrom), NSSCMSReceiptRequestReceiptsFromTemplate },
+    { SEC_ASN1_SEQUENCE_OF, offsetof(NSSCMSReceiptRequest, receiptsTo), NSSCMSReceiptRequestGeneralNamesTemplate },
     { 0 }
 };
 
@@ -1150,53 +1158,102 @@ NSS_SMIMEUtil_CreateReceiptRequest(PLArenaPool *poolp, SECItem *dest, unsigned c
 {
     NSSCMSReceiptRequest receiptRequest;
     SECItem *dummy;
+    CERTGeneralName generalName;
 
     /* signedContentIdentifier */
     receiptRequest.signedContentIdentifier.data = uuid;
     receiptRequest.signedContentIdentifier.len = PORT_Strlen(uuid);
 
     /* receiptsFrom */
-    receiptRequest.receiptsFrom.data = (char *) PORT_Alloc(1 * sizeof(char));
-    receiptRequest.receiptsFrom.data[0] = 0; /* TODO : handle other cases */
-    receiptRequest.receiptsFrom.len = 1;
+    SEC_ASN1EncodeInteger(poolp, &(receiptRequest.receiptsFrom), 0); /* 0 = allReceipts */
 
     /* receiptsTo */
-    receiptRequest.receiptsTo.data = (unsigned char*) receiptsTo;
-    receiptRequest.receiptsTo.len = PORT_Strlen(receiptsTo);
+    generalName.type = certRFC822Name;
+    generalName.name.other.data = receiptsTo;
+    generalName.name.other.len = PORT_Strlen(receiptsTo);
+    receiptRequest.receiptsTo = PORT_Alloc(3 * sizeof(NSSCMSReceiptRequestGeneralNames*));
+    receiptRequest.receiptsTo[0] = PORT_Alloc(1 * sizeof(NSSCMSReceiptRequestGeneralNames));
+    receiptRequest.receiptsTo[0]->generalNameSeq = PORT_Alloc(2 * sizeof(SECItem*));
+    receiptRequest.receiptsTo[0]->generalNameSeq[0] = CERT_EncodeGeneralName(&generalName, NULL, poolp);
+    if (receiptRequest.receiptsTo[0]->generalNameSeq[0] == NULL)
+        goto loser;
+    receiptRequest.receiptsTo[0]->generalNameSeq[1] = NULL;
 
-    /* Now encode */
+    receiptRequest.receiptsTo[1] = NULL;
+
+    /* Encode receipt request */
     dummy = SEC_ASN1EncodeItem(poolp, dest, &receiptRequest, NSSCMSReceiptRequestTemplate);
 
-    PORT_Free(receiptRequest.receiptsFrom.data);
-    
+loser:
+    PORT_Free(receiptRequest.receiptsTo[0]->generalNameSeq);
+    PORT_Free(receiptRequest.receiptsTo[0]);
+    PORT_Free(receiptRequest.receiptsTo);
+
     return (dummy == NULL) ? SECFailure : SECSuccess;
 }
 
 /*
- * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest values
  */
 SECStatus
-NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, NSSCMSReceiptRequest *receiptRequest) {
+NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo)
+{
 
     NSSCMSAttribute *attr;
-    SECStatus rv;
+    SECStatus rv = SECFailure;
 
     PLArenaPool *poolp;
     void *mark;
+    NSSCMSReceiptRequest receiptRequest;
+    unsigned int i,j, len;
 
     poolp = signerinfo->cmsg->poolp;
     mark = PORT_ArenaMark(poolp);
 
     attr = NSS_CMSAttributeArray_FindAttrByOidTag(signerinfo->authAttr, SEC_OID_SMIME_RECEIPT_REQUEST, PR_TRUE);
-    if (attr != NULL && attr->values != NULL && attr->values[0] != NULL)
-    {
-      rv = SEC_ASN1DecodeItem(poolp, receiptRequest, NSSCMSReceiptRequestTemplate, attr->values[0]);
 
-    } else {
-      rv = SECFailure;
+    if (attr != NULL && attr->values != NULL && attr->values[0] != NULL) {
+        if ((rv = SEC_ASN1DecodeItem(poolp, &receiptRequest, NSSCMSReceiptRequestTemplate, attr->values[0])) == SECSuccess) {
+
+            /* signedContentIdentifier */
+            len = receiptRequest.signedContentIdentifier.len;
+            *aSignedContentIdentifier = PORT_Alloc(len + 1);
+            PORT_Memcpy(*aSignedContentIdentifier, receiptRequest.signedContentIdentifier.data, len);
+            (*aSignedContentIdentifier)[len] = '\0';
+
+            /* receiptsFrom */
+            SEC_ASN1DecodeInteger(&(receiptRequest.receiptsFrom), aReceiptsFrom);
+
+            /* receiptsTo */
+            CERTGeneralName* generalName = NULL;
+            if (receiptRequest.receiptsTo != NULL) {
+                NSSCMSReceiptRequestGeneralNames** p = receiptRequest.receiptsTo;
+                /* For each GeneralNames */
+                for (i = 0; p[i] != NULL; i++) {
+                    if (p[i]->generalNameSeq != NULL) {
+                        /* For each GeneralName */
+                        for (j = 0; p[i]->generalNameSeq[j] != NULL; j++) {
+                            generalName = CERT_DecodeGeneralName(poolp, p[i]->generalNameSeq[j], NULL);
+                            if (generalName != NULL)
+                                break;
+                        }
+                    }
+                    if (generalName != NULL)
+                        break;
+                }
+            }
+
+            len = 0;
+            if (generalName != NULL && generalName->type == certRFC822Name && generalName->name.other.len > 0)
+                len = generalName->name.other.len;
+            *aReceiptsTo = PORT_Alloc(len + 1);
+            PORT_Memcpy(*aReceiptsTo, generalName->name.other.data, len);
+            (*aReceiptsTo)[len] = '\0';
+
+        }
     }
 
-    PORT_ArenaUnmark (poolp, mark);
+    PORT_ArenaUnmark(poolp, mark);
     return rv;
 }
 

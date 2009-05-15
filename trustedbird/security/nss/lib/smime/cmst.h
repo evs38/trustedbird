@@ -92,11 +92,13 @@ typedef struct NSSCMSContentInfoStr NSSCMSContentInfo;
 typedef struct NSSCMSSignedDataStr NSSCMSSignedData;
 typedef struct NSSCMSSignerInfoStr NSSCMSSignerInfo;
 typedef struct NSSCMSSignerIdentifierStr NSSCMSSignerIdentifier;
-typedef struct NSSCMSReceiptRequestStr NSSCMSReceiptRequest;
 
 typedef struct NSSCMSSecurityLabelStr NSSCMSSecurityLabel;
 typedef struct NSSCMSSecurityLabelElementStr NSSCMSSecurityLabelElement;
 typedef struct NSSCMSSecurityLabelSecurityCategoryStr NSSCMSSecurityLabelSecurityCategory;
+
+typedef struct NSSCMSReceiptRequestStr NSSCMSReceiptRequest;
+typedef struct NSSCMSReceiptRequestGeneralNamesStr NSSCMSReceiptRequestGeneralNames;
 
 typedef struct NSSCMSEnvelopedDataStr NSSCMSEnvelopedData;
 typedef struct NSSCMSOriginatorInfoStr NSSCMSOriginatorInfo;
@@ -307,10 +309,14 @@ enum {
 
 
 /* ESS Signed Receipt Request */
+struct NSSCMSReceiptRequestGeneralNamesStr {
+    SECItem** generalNameSeq;
+};
+
 struct NSSCMSReceiptRequestStr {
     SECItem signedContentIdentifier;
     SECItem receiptsFrom;
-    SECItem receiptsTo;
+    NSSCMSReceiptRequestGeneralNames** receiptsTo;
 };
 
 /* =============================================================================

@@ -51,6 +51,6 @@ interface nsIMsgSignedReceiptRequestGenerator : nsISupports
                  in nsMsgKey key,
                  in nsIMimeHeaders headers,
                  in string aSignedContentIdentifier,
-                 in string aReceiptsFrom,
+                 in long aReceiptsFrom,
                  in string aReceiptsTo);
 };
