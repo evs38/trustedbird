@@ -1205,6 +1205,7 @@ NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedCont
     PLArenaPool *poolp;
     void *mark;
     NSSCMSReceiptRequest receiptRequest;
+    CERTGeneralName *generalName = NULL;
     unsigned int i,j, len;
 
     poolp = signerinfo->cmsg->poolp;
@@ -1225,7 +1226,6 @@ NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedCont
             SEC_ASN1DecodeInteger(&(receiptRequest.receiptsFrom), aReceiptsFrom);
 
             /* receiptsTo */
-            CERTGeneralName* generalName = NULL;
             if (receiptRequest.receiptsTo != NULL) {
                 NSSCMSReceiptRequestGeneralNames** p = receiptRequest.receiptsTo;
                 /* For each GeneralNames */
