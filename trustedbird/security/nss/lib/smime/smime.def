@@ -124,7 +124,6 @@ NSS_CMSSignerInfo_AddSigningTime;
 NSS_CMSSignerInfo_AddSecurityLabel;
 NSS_CMSSignerInfo_GetSecurityLabel;
 NSS_CMSSignerInfo_AddReceiptRequest;
-NSS_CMSSignerInfo_HasReceiptRequest;
 NSS_CMSSignerInfo_GetReceiptRequest;
 NSS_CMSSignerInfo_Create;
 NSS_CMSSignerInfo_Destroy;
