@@ -186,8 +186,12 @@ static const SEC_ASN1Template NSSCMSReceiptRequestReceiptsFromTemplate[] = {
     { SEC_ASN1_INTEGER, 0, NULL },
 };
 
+const SEC_ASN1Template NSSCMSReceiptRequestGeneralNameTemplate[] = {
+    { SEC_ASN1_ANY | SEC_ASN1_MAY_STREAM, 0, NULL, sizeof(SECItem) }
+};
+
 static const SEC_ASN1Template NSSCMSReceiptRequestGeneralNamesTemplate[] = {
-    { SEC_ASN1_SEQUENCE_OF, 0, SEC_AnyTemplate },
+    { SEC_ASN1_SEQUENCE_OF, 0, NSSCMSReceiptRequestGeneralNameTemplate },
 };
 
 static const SEC_ASN1Template NSSCMSReceiptRequestTemplate[] = {
