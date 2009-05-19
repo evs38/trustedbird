@@ -103,7 +103,7 @@ function securityLabelGetSecurityCategoryName(securityPolicyIdentifier, security
 			if (i == 0) list = securityLabelSecurityCategoriesList[securityPolicyIdentifierName]["all"];
 			/* Security Categories for selected classification */
 			if (i == 1) list = securityLabelSecurityCategoriesList[securityPolicyIdentifierName][securityClassification.toString()];
-	                
+
 			for (securityCategoryName in list) {
 				if (list[securityCategoryName][0] == securityCategoryOid && list[securityCategoryName][1] == securityCategoryType && list[securityCategoryName][2] == securityCategoryValue) {
 					return securityCategoryName;
@@ -130,18 +130,27 @@ function securityLabelReadProfiles() {
 		securityLabelSecurityClassificationList = [];
 		securityLabelPrivacyMarkList = [];
 		securityLabelSecurityCategoriesList = [];
-		                                           
+		
 		/* Get profile directory */
 		var dir = Components.classes["@mozilla.org/file/directory_service;1"].createInstance(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
 		dir.append("securityLabel");
+		
+		/* Copy default profile if needed */
+		if (!dir.exists()) {
+			dir.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0755);
+			var defaultFile = Components.classes["@mozilla.org/file/directory_service;1"].createInstance(Components.interfaces.nsIProperties).get("ProfDefNoLoc", Components.interfaces.nsIFile);
+			defaultFile.append("securityLabelPolicy-sample.xml");
+			if (defaultFile.exists()) defaultFile.copyTo(dir, "default.xml");
+		}
+		
 		if (dir.isDirectory()) {
 			/* Read directory contents */
 			var entries = dir.directoryEntries;
 			var dirList = [];
 			while (entries.hasMoreElements()) {
-			  var entry = entries.getNext();
-			  entry.QueryInterface(Components.interfaces.nsIFile);
-			  dirList.push(entry);
+				var entry = entries.getNext();
+				entry.QueryInterface(Components.interfaces.nsIFile);
+				dirList.push(entry);
 			}
 
 			for (i in dirList) {

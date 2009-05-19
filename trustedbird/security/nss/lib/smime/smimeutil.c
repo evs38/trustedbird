@@ -868,15 +868,16 @@ SECStatus NSS_SMIMEUtil_CreateSecurityLabelEncodeOid(const char* data, const uns
 	/* Next bytes */
 	for (i = 2; i < itemCount; i++) {
 		n = 0;
-		if (n == 5) {/* 5 bytes by item maximum */
-			PORT_Free(oid);
-			return SECFailure;
-		}
-		tempDER[n] = oid[i] & 0x7F;
-		if (n != 0) tempDER[n] |= 0x80;
-		oid[i] >>= 7;
-		n++;
-
+		do {
+                  if (n == 5) {/* 5 bytes by item maximum */
+                    PORT_Free(oid);
+                    return SECFailure;
+                  }
+                  tempDER[n] = oid[i] & 0x7F;
+                  if (n != 0) tempDER[n] |= 0x80;
+                  oid[i] >>= 7;
+                  n++;
+		} while (oid[i] > 0);
 		for (k = 0; k < n; k++) {
 			(*output)[(*outputLen)++] = tempDER[n - 1 - k];
 		}
