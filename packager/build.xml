@@ -318,7 +318,7 @@
 	<target name="package-tb"
 	        description="Create Trustedbird package"
 	        depends="-define-config-tb">
-		<available file="${local.build.dir}/mozilla/${local.checkbuild.file}"
+		<available file="${local.build.dir}/mozilla/obj/${local.checkbuild.file}"
 		           property="build.success" />
 		<fail message="File ${local.checkbuild.file} not found! Build Trustedbird first."
 		      unless="build.success" />
@@ -330,7 +330,7 @@
 			<then>
 				<!-- Create package -->
 				<exec executable="make"
-				      dir="${local.build.dir}/mozilla"
+				      dir="${local.build.dir}/mozilla/obj"
 				      failonerror="true">
 					<arg value="-C" />
 					<arg value="mail/installer" />
@@ -346,7 +346,7 @@
 
 				<!-- Rename package -->
 				<copy todir="${local.dist.dir}/">
-					<fileset dir="${local.build.dir}/mozilla/dist">
+					<fileset dir="${local.build.dir}/mozilla/obj/dist">
 						<include name="*.tar.gz" />
 					</fileset>
 					<mapper type="regexp"
@@ -359,7 +359,7 @@
 					<available file="/usr/bin/dpkg-deb" />
 					<then>
 						<copy todir="${local.build.dir}/">
-							<fileset dir="${local.build.dir}/mozilla/dist">
+							<fileset dir="${local.build.dir}/mozilla/obj/dist">
 								<include name="*.tar.gz" />
 							</fileset>
 							<mapper type="regexp"
@@ -381,7 +381,7 @@
 			<else>
 				<!-- Create package -->
 				<exec executable="make"
-				      dir="${local.build.dir}/mozilla"
+				      dir="${local.build.dir}/mozilla/obj"
 				      failonerror="true">
 					<arg value="-C" />
 					<arg value="mail/installer" />
@@ -390,7 +390,7 @@
 
 				<!-- Rename package -->
 				<copy todir="${local.dist.dir}/">
-					<fileset dir="${local.build.dir}/mozilla/dist/install/sea">
+					<fileset dir="${local.build.dir}/mozilla/obj/dist/install/sea">
 						<include name="*.exe" />
 					</fileset>
 					<mapper type="regexp"
