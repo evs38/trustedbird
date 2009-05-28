@@ -68,6 +68,7 @@ private:
     nsresult SendReceiptMsg();
     nsresult StoreMDNSentFlag(nsIMsgFolder *folder, nsMsgKey key);
     void AlertUnableToSendReceiptMsg(nsIMsgWindow *aWindow);
+    nsresult PromptSendReceiptMsg(nsIMsgWindow *aWindow, PRBool *shouldSendMessage);
     nsresult WriteString(const char *str);
     nsresult WriteSignedString(const char *str);
     PRBool MailAddrMatch(const char *addr1, const char *addr2);

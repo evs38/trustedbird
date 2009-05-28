@@ -117,11 +117,18 @@ NS_IMETHODIMP nsMsgSignedReceiptRequestGenerator::Process(
         return NS_OK;
     }
 
-    rv = CreateReceiptMsg();
-    if (NS_FAILED(rv)) 
+    PRBool shouldSendMessage;
+    rv = PromptSendReceiptMsg(aWindow, &shouldSendMessage);
+    if (NS_FAILED(rv))
+      return rv;
+
+    if (shouldSendMessage) {
+      rv = CreateReceiptMsg();
+      if (NS_FAILED(rv))
         return rv;
-        
-    return SendReceiptMsg();
+      rv = SendReceiptMsg();
+    }
+    return rv;
 }
 
 nsresult nsMsgSignedReceiptRequestGenerator::Init()
@@ -424,6 +431,22 @@ void nsMsgSignedReceiptRequestGenerator::AlertUnableToSendReceiptMsg(nsIMsgWindo
             rv = dialog->Alert(nsnull, unableToSend);
         }
     }
+}
+
+nsresult nsMsgSignedReceiptRequestGenerator::PromptSendReceiptMsg(nsIMsgWindow *aWindow, PRBool *shouldSendMessage)
+{
+  nsresult rv;
+  nsCOMPtr<nsIPrompt> dialog;
+  rv = aWindow->GetPromptDialog(getter_AddRefs(dialog));
+
+  if (NS_SUCCEEDED(rv)) {
+    nsXPIDLString wishToSend;
+    rv = GetStringFromName(NS_LITERAL_STRING("MsgSignedReceiptWishToSend").get(), getter_Copies(wishToSend));
+    if (NS_SUCCEEDED(rv))
+      rv = dialog->Confirm(nsnull, wishToSend, shouldSendMessage);
+  }
+
+  return rv;
 }
 
 nsresult nsMsgSignedReceiptRequestGenerator::GetStringFromName(const PRUnichar *aName, PRUnichar **aResultString)
