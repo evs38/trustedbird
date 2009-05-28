@@ -11,6 +11,10 @@
 <!ENTITY signingGroupTitle.label "Digital Signing">
 <!ENTITY signMessage.label "Digitally sign messages (by default)">
 <!ENTITY requestSignedReceipt.label "When sending messages, always request a signed return receipt">
+<!ENTITY signedReceiptSendPolicy.label "When I receive a request for a signed return receipt:">
+<!ENTITY signedReceiptNeverSend.label "Never send">
+<!ENTITY signedReceiptAlwaysSend.label "Always send">
+<!ENTITY signedReceiptAskMe.label "Ask me">
 <!ENTITY tripleWrapMessage.label "Use triple wrapping (A certificate for signing and encrypting must be defined)">
 <!ENTITY signingCert.message "Use this certificate to digitally sign messages you send:">
 <!ENTITY signingCert.notselected "No certificate set">

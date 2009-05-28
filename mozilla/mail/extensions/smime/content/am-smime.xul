@@ -83,6 +83,17 @@
     <checkbox id="identity.sign_mail" wsm_persist="true" label="&signMessage.label;" oncommand="toggleSignMail()"/>
 
     <checkbox id="identity.request_signed_return_receipt_on" wsm_persist="true" label="&requestSignedReceipt.label;" oncommand="toggleRequestSignedReceipt()"/>
+
+    <hbox align="center">
+      <label id="signedReceiptSendPolicyLabel" value="&signedReceiptSendPolicy.label;" control="identity.signed_receipt_send_policy"/>
+      <menulist id="identity.signed_receipt_send_policy" wsm_persist="true">
+        <menupopup>
+          <menuitem value="0" label="&signedReceiptNeverSend.label;"/>
+          <menuitem value="2" label="&signedReceiptAlwaysSend.label;"/>
+          <menuitem value="1" label="&signedReceiptAskMe.label;"/>
+        </menupopup>
+      </menulist>
+    </hbox>
   </groupbox>
 
   <groupbox id="encryption.titlebox">

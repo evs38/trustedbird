@@ -53,6 +53,7 @@ var gEncryptionChoices = null;
 var gSignCertName  = null;
 var gSignMessages  = null;
 var gRequestSignedReceipt = null;
+var gSignedReceiptSendPolicy = null;
 var gEncryptAlways = null;
 var gNeverEncrypt = null;
 var gTripleWrapMessages = null;
@@ -73,6 +74,7 @@ function onInit()
   gSignCertName       = document.getElementById(kSigningCertPref);
   gSignMessages       = document.getElementById("identity.sign_mail");
   gRequestSignedReceipt = document.getElementById("identity.request_signed_return_receipt_on");
+  gSignedReceiptSendPolicy = document.getElementById("identity.signed_receipt_send_policy");
   gEncryptAlways      = document.getElementById("encrypt_mail_always");
   gNeverEncrypt       = document.getElementById("encrypt_mail_never");
   gBundle             = document.getElementById("bundle_smime");
@@ -98,6 +100,7 @@ function onInit()
   gSignCertName.value = gIdentity.getUnicharAttribute("signing_cert_name");
   gSignMessages.checked = gIdentity.getBoolAttribute("sign_mail");
   gRequestSignedReceipt.checked = gIdentity.getBoolAttribute("request_signed_return_receipt_on");
+  gSignedReceiptSendPolicy.value = gIdentity.getIntAttribute("signed_receipt_send_policy");
   if (!gSignCertName.value)
   {
     gSignMessages.setAttribute("disabled", true);
@@ -136,6 +139,7 @@ function onSave()
 
   gIdentity.setBoolAttribute("sign_mail", gSignMessages.checked);
   gIdentity.setBoolAttribute("request_signed_return_receipt_on", gRequestSignedReceipt.checked);
+  gIdentity.setIntAttribute("signed_receipt_send_policy", gSignedReceiptSendPolicy.value);
   gIdentity.setUnicharAttribute("signing_cert_name", gSignCertName.value);
 
   gIdentity.setBoolAttribute("triple_wrap_mail", gTripleWrapMessages.checked);
