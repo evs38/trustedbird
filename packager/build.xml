@@ -309,9 +309,6 @@
 			<arg value="client.mk" />
 			<arg value="build" />
 		</exec>
-		<copy file="${local.build.dir}/mozilla/mail/config/version.txt-orig"
-		      tofile="${local.build.dir}/mozilla/mail/config/version.txt"
-		      overwrite="yes" />
 	</target>
 
 
