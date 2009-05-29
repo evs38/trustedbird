@@ -229,25 +229,6 @@
 		      tofile="${local.build.dir}/mozilla/.mozconfig" />
 		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
 		<touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
-
-		<!-- Set version -->
-		<if>
-			<not>
-				<available file="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
-			</not>
-			<then>
-				<copy file="${local.build.dir}/mozilla/mail/config/version.txt"
-				      tofile="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
-			</then>
-		</if>
-		<loadfile property="local.mozilla.version"
-		          srcfile="${local.build.dir}/mozilla/mail/config/version.txt-orig">
-			<filterchain>
-				<striplinebreaks />
-			</filterchain>
-		</loadfile>
-		<echo message="${local.mozilla.version}-${tb.name}${local.tb.version}"
-		      file="${local.build.dir}/mozilla/mail/config/version.txt" />
 	</target>
 
 
@@ -299,6 +280,26 @@
 	<target name="build-tb"
 	        description="Build Trustedbird"
 	        depends="-define-config-tb">
+		<!-- Set version file -->
+		<if>
+			<not>
+				<available file="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+			</not>
+			<then>
+				<move file="${local.build.dir}/mozilla/mail/config/version.txt"
+				      tofile="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+			</then>
+		</if>
+		<loadfile property="local.mozilla.version"
+		          srcfile="${local.build.dir}/mozilla/mail/config/version.txt-orig">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+		<echo message="${local.mozilla.version}-${tb.name}${local.tb.version}"
+		      file="${local.build.dir}/mozilla/mail/config/version.txt" />
+
+		<!-- Build -->
 		<exec executable="make"
 		      dir="${local.build.dir}/mozilla"
 		      failonerror="true">
@@ -309,6 +310,10 @@
 			<arg value="client.mk" />
 			<arg value="build" />
 		</exec>
+
+		<!-- Restore version file -->
+		<move file="${local.build.dir}/mozilla/mail/config/version.txt-orig"
+		      tofile="${local.build.dir}/mozilla/mail/config/version.txt" />
 	</target>
 
 
