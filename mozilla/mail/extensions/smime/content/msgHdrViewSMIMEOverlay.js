@@ -214,7 +214,7 @@ var smimeHeaderSink =
     }
   },
 
-  signedRequestReceiptStatus: function(aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo)
+  signedReceiptRequestStatus: function(aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo)
   {
     checkSignedReceiptRequest(aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo);
   },
@@ -257,11 +257,11 @@ function checkSignedReceiptRequest(aSignedContentIdentifier, aReceiptsFrom, aRec
   if ((msgFlags & MSG_FLAG_IMAP_DELETED) || (msgFlags & MSG_FLAG_SIGNED_RECEIPT_SENT))
     return;
 
-  var signedReceiptRequestGenerator = 
-    Components.classes["@mozilla.org/messenger/signedreceiptrequestgenerator;1"]
-      .createInstance(Components.interfaces.nsIMsgSignedReceiptRequestGenerator);
+  var signedReceiptGenerator = 
+    Components.classes["@mozilla.org/messenger/signedreceiptgenerator;1"]
+      .createInstance(Components.interfaces.nsIMsgSignedReceiptGenerator);
 
-  signedReceiptRequestGenerator.process(msgWindow, msgFolder, msgHdr.messageKey, mimeHdr, aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo);
+  signedReceiptGenerator.process(msgWindow, msgFolder, msgHdr.messageKey, mimeHdr, aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo);
 
   // Reset mark msg MDN "Sent" and "Not Needed".
   msgHdr.OrFlags(MSG_FLAG_SIGNED_RECEIPT_SENT);

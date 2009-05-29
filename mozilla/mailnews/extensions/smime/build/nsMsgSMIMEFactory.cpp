@@ -53,13 +53,13 @@
 #include "nsMsgComposeSecure.h"
 #include "nsSMimeJSHelper.h"
 #include "nsEncryptedSMIMEURIsService.h"
-#include "nsMsgSignedReceiptRequestGenerator.h"
+#include "nsMsgSignedReceiptGenerator.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgComposeSecure)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMEComposeFields)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsSMimeJSHelper)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEncryptedSMIMEURIsService)
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSignedReceiptRequestGenerator)
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSignedReceiptGenerator)
 
 ////////////////////////////////////////////////////////////
 //
@@ -83,10 +83,10 @@ static const nsModuleComponentInfo components[] =
     NS_SMIMEENCRYPTURISERVICE_CID,
     NS_SMIMEENCRYPTURISERVICE_CONTRACTID,
     nsEncryptedSMIMEURIsServiceConstructor },
-  { NS_MSGSIGNEDRECEIPTREQUEST_GENERATOR_CLASSNAME,
-    NS_MSGSIGNEDRECEIPTREQUEST_GENERATOR_CID,
-    NS_MSGSIGNEDRECEIPTREQUEST_GENERATOR_CONTRACTID,
-    nsMsgSignedReceiptRequestGeneratorConstructor,
+  { NS_MSGSIGNEDRECEIPT_GENERATOR_CLASSNAME,
+    NS_MSGSIGNEDRECEIPT_GENERATOR_CID,
+    NS_MSGSIGNEDRECEIPT_GENERATOR_CONTRACTID,
+    nsMsgSignedReceiptGeneratorConstructor,
   }
 };
 

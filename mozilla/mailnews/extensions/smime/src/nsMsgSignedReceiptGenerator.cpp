@@ -37,7 +37,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "nsMsgSignedReceiptRequestGenerator.h"
+#include "nsMsgSignedReceiptGenerator.h"
 #include "nsCOMPtr.h"
 #include "nsIPrompt.h"
 #include "nsIStringBundle.h"
@@ -73,18 +73,18 @@
      else { return NS_ERROR_OUT_OF_MEMORY; } } while (0)
 
 
-NS_IMPL_ISUPPORTS2(nsMsgSignedReceiptRequestGenerator, nsIMsgSignedReceiptRequestGenerator, nsIUrlListener)
+NS_IMPL_ISUPPORTS2(nsMsgSignedReceiptGenerator, nsIMsgSignedReceiptGenerator, nsIUrlListener)
 
-nsMsgSignedReceiptRequestGenerator::nsMsgSignedReceiptRequestGenerator()
+nsMsgSignedReceiptGenerator::nsMsgSignedReceiptGenerator()
 {
     m_outputStream = nsnull;
 }
 
-nsMsgSignedReceiptRequestGenerator::~nsMsgSignedReceiptRequestGenerator()
+nsMsgSignedReceiptGenerator::~nsMsgSignedReceiptGenerator()
 {
 }
 
-NS_IMETHODIMP nsMsgSignedReceiptRequestGenerator::Process(
+NS_IMETHODIMP nsMsgSignedReceiptGenerator::Process(
     nsIMsgWindow *aWindow,
     nsIMsgFolder *aFolder,
     nsMsgKey key,
@@ -140,7 +140,7 @@ NS_IMETHODIMP nsMsgSignedReceiptRequestGenerator::Process(
     return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::Init()
+nsresult nsMsgSignedReceiptGenerator::Init()
 {
     nsresult rv = NS_OK;
 
@@ -230,7 +230,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::Init()
     return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::SendReceiptMsg()
+nsresult nsMsgSignedReceiptGenerator::SendReceiptMsg()
 {
     nsresult rv = NS_OK;
     nsCOMPtr<nsISmtpService> smtpService = do_GetService(NS_SMTPSERVICE_CONTRACTID, &rv);
@@ -241,7 +241,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::SendReceiptMsg()
     return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::CreateReceiptMsg()
+nsresult nsMsgSignedReceiptGenerator::CreateReceiptMsg()
 {
     nsresult rv = NS_OK;
 
@@ -306,7 +306,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::CreateReceiptMsg()
     return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::WriteString(const char *str)
+nsresult nsMsgSignedReceiptGenerator::WriteString(const char *str)
 {
   NS_ENSURE_ARG (str);
   PRUint32 len = strlen(str);
@@ -315,13 +315,13 @@ nsresult nsMsgSignedReceiptRequestGenerator::WriteString(const char *str)
   return m_outputStream->Write(str, len, &wLen);
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::WriteSignedString(const char *str)
+nsresult nsMsgSignedReceiptGenerator::WriteSignedString(const char *str)
 {
   NS_ENSURE_ARG (str);
   return m_secureCompose->MimeCryptoWriteBlock(str, strlen(str));
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::CreateMsgHeader()
+nsresult nsMsgSignedReceiptGenerator::CreateMsgHeader()
 {
     nsresult rv = NS_OK;
 
@@ -422,7 +422,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::CreateMsgHeader()
     return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::CreateMsgContent()
+nsresult nsMsgSignedReceiptGenerator::CreateMsgContent()
 {
     nsresult rv = NS_OK;
     char *tmpBuffer = nsnull;
@@ -461,7 +461,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::CreateMsgContent()
     return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::StoreMDNSentFlag(nsIMsgFolder *folder, nsMsgKey key)
+nsresult nsMsgSignedReceiptGenerator::StoreMDNSentFlag(nsIMsgFolder *folder, nsMsgKey key)
 {
     // Store the $MDNSent flag if the folder is an Imap Mail Folder
     // otherwise, do nothing.
@@ -474,7 +474,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::StoreMDNSentFlag(nsIMsgFolder *fold
     return imapFolder->StoreImapFlags(kImapMsgMDNSentFlag, PR_TRUE, keyArray.GetArray(), keyArray.GetSize(), nsnull);
 }
 
-void nsMsgSignedReceiptRequestGenerator::AlertUnableToSendReceiptMsg(nsIMsgWindow *aWindow) {
+void nsMsgSignedReceiptGenerator::AlertUnableToSendReceiptMsg(nsIMsgWindow *aWindow) {
     nsresult rv;
     nsCOMPtr<nsIPrompt> dialog;
 
@@ -490,7 +490,7 @@ void nsMsgSignedReceiptRequestGenerator::AlertUnableToSendReceiptMsg(nsIMsgWindo
     }
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::PromptSendReceiptMsg(nsIMsgWindow *aWindow, PRBool *shouldSendMessage)
+nsresult nsMsgSignedReceiptGenerator::PromptSendReceiptMsg(nsIMsgWindow *aWindow, PRBool *shouldSendMessage)
 {
   nsresult rv;
   nsCOMPtr<nsIPrompt> dialog;
@@ -506,7 +506,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::PromptSendReceiptMsg(nsIMsgWindow *
   return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::GetStringFromName(const PRUnichar *aName, PRUnichar **aResultString)
+nsresult nsMsgSignedReceiptGenerator::GetStringFromName(const PRUnichar *aName, PRUnichar **aResultString)
 {
     nsresult rv;
 
@@ -523,7 +523,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::GetStringFromName(const PRUnichar *
     return rv;
 }
 
-nsresult nsMsgSignedReceiptRequestGenerator::FormatStringFromName(const PRUnichar *aName, const PRUnichar *aString, PRUnichar **aResultString)
+nsresult nsMsgSignedReceiptGenerator::FormatStringFromName(const PRUnichar *aName, const PRUnichar *aString, PRUnichar **aResultString)
 {
     nsresult rv;
 
@@ -540,7 +540,7 @@ nsresult nsMsgSignedReceiptRequestGenerator::FormatStringFromName(const PRUnicha
     return rv;
 }
 
-PRBool nsMsgSignedReceiptRequestGenerator::MailAddrMatch(const char *addr1, const char *addr2)
+PRBool nsMsgSignedReceiptGenerator::MailAddrMatch(const char *addr1, const char *addr2)
 {
     // Comparing two email addresses returns true if matched; local/account
     // part comparison is case sensitive; domain part comparison is case
@@ -578,12 +578,12 @@ PRBool nsMsgSignedReceiptRequestGenerator::MailAddrMatch(const char *addr1, cons
     return isMatched;
 }
 
-NS_IMETHODIMP nsMsgSignedReceiptRequestGenerator::OnStartRunningUrl(nsIURI *url)
+NS_IMETHODIMP nsMsgSignedReceiptGenerator::OnStartRunningUrl(nsIURI *url)
 {
     return NS_OK;
 }
 
-NS_IMETHODIMP nsMsgSignedReceiptRequestGenerator::OnStopRunningUrl(nsIURI *url, nsresult aExitCode)
+NS_IMETHODIMP nsMsgSignedReceiptGenerator::OnStopRunningUrl(nsIURI *url, nsresult aExitCode)
 {
     m_fileSpec->Delete(PR_FALSE);
     return NS_OK;

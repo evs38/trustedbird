@@ -50,7 +50,7 @@ XPIDLSRCS	= \
 		nsIMsgSMIMEHeaderSink.idl \
 		nsISMimeJSHelper.idl \
 		nsIEncryptedSMIMEURIsSrvc.idl \
-		nsIMsgSignedReceiptRequestGenerator.idl \
+		nsIMsgSignedReceiptGenerator.idl \
 		$(NULL)
 
 include $(topsrcdir)/config/rules.mk

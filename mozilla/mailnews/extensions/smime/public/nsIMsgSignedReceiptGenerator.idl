@@ -44,7 +44,7 @@ interface nsIMsgFolder;
 interface nsIMimeHeaders;
 
 [scriptable, uuid(5547f653-6adc-4a01-8467-036fce6fc83b)]
-interface nsIMsgSignedReceiptRequestGenerator : nsISupports
+interface nsIMsgSignedReceiptGenerator : nsISupports
 {    
     void process(in nsIMsgWindow aWindow,
                  in nsIMsgFolder aFolder,

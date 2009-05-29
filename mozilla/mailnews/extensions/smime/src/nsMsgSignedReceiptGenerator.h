@@ -36,10 +36,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-#ifndef _NSMSGSIGNEDRECEIPTREQUESTGENERATOR_H_
-#define _NSMSGSIGNEDRECEIPTREQUESTGENERATOR_H_
+#ifndef _NSMSGSIGNEDRECEIPTGENERATOR_H_
+#define _NSMSGSIGNEDRECEIPTGENERATOR_H_
 
-#include "nsIMsgSignedReceiptRequestGenerator.h"
+#include "nsIMsgSignedReceiptGenerator.h"
 #include "nsXPIDLString.h"
 #include "nsIFileSpec.h"
 #include "nsIMsgIdentity.h"
@@ -50,15 +50,15 @@
 #include "nsIMsgWindow.h"
 #include "nsMsgComposeSecure.h"
 
-class nsMsgSignedReceiptRequestGenerator : public nsIMsgSignedReceiptRequestGenerator, public nsIUrlListener
+class nsMsgSignedReceiptGenerator : public nsIMsgSignedReceiptGenerator, public nsIUrlListener
 {
 public:
     NS_DECL_ISUPPORTS
-    NS_DECL_NSIMSGSIGNEDRECEIPTREQUESTGENERATOR
+    NS_DECL_NSIMSGSIGNEDRECEIPTGENERATOR
     NS_DECL_NSIURLLISTENER
 
-    nsMsgSignedReceiptRequestGenerator();
-    virtual ~nsMsgSignedReceiptRequestGenerator();
+    nsMsgSignedReceiptGenerator();
+    virtual ~nsMsgSignedReceiptGenerator();
 
 private:
     nsresult Init();

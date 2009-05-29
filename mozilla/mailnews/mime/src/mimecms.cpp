@@ -360,7 +360,7 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
         nsXPIDLCString receiptsTo;
         msg->GetSignedReceiptRequest(getter_Copies(signedContentIdentifier), &receiptsFrom, getter_Copies(receiptsTo));
         if (signedContentIdentifier && (receiptsFrom == 0) && receiptsTo)
-          proxySink->SignedRequestReceiptStatus(signedContentIdentifier, receiptsFrom, receiptsTo);
+          proxySink->SignedReceiptRequestStatus(signedContentIdentifier, receiptsFrom, receiptsTo);
       }
     }
   }
