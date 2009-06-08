@@ -347,11 +347,11 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
         // Handle Security Label
         nsXPIDLCString securityPolicyIdentifier;
         PRInt32 securityClassification = -1;
-        nsXPIDLString privacyMark;
-        nsXPIDLString securityCategories;
+        nsXPIDLCString privacyMark;
+        nsXPIDLCString securityCategories;
         msg->GetSecurityLabel(getter_Copies(securityPolicyIdentifier), &securityClassification, getter_Copies(privacyMark), getter_Copies(securityCategories));
 
-        if (securityPolicyIdentifier) proxySink->SecurityLabelStatus(securityPolicyIdentifier, securityClassification, privacyMark, securityCategories);
+        if (securityPolicyIdentifier) proxySink->SecurityLabelStatus(securityPolicyIdentifier, securityClassification, NS_ConvertUTF8toUTF16(privacyMark), NS_ConvertUTF8toUTF16(securityCategories));
 
 
         // Handle SignedReceiptRequest

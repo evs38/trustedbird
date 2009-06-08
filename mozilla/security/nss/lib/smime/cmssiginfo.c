@@ -929,17 +929,17 @@ NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char* sec
 
     securityLabel = SECITEM_AllocItem(poolp, NULL, 0);
     if (securityLabel == NULL)
-      goto loser;
+        goto loser;
 
     /* create new SecurityLabel attribute */
     if (NSS_SMIMEUtil_CreateSecurityLabel(poolp, securityLabel, securityPolicyIdentifier, securityClassification, privacyMark, securityCategories) != SECSuccess)
-      goto loser;
+        goto loser;
 
     if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_SECURITY_LABEL, securityLabel, PR_TRUE)) == NULL)
-      goto loser;
+        goto loser;
 
     if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
-      goto loser;
+        goto loser;
 
     PORT_ArenaUnmark (poolp, mark);
 
@@ -954,9 +954,9 @@ loser:
  * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value
  */
 SECStatus
-NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *signerinfo, NSSCMSSecurityLabel *securityLabel)
+NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, char **aPrivacyMark, char **aSecurityCategories)
 {
-    return NSS_SMIMEUtil_GetSecurityLabel(signerinfo, securityLabel);
+    return NSS_SMIMEUtil_GetSecurityLabel(aSignerinfo, aSecurityPolicyIdentifier, aSecurityClassification, aPrivacyMark, aSecurityCategories);
 }
 
 /*

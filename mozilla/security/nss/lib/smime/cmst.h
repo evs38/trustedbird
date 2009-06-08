@@ -274,26 +274,26 @@ typedef enum {
 
 /* ESS Security Label */
 typedef enum {
-	NSSCMSSecurityLabelElement_securityPolicyIdentifier = 0,
-	NSSCMSSecurityLabelElement_securityClassification = 1,
-	NSSCMSSecurityLabelElement_privacyMarkPrintableString = 2,
-	NSSCMSSecurityLabelElement_privacyMarkUTF8 = 3,
-	NSSCMSSecurityLabelElement_securityCategories = 4
+    NSSCMSSecurityLabelElement_securityPolicyIdentifier   = 0,
+    NSSCMSSecurityLabelElement_securityClassification     = 1,
+    NSSCMSSecurityLabelElement_privacyMarkPrintableString = 2,
+    NSSCMSSecurityLabelElement_privacyMarkUTF8            = 3,
+    NSSCMSSecurityLabelElement_securityCategories         = 4
 } NSSCMSSecurityLabelElementSelector;
 
 struct NSSCMSSecurityLabelElementStr {
-	NSSCMSSecurityLabelElementSelector selector;
-	union {
-		SECItem securityPolicyIdentifier;
-		SECItem securityClassification;
-		SECItem privacyMarkPrintableString;
-		SECItem privacyMarkUTF8;
-		NSSCMSSecurityLabelSecurityCategory** securityCategories;
+    NSSCMSSecurityLabelElementSelector selector;
+    union {
+        SECItem securityPolicyIdentifier;
+        SECItem securityClassification;
+        SECItem privacyMarkPrintableString;
+        SECItem privacyMarkUTF8;
+        NSSCMSSecurityLabelSecurityCategory **securityCategories;
     } id;
 };
 
 struct NSSCMSSecurityLabelStr {
-	NSSCMSSecurityLabelElement** element;
+    NSSCMSSecurityLabelElement **element;
 };
 
 struct NSSCMSSecurityLabelSecurityCategoryStr {
@@ -302,21 +302,21 @@ struct NSSCMSSecurityLabelSecurityCategoryStr {
 };
 
 enum {
-	SECURITY_CATEGORY_VALUE_TYPE_UNKNOWN = 0,
-	SECURITY_CATEGORY_VALUE_TYPE_UTF8 = 1,
-	SECURITY_CATEGORY_VALUE_TYPE_INTEGER = 2
+    SECURITY_CATEGORY_VALUE_TYPE_UNKNOWN = 0,
+    SECURITY_CATEGORY_VALUE_TYPE_UTF8    = 1,
+    SECURITY_CATEGORY_VALUE_TYPE_INTEGER = 2
 };
 
 
 /* ESS Signed Receipt Request */
 struct NSSCMSReceiptRequestGeneralNamesStr {
-    SECItem** generalNameSeq;
+    SECItem **generalNameSeq;
 };
 
 struct NSSCMSReceiptRequestStr {
     SECItem signedContentIdentifier;
     SECItem receiptsFrom;
-    NSSCMSReceiptRequestGeneralNames** receiptsTo;
+    NSSCMSReceiptRequestGeneralNames **receiptsTo;
 };
 
 /* =============================================================================

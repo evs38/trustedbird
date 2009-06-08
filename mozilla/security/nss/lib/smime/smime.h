@@ -148,7 +148,7 @@ extern SECStatus NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *
 /*
  * NSS_SMIMEUtil_GetSecurityLabel - get S/MIME SecurityLabel attr value
  */
-extern SECStatus NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *signerinfo, NSSCMSSecurityLabelElement **securityLabel);
+extern SECStatus NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, char **aPrivacyMark, char **aSecurityCategories);
 
 /*
  * NSS_SMIMEUtil_CreateReceiptRequest - create S/MIME ReceiptRequest attr value
@@ -158,7 +158,7 @@ extern SECStatus NSS_SMIMEUtil_CreateReceiptRequest(PLArenaPool *poolp, SECItem 
 /*
  * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest attr value
  */
-extern SECStatus NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo);
+extern SECStatus NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo);
 
 /*
  * NSS_SMIMEUtil_GetCertFromEncryptionKeyPreference - find cert marked by EncryptionKeyPreference

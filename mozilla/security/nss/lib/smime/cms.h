@@ -762,7 +762,7 @@ NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char *sec
  * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value
  */
 extern SECStatus
-NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *signerinfo, NSSCMSSecurityLabel *securityLabel);
+NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, char **aPrivacyMark, char **aSecurityCategories);
 
 /*
  * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the

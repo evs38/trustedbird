@@ -53,7 +53,7 @@ interface nsIMsgSMIMEHeaderSink : nsISupports
 {
   void signedStatus(in long aNestingLevel, in long aSignatureStatus, in nsIX509Cert aSignerCert);
   void encryptionStatus(in long aNestingLevel, in long aEncryptionStatus, in nsIX509Cert aReceipientCert);
-  void securityLabelStatus(in string aSecurityPolicyIdentifier, in long aSecurityClassification, in wstring aPrivacyMark, in wstring aSecurityCategories);
+  void securityLabelStatus(in string aSecurityPolicyIdentifier, in long aSecurityClassification, in AString aPrivacyMark, in AString aSecurityCategories);
   void signedReceiptRequestStatus(in string aSignedContentIdentifier, in long aReceiptsFrom, in string aReceiptsTo);
 
   long maxWantedNesting(); // 1 == only info on outermost nesting level wanted
