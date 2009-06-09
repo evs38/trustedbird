@@ -150,7 +150,7 @@ static const SEC_ASN1Template securityCategoryIdentifierTemplate[] = {
 static const SEC_ASN1Template securityCategoryValueTemplate[] = {
     { SEC_ASN1_ANY, 0, NULL },
 };
-/*
+
 static const SEC_ASN1Template securityCategoryValueUTF8Template[] = {
     { SEC_ASN1_UTF8_STRING | SEC_ASN1_MAY_STREAM, 0, NULL, sizeof(SECItem) },
 };
@@ -158,7 +158,7 @@ static const SEC_ASN1Template securityCategoryValueUTF8Template[] = {
 static const SEC_ASN1Template securityCategoryValueIntegerTemplate[] = {
     { SEC_ASN1_INTEGER, 0, NULL, sizeof(SECItem) },
 };
-*/
+
 static const SEC_ASN1Template NSSCMSSecurityLabelSecurityCategoryTemplate[] = {
     { SEC_ASN1_SEQUENCE, 0, NULL, sizeof(NSSCMSSecurityLabelSecurityCategory) },
     { SEC_ASN1_CONTEXT_SPECIFIC | 0, offsetof(NSSCMSSecurityLabelSecurityCategory, securityCategoryIdentifier), securityCategoryIdentifierTemplate },
@@ -949,8 +949,7 @@ NSS_SMIMEUtil_DecodeOid(const unsigned char *data, const unsigned int len, char 
             (*output)[outputCount] = '.';
             outputCount++;
         }
-        if (oid[i] < 10000000)
-            outputCount += sprintf(&((*output)[outputCount]), "%d", oid[i]);
+        outputCount += sprintf(&((*output)[outputCount]), "%d", oid[i]);
     }
     (*output)[outputCount] = '\0';
 
@@ -1125,7 +1124,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char 
                     case SECURITY_CATEGORY_VALUE_TYPE_UTF8:
                         tempSecurityCategoryValue.data = securityCategories + startPosition;
                         tempSecurityCategoryValue.len = fieldLen;
-                        if (SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, SEC_UTF8StringTemplate) == NULL)
+                        if (SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, securityCategoryValueUTF8Template) == NULL)
                             goto loser;
                         break;
                     case SECURITY_CATEGORY_VALUE_TYPE_INTEGER:
@@ -1138,7 +1137,7 @@ NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char 
                         if (SEC_ASN1EncodeInteger(poolp, &tempSecurityCategoryValue, tempSecurityCategoryValueInteger) == NULL)
                             goto loser;
 
-                        if (SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, SEC_IntegerTemplate) == NULL)
+                        if (SEC_ASN1EncodeItem(poolp, &(securityLabel[securityLabelItem]->id.securityCategories[i]->securityCategoryValue), &tempSecurityCategoryValue, securityCategoryValueIntegerTemplate) == NULL)
                             goto loser;
                         break;
                     default:
@@ -1214,7 +1213,6 @@ NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPo
     char *tempBuffer;
     const char securityCategoriesSeparator = '|';
     unsigned int i;
-    unsigned int k;
     char *oid;
     char *tempSecurityCategories;
     unsigned int tempIntValue;
@@ -1367,7 +1365,7 @@ NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPo
                         /* Add size of securityCategoryValue */
                         if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.len > 2) {
                             if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.data[0] == SEC_ASN1_INTEGER) /* Integer */
-                                len += 7; /* 7 characters max for an integer */
+                                len += 10; /* 10 characters max for an integer */
                             else /* UTF-8 and other types */
                                 len += securityLabelElement->id.securityCategories[i]->securityCategoryValue.len;
                         }
@@ -1423,13 +1421,13 @@ NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPo
                             if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.len > 2) {
                                 if (securityLabelElement->id.securityCategories[i]->securityCategoryValue.data[0] == SEC_ASN1_INTEGER) { /* Integer: decode */
 
-                                    if ((rv = SEC_ASN1DecodeItem(poolp, &tempSECItemValue, SEC_IntegerTemplate, &(securityLabelElement->id.securityCategories[i]->securityCategoryValue))) != SECSuccess)
+                                    if ((rv = SEC_ASN1DecodeItem(poolp, &tempSECItemValue, securityCategoryValueIntegerTemplate, &(securityLabelElement->id.securityCategories[i]->securityCategoryValue))) != SECSuccess)
                                         break;
 
                                     if ((rv = SEC_ASN1DecodeInteger(&tempSECItemValue, &tempIntValue)) != SECSuccess)
                                         break;
 
-                                    ret = snprintf(tempSecurityCategories + len, 8, "%d", tempIntValue);
+                                    ret = sprintf(tempSecurityCategories + len, "%d", tempIntValue);
                                     if (ret > 0) {
                                         len += ret;
                                     } else {
