@@ -2,6 +2,7 @@ trustedbird (-)
   * Signed Receipts: fixed bug #4288 - prompt before sending receipt
   * Signed Receipts: fixed bug #4286 - structure of receipt request
   * Security Labels: fixed crash while parsing OID (bugs #4276 and #4277)
+  * Security Labels: refactoring
 
 trustedbird (0.3.0)
   * Added ChangeLog/README
