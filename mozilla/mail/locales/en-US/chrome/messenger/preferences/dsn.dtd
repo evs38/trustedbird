@@ -1,16 +1,16 @@
-<!ENTITY dialog.title               "Delivery Status Notification">
-<!ENTITY requestAlways.label        "When sending messages, always request a Delivery Status Notification">
+<!ENTITY dialog.title               "Delivery Receipts">
+<!ENTITY requestAlways.label        "When sending messages, always request a delivery receipt">
 <!ENTITY requestAlways.accesskey    "W">
-<!ENTITY optionTitle.label          "Ask notification on :">
-<!ENTITY requestOnSucess.label      "Success in delivering">
-<!ENTITY requestOnSucess.accesskey  "S">
+<!ENTITY optionTitle.label          "Ask notification on:">
+<!ENTITY requestOnSuccess.label     "Success in delivering">
+<!ENTITY requestOnSuccess.accesskey "S">
 <!ENTITY requestOnFailure.label     "Failure in delivering">
 <!ENTITY requestOnFailure.accesskey "F">
 <!ENTITY requestOnDelay.label       "Delay in delivering">
 <!ENTITY requestOnDelay.accesskey   "D">
-<!ENTITY requestNever.label         "Never receive Delivery Status Notification">
+<!ENTITY requestNever.label         "Never receive a delivery receipt">
 <!ENTITY requestNever.accesskey     "N">
-<!ENTITY RET_FailureMessage.label   "Failure message :">
+<!ENTITY RET_FailureMessage.label   "Failure message contains:">
 <!ENTITY RET_FULL.label             "Entire message">
 <!ENTITY RET_FULL.accesskey         "E">
 <!ENTITY RET_HDRS.label             "Headers only">

@@ -83,9 +83,9 @@
 
     <!-- When this checkbox is checked, DSN request is sent with SUCCESS option -->
     <checkbox id="request_on_success_on"
-              label="&requestOnSucess.label;"
+              label="&requestOnSuccess.label;"
               preference="mail.dsn.request_on_success_on"
-              accesskey="&requestOnSucess.accesskey;"
+              accesskey="&requestOnSuccess.accesskey;"
               oncommand="EnableDisableAllowedDSNRequests(this)"/>
 
     <!-- When this checkbox is checked, DSN request is sent with FAILURE option -->
