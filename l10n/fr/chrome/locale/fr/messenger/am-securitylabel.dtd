@@ -1,0 +1,5 @@
+<!ENTITY pane.title							"Libellés de sécurité">
+<!ENTITY securityLabel.location				"Emplacement du libellé avec la triple enveloppe">
+<!ENTITY securityLabel.bothSignatures		"Signatures interne et externe">
+<!ENTITY securityLabel.innerSignatureOnly	"Signature interne seulement">
+<!ENTITY securityLabel.outerSignatureOnly	"Signature externe seulement">
