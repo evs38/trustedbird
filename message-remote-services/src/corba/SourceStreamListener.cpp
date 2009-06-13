@@ -54,6 +54,9 @@ nsresult SourceStreamListener::OnDataAvailable(nsIRequest *aRequest,
 	PRUint32 ret, size;
 	nsresult rv;
 
+	PRUint32 sourceSize = aCount;
+
+	//Read
 	while(aCount)
 	{
 		size = PR_MIN(aCount, sizeof(buf));
@@ -62,18 +65,22 @@ nsresult SourceStreamListener::OnDataAvailable(nsIRequest *aRequest,
 		aCount -= ret;
 	}
 
-	octetSeq buffout (size);
+	//Output buffer allocation
+	octetSeq  buffout(sourceSize);
+	//Necessary after allocation ! Do not miss it (Why it is not allocate in the constructor ?)
+	buffout.length(sourceSize);
 
 	//convert to corba octet array
-	for (int i = 0; i < size; i++)
+	const char * c = content.get();
+
+	for (int i = 0; i < sourceSize; i++)
 	{
-		buffout[i] = buf[i];
+		buffout[i] = c[i];
 	}
 
 	m_SourceListener->OnLoad(buffout);
 
 	return NS_OK;
-
 }
 
 
