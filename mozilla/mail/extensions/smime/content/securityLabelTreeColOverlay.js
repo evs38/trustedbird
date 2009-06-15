@@ -38,47 +38,47 @@
 window.addEventListener("load", securityLabelTreeColOverlayInit, false);
 
 function securityLabelTreeColOverlayInit() {
-	var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-	observerService.addObserver(createDbObserver, "MsgCreateDBView", false);
+  var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+  observerService.addObserver(createDbObserver, "MsgCreateDBView", false);
 }
 
 var createDbObserver = {
-	observe: function(aMsgFolder, aTopic, aData) {
-		try {
-			if (gDBView != undefined && gDBView.addColumnHandler) gDBView.addColumnHandler("securityLabelSecurityClassificationColumn", securityLabelSecurityClassificationColumnHandler);
-		} catch(e) {}
-	}
+  observe: function(aMsgFolder, aTopic, aData) {
+    try {
+      if (gDBView != undefined && gDBView.addColumnHandler) gDBView.addColumnHandler("securityLabelSecurityClassificationColumn", securityLabelSecurityClassificationColumnHandler);
+    } catch(e) {}
+  }
 }
 
 /* Add a new column in the tree list */
 var securityLabelSecurityClassificationColumnHandler = {
-	getCellText: function(row, column) {
-		var key = gDBView.getKeyAt(row);
-		var hdr = gDBView.db.GetMsgHdrForKey(key);
-		var securityLabelSecurityPolicyIdentifier = hdr.getStringProperty("securityLabelSecurityPolicyIdentifier");
-		var securityLabelSecurityClassification = hdr.getStringProperty("securityLabelSecurityClassification");
+  getCellText: function(row, column) {
+    var key = gDBView.getKeyAt(row);
+    var hdr = gDBView.db.GetMsgHdrForKey(key);
+    var securityLabelSecurityPolicyIdentifier = hdr.getStringProperty("securityLabelSecurityPolicyIdentifier");
+    var securityLabelSecurityClassification = hdr.getStringProperty("securityLabelSecurityClassification");
 
-		if (securityLabelSecurityPolicyIdentifier != "") {
-			if (securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1") return securityLabelGetSecurityClassificationName(securityLabelSecurityPolicyIdentifier, securityLabelSecurityClassification);
-		}
-		return "";
-	},
-	getSortStringForRow: function(hdr) {
-		var securityLabelSecurityPolicyIdentifier = hdr.getStringProperty("securityLabelSecurityPolicyIdentifier");
-		var securityLabelSecurityClassification = hdr.getStringProperty("securityLabelSecurityClassification");
-		
-		if (securityLabelSecurityPolicyIdentifier != "") {
-			if (securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1") {
-				if (securityLabelSecurityClassification < 10) return "00" + securityLabelSecurityClassification;
-				else if (securityLabelSecurityClassification < 100) return "0" + securityLabelSecurityClassification;
-				else return securityLabelSecurityClassification;
-			} 
-		}
-		return "";
-	},
-	isString:          function() {return true;},
-	getCellProperties: function(row, col, props){ },
-	getRowProperties:  function(row, props){ },
-	getImageSrc:       function(row, col) {return null;},
-	getSortLongForRow: function(hdr) {return 0;}
+    if (securityLabelSecurityPolicyIdentifier != "") {
+      if (securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1") return securityLabelGetSecurityClassificationName(securityLabelSecurityPolicyIdentifier, securityLabelSecurityClassification);
+    }
+    return "";
+  },
+  getSortStringForRow: function(hdr) {
+    var securityLabelSecurityPolicyIdentifier = hdr.getStringProperty("securityLabelSecurityPolicyIdentifier");
+    var securityLabelSecurityClassification = hdr.getStringProperty("securityLabelSecurityClassification");
+
+    if (securityLabelSecurityPolicyIdentifier != "") {
+      if (securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1") {
+        if (securityLabelSecurityClassification < 10) return "00" + securityLabelSecurityClassification;
+        else if (securityLabelSecurityClassification < 100) return "0" + securityLabelSecurityClassification;
+        else return securityLabelSecurityClassification;
+      }
+    }
+    return "";
+  },
+  isString:          function() {return true;},
+  getCellProperties: function(row, col, props){ },
+  getRowProperties:  function(row, props){ },
+  getImageSrc:       function(row, col) {return null;},
+  getSortLongForRow: function(hdr) {return 0;}
 }
