@@ -50,6 +50,7 @@ FILES := \
 	mimeTypes.rdf \
     localstore.rdf \
     securityLabelPolicy-sample.xml \
+    securityLabelPolicy-schema.xsd \
 	$(NULL)
 
 libs:: $(FILES)
