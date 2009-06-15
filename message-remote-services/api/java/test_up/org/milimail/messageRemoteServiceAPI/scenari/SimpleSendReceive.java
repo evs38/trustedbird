@@ -78,7 +78,8 @@ public class SimpleSendReceive extends AbstractMessageServiceTest {
 		FolderHolder folderHolder = new FolderHolder();
 		
 		List<Account> accountsDest = accountService.GetAllAccounts();
-		Account accountDest = accountsDest.get(1);
+		
+		Account accountDest = accountsDest.get(2);
 		
 		browseService.getRootFolder(accountDest, folderHolder);
 
@@ -86,15 +87,15 @@ public class SimpleSendReceive extends AbstractMessageServiceTest {
 		
 		Folder folder = foldersHolder.getValue()[0];
 		
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		browseService.getNewMessages(folder);
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		MessageHandlersHolder hdrHolder = new MessageHandlersHolder();
 		browseService.getMessageHandlers(folder, hdrHolder);
 		
 		MessageHandler[] handlers = hdrHolder.getValue();
 		
-		MessageHandler handler = handlers[0];
+		MessageHandler handler = handlers[handlers.length -1];
 		return handler;
 	}
 	
