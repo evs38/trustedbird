@@ -3,9 +3,9 @@ trustedbird (0.3.1)
   * Signed Receipts: fixed bug #4286 - structure of receipt request
   * Security Labels: fixed crash while parsing OID (bugs #4276 and #4277)
   * Security Labels: refactoring
--- Jun 17 2009
+-- 17 June 2009
 
 trustedbird (0.3.0)
   * Added ChangeLog/README
   * Upgraded to Thunderbird 2.0.0.21
--- Apr 17 2009
+-- 17 April 2009
