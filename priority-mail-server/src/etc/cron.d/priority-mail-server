@@ -1,0 +1,4 @@
+# /etc/cron.d/priority-mail-server
+# Update mail system monitoring data
+
+* * * * *       root    /usr/sbin/priority-mail-server-updateMonitoringData

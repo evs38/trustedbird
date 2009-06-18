@@ -1,0 +1,18 @@
+#!/bin/sh
+# Create Debian package
+
+[ -r "src/DEBIAN/control" ] || { echo "Can't find control file in package directory!"; exit; }
+
+PACKAGE=`cat src/DEBIAN/control | grep Package | cut -d" " -f2`
+VERSION=`cat version`
+
+[ -z "$PACKAGE" -o -z "$VERSION" ] && { echo "Can't find package name or version!"; exit; }
+
+# Add version
+[ -e ".control.orig" ] || cp src/DEBIAN/control .control.orig
+cp .control.orig src/DEBIAN/control
+sed -i "s|__VERSION__|$VERSION|" "src/DEBIAN/control"
+
+fakeroot dpkg-deb -b src ${PACKAGE}_${VERSION}.deb
+
+mv .control.orig src/DEBIAN/control

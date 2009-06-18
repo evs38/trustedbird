@@ -1,0 +1,18 @@
+#!/bin/sh -e
+# Post-installation script for priority-mail-server package
+
+# Disable original postfix and qpsmtpd init.d scripts
+update-rc.d -f postfix remove >/dev/null
+update-rc.d -f qpsmtpd remove >/dev/null
+
+# Enable init.d scripts
+update-rc.d postfix-priority defaults >/dev/null
+update-rc.d qpsmtpd-priority defaults >/dev/null
+
+# Permit qpsmtpd user to inject mails into postfix
+adduser qpsmtpd postdrop
+
+# Configure server
+update-priority-mail-server
+
+# Daemons are started by update-priority-mail-server

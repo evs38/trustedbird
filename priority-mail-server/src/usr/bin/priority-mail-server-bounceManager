@@ -1,0 +1,24 @@
+#!/bin/bash
+# Manage bounces
+
+# Read settings
+[ -r /etc/priority-mail-server.conf ] || { echo "Settings not found in /etc/priority-mail-server.conf!"; exit 1; }
+. /etc/priority-mail-server.conf
+[ -n "$PRIORITY_COUNT" ] && [ $PRIORITY_COUNT -gt 0 ] || { echo "Wrong priority count in /etc/priority-mail-server.conf!"; exit 1; }
+
+# Launch command
+ARG1=$1
+[ -n "$ARG1" ] && {
+	INDEX=${ARG1/postfix/}
+	if [ "$ARG1" = "postfix-frontend" ]; then
+		COMMAND=$BOUNCE_COMMAND_FRONTEND
+	elif [ $INDEX -ge 0 -a $INDEX -lt $PRIORITY_COUNT ]; then
+		COMMAND=${BOUNCE_COMMAND[$INDEX]-$BOUNCE_COMMAND_DEFAULT}
+	fi
+
+	[ -n "$COMMAND" ] && $COMMAND
+
+	exit 0
+}
+
+exit 1

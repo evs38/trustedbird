@@ -1,0 +1,11 @@
+# Qpsmtpd plugin - addDSNCapability
+#  Add the "DSN" EHLO keyword
+
+sub hook_ehlo {
+	my ($self, $transaction) = @_;
+	my $capabilities = $transaction->notes('capabilities');
+	push @$capabilities, 'DSN';
+	$transaction->notes('capabilities', $capabilities);
+
+	return DECLINED;
+}

@@ -1,0 +1,29 @@
+# Qpsmtpd plugin - parseSMTPExtensions
+#  Parse MAIL FROM and RCPT TO extensions (for DSN)
+#  and save them in $transaction->notes
+
+# Parse MAIL FROM
+sub hook_mail {
+	my ($self, $transaction, $sender, %args) = @_;
+
+	# Get MAIL FROM extensions
+	foreach (keys(%args)) {
+		$self->log(LOGDEBUG, "parseSMTPExtensions MAIL: ".$_." -> ".$args{$_});
+		$transaction->notes('mail-extension-'.$_, $args{$_});
+	}
+
+	return DECLINED;
+}
+
+# Parse RCPT TO
+sub hook_rcpt {
+	my ($self, $transaction, $recipient, %args) = @_;
+
+	# Get RCPT TO extensions
+	foreach (keys(%args)) {
+		$self->log(LOGDEBUG, "parseSMTPExtensions RCPT: ".$_." -> ".$args{$_});
+		$transaction->notes('rcpt-extension-'.$_.'-'.$recipient->address, $args{$_});
+	}
+
+	return DECLINED;
+}

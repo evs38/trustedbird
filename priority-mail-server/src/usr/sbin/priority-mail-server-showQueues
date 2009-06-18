@@ -1,0 +1,26 @@
+#!/bin/sh
+# Show message count in all Postfix queues
+
+# Read settings
+[ -r /etc/priority-mail-server.conf ] || { echo "Settings not found in /etc/priority-mail-server.conf!"; exit 1; }
+. /etc/priority-mail-server.conf
+[ -n "$PRIORITY_COUNT" -a "$PRIORITY_COUNT" -gt 0 ] || { echo "Wrong priority count in /etc/priority-mail-server.conf!"; exit 1; }
+
+GET_POSTFIX_QUEUE_COUNT="/usr/sbin/priority-mail-server-getPostfixQueueCount"
+
+echo "Message count in incoming, active and deferred queues of all Postfix instances"
+echo
+
+for i in -frontend `seq 0 $(expr $PRIORITY_COUNT - 1)`; do
+	INCOMING_COUNT=`$GET_POSTFIX_QUEUE_COUNT postfix$i incoming`
+	ACTIVE_COUNT=`$GET_POSTFIX_QUEUE_COUNT postfix$i active`
+	DEFERRED_COUNT=`$GET_POSTFIX_QUEUE_COUNT postfix$i deferred`
+	TOTAL_COUNT=$(expr $INCOMING_COUNT + $ACTIVE_COUNT + $DEFERRED_COUNT)
+
+	echo " * postfix$i = $TOTAL_COUNT"
+	if [ $TOTAL_COUNT -gt 0 ]; then
+		echo "   | incoming = $INCOMING_COUNT"
+		echo "   | active   = $ACTIVE_COUNT"
+		echo "   | deferred = $DEFERRED_COUNT"
+	fi
+done

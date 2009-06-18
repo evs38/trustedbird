@@ -1,0 +1,133 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides: qpsmtpd
+# Required-Start: $local_fs $remote_fs $network
+# Should-Start: $syslog $mail-transport-agent $clamav-daemon $spamassassin
+# Required-Stop: $local_fs $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start and stop the qpsmtpd SMTP daemon
+# Description: Qpsmtpd is an SMTP daemon which acts as a frontend
+#    for a mail transport system.
+### END INIT INFO
+
+set -e
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+[ -x "/usr/bin/qpsmtpd-forkserver" ] || exit 0
+
+PORT="10025"
+RUNAS="qpsmtpd"
+NICE=""
+INTERFACES="127.0.0.1"
+LISTEN=""
+ENABLED="false"
+
+
+# Check if Qpsmtpd needs to be patched in order to redefine Postfix queue socket name and propagate DSN
+grep -q DSN_NOTIFY_SUCCESS /usr/share/perl5/Qpsmtpd/Postfix.pm || {
+	echo -n "Patching Qpsmtpd... "
+	patch -f -b -s -p0 < /usr/share/priority-mail-server/qpsmtpd.patch || exit 1
+	echo "OK"
+}
+
+# [ -f "/etc/qpsmtpd/debconf-settings" ] && . "/etc/qpsmtpd/debconf-settings"
+
+# [ "$ENABLED" = "true" -o "$ENABLED" = "1" ] || exit 0
+
+if [ "x$INTERFACES" != "x" ] ; then
+	LISTEN=`echo "$INTERFACES" | \
+		perl -pe 's/(\S+)/--listen-address $1/g'`
+fi
+
+qpsmtpd_start()
+{
+	# Stop and disable original qpsmtpd instance if necessary
+	if which invoke-rc.d >/dev/null 2>&1; then
+        	invoke-rc.d qpsmtpd stop || exit 1
+	else
+        	[ -x /etc/init.d/qpsmtpd ] && { /etc/init.d/qpsmtpd stop; exit 1; }
+	fi
+	chmod -x /etc/init.d/qpsmtpd
+
+	# a bug in 0.31.1 caused logfiles to be created as root, rather
+	# than as the $RUNAS user
+	if [ "x$RUNAS" != "x" -a \
+             "`stat --format '%u' /var/log/qpsmtpd/qpsmtpd.log 2>/dev/null`" \
+	       = "0" ] ; then
+                chown "$RUNAS" /var/log/qpsmtpd/qpsmtpd.log
+        fi
+	export QPSMTPD_CONFIG="/etc/qpsmtpd"
+	if [ ! -d "/var/run/qpsmtpd" ] ; then
+		mkdir -p /var/run/qpsmtpd
+		chown $RUNAS:adm /var/run/qpsmtpd
+		chmod 2755 /var/run/qpsmtpd
+	fi
+	start-stop-daemon --quiet --start \
+		-N `cat "$QPSMTPD_CONFIG/niceLevel"` \
+		--exec /usr/bin/qpsmtpd-forkserver -- \
+		--port $PORT --user $RUNAS \
+		--limit-connections `cat "$QPSMTPD_CONFIG/limitConnections"` \
+		--pid-file /var/run/qpsmtpd/qpsmtpd.pid \
+		$LISTEN --detach
+}
+
+qpsmtpd_stop()
+{
+	# qpsmtpd-forkserver is a perl script, and s-s-d's --exec option
+	# would look at the interpreter path rather than the script.  More
+	# seriously, however, --exec compares devices/inodes rather than
+	# executable paths, so --exec will break every time the perl package
+	# is upgraded (see Debian Bug#337942).  So, --exec isn't used at all.
+	start-stop-daemon --quiet --stop --oknodo \
+		--pidfile /var/run/qpsmtpd/qpsmtpd.pid \
+		--user "$RUNAS"
+}
+
+qpsmtpd_status()
+{
+	echo -n "Checking status of qpsmtpd: "
+	if [ -f "/var/run/qpsmtpd/qpsmtpd.pid" ] ; then
+		if start-stop-daemon --quiet --stop --signal 0 \
+		       --pidfile /var/run/qpsmtpd/qpsmtpd.pid ; then
+			echo "running"
+			exit 0
+		else
+			echo "not running, stale PID file"
+			exit 1
+		fi
+	else
+		echo "not running"
+		exit 3
+	fi
+}
+
+case "$1" in
+	start)
+		echo -n "Starting qpsmtpd: "
+		qpsmtpd_start
+		echo "qpsmtpd-forkserver."
+		;;
+	stop)
+		echo -n "Stopping qpsmtpd: "
+		qpsmtpd_stop
+		echo "qpsmtpd-forkserver."
+		;;
+	restart|reload|force-reload)
+		qpsmtpd_stop
+		qpsmtpd_start
+		;;
+	status)
+		qpsmtpd_status
+		;;
+	*)
+		echo "usage: $0 {start|stop|restart|reload|force-reload|status}"
+		exit 1
+		;;
+esac
+
+exit 0
+
+

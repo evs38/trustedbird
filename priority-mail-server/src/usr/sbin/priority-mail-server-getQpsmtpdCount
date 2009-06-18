@@ -1,0 +1,4 @@
+#!/bin/sh
+# Print qpsmtpd processes count
+
+ps ax | grep -c [q]psmtpd-forkserver

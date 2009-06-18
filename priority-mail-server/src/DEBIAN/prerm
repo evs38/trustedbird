@@ -1,0 +1,11 @@
+#!/bin/sh -e
+# Pre-removal script for priority-mail-server package
+
+# Stop daemons
+if which invoke-rc.d >/dev/null 2>&1; then
+        invoke-rc.d postfix-priority stop
+        invoke-rc.d qpsmtpd-priority stop
+else
+	/etc/init.d/postfix-priority stop
+	/etc/init.d/qpsmtpd-priority stop
+fi

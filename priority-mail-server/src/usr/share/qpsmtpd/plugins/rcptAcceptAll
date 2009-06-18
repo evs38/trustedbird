@@ -1,0 +1,7 @@
+# Qpsmtpd plugin - rcptAcceptAll
+# Accept recipient. This plugin should be configured to be run LAST.
+
+sub hook_rcpt {
+	# Recipient allowed
+	return OK;
+}

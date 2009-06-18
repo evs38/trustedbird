@@ -1,0 +1,122 @@
+--- /usr/share/qpsmtpd/plugins/queue/postfix-queue.orig	2006-11-01 03:08:30.000000000 +0100
++++ /usr/share/qpsmtpd/plugins/queue/postfix-queue	2008-12-05 12:05:25.000000000 +0100
+@@ -128,8 +128,10 @@
+                         ."v$postfix_version");
+     $self->{_queue_flags} = 0;
+     if (@args > 0) {
+-        if ($args[0] =~ m#^/#) {
+-            $self->{_queue_socket} = shift @args;
++        if ($args[0] =~ m#^(/.+)#) {
++            # untaint socket path
++            $self->{_queue_socket} = $1;
++            shift @args;
+         }
+         else {
+             $self->{_queue_socket} = "/var/spool/postfix/public/cleanup";
+@@ -157,6 +159,7 @@
+ sub hook_queue {
+     my ($self, $transaction) = @_;
+     $transaction->notes('postfix-queue-flags', $self->{_queue_flags});
++    $transaction->notes('postfix-queue-socket', $self->{_queue_socket});
+ 
+     # $self->log(LOGDEBUG, "queue-flags=".$transaction->notes('postfix-queue-flags'));
+     my ($status, $qid, $reason) = Qpsmtpd::Postfix->inject_mail($transaction);
+--- /usr/share/perl5/Qpsmtpd/Postfix.pm.orig	2006-01-11 17:48:08.000000000 +0100
++++ /usr/share/perl5/Qpsmtpd/Postfix.pm	2008-12-22 12:10:34.000000000 +0100
+@@ -19,6 +19,14 @@
+ 
+ my %rec_types;
+ 
++use constant DSN_RET_FULL => (1<<0);
++use constant DSN_RET_HDRS => (1<<1);
++
++use constant DSN_NOTIFY_NEVER   => (1<<0);
++use constant DSN_NOTIFY_SUCCESS => (1<<1);
++use constant DSN_NOTIFY_FAILURE => (1<<2);
++use constant DSN_NOTIFY_DELAY   => (1<<3);
++
+ sub init {
+   my ($self) = @_;
+ 
+@@ -47,6 +55,11 @@
+     REC_TYPE_PRIO    => 'P',	# priority
+     REC_TYPE_VERP    => 'V',	# VERP delimiters
+ 
++    REC_TYPE_DSN_RET    => '<', # DSN full/hdrs
++    REC_TYPE_DSN_ENVID  => 'i', # DSN envid
++    REC_TYPE_DSN_ORCPT  => 'o', # DSN orig rcpt address
++    REC_TYPE_DSN_NOTIFY => 'n', # DSN notify flags
++
+     REC_TYPE_END     => 'E',	# terminator, required
+ 
+   );
+@@ -90,10 +103,16 @@
+ }
+ 
+ sub open_cleanup {
+-  my ($class) = @_;
++  my ($class, $socket) = @_;
++
++  $socket = "/var/spool/postfix/public/cleanup"
++    unless defined $socket;
++
+   my $self = IO::Socket::UNIX->new(Type => SOCK_STREAM,
+-  				   Peer => "/var/spool/postfix/public/cleanup");
+-  die qq[Couldn't open unix socket "/var/spool/postfix/public/cleanup": $!] unless ref $self;
++  				   Peer => $socket);
++  die qq(Couldn't open unix socket "$socket": $!) unless ref $self;
++  # allow buffered writes
++  $self->autoflush(0);
+   bless ($self, $class);
+   $self->init();
+   return $self;
+@@ -157,7 +176,7 @@
+ sub inject_mail {
+   my ($class, $transaction) = @_;
+ 
+-  my $strm = $class->open_cleanup();
++  my $strm = $class->open_cleanup($transaction->notes('postfix-queue-socket'));
+ 
+   my %at = $strm->get_attr;
+   my $qid = $at{queue_id};
+@@ -165,9 +184,40 @@
+   $strm->print_attr('flags' => $transaction->notes('postfix-queue-flags'));
+   $strm->print_rec_time();
+   $strm->print_rec('REC_TYPE_FROM', $transaction->sender->address|| "");
++
++  # DSN data propagation
++  if ($transaction->notes('mail-extension-ret') eq 'FULL') {
++    $strm->print_rec('REC_TYPE_DSN_RET', DSN_RET_FULL);
++  } elsif ($transaction->notes('mail-extension-ret') eq 'HDRS') {
++    $strm->print_rec('REC_TYPE_DSN_RET', DSN_RET_HDRS);
++  }
++  $strm->print_rec('REC_TYPE_DSN_ENVID', $transaction->notes('mail-extension-envid')) if $transaction->notes('mail-extension-envid');
++
+   for (map { $_->address } $transaction->recipients) {
++    # Get recipient address without .priorityX domain for DSN data
++    my $original_address = $_;
++    $original_address =~ s/^(.*)\.priority[0-9]+$/$1/;
++
++    # DSN data propagation
++    if ($transaction->notes('rcpt-extension-notify-'.$original_address)) {
++      my $notify = 0;
++      $notify |= DSN_NOTIFY_SUCCESS if $transaction->notes('rcpt-extension-notify-'.$original_address) =~ /SUCCESS/;
++      $notify |= DSN_NOTIFY_FAILURE if $transaction->notes('rcpt-extension-notify-'.$original_address) =~ /FAILURE/;
++      $notify |= DSN_NOTIFY_DELAY if $transaction->notes('rcpt-extension-notify-'.$original_address) =~ /DELAY/;
++      $notify = DSN_NOTIFY_NEVER if $transaction->notes('rcpt-extension-notify-'.$original_address) =~ /NEVER/;
++      $strm->print_rec('REC_TYPE_DSN_NOTIFY', $notify) if $notify != 0;
++    }
++    if ($transaction->notes('rcpt-extension-orcpt-'.$original_address)) {
++      $strm->print_rec('REC_TYPE_DSN_ORCPT', $transaction->notes('rcpt-extension-orcpt-'.$original_address));
++    } else {
++      # Force ORCPT with original address if nothing specified otherwise Postfix set it with .priorityX domain
++      $strm->print_rec('REC_TYPE_DSN_ORCPT', 'rfc822;'.$original_address);
++    }
++
++    # Recipient address
+     $strm->print_rec('REC_TYPE_RCPT', $_);
+   }
++
+   # add an empty message length record.
+   # cleanup is supposed to understand that.
+   # see src/pickup/pickup.c 

@@ -1,0 +1,69 @@
+# Qpsmtpd plugin - addPrivatePriorityDomain
+# Add a private domain to envelope recipients
+# based on priority determined from email headers
+
+# Settings are in /etc/qpsmtpd/addPrivatePriorityDomain.conf
+
+# Read settings
+my %config = do '/etc/qpsmtpd/addPrivatePriorityDomain.conf';
+my $defaultPriority = do '/etc/qpsmtpd/addPrivatePriorityDomain.defaultPriority';
+my $relayEnable = do '/etc/qpsmtpd/addPrivatePriorityDomain.relayEnable';
+
+# Add domain name based on priority to recipients
+sub hook_data_post {
+	my ($self, $transaction) = @_;
+
+	# Check headers and contruct recipients' domain list with priority
+	my %domainPriorityList;
+	my $headerTo = $transaction->header->get("To");
+	my $maxPriority = -1;
+	foreach (@{$config{headerRuleList}}) {
+		(my $headerName, my $headerRegexp, my $recipientType, my $priority) = @{$_};
+		
+		# Get header value
+		my $headerValue = $transaction->header->get($headerName);
+		
+		# Check if rule applies
+		if ($headerValue =~ $headerRegexp) {
+			foreach ($transaction->recipients) {
+				my $recipientAddress = $_->address;
+				my $recipientHost = $_->host;
+
+				# Check if recipient address is in To and/or Cc
+				if ($recipientType == 0 ||
+				($recipientType == 1 && $headerTo =~ /$recipientAddress/) ||
+				($recipientType == 2 && !($headerTo =~ /$recipientAddress/))) {
+					if ($relayEnable == 1) {
+						# Relay mode: get max priority
+						$maxPriority = $priority if $priority > $maxPriority;
+					} else {
+						# Define new priority for recipient's domain if higher than previous
+						if ($domainPriorityList{$recipientHost} eq "" || $priority > $domainPriorityList{$recipientHost}) {
+							$domainPriorityList{$recipientHost} = $priority;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	# If needed, initialize max priority for relay mode
+	if ($relayEnable == 1 && $maxPriority == -1) {
+		$maxPriority = $defaultPriority;
+	}
+
+	# Register new recipient list with a private domain per priority
+	my @newRecipients = ();
+	foreach ($transaction->recipients) {
+		my $priority = $defaultPriority;
+		if ($relayEnable == 1) {
+			$priority = $maxPriority;
+		} else {
+			$priority = $domainPriorityList{$_->host} if $domainPriorityList{$_->host} ne "";
+		}
+		push(@newRecipients, Qpsmtpd::Address->new($_->address.".priority".$priority));
+	}
+	$transaction->recipients(@newRecipients);
+
+	return DECLINED;
+}

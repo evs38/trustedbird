@@ -1,0 +1,13 @@
+Priority Mail Server
+--------------------
+
+This package is a set of scripts and patches which setup a mail server to
+manage several queues in order to prioritize emails based on message headers.
+
+It configures Qpsmtpd and several Postfix instances.
+
+It works on Debian-based linux distributions.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+

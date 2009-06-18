@@ -1,0 +1,244 @@
+#!/bin/bash
+# Create or update settings for several Postfix instances and Qpsmtpd
+#
+# Settings are in /etc/priority-mail-server.conf
+# Default Postfix settings are copied from /etc/postfix
+
+
+[ -r /etc/postfix/main.cf ] || { echo "/etc/postfix/main.cf not found! Is Postfix installed and pre-configured?"; exit 1; }
+[ -d /etc/qpsmtpd ] || { echo "/etc/qpsmtpd not found! Is Qpsmtpd installed?"; exit 1; }
+
+# Read settings
+[ -r /etc/priority-mail-server.conf ] || { echo "Settings not found in /etc/priority-mail-server.conf!"; exit 1; }
+. /etc/priority-mail-server.conf
+[ -n "$PRIORITY_COUNT" ] && [ $PRIORITY_COUNT -gt 0 ] || { echo "Wrong priority count in /etc/priority-mail-server.conf!"; exit 1; }
+[ -n "$DEFAULT_PRIORITY" ] && [ $DEFAULT_PRIORITY -ge 0 ] && [ $DEFAULT_PRIORITY -lt $PRIORITY_COUNT ] || { echo "Wrong default priority in /etc/priority-mail-server.conf!"; exit 1; }
+
+# Stop running instances
+if which invoke-rc.d >/dev/null 2>&1; then
+        invoke-rc.d postfix stop
+        invoke-rc.d postfix-priority stop
+        invoke-rc.d qpsmtpd stop
+        invoke-rc.d qpsmtpd-priority stop
+else
+	[ -x /etc/init.d/postfix ] && /etc/init.d/postfix stop
+	[ -x /etc/init.d/postfix-priority ] && /etc/init.d/postfix-priority stop
+	[ -x /etc/init.d/qpsmtpd ] && /etc/init.d/qpsmtpd stop
+	[ -x /etc/init.d/qpsmtpd-priority ] && /etc/init.d/qpsmtpd-priority stop
+fi
+
+# Disable original postfix and qpsmtpd init.d scripts to prevent mistakes
+chmod -x /etc/init.d/postfix
+chmod -x /etc/init.d/qpsmtpd
+
+
+### Postfix setup ###
+
+# Add user to manage bounces (SNMP traps, ...)
+id bouncecommand >/dev/null 2>&1 || useradd -d /tmp -s /bin/false bouncecommand
+
+# Create/update all Postfix configurations
+for i in -frontend `seq 0 $(expr $PRIORITY_COUNT - 1)`; do
+	echo " * /etc/postfix$i setup"
+
+	# Create config directories
+	[ ! -d /etc/postfix$i ] && {
+		echo -n "   Creating /etc/postfix$i from /etc/postfix... "
+		cp -r /etc/postfix /etc/postfix$i || exit 1
+		echo "OK"
+	}
+
+	# Add user
+	id postfix$i >/dev/null 2>&1 || useradd -d /var/spool/postfix$i -s /bin/false postfix$i
+
+	# Create data and queue directories if necessary
+	mkdir -p /var/lib/postfix$i
+	chown postfix$i /var/lib/postfix$i
+	mkdir -p /var/spool/postfix$i
+	chown postfix$i /var/spool/postfix$i
+
+	# Common settings
+	echo -n "   Updating postfix$i settings... "
+	sed -i "/^###/d" /etc/postfix$i/main.cf
+	echo "### priority-mail-server ###" >> /etc/postfix$i/main.cf
+	echo "### (this file contains parameters which are automatically generated and updated by update-priority-mail-server)" >> /etc/postfix$i/main.cf
+	echo "### Automatically updated parameter: mail_name" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "mail_name = postfix$i"
+	echo "### Automatically updated parameter: mail_owner" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "mail_owner = postfix$i"
+	echo "### Automatically updated parameter: syslog_name" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "syslog_name = postfix$i"
+	echo "### Automatically updated parameter: data_directory" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "data_directory = /var/lib/postfix$i"
+	echo "### Automatically updated parameter: queue_directory" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "queue_directory = /var/spool/postfix$i"
+	ALTERNATE_CONFIG_DIRECTORIES=
+	for k in -frontend `seq 0 $(expr $PRIORITY_COUNT - 1)`; do
+		[ "$k" != "$i" ] && ALTERNATE_CONFIG_DIRECTORIES="$ALTERNATE_CONFIG_DIRECTORIES /etc/postfix$k"
+	done
+	echo "### Automatically updated parameter: alternate_config_directories" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "alternate_config_directories = $ALTERNATE_CONFIG_DIRECTORIES"
+
+	# Create bounce handler
+	echo "# Manage bounces" > /etc/postfix$i/mailbox_command_maps
+	echo "# (DON'T EDIT: automatically generated and updated by update-priority-mail-server)" >> /etc/postfix$i/mailbox_command_maps
+	echo "bouncecommand /usr/bin/priority-mail-server-bounceManager postfix$i" >> /etc/postfix$i/mailbox_command_maps
+	postmap -c /etc/postfix$i /etc/postfix$i/mailbox_command_maps
+	echo "### Automatically updated parameter: notify_classes" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "notify_classes = bounce, resource, software"
+	echo "### Automatically updated parameter: bounce_notice_recipient" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "bounce_notice_recipient = bouncemanager"
+	echo "### Automatically updated parameter: mailbox_command_maps" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "mailbox_command_maps = hash:/etc/postfix$i/mailbox_command_maps"
+	echo "### Automatically updated parameter: alias_maps" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "alias_maps = hash:/etc/aliases, hash:/etc/postfix$i/alias_maps"
+	[ -r /etc/postfix$i/alias_maps ] || {
+		echo "# Bounce notice recipients" > /etc/postfix$i/alias_maps
+		echo "# (this file will not be modified anymore by update-priority-mail-server)" >> /etc/postfix$i/alias_maps
+		echo "# You can append a bounce notice recipient to bouncemanager alias list" >> /etc/postfix$i/alias_maps
+		echo "bouncemanager: bouncecommand" >> /etc/postfix$i/alias_maps
+	}
+	postalias -c /etc/postfix$i /etc/postfix$i/alias_maps
+	echo "### Automatically updated parameter: relayhost" >> /etc/postfix$i/main.cf
+	postconf -c /etc/postfix$i -e "relayhost = $RELAY_HOST"
+
+	# Specific settings
+	if [ "$i" = "-frontend" ]; then
+		# Postfix frontend
+		echo "### Automatically updated parameter: transport_maps" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "transport_maps = hash:/etc/postfix$i/transport"
+		echo "### Automatically updated parameter: queue_run_delay" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "queue_run_delay = $QUEUE_RUN_DELAY_FRONTEND"
+		echo "### Automatically updated parameter: minimal_backoff_time = queue_run_delay" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "minimal_backoff_time = $QUEUE_RUN_DELAY_FRONTEND"
+		echo "### Automatically updated parameter: maximal_queue_lifetime" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "maximal_queue_lifetime = $MAXIMAL_QUEUE_LIFETIME_FRONTEND"
+		echo "### Automatically updated parameter: bounce_queue_lifetime = maximal_queue_lifetime" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "bounce_queue_lifetime = $MAXIMAL_QUEUE_LIFETIME_FRONTEND"
+		echo "$NICE_LEVEL_FRONTEND" > /etc/postfix$i/niceLevel
+		echo "$DSCP_CLASS_FRONTEND" > /etc/postfix$i/dscpClass
+
+		grep -q "priority-mail-server" /etc/postfix$i/master.cf || {
+			# Setup master.cf
+			sed -i "s/^smtp\s\+inet/#&/" /etc/postfix$i/master.cf
+			echo "### priority-mail-server ###" >> /etc/postfix$i/master.cf
+			echo "### (this file will not be modified anymore by update-priority-mail-server)" >> /etc/postfix$i/master.cf
+			echo "### Authentication can be configured and other services can be enabled and forwarded to Qpsmtpd" >> /etc/postfix$i/master.cf
+			echo "### with parameter \"-o content_filter=smtp:[127.0.0.1]:10025\"" >> /etc/postfix$i/master.cf
+			echo "smtp      inet  n       -       -       -       -       smtpd" >> /etc/postfix$i/master.cf
+			echo "  -o content_filter=smtp:[127.0.0.1]:10025" >> /etc/postfix$i/master.cf
+		}
+
+		# Create transports
+		echo "# Routing based on .priorityX domain" > /etc/postfix$i/transport
+		echo "# (DON'T EDIT: automatically generated and updated by update-priority-mail-server)" >> /etc/postfix$i/transport
+		for k in `seq 0 $(expr $PRIORITY_COUNT - 1)`; do
+			echo ".priority$k smtp:[127.0.0.1]:$(expr 20000 + $k)" >> /etc/postfix$i/transport
+		done
+		echo "* smtp:[127.0.0.1]:$(expr 20000 + $DEFAULT_PRIORITY)" >> /etc/postfix$i/transport
+		postmap -c /etc/postfix$i /etc/postfix$i/transport
+
+	else
+
+		# Postfix priority instances
+		echo "### Automatically updated parameter: mynetworks" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "mynetworks = 127.0.0.0/8"
+		echo "### Automatically updated parameter: queue_run_delay" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "queue_run_delay = ${QUEUE_RUN_DELAY[$i]-$QUEUE_RUN_DELAY_DEFAULT}"
+		echo "### Automatically updated parameter: minimal_backoff_time = queue_run_delay" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "minimal_backoff_time = ${QUEUE_RUN_DELAY[$i]-$QUEUE_RUN_DELAY_DEFAULT}"
+		echo "### Automatically updated parameter: maximal_queue_lifetime" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "maximal_queue_lifetime = ${MAXIMAL_QUEUE_LIFETIME[$i]-$MAXIMAL_QUEUE_LIFETIME_DEFAULT}"
+		echo "### Automatically updated parameter: bounce_queue_lifetime = maximal_queue_lifetime" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "bounce_queue_lifetime = ${MAXIMAL_QUEUE_LIFETIME[$i]-$MAXIMAL_QUEUE_LIFETIME_DEFAULT}"
+
+		echo "${NICE_LEVEL[$i]-$NICE_LEVEL_DEFAULT}" > /etc/postfix$i/niceLevel
+		echo "${DSCP_CLASS[$i]-$DSCP_CLASS_DEFAULT}" > /etc/postfix$i/dscpClass
+
+		grep -q "priority-mail-server" /etc/postfix$i/master.cf || {
+			# Setup master.cf
+			sed -i "s/^smtp\s\+inet/#&/" /etc/postfix$i/master.cf
+			echo "### priority-mail-server ###" >> /etc/postfix$i/master.cf
+			echo "### (this file will not be modified anymore by update-priority-mail-server)" >> /etc/postfix$i/master.cf
+			echo "### The following service enables internal connections from postfix-frontend:" >> /etc/postfix$i/master.cf
+			echo "localhost:$(expr 20000 + $i)      inet  n       -       -       -       -       smtpd" >> /etc/postfix$i/master.cf
+		}
+
+		# Create rule to remove .priorityX domain for recipients in envelope
+		echo "# Remove .priorityX domain from recipients in envelope" > /etc/postfix$i/recipient_canonical_maps
+		echo "# (DON'T EDIT: automatically generated and updated by update-priority-mail-server)" >> /etc/postfix$i/recipient_canonical_maps
+		echo "/(.*)\.priority[0-9]+\$/ \${1}" >> /etc/postfix$i/recipient_canonical_maps
+		echo "### Automatically updated parameter: recipient_canonical_classes" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "recipient_canonical_classes = envelope_recipient"
+		echo "### Automatically updated parameter: recipient_canonical_maps" >> /etc/postfix$i/main.cf
+		postconf -c /etc/postfix$i -e "recipient_canonical_maps = regexp:/etc/postfix$i/recipient_canonical_maps"
+
+	fi
+	echo "OK"
+
+	# Check settings
+	echo -n "   Checking postfix$i settings... "
+	postfix -c /etc/postfix$i check || exit 1
+	echo "OK"
+done
+
+
+### Qpsmtpd setup ###
+echo " * Qpsmtpd setup"
+
+# Create plugin list to apply
+[ -e /etc/qpsmtpd/plugins.old ] || cp /etc/qpsmtpd/plugins /etc/qpsmtpd/plugins.old
+echo "# Qpsmtpd plugins for priority-mail-server" > /etc/qpsmtpd/plugins
+echo "# (DON'T EDIT: automatically generated and updated by update-priority-mail-server)" >> /etc/qpsmtpd/plugins
+echo "addDSNCapability" >> /etc/qpsmtpd/plugins
+echo "parseSMTPExtensions" >> /etc/qpsmtpd/plugins
+echo "addPrivatePriorityDomain" >> /etc/qpsmtpd/plugins
+echo "rcptAcceptAll" >> /etc/qpsmtpd/plugins
+echo "queue/postfix-queue /var/spool/postfix-frontend/public/cleanup" >> /etc/qpsmtpd/plugins
+
+# Default priority
+echo "# Default priority for priority-mail-server" > /etc/qpsmtpd/addPrivatePriorityDomain.defaultPriority
+echo "# (DON'T EDIT: automatically generated and updated by update-priority-mail-server)" >> /etc/qpsmtpd/addPrivatePriorityDomain.defaultPriority
+echo "$DEFAULT_PRIORITY" >> /etc/qpsmtpd/addPrivatePriorityDomain.defaultPriority
+
+# Relay mode enable
+echo "# Relay mode enable for priority-mail-server" > /etc/qpsmtpd/addPrivatePriorityDomain.relayEnable
+echo "# (DON'T EDIT: automatically generated and updated by update-priority-mail-server)" >> /etc/qpsmtpd/addPrivatePriorityDomain.relayEnable
+RELAY_ENABLE=0
+[ -n "$RELAY_HOST" ] && RELAY_ENABLE=1
+echo $RELAY_ENABLE >> /etc/qpsmtpd/addPrivatePriorityDomain.relayEnable
+
+# Nice level
+echo "$NICE_LEVEL_QPSMTPD" > /etc/qpsmtpd/niceLevel
+
+# Limit connections
+echo "$LIMIT_CONNECTIONS_QPSMTPD" > /etc/qpsmtpd/limitConnections
+
+
+### SNMP server setup ###
+mkdir -p /etc/snmp
+echo "# SNMP configuration for priority-mail-server" > /etc/snmp/snmpd.priority-mail-server.conf
+echo "# (DON'T EDIT: automatically generated and updated by update-priority-mail-server)" >> /etc/snmp/snmpd.priority-mail-server.conf
+echo "# configure SNMP server and link this file to /etc/snmp/snmpd.local.conf:" >> /etc/snmp/snmpd.priority-mail-server.conf
+echo "# e.g.: ln /etc/snmp/snmpd.priority-mail-server.conf /etc/snmp/snmpd.local.conf" >> /etc/snmp/snmpd.priority-mail-server.conf
+echo >> /etc/snmp/snmpd.priority-mail-server.conf
+
+# Qpsmtpd variables
+echo "exec qpsmtpdCount /bin/cat $MONITORING_DIR/qpsmtpdCount" >> /etc/snmp/snmpd.priority-mail-server.conf
+
+# Postfix variables
+for i in -frontend `seq 0 $(expr $PRIORITY_COUNT - 1)`; do
+	echo "exec postfix$i-incoming /bin/cat $MONITORING_DIR/postfix$i-incoming" >> /etc/snmp/snmpd.priority-mail-server.conf
+	echo "exec postfix$i-active /bin/cat $MONITORING_DIR/postfix$i-active" >> /etc/snmp/snmpd.priority-mail-server.conf
+	echo "exec postfix$i-deferred /bin/cat $MONITORING_DIR/postfix$i-deferred" >> /etc/snmp/snmpd.priority-mail-server.conf
+done
+
+
+# Start instances
+if which invoke-rc.d >/dev/null 2>&1; then
+        invoke-rc.d qpsmtpd-priority start
+        invoke-rc.d postfix-priority start
+else
+	[ -x /etc/init.d/qpsmtpd-priority ] && /etc/init.d/qpsmtpd-priority start
+	[ -x /etc/init.d/postfix-priority ] && /etc/init.d/postfix-priority start
+fi
