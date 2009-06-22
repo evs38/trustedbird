@@ -1,5 +1,5 @@
 #!/bin/sh -e
-# Post-installation script for priority-mail-server package
+# Post-installation script for priority-email-gateway package
 
 # Disable original postfix and qpsmtpd init.d scripts
 update-rc.d -f postfix remove >/dev/null
@@ -13,6 +13,6 @@ update-rc.d qpsmtpd-priority defaults >/dev/null
 adduser qpsmtpd postdrop
 
 # Configure server
-update-priority-mail-server
+update-priority-email-gateway
 
-# Daemons are started by update-priority-mail-server
+# Daemons are started by update-priority-email-gateway

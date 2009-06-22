@@ -1,5 +1,5 @@
 #!/bin/sh -e
-# Pre-removal script for priority-mail-server package
+# Pre-removal script for priority-email-gateway package
 
 # Stop daemons
 if which invoke-rc.d >/dev/null 2>&1; then

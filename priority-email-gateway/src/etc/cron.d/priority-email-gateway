@@ -1,0 +1,4 @@
+# /etc/cron.d/priority-email-gateway
+# Update mail system monitoring data
+
+* * * * *       root    /usr/sbin/priority-email-gateway-updateMonitoringData

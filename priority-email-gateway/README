@@ -1,8 +1,8 @@
-Priority Mail Server
---------------------
+Priority Email Gateway
+----------------------
 
-This package is a set of scripts and patches which setup a mail server to
-manage several queues in order to prioritize emails based on message headers.
+This package is a set of scripts and patches to setup an email gateway with
+several queues in order to prioritize emails based on message headers.
 
 It configures Qpsmtpd and several Postfix instances.
 

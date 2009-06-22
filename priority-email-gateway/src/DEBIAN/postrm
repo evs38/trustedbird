@@ -1,5 +1,5 @@
 #!/bin/sh -e
-# Post-removal script for priority-mail-server package
+# Post-removal script for priority-email-gateway package
 
 update-rc.d -f postfix-priority remove >/dev/null
 update-rc.d -f qpsmtpd-priority remove >/dev/null

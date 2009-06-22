@@ -2,11 +2,11 @@
 # Show message count in all Postfix queues
 
 # Read settings
-[ -r /etc/priority-mail-server.conf ] || { echo "Settings not found in /etc/priority-mail-server.conf!"; exit 1; }
-. /etc/priority-mail-server.conf
-[ -n "$PRIORITY_COUNT" -a "$PRIORITY_COUNT" -gt 0 ] || { echo "Wrong priority count in /etc/priority-mail-server.conf!"; exit 1; }
+[ -r /etc/priority-email-gateway.conf ] || { echo "Settings not found in /etc/priority-email-gateway.conf!"; exit 1; }
+. /etc/priority-email-gateway.conf
+[ -n "$PRIORITY_COUNT" -a "$PRIORITY_COUNT" -gt 0 ] || { echo "Wrong priority count in /etc/priority-email-gateway.conf!"; exit 1; }
 
-GET_POSTFIX_QUEUE_COUNT="/usr/sbin/priority-mail-server-getPostfixQueueCount"
+GET_POSTFIX_QUEUE_COUNT="/usr/sbin/priority-email-gateway-getPostfixQueueCount"
 
 echo "Message count in incoming, active and deferred queues of all Postfix instances"
 echo

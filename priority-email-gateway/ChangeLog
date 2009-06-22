@@ -1,4 +1,4 @@
-priority-mail-server (0.1.0)
+priority-email-gateway (0.1.0)
   * Qpsmtpd patched in order to propagate DSN
   * Initial version
 -- 18 June 2009

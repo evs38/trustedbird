@@ -29,7 +29,7 @@ ENABLED="false"
 # Check if Qpsmtpd needs to be patched in order to redefine Postfix queue socket name and propagate DSN
 grep -q DSN_NOTIFY_SUCCESS /usr/share/perl5/Qpsmtpd/Postfix.pm || {
 	echo -n "Patching Qpsmtpd... "
-	patch -f -b -s -p0 < /usr/share/priority-mail-server/qpsmtpd.patch || exit 1
+	patch -f -b -s -p0 < /usr/share/priority-email-gateway/qpsmtpd.patch || exit 1
 	echo "OK"
 }
 

@@ -2,9 +2,9 @@
 # Manage bounces
 
 # Read settings
-[ -r /etc/priority-mail-server.conf ] || { echo "Settings not found in /etc/priority-mail-server.conf!"; exit 1; }
-. /etc/priority-mail-server.conf
-[ -n "$PRIORITY_COUNT" ] && [ $PRIORITY_COUNT -gt 0 ] || { echo "Wrong priority count in /etc/priority-mail-server.conf!"; exit 1; }
+[ -r /etc/priority-email-gateway.conf ] || { echo "Settings not found in /etc/priority-email-gateway.conf!"; exit 1; }
+. /etc/priority-email-gateway.conf
+[ -n "$PRIORITY_COUNT" ] && [ $PRIORITY_COUNT -gt 0 ] || { echo "Wrong priority count in /etc/priority-email-gateway.conf!"; exit 1; }
 
 # Launch command
 ARG1=$1

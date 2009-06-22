@@ -1,4 +1,4 @@
-Package: priority-mail-server
+Package: priority-email-gateway
 Version: __VERSION__
 Architecture: all
 Maintainer: Trustedbird project <contact@trustedbird.org>
@@ -7,6 +7,6 @@ Depends: postfix, qpsmtpd (>= 0.40)
 Section: mail
 Priority: extra
 Description: Priority-based mail architecture using Postfix and Qpsmtpd
- priority-mail-server is a set of scripts and patches to setup
+ priority-email-gateway is a set of scripts and patches to setup
  Qpsmtpd and several Postfix instances in order to prioritize
  emails based on message headers.
