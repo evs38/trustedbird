@@ -1,3 +1,7 @@
+trustedbird (-)
+  * Upgraded to Thunderbird 2.0.0.22
+-- 25 June 2009
+
 trustedbird (0.3.1)
   * Signed Receipts: fixed bug #4288 - prompt before sending receipt
   * Signed Receipts: fixed bug #4286 - structure of receipt request
