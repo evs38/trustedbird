@@ -231,6 +231,7 @@ for i in -frontend `seq 0 $(expr $PRIORITY_COUNT - 1)`; do
 	echo "exec postfix$i-incoming /bin/cat $MONITORING_DIR/postfix$i-incoming" >> /etc/snmp/snmpd.priority-email-gateway.conf
 	echo "exec postfix$i-active /bin/cat $MONITORING_DIR/postfix$i-active" >> /etc/snmp/snmpd.priority-email-gateway.conf
 	echo "exec postfix$i-deferred /bin/cat $MONITORING_DIR/postfix$i-deferred" >> /etc/snmp/snmpd.priority-email-gateway.conf
+	echo "exec postfix$i-hold /bin/cat $MONITORING_DIR/postfix$i-hold" >> /etc/snmp/snmpd.priority-email-gateway.conf
 done
 
 

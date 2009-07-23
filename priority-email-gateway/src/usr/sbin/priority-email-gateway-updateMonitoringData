@@ -20,4 +20,5 @@ for i in -frontend `seq 0 $(expr $PRIORITY_COUNT - 1)`; do
 	$GET_POSTFIX_QUEUE_COUNT postfix$i incoming > $MONITORING_DIR/postfix$i-incoming
 	$GET_POSTFIX_QUEUE_COUNT postfix$i active   > $MONITORING_DIR/postfix$i-active
 	$GET_POSTFIX_QUEUE_COUNT postfix$i deferred > $MONITORING_DIR/postfix$i-deferred
+	$GET_POSTFIX_QUEUE_COUNT postfix$i hold     > $MONITORING_DIR/postfix$i-hold
 done

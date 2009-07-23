@@ -1,3 +1,7 @@
+priority-email-gateway (0.1.1)
+  * Add hold queue supervision
+-- 23 July 2009
+
 priority-email-gateway (0.1.0)
   * Qpsmtpd patched in order to propagate DSN
   * Initial version

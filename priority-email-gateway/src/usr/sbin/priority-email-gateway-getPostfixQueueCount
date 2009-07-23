@@ -5,7 +5,7 @@ usage() {
 	echo "Usage:"
 	echo "  $0 postfixMailName queueName"
 	echo "    postfixMailName = mail_name value from main.cf"
-	echo "    queueName = incoming|active|deferred"
+	echo "    queueName = incoming|active|deferred|hold"
 	echo "  e.g.: $0 postfix0 deferred"
 	exit
 }
