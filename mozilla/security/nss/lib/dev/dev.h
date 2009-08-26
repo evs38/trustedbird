@@ -44,7 +44,7 @@
  */
 
 #ifdef DEBUG
-static const char DEV_CVS_ID[] = "@(#) $RCSfile: dev.h,v $ $Revision: 1.37.28.2 $ $Date: 2008/12/03 04:52:53 $";
+static const char DEV_CVS_ID[] = "@(#) $RCSfile: dev.h,v $ $Revision: 1.41 $ $Date: 2008/05/29 17:24:15 $";
 #endif /* DEBUG */
 
 #ifndef NSSCKT_H
@@ -448,7 +448,7 @@ nssToken_ImportCertificate
   nssSession *sessionOpt,
   NSSCertificateType certType,
   NSSItem *id,
-  NSSUTF8 *nickname,
+  const NSSUTF8 *nickname,
   NSSDER *encoding,
   NSSDER *issuer,
   NSSDER *subject,
@@ -519,7 +519,7 @@ nssToken_FindCertificatesByNickname
 (
   NSSToken *token,
   nssSession *sessionOpt,
-  NSSUTF8 *name,
+  const NSSUTF8 *name,
   nssTokenSearchType searchType,
   PRUint32 maximumOpt,
   PRStatus *statusOpt
@@ -771,7 +771,7 @@ nssCryptokiPrivateKey_SetCertificate
 (
   nssCryptokiObject *keyObject,
   nssSession *sessionOpt,
-  NSSUTF8 *nickname,
+  const NSSUTF8 *nickname,
   NSSItem *id,
   NSSDER *subject
 );
