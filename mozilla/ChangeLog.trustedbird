@@ -1,3 +1,7 @@
+trustedbird (0.3.4)
+  * S/MIME Receipts: receipt generation and reception
+-- 31 August 2009
+
 trustedbird (0.3.3)
   * Upgraded to Thunderbird 2.0.0.23
 -- 27 August 2009
@@ -7,8 +11,8 @@ trustedbird (0.3.2)
 -- 29 June 2009
 
 trustedbird (0.3.1)
-  * Signed Receipts: fixed bug #4288 - prompt before sending receipt
-  * Signed Receipts: fixed bug #4286 - structure of receipt request
+  * S/MIME Receipts: fixed bug #4288 - prompt before sending receipt
+  * S/MIME Receipts: fixed bug #4286 - structure of receipt request
   * Security Labels: fixed crash while parsing OID (bugs #4276 and #4277)
   * Security Labels: refactoring
 -- 17 June 2009

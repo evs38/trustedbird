@@ -7,7 +7,7 @@
 <!ENTITY status.securityLabel "Libellé de sécurité :">
 <!ENTITY status.encrypted "Chiffré :">
 <!ENTITY status.tripleWrapped "Triple enveloppe :">
-<!ENTITY status.signedReceiptRequest "Reçu signé :">
+<!ENTITY status.signedReceiptRequest "Demande d'accusé de réception signé :">
 <!ENTITY status.certificates "Certificats :">
 <!ENTITY view.label "Voir">
 <!ENTITY view.accesskey "V">

@@ -71,16 +71,16 @@
         <label id="signed"/>
       </row>
       <row>
+        <label value="&status.signedReceiptRequest;"/>
+        <label id="signedReceiptRequest"/>
+      </row>
+      <row>
         <label value="&status.securityLabel;"/>
         <label id="securityLabel"/>
       </row>
       <row>
         <label value="&status.encrypted;"/>
         <label id="encrypted"/>
-      </row>
-      <row>
-        <label value="&status.signedReceiptRequest;"/>
-        <label id="signedReceiptRequest"/>
       </row>
       <row>
         <label value="&status.tripleWrapped;"/>
