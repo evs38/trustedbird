@@ -158,7 +158,29 @@ extern SECStatus NSS_SMIMEUtil_CreateReceiptRequest(PLArenaPool *poolp, SECItem 
 /*
  * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest attr value
  */
-extern SECStatus NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo);
+extern SECStatus NSS_SMIMEUtil_GetReceiptRequest(
+    NSSCMSSignerInfo *aSignerinfo,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aContentType,
+    PRUint32 *aContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo);
+
+/*
+ * NSS_SMIMEUtil_CreateReceipt - create S/MIME Receipt
+ */
+extern SECStatus NSS_SMIMEUtil_CreateReceipt(
+    PLArenaPool *poolp,
+    SECItem *dest,
+    const PRUint8 *signedContentIdentifier,
+    const PRUint32 signedContentIdentifierLen,
+    const PRUint8 *originatorSignatureValue,
+    const PRUint32 originatorSignatureValueLen,
+    const PRUint8 *contentType,
+    const PRUint32 contentTypeLen);
 
 /*
  * NSS_SMIMEUtil_GetCertFromEncryptionKeyPreference - find cert marked by EncryptionKeyPreference

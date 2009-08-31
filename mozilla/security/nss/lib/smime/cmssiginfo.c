@@ -998,9 +998,40 @@ loser:
  * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest values
  */
 SECStatus
-NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo)
+NSS_CMSSignerInfo_GetReceiptRequest(
+    NSSCMSSignerInfo *signerinfo,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aOriginatorContentType,
+    PRUint32 *aOriginatorContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo)
 {
-    return NSS_SMIMEUtil_GetReceiptRequest(signerinfo, aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo);
+    return NSS_SMIMEUtil_GetReceiptRequest(signerinfo, aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo);
+}
+
+/*
+ * NSS_CMSSignerInfo_HasReceipt - check if signer info has a S/MIME Receipt content-type
+ */
+PRBool
+NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo)
+{
+    NSSCMSAttribute *attr;
+    SECOidData *smimeReceiptOid;
+
+    /* Get content-type */
+    attr = NSS_CMSAttributeArray_FindAttrByOidTag(signerinfo->authAttr, SEC_OID_PKCS9_CONTENT_TYPE, PR_TRUE);
+    if (attr == NULL || attr->values == NULL || attr->values[0] == NULL)
+        return PR_FALSE;
+
+    /* Compare content-type with receipt content-type */
+    smimeReceiptOid = SECOID_FindOIDByTag(SEC_OID_SMIME_RECEIPT);
+    if (!smimeReceiptOid || !NSS_CMSAttribute_CompareValue(attr, &(smimeReceiptOid->oid)))
+        return PR_FALSE;
+
+    return PR_TRUE;
 }
 
 /*

@@ -181,14 +181,24 @@ NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(char **aSecurityPolicyIdentifier, P
   return NS_OK;
 }
 
-NS_IMETHODIMP nsCMSMessage::GetSignedReceiptRequest(char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo)
+NS_IMETHODIMP nsCMSMessage::GetReceiptRequest(
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aOriginatorContentType,
+    PRUint32 *aOriginatorContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo)
 {
   nsNSSShutDownPreventionLock locker;
   if (isAlreadyShutDown())
     return NS_ERROR_NOT_AVAILABLE;
 
-  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::GetSignedReceiptRequest\n"));
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::GetReceiptRequest\n"));
   NS_ENSURE_ARG(aSignedContentIdentifier);
+  NS_ENSURE_ARG(aOriginatorSignatureValue);
+  NS_ENSURE_ARG(aOriginatorContentType);
   NS_ENSURE_ARG(aReceiptsFrom);
   NS_ENSURE_ARG(aReceiptsTo);
 
@@ -196,7 +206,64 @@ NS_IMETHODIMP nsCMSMessage::GetSignedReceiptRequest(char **aSignedContentIdentif
   if (!si)
     return NS_ERROR_FAILURE;
 
-  NSS_CMSSignerInfo_GetReceiptRequest(si, aSignedContentIdentifier, aReceiptsFrom, aReceiptsTo);
+  NSS_CMSSignerInfo_GetReceiptRequest(si, aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo);
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsCMSMessage::GetReceipt()
+{
+  NSSCMSContentInfo *cinfo = nsnull;
+  NSSCMSSignedData *sigd = nsnull;
+
+  nsNSSShutDownPreventionLock locker;
+  if (isAlreadyShutDown())
+    return NS_ERROR_NOT_AVAILABLE;
+
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::GetReceipt\n"));
+
+  NSSCMSSignerInfo *si = GetTopLevelSignerInfo();
+  if (!si)
+    return NS_ERROR_FAILURE;
+
+  if (!NSS_CMSSignerInfo_HasReceipt(si))
+    return NS_OK;
+
+  printf("Receipt found!\n");
+
+  /************TODO********************/
+
+  SECItem *contentInfoItem;
+  int i;
+
+  cinfo = NSS_CMSMessage_ContentLevel(m_cmsMsg, 0);
+  if (!cinfo)
+    return NS_OK;
+
+  sigd = (NSSCMSSignedData*)NSS_CMSContentInfo_GetContent(cinfo);
+  if (!sigd)
+    return NS_OK;
+
+  if (NSS_CMSContentInfo_GetContentTypeTag(&(sigd->contentInfo)) != SEC_OID_SMIME_RECEIPT)
+    return NS_OK;
+
+  printf("NSS_CMSContentInfo_GetContentTypeTag=%d\n", NSS_CMSContentInfo_GetContentTypeTag(&(sigd->contentInfo)));
+
+  contentInfoItem = sigd->contentInfo.content.data;
+  if (contentInfoItem) {
+    printf("contentInfoItem(%d) sigd->contentInfo.content.data = ", contentInfoItem->len);
+    for (i=0; i<contentInfoItem->len; i++) printf("%02X ", contentInfoItem->data[i]);
+    printf("\n");
+  }
+    
+  contentInfoItem = sigd->contentInfo.rawContent;
+  if (contentInfoItem) {
+    printf("contentInfoItem(%d) sigd->contentInfo.rawContent = ", contentInfoItem->len);
+    for (i=0; i<contentInfoItem->len; i++) printf("%02X ", contentInfoItem->data[i]);
+    printf("\n");
+  }
+
+  printf("\n");
 
   return NS_OK;
 }
@@ -657,7 +724,23 @@ loser:
   return rv;
 }
 
-NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert* aEncryptCert, unsigned char* aDigestData, PRUint32 aDigestDataLen, const char* aSecurityPolicyIdentifier, PRInt32 aSecurityClassification, const char* aPrivacyMark, const char* aSecurityCategories, unsigned char* aReceiptsTo)
+NS_IMETHODIMP nsCMSMessage::CreateReceipt(const PRUint8 *aSignedReceiptContentIdentifier, const PRUint32 aSignedReceiptContentIdentifierLen, const PRUint8 *aOriginatorSignatureValue, const PRUint32 aOriginatorSignatureValueLen, const PRUint8 *aOriginatorContentType, const PRUint32 aOriginatorContentTypeLen, PRUint8 **encodedReceipt, PRUint32 *encodedReceiptLen)
+{
+  if (m_cmsMsg == NULL) return NS_ERROR_FAILURE;
+
+  SECItem receipt;
+
+  if (NSS_SMIMEUtil_CreateReceipt(m_cmsMsg->poolp, &receipt, aSignedReceiptContentIdentifier, aSignedReceiptContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen) != SECSuccess) {
+    return NS_ERROR_FAILURE;
+  }
+
+  *encodedReceipt = (PRUint8*)(receipt.data);
+  *encodedReceiptLen = receipt.len;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert* aEncryptCert, unsigned char* aDigestData, PRUint32 aDigestDataLen, const char* aSecurityPolicyIdentifier, PRInt32 aSecurityClassification, const char* aPrivacyMark, const char* aSecurityCategories, unsigned char* aReceiptsTo, const PRBool aSignedReceipt)
 {
   nsNSSShutDownPreventionLock locker;
   if (isAlreadyShutDown())
@@ -709,11 +792,20 @@ NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert*
 
   cinfo = NSS_CMSSignedData_GetContentInfo(sigd);
 
-  /* we're always passing data in and detaching optionally */
-  if (NSS_CMSContentInfo_SetContent_Data(m_cmsMsg, cinfo, nsnull, PR_TRUE) 
-          != SECSuccess) {
-    PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't set content data\n"));
-    goto loser;
+  /* Set content-type to "receipt" for Signed Receipts or "data" */
+  if (aSignedReceipt) {
+    if (NSS_CMSContentInfo_SetContent(m_cmsMsg, cinfo, SEC_OID_SMIME_RECEIPT, nsnull)
+            != SECSuccess) {
+      PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't set content receipt\n"));
+      goto loser;
+    }
+  } else {
+    /* we're always passing data in and detaching optionally */
+    if (NSS_CMSContentInfo_SetContent_Data(m_cmsMsg, cinfo, nsnull, PR_TRUE)
+            != SECSuccess) {
+      PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't set content data\n"));
+      goto loser;
+    }
   }
 
   /* 
@@ -751,7 +843,7 @@ NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert*
     }
   }
   
-  // Add ReceiptRequest if requested
+  // Add Signed Receipt Request
   if (aReceiptsTo != NULL && aReceiptsTo[0] != '\0') {
 
     // Generate UUID

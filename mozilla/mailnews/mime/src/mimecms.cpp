@@ -354,13 +354,30 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
         if (securityPolicyIdentifier) proxySink->SecurityLabelStatus(securityPolicyIdentifier, securityClassification, NS_ConvertUTF8toUTF16(privacyMark), NS_ConvertUTF8toUTF16(securityCategories));
 
 
-        // Handle SignedReceiptRequest
-        nsXPIDLCString signedContentIdentifier;
+        // Handle Signed Receipt Request
+        PRUint8 *signedContentIdentifier = NULL;
+        PRUint32 signedContentIdentifierLen = 0;
+        PRUint8 *originatorSignatureValue = NULL;
+        PRUint32 originatorSignatureValueLen = 0;
+        PRUint8 *originatorContentType = NULL;
+        PRUint32 originatorContentTypeLen = 0;
         PRInt32 receiptsFrom = -1;
         nsXPIDLCString receiptsTo;
-        msg->GetSignedReceiptRequest(getter_Copies(signedContentIdentifier), &receiptsFrom, getter_Copies(receiptsTo));
-        if (signedContentIdentifier && (receiptsFrom == 0) && receiptsTo)
-          proxySink->SignedReceiptRequestStatus(signedContentIdentifier, receiptsFrom, receiptsTo);
+        msg->GetReceiptRequest(&signedContentIdentifier, &signedContentIdentifierLen, &originatorSignatureValue, &originatorSignatureValueLen, &originatorContentType, &originatorContentTypeLen, &receiptsFrom, getter_Copies(receiptsTo));
+
+        if (signedContentIdentifierLen > 0 && originatorSignatureValueLen > 0 && originatorContentTypeLen > 0 && (receiptsFrom == 0) && receiptsTo)
+          proxySink->SignedReceiptRequestStatus(signedContentIdentifier, signedContentIdentifierLen, originatorSignatureValue, originatorSignatureValueLen, originatorContentType, originatorContentTypeLen, receiptsFrom, receiptsTo);
+
+        if (signedContentIdentifier)
+          PR_Free(signedContentIdentifier);
+        if (originatorSignatureValue)
+          PR_Free(originatorSignatureValue);
+        if (originatorContentType)
+          PR_Free(originatorContentType);
+
+
+        // Handle Signed Receipt
+        msg->GetReceipt();
       }
     }
   }

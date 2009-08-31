@@ -768,7 +768,19 @@ NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char 
  * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest attr value
  */
 extern SECStatus
-NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *signerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo);
+NSS_CMSSignerInfo_GetReceiptRequest(
+    NSSCMSSignerInfo *signerinfo,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aContentType,
+    PRUint32 *aContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo);
+
+extern PRBool
+NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo);
 
 /* 
  * NSS_CMSSignerInfo_AddCounterSignature - countersign a signerinfo

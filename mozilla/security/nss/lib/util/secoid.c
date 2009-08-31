@@ -258,8 +258,10 @@ CONST_OID cms3DESwrap[] 			= { PKCS9_SMIME_ALGS, 6 };
 CONST_OID cmsRC2wrap[]  			= { PKCS9_SMIME_ALGS, 7 };
 
 /* RFC2634 SMIME message attributes */
-CONST_OID smimeReceiptRequest[] = { PKCS9_SMIME_ATTRS, 1 };
-CONST_OID smimeSecurityLabel[]  = { PKCS9_SMIME_ATTRS, 2 };
+CONST_OID smimeReceiptRequest[]                 = { PKCS9_SMIME_ATTRS, 1 };
+CONST_OID smimeReceipt[]                        = { PKCS9_SMIME_IDS, 1, 1 };
+CONST_OID smimeMsgSigDigest[]                   = { PKCS9_SMIME_ATTRS, 2, 5 };
+CONST_OID smimeSecurityLabel[]                  = { PKCS9_SMIME_ATTRS, 2 };
 
 /* RFC2633 SMIME message attributes */
 CONST_OID smimeEncryptionKeyPreference[] 	= { PKCS9_SMIME_ATTRS, 11 };
@@ -1592,7 +1594,13 @@ const static SECOidData oids[SEC_OID_TOTAL] = {
 	"SEED-CBC", CKM_SEED_CBC, INVALID_CERT_EXTENSION),
 
     OD( smimeReceiptRequest, SEC_OID_SMIME_RECEIPT_REQUEST,
-        "S/MIME Signed Receipt",
+        "S/MIME Signed Receipt Request",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+    OD( smimeReceipt, SEC_OID_SMIME_RECEIPT,
+        "S/MIME Receipt",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+    OD( smimeMsgSigDigest, SEC_OID_SMIME_MSG_SIG_DIGEST,
+        "S/MIME Msg Sig Digest",
         CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
     OD( smimeSecurityLabel, SEC_OID_SMIME_SECURITY_LABEL,
         "S/MIME Security Label",

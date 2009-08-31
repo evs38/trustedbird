@@ -82,6 +82,12 @@ private:
     nsXPIDLCString m_from;
     nsXPIDLCString m_messageId;
     nsXPIDLCString m_charset;
+    PRUint8 *m_signedContentIdentifier;
+    PRUint32 m_signedContentIdentifierLen;
+    PRUint8 *m_originatorSignatureValue;
+    PRUint32 m_originatorSignatureValueLen;
+    PRUint8 *m_originatorContentType;
+    PRUint32 m_originatorContentTypeLen;
     nsCOMPtr<nsIMsgFolder> m_folder;
     nsCOMPtr<nsIMsgIncomingServer> m_server;
     nsCOMPtr<nsIMimeHeaders> m_headers;

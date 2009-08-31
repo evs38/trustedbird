@@ -45,6 +45,8 @@
 
 #include "nsISupports.idl"
 
+[ptr] native PRUint8Ptr(PRUint8);
+
 [scriptable, uuid(052D6790-5C8E-45B9-8632-34D1DFF1DCF2)]
 interface nsIMsgSMIMECompFields : nsISupports 
 {
@@ -56,5 +58,11 @@ interface nsIMsgSMIMECompFields : nsISupports
   attribute AString privacyMark;
   attribute AString securityCategories;
   attribute boolean signedReceiptRequest;
+  [noscript] attribute PRUint8Ptr signedContentIdentifier;
+  attribute PRUint32 signedContentIdentifierLen;
+  [noscript] attribute PRUint8Ptr originatorSignatureValue;
+  attribute PRUint32 originatorSignatureValueLen;
+  [noscript] attribute PRUint8Ptr originatorContentType;
+  attribute PRUint32 originatorContentTypeLen;
   attribute boolean tripleWrapMessage;
 };

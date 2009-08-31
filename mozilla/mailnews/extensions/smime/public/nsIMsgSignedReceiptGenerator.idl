@@ -15,7 +15,7 @@
  * The Original Code is mozilla.org code.
  *
  * The Initial Developer of the Original Code is
- *   BT Global Services / Etat fran�ais Minist�re de la D�fense
+ *   BT Global Services / Etat francais Ministere de la Defense
  * Portions created by the Initial Developer are Copyright (C) 1998
  * the Initial Developer. All Rights Reserved.
  *
@@ -50,7 +50,12 @@ interface nsIMsgSignedReceiptGenerator : nsISupports
                  in nsIMsgFolder aFolder,
                  in nsMsgKey key,
                  in nsIMimeHeaders headers,
-                 in string aSignedContentIdentifier,
+                 [array,size_is(aSignedContentIdentifierLen)] in PRUint8 aSignedContentIdentifier,
+                 in PRUint32 aSignedContentIdentifierLen,
+                 [array,size_is(aOriginatorSignatureValueLen)] in PRUint8 aOriginatorSignatureValue,
+                 in PRUint32 aOriginatorSignatureValueLen,
+                 [array,size_is(aOriginatorContentTypeLen)] in PRUint8 aOriginatorContentType,
+                 in PRUint32 aOriginatorContentTypeLen,
                  in long aReceiptsFrom,
                  in string aReceiptsTo);
 };

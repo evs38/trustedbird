@@ -211,7 +211,11 @@ char
 NS_IMPL_ISUPPORTS1(nsMsgSMIMEComposeFields, nsIMsgSMIMECompFields)
 
 nsMsgSMIMEComposeFields::nsMsgSMIMEComposeFields()
-:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE), mSecurityLabelLocation(SECURITY_LABEL_LOCATION_BOTH_SIGNATURES), mSecurityClassification(-1), mSignedReceiptRequest(PR_FALSE), mTripleWrapMessage(PR_FALSE)
+:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE),
+mSecurityLabelLocation(SECURITY_LABEL_LOCATION_BOTH_SIGNATURES), mSecurityClassification(-1),
+mSignedReceiptRequest(PR_FALSE),
+mSignedContentIdentifierLen(0), mOriginatorSignatureValueLen(0), mOriginatorContentTypeLen(0),
+mTripleWrapMessage(PR_FALSE)
 {
 }
 
@@ -312,6 +316,78 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSignedReceiptRequest(PRBool value)
 NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignedReceiptRequest(PRBool *_retval)
 {
   *_retval = mSignedReceiptRequest;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSignedContentIdentifier(PRUint8 *value)
+{
+  mSignedContentIdentifier = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignedContentIdentifier(PRUint8 **_retval)
+{
+  *_retval = mSignedContentIdentifier;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSignedContentIdentifierLen(const PRUint32 value)
+{
+  mSignedContentIdentifierLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignedContentIdentifierLen(PRUint32 *_retval)
+{
+  *_retval = mSignedContentIdentifierLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorSignatureValue(PRUint8 *value)
+{
+  mOriginatorSignatureValue = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorSignatureValue(PRUint8 **_retval)
+{
+  *_retval = mOriginatorSignatureValue;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorSignatureValueLen(const PRUint32 value)
+{
+  mOriginatorSignatureValueLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorSignatureValueLen(PRUint32 *_retval)
+{
+  *_retval = mOriginatorSignatureValueLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorContentType(PRUint8 *value)
+{
+  mOriginatorContentType = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorContentType(PRUint8 **_retval)
+{
+  *_retval = mOriginatorContentType;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorContentTypeLen(const PRUint32 value)
+{
+  mOriginatorContentTypeLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorContentTypeLen(PRUint32 *_retval)
+{
+  *_retval = mOriginatorContentTypeLen;
   return NS_OK;
 }
 
@@ -597,7 +673,7 @@ nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aCompo
   return NS_OK;
 }
 
-nsresult nsMsgComposeSecure::ExtractSignedReceiptRequestState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignedReceiptRequest)
+nsresult nsMsgComposeSecure::ExtractSignedReceiptRequestState(nsIMsgIdentity *aIdentity, nsIMsgCompFields *aComposeFields, PRBool *aSignedReceiptRequest)
 {
   if (!aComposeFields && !aIdentity)
     return NS_ERROR_FAILURE; // kick out...invalid args....
@@ -621,6 +697,39 @@ nsresult nsMsgComposeSecure::ExtractSignedReceiptRequestState(nsIMsgIdentity * a
   }
 
   *aSignedReceiptRequest = PR_FALSE; // Not found
+  return NS_OK;
+}
+
+nsresult nsMsgComposeSecure::ExtractSignedReceiptState(nsIMsgCompFields *aComposeFields, PRUint8 **aSignedContentIdentifier, PRUint32 *aSignedContentIdentifierLen, PRUint8 **aOriginatorSignatureValue, PRUint32 *aOriginatorSignatureValueLen, PRUint8 **aOriginatorContentType, PRUint32 *aOriginatorContentTypeLen)
+{
+  if (!aComposeFields)
+    return NS_ERROR_FAILURE; // kick out...invalid args....
+
+  nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+        smimeCompFields->GetSignedContentIdentifier(aSignedContentIdentifier);
+        smimeCompFields->GetSignedContentIdentifierLen(aSignedContentIdentifierLen);
+        smimeCompFields->GetOriginatorSignatureValue(aOriginatorSignatureValue);
+        smimeCompFields->GetOriginatorSignatureValueLen(aOriginatorSignatureValueLen);
+        smimeCompFields->GetOriginatorContentType(aOriginatorContentType);
+        smimeCompFields->GetOriginatorContentTypeLen(aOriginatorContentTypeLen);
+        return NS_OK;
+      }
+    }
+  }
+
+  *aSignedContentIdentifierLen = 0;
+  *aOriginatorSignatureValueLen = 0;
+  *aOriginatorContentTypeLen = 0;
+
   return NS_OK;
 }
 
@@ -651,6 +760,9 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsOutputFileStream * 
   if (mSignedReceiptRequest) {
     aIdentity->GetEmail(getter_Copies(mSignedReceiptRequest_ReceiptTo));
   }
+
+  // Extract SignedReceipt State
+  ExtractSignedReceiptState(aCompFields, &mSignedContentIdentifier, &mSignedContentIdentifierLen, &mOriginatorSignatureValue, &mOriginatorSignatureValueLen, &mOriginatorContentType, &mOriginatorContentTypeLen);
 
   mStream = aStream;
   mIsDraft = aIsDraft;
@@ -956,7 +1068,8 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
 						   mSecurityClassification,
 						   (char*)(NS_ConvertUTF16toUTF8(mPrivacyMark).get()),
 						   (char*)(NS_ConvertUTF16toUTF8(mSecurityCategories).get()),
-						   ((tripleWrapped && aOuter) || !mSignedReceiptRequest) ? NULL : (unsigned char*)mSignedReceiptRequest_ReceiptTo.get()
+						   ((tripleWrapped && aOuter) || !mSignedReceiptRequest) ? NULL : (unsigned char*)mSignedReceiptRequest_ReceiptTo.get(),
+						   (mSignedContentIdentifierLen > 0 && mOriginatorSignatureValueLen > 0 && mOriginatorContentTypeLen > 0) ? PR_TRUE : PR_FALSE
 						  );
   if (NS_FAILED(rv))  {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
@@ -983,6 +1096,23 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
   if (NS_FAILED(rv)) {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;
+  }
+
+  if (mSignedContentIdentifierLen > 0 && mOriginatorSignatureValueLen > 0 && mOriginatorContentTypeLen > 0) {
+    /* Create receipt */
+    PRUint8 *receiptBuffer = NULL;
+    PRUint32 receiptBufferLength = 0;
+    rv = cinfo->CreateReceipt(mSignedContentIdentifier, mSignedContentIdentifierLen, mOriginatorSignatureValue, mOriginatorSignatureValueLen, mOriginatorContentType, mOriginatorContentTypeLen, &receiptBuffer, &receiptBufferLength);
+    if (NS_FAILED(rv)) {
+      SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+      goto FAIL;
+    }
+
+    rv = encoder->Update((char*)receiptBuffer, (PRInt32)receiptBufferLength);
+    if (NS_FAILED(rv)) {
+      SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+      goto FAIL;
+    }
   }
 
   // We're not passing in any data, so no update needed.

@@ -202,6 +202,16 @@ static const SEC_ASN1Template NSSCMSReceiptRequestTemplate[] = {
     { 0 }
 };
 
+/* ESS Signed Receipt */
+static const SEC_ASN1Template NSSCMSReceiptTemplate[] = {
+    { SEC_ASN1_SEQUENCE, 0, NULL, sizeof(NSSCMSReceipt) },
+    { SEC_ASN1_INTEGER, offsetof(NSSCMSReceipt, version) },
+    { SEC_ASN1_OBJECT_ID, offsetof(NSSCMSReceipt, contentType) },
+    { SEC_ASN1_OCTET_STRING, offsetof(NSSCMSReceipt, signedContentIdentifier) },
+    { SEC_ASN1_OCTET_STRING, offsetof(NSSCMSReceipt, originatorSignatureValue) },
+    { 0 }
+};
+
 
 /* smime_cipher_map - map of SMIME symmetric "ciphers" to algtag & parameters */
 typedef struct {
@@ -1531,7 +1541,16 @@ loser:
  * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest values
  */
 SECStatus
-NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo, char **aSignedContentIdentifier, PRInt32 *aReceiptsFrom, char **aReceiptsTo)
+NSS_SMIMEUtil_GetReceiptRequest(
+    NSSCMSSignerInfo *aSignerinfo,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aOriginatorContentType,
+    PRUint32 *aOriginatorContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo)
 {
 
     NSSCMSAttribute *attr;
@@ -1558,9 +1577,9 @@ NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo, char **aSignedCon
 
     /* signedContentIdentifier */
     len = receiptRequest.signedContentIdentifier.len;
-    *aSignedContentIdentifier = PORT_Alloc(len + 1);
+    *aSignedContentIdentifier = PORT_Alloc(len);
     PORT_Memcpy(*aSignedContentIdentifier, receiptRequest.signedContentIdentifier.data, len);
-    (*aSignedContentIdentifier)[len] = '\0';
+    *aSignedContentIdentifierLen = len;
 
     /* receiptsFrom */
     if ((rv = SEC_ASN1DecodeInteger(&(receiptRequest.receiptsFrom), aReceiptsFrom)) != SECSuccess)
@@ -1594,10 +1613,73 @@ NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo, char **aSignedCon
     } else
         rv = SECFailure;
 
+    /* originatorSignatureValue */
+    len = aSignerinfo->encDigest.len;
+    *aOriginatorSignatureValue = PORT_Alloc(len);
+    PORT_Memcpy(*aOriginatorSignatureValue, aSignerinfo->encDigest.data, len);
+    *aOriginatorSignatureValueLen = len;
+
+    /* originatorContentType */
+    attr = NSS_CMSAttributeArray_FindAttrByOidTag(aSignerinfo->authAttr, SEC_OID_PKCS9_CONTENT_TYPE, PR_TRUE);
+    if (attr == NULL || attr->values == NULL || attr->values[0] == NULL) {
+        rv = SECFailure;
+        goto loser;
+    }
+    len = attr->values[0]->len;
+    *aOriginatorContentType = PORT_Alloc(len);
+    PORT_Memcpy(*aOriginatorContentType, attr->values[0]->data, len);
+    *aOriginatorContentTypeLen = len;
+
 loser:
 
     PORT_ArenaUnmark(poolp, mark);
     return rv;
+}
+
+/*
+ * NSS_SMIMEUtil_CreateReceipt - create S/MIME Receipt
+ */
+SECStatus
+NSS_SMIMEUtil_CreateReceipt(
+    PLArenaPool *poolp,
+    SECItem *dest,
+    const PRUint8 *signedContentIdentifier,
+    const PRUint32 signedContentIdentifierLen,
+    const PRUint8 *originatorSignatureValue,
+    const PRUint32 originatorSignatureValueLen,
+    const PRUint8 *originatorContentType,
+    const PRUint32 originatorContentTypeLen)
+{
+    NSSCMSReceipt receipt;
+    SECItem *dummy = NULL;
+    SECItem *encodedReceipt = NULL;
+
+    /* version */
+    SEC_ASN1EncodeInteger(poolp, &(receipt.version), 1);
+
+    /* contentType */
+    receipt.contentType.data = originatorContentType;
+    receipt.contentType.len = originatorContentTypeLen;
+
+    /* signedContentIdentifier */
+    receipt.signedContentIdentifier.data = signedContentIdentifier;
+    receipt.signedContentIdentifier.len = signedContentIdentifierLen;
+
+    /* originatorSignatureValue */
+    receipt.originatorSignatureValue.data = originatorSignatureValue;
+    receipt.originatorSignatureValue.len = originatorSignatureValueLen;
+
+    /* Encode receipt */
+    encodedReceipt = SEC_ASN1EncodeItem(poolp, encodedReceipt, &receipt, NSSCMSReceiptTemplate);
+    if (encodedReceipt == NULL)
+        goto loser;
+
+    /* Encapsulate receipt in octet string */
+    dummy = SEC_ASN1EncodeItem(poolp, dest, encodedReceipt, SEC_OctetStringTemplate);
+
+loser:
+
+    return (dummy == NULL) ? SECFailure : SECSuccess;
 }
 
 /*

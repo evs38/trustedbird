@@ -89,8 +89,13 @@ NS_IMETHODIMP nsMsgSignedReceiptGenerator::Process(
     nsIMsgFolder *aFolder,
     nsMsgKey key,
     nsIMimeHeaders *headers,
-    const char *aSignedContentIdentifier,
-    const PRInt32 aReceiptsFrom,
+    PRUint8 *aSignedContentIdentifier,
+    PRUint32 aSignedContentIdentifierLen,
+    PRUint8 *aOriginatorSignatureValue,
+    PRUint32 aOriginatorSignatureValueLen,
+    PRUint8 *aOriginatorContentType,
+    PRUint32 aOriginatorContentTypeLen,
+    PRInt32 aReceiptsFrom,
     const char *aReceiptsTo)
 {
     nsresult rv = NS_OK;
@@ -98,6 +103,12 @@ NS_IMETHODIMP nsMsgSignedReceiptGenerator::Process(
     m_folder = aFolder;
     m_headers = headers;
     m_to = aReceiptsTo;
+    m_signedContentIdentifier = aSignedContentIdentifier;
+    m_signedContentIdentifierLen = aSignedContentIdentifierLen;
+    m_originatorSignatureValue = aOriginatorSignatureValue;
+    m_originatorSignatureValueLen = aOriginatorSignatureValueLen;
+    m_originatorContentType = aOriginatorContentType;
+    m_originatorContentTypeLen = aOriginatorContentTypeLen;
 
     StoreMDNSentFlag(aFolder, key);
 
@@ -277,7 +288,13 @@ nsresult nsMsgSignedReceiptGenerator::CreateReceiptMsg()
     if (!mSMIMECompFields)
         return NS_ERROR_OUT_OF_MEMORY;
 
-    mSMIMECompFields->SetSignMessage(PR_TRUE);   // Sign message
+    mSMIMECompFields->SetSignMessage(PR_TRUE); // Sign message
+    mSMIMECompFields->SetSignedContentIdentifier(m_signedContentIdentifier);
+    mSMIMECompFields->SetSignedContentIdentifierLen(m_signedContentIdentifierLen);
+    mSMIMECompFields->SetOriginatorSignatureValue(m_originatorSignatureValue);
+    mSMIMECompFields->SetOriginatorSignatureValueLen(m_originatorSignatureValueLen);
+    mSMIMECompFields->SetOriginatorContentType(m_originatorContentType);
+    mSMIMECompFields->SetOriginatorContentTypeLen(m_originatorContentTypeLen);
     mCompFields->SetSecurityInfo(mSMIMECompFields);
 
     // Begin crypto encapsulation
@@ -384,7 +401,7 @@ nsresult nsMsgSignedReceiptGenerator::CreateMsgHeader()
     rv = GetStringFromName(NS_LITERAL_STRING("SignedReceiptDisplayedReceipt").get(), getter_Copies(receipt_string));
     if (NS_FAILED(rv)) 
         return rv;
-    receipt_string.Append(NS_LITERAL_STRING(" - "));
+    receipt_string.Append(NS_LITERAL_STRING(": "));
     char * encodedReceiptString = nsMsgI18NEncodeMimePartIIStr(NS_ConvertUCS2toUTF8(receipt_string).get(), PR_FALSE, "UTF-8", 0, conformToStandard);
 
     nsXPIDLCString subject;

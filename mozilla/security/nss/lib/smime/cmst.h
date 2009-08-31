@@ -100,6 +100,8 @@ typedef struct NSSCMSSecurityLabelSecurityCategoryStr NSSCMSSecurityLabelSecurit
 typedef struct NSSCMSReceiptRequestStr NSSCMSReceiptRequest;
 typedef struct NSSCMSReceiptRequestGeneralNamesStr NSSCMSReceiptRequestGeneralNames;
 
+typedef struct NSSCMSReceiptStr NSSCMSReceipt;
+
 typedef struct NSSCMSEnvelopedDataStr NSSCMSEnvelopedData;
 typedef struct NSSCMSOriginatorInfoStr NSSCMSOriginatorInfo;
 typedef struct NSSCMSRecipientInfoStr NSSCMSRecipientInfo;
@@ -317,6 +319,15 @@ struct NSSCMSReceiptRequestStr {
     SECItem signedContentIdentifier;
     SECItem receiptsFrom;
     NSSCMSReceiptRequestGeneralNames **receiptsTo;
+};
+
+
+/* ESS Signed Receipt */
+struct NSSCMSReceiptStr {
+    SECItem version;
+    SECItem contentType;
+    SECItem signedContentIdentifier;
+    SECItem originatorSignatureValue;
 };
 
 /* =============================================================================

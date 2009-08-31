@@ -71,6 +71,12 @@ private:
   nsString mPrivacyMark;
   nsString mSecurityCategories;
   PRBool mSignedReceiptRequest;
+  PRUint8 *mSignedContentIdentifier;
+  PRUint32 mSignedContentIdentifierLen;
+  PRUint8 *mOriginatorSignatureValue;
+  PRUint32 mOriginatorSignatureValueLen;
+  PRUint8 *mOriginatorContentType;
+  PRUint32 mOriginatorContentTypeLen;
   PRBool mTripleWrapMessage;
 };
 
@@ -109,8 +115,9 @@ private:
 					   PRUint32 numParams,
 					   PRUnichar **outString);
   nsresult ExtractEncryptionState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignMessage, PRBool * aEncrypt, PRBool * aTripleWrap);
-  nsresult ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, PRInt32 * aSecurityLabelLocation, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories);
-  nsresult ExtractSignedReceiptRequestState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignedReceiptRequest);
+  nsresult ExtractSecurityLabelState(nsIMsgCompFields *aComposeFields, PRInt32 *aSecurityLabelLocation, nsACString& aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories);
+  nsresult ExtractSignedReceiptRequestState(nsIMsgIdentity *aIdentity, nsIMsgCompFields *aComposeFields, PRBool *aSignedReceiptRequest);
+  nsresult ExtractSignedReceiptState(nsIMsgCompFields *aComposeFields, PRUint8 **aSignedContentIdentifier, PRUint32 *aSignedContentIdentifierLen, PRUint8 **aOriginatorSignatureValue, PRUint32 *aOriginatorSignatureValueLen, PRUint8 **aOriginatorContentType, PRUint32 *aOriginatorContentTypeLen);
 
   mimeDeliveryCryptoState mCryptoState;
   nsOutputFileStream *mStream;
@@ -148,6 +155,13 @@ private:
 
   PRBool mSignedReceiptRequest;
   nsXPIDLCString mSignedReceiptRequest_ReceiptTo;
+
+  PRUint8 *mSignedContentIdentifier;
+  PRUint32 mSignedContentIdentifierLen;
+  PRUint8 *mOriginatorSignatureValue;
+  PRUint32 mOriginatorSignatureValueLen;
+  PRUint8 *mOriginatorContentType;
+  PRUint32 mOriginatorContentTypeLen;
 };
 
 #endif

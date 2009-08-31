@@ -65,7 +65,9 @@ interface nsICMSMessage : nsISupports
   void verifySignature();
   void verifyDetachedSignature(in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
   void CreateEncrypted(in nsIArray aRecipientCerts);
-  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen, in string aSecurityPolicyIdentifier, in long aSecurityClassification, in string aPrivacyMark, in string aSecurityCategories, in UnsignedCharPtr aReceiptsTo);
+  void CreateReceipt([const,array,size_is(aSignedContentIdentifierLen)] in PRUint8 aSignedContentIdentifier, in PRUint32 aSignedContentIdentifierLen, [const,array,size_is(aOriginatorSignatureValueLen)] in PRUint8 aOriginatorSignatureValue, in PRUint32 aOriginatorSignatureValueLen, [const,array,size_is(aContentTypeLen)] in PRUint8 aContentType, in PRUint32 aContentTypeLen, [const,array,size_is(encodedReceiptLen)] out PRUint8 encodedReceipt, out PRUint32 encodedReceiptLen);
+  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen, in string aSecurityPolicyIdentifier, in long aSecurityClassification, in string aPrivacyMark, in string aSecurityCategories, in UnsignedCharPtr aReceiptsTo, in boolean aSignedReceipt);
   void getSecurityLabel(out string aSecurityPolicyIdentifier, out long aSecurityClassification, out string aPrivacyMark, out string aSecurityCategories);
-  void getSignedReceiptRequest(out string aSignedContentIdentifier, out long aReceiptsFrom, out string aReceiptsTo);
+  void getReceiptRequest([const,array,size_is(aSignedContentIdentifierLen)] out PRUint8 aSignedContentIdentifier, out PRUint32 aSignedContentIdentifierLen, [const,array,size_is(aOriginatorSignatureValueLen)] out PRUint8 aOriginatorSignatureValue, out PRUint32 aOriginatorSignatureValueLen, [const,array,size_is(aContentTypeLen)] out PRUint8 aContentType, out PRUint32 aContentTypeLen, out long aReceiptsFrom, out string aReceiptsTo);
+  void getReceipt();
 };
