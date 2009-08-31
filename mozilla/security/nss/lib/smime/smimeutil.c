@@ -212,6 +212,10 @@ static const SEC_ASN1Template NSSCMSReceiptTemplate[] = {
     { 0 }
 };
 
+static const SEC_ASN1Template NSSCMSReceiptOctetStringTemplate[] = {
+    { SEC_ASN1_OCTET_STRING | SEC_ASN1_MAY_STREAM, 0, NULL, sizeof(SECItem) }
+};
+
 
 /* smime_cipher_map - map of SMIME symmetric "ciphers" to algtag & parameters */
 typedef struct {
@@ -1675,7 +1679,7 @@ NSS_SMIMEUtil_CreateReceipt(
         goto loser;
 
     /* Encapsulate receipt in octet string */
-    dummy = SEC_ASN1EncodeItem(poolp, dest, encodedReceipt, SEC_OctetStringTemplate);
+    dummy = SEC_ASN1EncodeItem(poolp, dest, encodedReceipt, NSSCMSReceiptOctetStringTemplate);
 
 loser:
 
