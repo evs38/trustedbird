@@ -79,6 +79,12 @@
       </hbox>
     </vbox>
 
+    <vbox id="smimeReceiptBox" collapsed="true">
+      <separator/>
+      <label id="smimeReceiptLabel"/>
+      <description id="smimeReceiptDescription"/>
+    </vbox>
+
     <separator/>
 
     <label id="encryptionLabel"/>

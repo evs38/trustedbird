@@ -55,6 +55,10 @@ var gSecurityClassification = -1;
 var gPrivacyMark = null;
 var gSecurityCategories = null;
 var gTripleWrapStatus = -1;
+var gSmimeReceiptType = null;
+var gSignedContentIdentifier = null;
+var gOriginatorSignatureValue = null;
+var gOriginatorContentType = null;
 
 var params = null;
 
@@ -89,6 +93,10 @@ function onLoad()
   gPrivacyMark = params.GetString(5);
   gSecurityCategories = params.GetString(6);
   gTripleWrapStatus = params.GetInt(7);
+  gSmimeReceiptType = params.GetString(8);
+  gSignedContentIdentifier = params.GetString(9);
+  gOriginatorSignatureValue = params.GetString(10);
+  gOriginatorContentType = params.GetString(11);
   
   var bundle = document.getElementById("bundle_smime_read_info");
 
@@ -179,7 +187,26 @@ function onLoad()
       str = bundle.getString("SIClueless") + " (" + gSignatureStatus + ")";
     }
     setText("signatureExplanation", str);
-    
+
+    if (gSignatureStatus == nsICMSMessageErrors.SUCCESS && gSmimeReceiptType) {
+      var smimeReceiptBox = document.getElementById("smimeReceiptBox");
+      smimeReceiptBox.collapsed = false;
+
+      var smimeReceiptLabel = document.getElementById("smimeReceiptLabel");
+      smimeReceiptLabel.value = bundle.getString("smimeReceiptLabel");
+
+      var smimeReceiptDescription = document.getElementById("smimeReceiptDescription");
+      switch (gSmimeReceiptType) {
+        case "request":
+          smimeReceiptDescription.value = bundle.getString("smimeReceiptTypeRequest");
+          break;
+        case "receipt":
+          smimeReceiptDescription.value = bundle.getString("smimeReceiptTypeReceipt");
+          break;
+        default:
+          smimeReceiptBox.collapsed = true;
+      }
+    }
 
     var encInfoLabel = null;
     var encInfoHeader = null;

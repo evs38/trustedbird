@@ -44,6 +44,10 @@ var gSecurityClassification = -1;
 var gPrivacyMark = null;
 var gSecurityCategories = null;
 var gTripleWrapStatus = -1;
+var gSmimeReceiptType = null;
+var gSignedContentIdentifier = null;
+var gOriginatorSignatureValue = null;
+var gOriginatorContentType = null;
 var gSignerCert = null;
 var gEncryptionCert = null;
 var gBundle;
@@ -106,7 +110,11 @@ function showMessageReadSecurityInfo()
   params.SetString(5, gPrivacyMark);
   params.SetString(6, gSecurityCategories);
   params.SetInt(7, gTripleWrapStatus);
-  
+  params.SetString(8, gSmimeReceiptType);
+  params.SetString(9, gSignedContentIdentifier);
+  params.SetString(10, gOriginatorSignatureValue);
+  params.SetString(11, gOriginatorContentType);
+
   window.openDialog('chrome://messenger-smime/content/msgReadSecurityInfo.xul',
     '', 'chrome,resizable=1,modal=1,dialog=1', pkiParams );
 }

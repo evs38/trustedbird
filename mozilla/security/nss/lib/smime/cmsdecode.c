@@ -545,7 +545,7 @@ nss_cms_decoder_work_data(NSSCMSDecoderContext *p7dcx,
 #if 1
     else
 #endif
-    if (NSS_CMSContentInfo_GetContentTypeTag(cinfo) == SEC_OID_PKCS7_DATA) {
+    if (NSS_CMSContentInfo_GetContentTypeTag(cinfo) == SEC_OID_PKCS7_DATA || NSS_CMSContentInfo_GetContentTypeTag(cinfo) == SEC_OID_SMIME_RECEIPT) {
 	/* store it in "inner" data item as well */
 	/* find the DATA item in the encapsulated cinfo and store it there */
 	NSSCMSDecoderData *decoderData = 

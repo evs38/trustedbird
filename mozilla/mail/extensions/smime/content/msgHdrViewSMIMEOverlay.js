@@ -93,6 +93,11 @@ var smimeHeaderSink =
     gSignatureStatus = aSignatureStatus;
     gSignerCert = aSignerCert;
 
+    gSmimeReceiptType = null;
+    gSignedContentIdentifier = null;
+    gOriginatorSignatureValue = null;
+    gOriginatorContentType = null;
+
     gSMIMEContainer.collapsed = false;
     gSignedUINode.collapsed = false;
   
@@ -202,21 +207,99 @@ var smimeHeaderSink =
     if (msgURI) {
       var msgHdr = messenger.msgHdrFromURI(msgURI);
       if (gSecurityPolicyIdentifier != "") {
-    	  /* Write Security Label in message database */
-    	  msgHdr.setStringProperty("securityLabelSecurityPolicyIdentifier", gSecurityPolicyIdentifier);
-    	  msgHdr.setStringProperty("securityLabelSecurityClassification", gSecurityClassification);
-    	  msgHdr.setStringProperty("securityLabelPrivacyMark", gPrivacyMark);
-    	  msgHdr.setStringProperty("securityLabelSecurityCategories", gSecurityCategories);
-      
-    	  /* Refresh tree view */
-    	  SelectMessage(msgURI);
+        /* Write Security Label in message database */
+        msgHdr.setStringProperty("securityLabelSecurityPolicyIdentifier", gSecurityPolicyIdentifier);
+        msgHdr.setStringProperty("securityLabelSecurityClassification", gSecurityClassification);
+        msgHdr.setStringProperty("securityLabelPrivacyMark", gPrivacyMark);
+        msgHdr.setStringProperty("securityLabelSecurityCategories", gSecurityCategories);
+
+        /* Refresh tree view */
+        SelectMessage(msgURI);
       }
     }
   },
 
+  // Check the signed receipt request and send a receipt
   signedReceiptRequestStatus: function(aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo)
   {
-    checkSignedReceiptRequest(aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo);
+    var msgURI = GetLoadedMessage();
+    if (!msgURI)
+      return;
+
+    var URL = createURLFromURI(msgURI);
+    var msgFolder = URL.folder;
+
+    if (!msgFolder || IsNewsMessage(msgURI))
+      return;
+
+    var msgHdr = messenger.msgHdrFromURI(msgURI);
+    var mimeHdr = createHeadersFromURI(msgURI);
+
+    gSmimeReceiptType = "request";
+    gSignedContentIdentifier = aSignedContentIdentifier;
+    gOriginatorSignatureValue = aOriginatorSignatureValue;
+    gOriginatorContentType = aOriginatorContentType;
+
+    // Write signed receipt request properties in message db
+    msgHdr.setStringProperty("smimeReceiptType", gSmimeReceiptType);
+    msgHdr.setStringProperty("smimeReceiptSignedContentIdentifier", gSignedContentIdentifier);
+    msgHdr.setStringProperty("smimeReceiptOriginatorSignatureValue", gOriginatorSignatureValue);
+    msgHdr.setStringProperty("smimeReceiptOriginatorContentType", gOriginatorContentType);
+
+    // If the folder is drafts, sent, or send later don't send a receipt
+    if (IsSpecialFolder(msgFolder, MSG_FOLDER_FLAG_SENTMAIL | MSG_FOLDER_FLAG_DRAFTS | MSG_FOLDER_FLAG_QUEUE, true))
+      return;
+
+    // if the message is marked as junk, do NOT attempt to process a return receipt
+    // in order to better protect the user
+    if (SelectedMessagesAreJunk())
+      return;
+
+    // Check if a receipt has already been sent.
+    var msgFlags = msgHdr.flags;
+    if ((msgFlags & MSG_FLAG_IMAP_DELETED) || (msgFlags & MSG_FLAG_SIGNED_RECEIPT_SENT))
+      return;
+
+    var signedReceiptGenerator = Components.classes["@mozilla.org/messenger/signedreceiptgenerator;1"]
+      .createInstance(Components.interfaces.nsIMsgSignedReceiptGenerator);
+
+    // Create and send a receipt
+    signedReceiptGenerator.process(msgWindow, msgFolder, msgHdr.messageKey, mimeHdr, aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo);
+
+    // Flag message
+    msgHdr.OrFlags(MSG_FLAG_SIGNED_RECEIPT_SENT);
+
+    // Commit db changes.
+    var msgdb = msgFolder.getMsgDatabase(msgWindow);
+    if (msgdb)
+      msgdb.Commit(ADDR_DB_LARGE_COMMIT);
+  },
+
+  signedReceiptStatus: function(aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo)
+  {
+    var msgURI = GetLoadedMessage();
+    if (!msgURI)
+      return;
+
+    var URL = createURLFromURI(msgURI);
+    var msgFolder = URL.folder;
+
+    if (!msgFolder || IsNewsMessage(msgURI))
+      return;
+
+    var msgHdr = messenger.msgHdrFromURI(msgURI);
+    var mimeHdr = createHeadersFromURI(msgURI);
+
+    gSmimeReceiptType = "receipt";
+    gSignedContentIdentifier = aSignedContentIdentifier;
+    gOriginatorSignatureValue = aOriginatorSignatureValue;
+    gOriginatorContentType = aOriginatorContentType;
+
+    // Write signed receipt properties in message db
+    msgHdr.setStringProperty("smimeReceiptType", gSmimeReceiptType);
+    msgHdr.setStringProperty("smimeReceiptSignedContentIdentifier", gSignedContentIdentifier);
+    msgHdr.setStringProperty("smimeReceiptOriginatorSignatureValue", gOriginatorSignatureValue);
+    msgHdr.setStringProperty("smimeReceiptOriginatorContentType", gOriginatorContentType);
   },
 
   QueryInterface : function(iid)
@@ -226,57 +309,6 @@ var smimeHeaderSink =
     throw Components.results.NS_NOINTERFACE;
   }
 };
-
-// Check the signed receipt request and send a receipt
-function checkSignedReceiptRequest(aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo)
-{
-  var msgURI = GetLoadedMessage();
-  if (!msgURI)
-    return;
-
-  var URL = createURLFromURI(msgURI);
-  var msgFolder = URL.folder;
-
-  if (!msgFolder || IsNewsMessage(msgURI))
-    return;
-
-  var msgHdr = messenger.msgHdrFromURI(msgURI);
-  var mimeHdr = createHeadersFromURI(msgURI);
-
-  // Write signed receipt request properties in message db
-  msgHdr.setStringProperty("x-smime-receipt-signedContentIdentifier", aSignedContentIdentifier);
-  msgHdr.setStringProperty("x-smime-receipt-originatorSignatureValue", aOriginatorSignatureValue);
-  msgHdr.setStringProperty("x-smime-receipt-originatorContentType", aOriginatorContentType);
-
-  // If the folder is drafts, sent, or send later don't send a receipt
-  if (IsSpecialFolder(msgFolder, MSG_FOLDER_FLAG_SENTMAIL | MSG_FOLDER_FLAG_DRAFTS | MSG_FOLDER_FLAG_QUEUE, true))
-    return;
-
-  // if the message is marked as junk, do NOT attempt to process a return receipt
-  // in order to better protect the user
-  if (SelectedMessagesAreJunk())
-    return;
-
-  // Check if a receipt has already been sent.
-  var msgFlags = msgHdr.flags;
-  if ((msgFlags & MSG_FLAG_IMAP_DELETED) || (msgFlags & MSG_FLAG_SIGNED_RECEIPT_SENT))
-    return;
-
-  var signedReceiptGenerator = 
-    Components.classes["@mozilla.org/messenger/signedreceiptgenerator;1"]
-      .createInstance(Components.interfaces.nsIMsgSignedReceiptGenerator);
-
-  // Create and send a receipt
-  signedReceiptGenerator.process(msgWindow, msgFolder, msgHdr.messageKey, mimeHdr, aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo);
-
-  // Flag message
-  msgHdr.OrFlags(MSG_FLAG_SIGNED_RECEIPT_SENT);
-
-  // Commit db changes.
-  var msgdb = msgFolder.getMsgDatabase(msgWindow);
-  if (msgdb)
-    msgdb.Commit(ADDR_DB_LARGE_COMMIT);
-}
 
 function createHeadersFromURI(messageURI) {  
     var messageService = messenger.messageServiceFromURI(messageURI);

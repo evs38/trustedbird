@@ -1683,6 +1683,56 @@ loser:
 }
 
 /*
+ * NSS_SMIMEUtil_GetReceipt - get S/MIME Receipt values
+ */
+SECStatus
+NSS_SMIMEUtil_GetReceipt(
+    PLArenaPool *aPoolp,
+    SECItem *aEncodedReceipt,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aOriginatorContentType,
+    PRUint32 *aOriginatorContentTypeLen)
+{
+
+    SECStatus rv = SECSuccess;
+
+    NSSCMSReceipt receipt;
+    unsigned int len;
+    void *mark;
+
+    mark = PORT_ArenaMark(aPoolp);
+
+    if ((rv = SEC_ASN1DecodeItem(aPoolp, &receipt, NSSCMSReceiptTemplate, aEncodedReceipt)) != SECSuccess)
+        goto loser;
+
+    /* contentType */
+    len = receipt.contentType.len;
+    *aOriginatorContentType = PORT_Alloc(len);
+    PORT_Memcpy(*aOriginatorContentType, receipt.contentType.data, len);
+    *aOriginatorContentTypeLen = len;
+
+    /* signedContentIdentifier */
+    len = receipt.signedContentIdentifier.len;
+    *aSignedContentIdentifier = PORT_Alloc(len);
+    PORT_Memcpy(*aSignedContentIdentifier, receipt.signedContentIdentifier.data, len);
+    *aSignedContentIdentifierLen = len;
+
+    /* originatorSignatureValue */
+    len = receipt.originatorSignatureValue.len;
+    *aOriginatorSignatureValue = PORT_Alloc(len);
+    PORT_Memcpy(*aOriginatorSignatureValue, receipt.originatorSignatureValue.data, len);
+    *aOriginatorSignatureValueLen = len;
+
+loser:
+
+    PORT_ArenaUnmark(aPoolp, mark);
+    return rv;
+}
+
+/*
  * NSS_SMIMEUtil_GetCertFromEncryptionKeyPreference -
  *				find cert marked by EncryptionKeyPreference attribute
  *

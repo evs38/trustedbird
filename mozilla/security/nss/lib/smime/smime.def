@@ -140,6 +140,7 @@ NSS_CMSSignerInfo_IncludeCerts;
 NSS_CMSUtil_VerificationStatusToString;
 NSS_SMIMEUtil_FindBulkAlgForRecipients;
 NSS_SMIMEUtil_CreateReceipt;
+NSS_SMIMEUtil_GetReceipt;
 CERT_DecodeCertPackage;
 SEC_PKCS7AddRecipient;
 SEC_PKCS7AddSigningTime;

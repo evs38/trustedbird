@@ -211,7 +211,14 @@ NS_IMETHODIMP nsCMSMessage::GetReceiptRequest(
   return NS_OK;
 }
 
-NS_IMETHODIMP nsCMSMessage::GetReceipt()
+NS_IMETHODIMP nsCMSMessage::GetReceipt(
+    PRBool *hasReceipt,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aOriginatorContentType,
+    PRUint32 *aOriginatorContentTypeLen)
 {
   NSSCMSContentInfo *cinfo = nsnull;
   NSSCMSSignedData *sigd = nsnull;
@@ -229,12 +236,8 @@ NS_IMETHODIMP nsCMSMessage::GetReceipt()
   if (!NSS_CMSSignerInfo_HasReceipt(si))
     return NS_OK;
 
-  printf("Receipt found!\n");
+  *hasReceipt = PR_TRUE;
 
-  /************TODO********************/
-
-  SECItem *contentInfoItem;
-  int i;
 
   cinfo = NSS_CMSMessage_ContentLevel(m_cmsMsg, 0);
   if (!cinfo)
@@ -247,23 +250,8 @@ NS_IMETHODIMP nsCMSMessage::GetReceipt()
   if (NSS_CMSContentInfo_GetContentTypeTag(&(sigd->contentInfo)) != SEC_OID_SMIME_RECEIPT)
     return NS_OK;
 
-  printf("NSS_CMSContentInfo_GetContentTypeTag=%d\n", NSS_CMSContentInfo_GetContentTypeTag(&(sigd->contentInfo)));
-
-  contentInfoItem = sigd->contentInfo.content.data;
-  if (contentInfoItem) {
-    printf("contentInfoItem(%d) sigd->contentInfo.content.data = ", contentInfoItem->len);
-    for (i=0; i<contentInfoItem->len; i++) printf("%02X ", contentInfoItem->data[i]);
-    printf("\n");
-  }
-    
-  contentInfoItem = sigd->contentInfo.rawContent;
-  if (contentInfoItem) {
-    printf("contentInfoItem(%d) sigd->contentInfo.rawContent = ", contentInfoItem->len);
-    for (i=0; i<contentInfoItem->len; i++) printf("%02X ", contentInfoItem->data[i]);
-    printf("\n");
-  }
-
-  printf("\n");
+  if (sigd->contentInfo.content.data)
+    NSS_SMIMEUtil_GetReceipt(si->cmsg->poolp, sigd->contentInfo.content.data, aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen);
 
   return NS_OK;
 }

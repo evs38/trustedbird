@@ -377,7 +377,25 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
 
 
         // Handle Signed Receipt
-        msg->GetReceipt();
+        PRBool hasReceipt = PR_FALSE;
+        signedContentIdentifier = NULL;
+        signedContentIdentifierLen = 0;
+        originatorSignatureValue = NULL;
+        originatorSignatureValueLen = 0;
+        originatorContentType = NULL;
+        originatorContentTypeLen = 0;
+
+        msg->GetReceipt(&hasReceipt, &signedContentIdentifier, &signedContentIdentifierLen, &originatorSignatureValue, &originatorSignatureValueLen, &originatorContentType, &originatorContentTypeLen);
+
+        if (hasReceipt)
+          proxySink->SignedReceiptStatus(signedContentIdentifier, signedContentIdentifierLen, originatorSignatureValue, originatorSignatureValueLen, originatorContentType, originatorContentTypeLen);
+
+        if (signedContentIdentifier)
+          PR_Free(signedContentIdentifier);
+        if (originatorSignatureValue)
+          PR_Free(originatorSignatureValue);
+        if (originatorContentType)
+          PR_Free(originatorContentType);
       }
     }
   }

@@ -183,6 +183,19 @@ extern SECStatus NSS_SMIMEUtil_CreateReceipt(
     const PRUint32 contentTypeLen);
 
 /*
+ * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ */
+extern SECStatus NSS_SMIMEUtil_GetReceipt(
+    PLArenaPool *aPoolp,
+    SECItem *aEncodedReceipt,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aContentType,
+    PRUint32 *aContentTypeLen);
+
+/*
  * NSS_SMIMEUtil_GetCertFromEncryptionKeyPreference - find cert marked by EncryptionKeyPreference
  *          attribute
  */
