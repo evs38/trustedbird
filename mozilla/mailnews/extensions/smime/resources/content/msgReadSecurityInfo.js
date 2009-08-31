@@ -190,21 +190,20 @@ function onLoad()
 
     if (gSignatureStatus == nsICMSMessageErrors.SUCCESS && gSmimeReceiptType) {
       var smimeReceiptBox = document.getElementById("smimeReceiptBox");
-      smimeReceiptBox.collapsed = false;
-
       var smimeReceiptLabel = document.getElementById("smimeReceiptLabel");
-      smimeReceiptLabel.value = bundle.getString("smimeReceiptLabel");
-
       var smimeReceiptDescription = document.getElementById("smimeReceiptDescription");
+
       switch (gSmimeReceiptType) {
         case "request":
-          smimeReceiptDescription.value = bundle.getString("smimeReceiptTypeRequest");
+          smimeReceiptLabel.value = bundle.getString("smimeReceiptLabelRequest");
+          smimeReceiptDescription.value = bundle.getString("smimeReceiptDescriptionRequest");
+          smimeReceiptBox.collapsed = false;
           break;
         case "receipt":
-          smimeReceiptDescription.value = bundle.getString("smimeReceiptTypeReceipt");
+          smimeReceiptLabel.value = bundle.getString("smimeReceiptLabelReceipt");
+          smimeReceiptDescription.value = bundle.getString("smimeReceiptDescriptionReceipt");
+          smimeReceiptBox.collapsed = false;
           break;
-        default:
-          smimeReceiptBox.collapsed = true;
       }
     }
 
