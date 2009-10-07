@@ -1,0 +1,10 @@
+content mailXFormsEngine chrome/content/
+locale  mailXFormsEngine en chrome/locale/en/
+locale  mailXFormsEngine fr chrome/locale/fr/
+skin    mailXFormsEngine classic/1.0 chrome/skin/
+
+overlay chrome://messenger/content/messenger.xul chrome://mailXFormsEngine/content/messenger-mailXFormsEngine.xul
+overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://mailXFormsEngine/content/messengercompose-mailXFormsEngine.xul
+overlay chrome://messenger/content/preferences/preferences.xul chrome://mailXFormsEngine/content/preferences/preferences-mailXFormsEngine.xul
+
+style   chrome://global/content/customizeToolbar.xul chrome://mailXFormsEngine/skin/mailXFormsEngine.css

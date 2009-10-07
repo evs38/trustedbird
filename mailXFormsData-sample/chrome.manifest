@@ -1,0 +1,4 @@
+content mailXFormsData-sample chrome/content/
+locale  mailXFormsData-sample en chrome/locale/en/
+locale  mailXFormsData-sample fr chrome/locale/fr/
+skin    mailXFormsData-sample classic/1.0 chrome/skin/

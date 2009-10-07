@@ -1,0 +1,3 @@
+<!ENTITY mailXFormsEngine.mailXFormsEngineName "Mail XForms">
+<!ENTITY mailXFormsEngine.selectFormTooltip "Sélectionner un formulaire">
+<!ENTITY mailXFormsEngine.preferenceDefaultForm "Formulaire par défaut dans un nouveau message :">

@@ -1,0 +1,25 @@
+#mailXFormsEngineComposeToolbarButtonMenu { list-style-image: url(chrome://mailXFormsEngine/skin/xforms.png); }
+toolbar[iconsize="small"] #mailXFormsEngineComposeToolbarButtonMenu { list-style-image: url(chrome://mailXFormsEngine/skin/xforms-small.png); }
+
+#mailXFormsEngineComposeTitleBox { padding: 0.3em;}
+#mailXFormsEngineComposeTitleImage { list-style-image: url(chrome://messenger/skin/icons/arrow/arrow-down.png); }
+#mailXFormsEngineComposeTitleBox[frameCollapsed="true"] #mailXFormsEngineComposeTitleImage { list-style-image: url(chrome://messenger/skin/icons/arrow/arrow-right.png); }
+#mailXFormsEngineComposeTitleBox[frameCollapsed="true"] { border-bottom: solid 1px #AAA; }
+
+#mailXFormsEngineReadTitleBox { padding: 0.3em;}
+#mailXFormsEngineReadTitleImage { list-style-image: url(chrome://messenger/skin/icons/arrow/arrow-down.png); }
+#mailXFormsEngineReadTitleBox[frameCollapsed="true"] #mailXFormsEngineReadTitleImage { list-style-image: url(chrome://messenger/skin/icons/arrow/arrow-right.png); }
+#mailXFormsEngineReadTitleBox[frameCollapsed="true"] { border-bottom: solid 1px #AAA; }
+
+#mailXFormsEngineComposeTitleLabel { font-style: italic; }
+#mailXFormsEngineReadTitleLabel { font-style: italic; }
+
+#mailXFormsEngineReadTitleError { color: red; }
+
+#mailXFormsEngineComposeFrameBox { border-bottom: solid 1px #AAA; }
+#mailXFormsEngineComposeFrame { margin: 0.5em 0; padding: 0 0.5em; }
+
+#mailXFormsEngineReadFrameBox { border-bottom: solid 1px #AAA; }
+#mailXFormsEngineReadFrame { margin: 0.5em 0; padding: 0 0.5em; }
+
+#mailXFormsEnginePreferencesActiveFormsBox { height: 20em; overflow-y: auto; }

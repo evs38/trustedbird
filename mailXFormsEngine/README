@@ -1,0 +1,18 @@
+Mail XForms Engine
+------------------
+
+This add-on for Mozilla Thunderbird 3 permits to use XForms-based forms
+in compose window and read panels in order to send information through email headers.
+
+Forms are written with the XForms XML language embedded into XHTML or XUL files and
+are provided by one or several customized "Mail XForms Data" add-ons.
+
+
+Mozilla XForms add-on is required.
+
+
+This add-on is written in XUL and Javascript.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+
