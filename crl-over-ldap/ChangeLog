@@ -1,3 +1,7 @@
+crl-over-ldap (1.0.1)
+  * Edit maxVersion to be compatible with TB3
+-- Dec 21 2009
+
 crl-over-ldap (1.0.0)
   * Tag version 1
   * ChangeLog/README
