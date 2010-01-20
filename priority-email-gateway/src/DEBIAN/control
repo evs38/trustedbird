@@ -3,7 +3,7 @@ Version: __VERSION__
 Architecture: all
 Maintainer: Trustedbird project <contact@trustedbird.org>
 Installed-Size: 0
-Depends: postfix, qpsmtpd (>= 0.40)
+Depends: postfix, qpsmtpd (>= 0.40), patch
 Section: mail
 Priority: extra
 Description: Priority-based mail architecture using Postfix and Qpsmtpd

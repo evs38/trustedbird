@@ -1,3 +1,7 @@
+priority-email-gateway (0.1.2)
+  * Add package dependency: patch
+-- 20 January 2010
+
 priority-email-gateway (0.1.1)
   * Add hold queue supervision
 -- 23 July 2009
