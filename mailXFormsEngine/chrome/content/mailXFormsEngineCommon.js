@@ -73,6 +73,8 @@ function mailXFormsEngineCommonLoadFormList() {
       newForm.name = formPrefParsed[1];
       newForm.version = formPrefParsed[2];
       newForm.url = prefBranch.getCharPref("forms." + newForm.name + "." + newForm.version + ".url");
+      if (newForm.url == "") continue;
+
       try {
         newForm.title = prefBranch.getComplexValue("forms." + newForm.name + "." + newForm.version + ".title", Components.interfaces.nsISupportsString).data;
       } catch (e) {
