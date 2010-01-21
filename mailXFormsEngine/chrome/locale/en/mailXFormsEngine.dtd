@@ -1,3 +1,5 @@
 <!ENTITY mailXFormsEngine.mailXFormsEngineName "Mail XForms">
 <!ENTITY mailXFormsEngine.selectFormTooltip "Select a form">
-<!ENTITY mailXFormsEngine.preferenceDefaultForm "Default form in a new message:">
+<!ENTITY mailXFormsEngine.preferencesDefaultFormCaption "Default form">
+<!ENTITY mailXFormsEngine.preferencesDefaultForm "Default form in a new message:">
+<!ENTITY mailXFormsEngine.preferencesActiveFormsCaption "Available forms when composing a new message">

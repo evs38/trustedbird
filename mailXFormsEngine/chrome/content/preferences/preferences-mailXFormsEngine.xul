@@ -53,9 +53,9 @@
       <preferences id="mailXFormsEnginePreferences" />
 
       <groupbox id="mailXFormsEnginePreferencesDefaultFormGroupBox">
-        <caption id="mailXFormsEnginePreferencesDefaultFormCaption" label="Default form" />
+        <caption id="mailXFormsEnginePreferencesDefaultFormCaption" label="&mailXFormsEngine.preferencesDefaultFormCaption;" />
         <hbox id="mailXFormsEnginePreferencesDefaultFormBox" align="center">
-          <label id="mailXFormsEnginePreferencesDefaultFormLabel" value="&mailXFormsEngine.preferenceDefaultForm;" />
+          <label id="mailXFormsEnginePreferencesDefaultFormLabel" value="&mailXFormsEngine.preferencesDefaultForm;" />
           <menulist id="mailXFormsEnginePreferencesDefaultFormMenu">
             <menupopup id="mailXFormsEnginePreferencesDefaultFormMenuPopup" />
           </menulist>
@@ -63,7 +63,7 @@
       </groupbox>
 
       <groupbox id="mailXFormsEnginePreferencesActiveFormsGroupBox">
-        <caption id="mailXFormsEnginePreferencesActiveFormsCaption" label="Available forms when composing a new message" />
+        <caption id="mailXFormsEnginePreferencesActiveFormsCaption" label="&mailXFormsEngine.preferencesActiveFormsCaption;" />
         <vbox id="mailXFormsEnginePreferencesActiveFormsBox" />
       </groupbox>
 
