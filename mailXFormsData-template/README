@@ -1,0 +1,28 @@
+Mail XForms Data
+----------------
+
+This add-on contains no form. It can be used to package your own forms.
+
+== How to create a new "Mail XForms Data" add-on with your forms ==
+
+Step 1 - choose a new package name (a-z, A-Z, 0-9, without spaces)
+
+Step 2 - replace all instances of the "MXD_PACKAGE_NAME" string by the package name in the following files:
+- install.rdf
+- chrome.manifest
+- defaults/preferences/default.js
+
+Step 3 - add the new form file(s) (*.xul or *.xhtml) in the directory chrome/content/
+
+Step 4 - register the forms by editing the file defaults/preferences/default.js
+
+Step 5 - zip the add-on directory (root must be where install.rdf is located) and name the zip file with the extension "xpi"
+
+
+
+This add-on for Mozilla Thunderbird 3 contains forms for the "Mail XForms Engine" add-on.
+Forms are XHTML or XUL files with XForms elements.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+

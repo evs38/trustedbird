@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
    -
@@ -15,7 +15,7 @@
    - The Original Code is Trustedbird/Mail XForms code.
    -
    - The Initial Developer of the Original Code is
-   -   BT Global Services / Etat francais Ministere de la Defense
+   - BT Global Services / Etat francais Ministere de la Defense.
    - Portions created by the Initial Developer are Copyright (C) 2009
    - the Initial Developer. All Rights Reserved.
    -
@@ -34,26 +34,37 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <em:creator>Trustedbird/Milimail project</em:creator>
-  <rdf:Description rdf:about="urn:mozilla:extension:mailXFormsData-sample@trustedbird.org">
-    <em:updates>
-      <rdf:Seq>
-        <rdf:li>
-          <rdf:Description>
-            <em:version>__VERSION__</em:version>
-            <em:targetApplication>
-              <rdf:Description>
-                <!-- Thunderbird -->
-                <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-                <em:minVersion>3.0</em:minVersion>
-                <em:maxVersion>3.0.*</em:maxVersion>
-                <em:updateLink>__XPI_URL__</em:updateLink>
-                <em:updateHash>__UPDATE_HASH__</em:updateHash>
-              </rdf:Description>
-            </em:targetApplication>
-          </rdf:Description>
-        </rdf:li>
-      </rdf:Seq>
-    </em:updates>
+  <rdf:Description about="urn:mozilla:install-manifest">
+
+    <em:id>mailXFormsData-MXD_PACKAGE_NAME@trustedbird.org</em:id>
+    <em:name>Mail XForms Data - MXD_PACKAGE_NAME</em:name>
+    <em:version>__VERSION__</em:version>
+    <em:creator>Trustedbird/Milimail project</em:creator>
+
+    <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
+    <em:iconURL>chrome://mailXFormsData-sample/skin/xforms.png</em:iconURL>
+
+    <em:updateURL></em:updateURL>
+    <em:updateKey></em:updateKey>
+
+    <em:targetApplication>
+      <rdf:Description>
+        <!-- Thunderbird -->
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>3.0</em:minVersion>
+        <em:maxVersion>3.0.*</em:maxVersion>
+      </rdf:Description>
+    </em:targetApplication>
+
+    <em:requires>
+      <rdf:Description>
+        <!-- Mail XForms Engine -->
+        <em:id>mailXFormsEngine@trustedbird.org</em:id>
+        <em:minVersion>1.0.0beta</em:minVersion>
+        <em:maxVersion>*</em:maxVersion>
+      </rdf:Description>
+    </em:requires>
+
+    <em:description>MXD_PACKAGE_NAME form data. Requires Mail XForms Engine add-on.</em:description>
   </rdf:Description>
 </rdf:RDF>

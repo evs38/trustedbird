@@ -1,0 +1,4 @@
+content mailXFormsData-MXD_PACKAGE_NAME chrome/content/
+locale  mailXFormsData-MXD_PACKAGE_NAME en chrome/locale/en/
+locale  mailXFormsData-MXD_PACKAGE_NAME fr chrome/locale/fr/
+skin    mailXFormsData-MXD_PACKAGE_NAME classic/1.0 chrome/skin/

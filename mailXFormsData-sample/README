@@ -1,14 +1,11 @@
 Mail XForms Data - sample
 -------------------------
 
+This add-on contains sample forms.
+
+
 This add-on for Mozilla Thunderbird 3 contains forms for the "Mail XForms Engine" add-on.
-Several instances based on this add-on can be installed to provide various sets of forms.
-
-
-It requires "Mail XForms Engine" add-on.
-
-
-This add-on contains XHTML or XUL files with XForms elements.
+Forms are XHTML or XUL files with XForms elements.
 
 Trustedbird/Milimail project
 URL: http://www.trustedbird.org
