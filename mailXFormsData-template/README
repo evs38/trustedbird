@@ -13,10 +13,12 @@ Step 2 - replace all instances of the "MXD_PACKAGE_NAME" string by the package n
 - defaults/preferences/default.js
 
 Step 3 - add the new form file(s) (*.xul or *.xhtml) in the directory chrome/content/
+         *.dtd should go in the sub-directories chrome/locale/*/
+         *.css should go in the directory chrome/skin/
 
 Step 4 - register the forms by editing the file defaults/preferences/default.js
 
-Step 5 - zip the add-on directory (root must be where install.rdf is located) and name the zip file with the extension "xpi"
+Step 5 - zip the add-on directory (root must be where install.rdf is located) and name the zip file with the ".xpi" extension
 
 
 

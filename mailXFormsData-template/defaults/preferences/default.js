@@ -5,7 +5,7 @@
 #pref("extensions.mailXFormsEngine.forms.myFormName.1.url", "chrome://mailXFormsData-MXD_PACKAGE_NAME/content/myForm.xul");
 
 # Form display name (default to the unique name of the form)
-#pref("extensions.mailXFormsEngine.forms.myFormName.1.title", "My Form title");
+#pref("extensions.mailXFormsEngine.forms.myFormName.1.title", "myFormName");
 
 # Should the form be available when composing a message (defaults to true)
-#pref("extensions.mailXFormsEngine.forms.myFormName.1.composeEnabled", false);
+#pref("extensions.mailXFormsEngine.forms.myFormName.1.composeEnabled", true);
