@@ -1,0 +1,23 @@
+@namespace xf "http://www.w3.org/2002/xforms";
+
+xf|group {
+	display: table;
+}
+
+xf|input,
+xf|textarea,
+xf|select,
+xf|select1 {
+	display: table-row;
+}
+
+xf|input xf|label,
+xf|textarea xf|label,
+xf|select xf|label,
+xf|select1 xf|label {
+	display: table-cell;
+}
+
+*:invalid  {
+	background-color: pink;
+}

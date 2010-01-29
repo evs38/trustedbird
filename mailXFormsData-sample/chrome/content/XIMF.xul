@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://mailXFormsData-sample/skin/XIMF.css" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<vbox>
+		<xf:model id="ximf-Model" xmlns="">
+
+			<xf:instance id="currentValues-Instance">
+				<data>
+					<correspondenceType>Personal</correspondenceType>
+					<securityClassification>NON PROTEGE</securityClassification>
+					<securityCategories />
+					<primaryPrecedence>Routine</primaryPrecedence>
+					<referenceOriginator />
+					<referenceIndication />
+					<attributionKeyWord />
+					<expiryDate />
+					<exemptedAddress />
+				</data>
+			</xf:instance>
+
+			<xf:bind nodeset="instance('currentValues-Instance')/expiryDate" type="xs:date" />
+
+			<xf:instance id="correspondenceType-Instance">
+				<root>
+					<item>
+						<label>Personnelle</label>
+						<value>Personal</value>
+					</item>
+					<item>
+						<label>Professionnelle</label>
+						<value>Professional</value>
+					</item>
+					<item>
+						<label>Officielle</label>
+						<value>Official</value>
+					</item>
+					<item>
+						<label>Opérationnelle</label>
+						<value>Operational</value>
+					</item>
+				</root>
+			</xf:instance>
+
+			<xf:instance id="securityClassification-Instance">
+				<root>
+					<item>
+						<label>NON PROTEGE</label>
+						<value>NON PROTEGE</value>
+						<correspondenceType>Personal</correspondenceType>
+						<correspondenceType>Professional</correspondenceType>
+						<correspondenceType>Official</correspondenceType>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+					<item>
+						<label>DIFFUSION RESTREINTE</label>
+						<value>DIFFUSION RESTREINTE</value>
+						<correspondenceType>Professional</correspondenceType>
+						<correspondenceType>Official</correspondenceType>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+					<item>
+						<label>CONFIDENTIEL</label>
+						<value>CONFIDENTIEL</value>
+						<correspondenceType>Official</correspondenceType>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+					<item>
+						<label>SECRET</label>
+						<value>SECRET</value>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+				</root>
+			</xf:instance>
+
+			<xf:instance id="securityCategories-Instance">
+				<root>
+					<item>
+						<label>DIFFUSABLE SUR INTERNET</label>
+						<value>DIFFUSABLE_SUR_INTERNET</value>
+						<securityClassification>NON PROTEGE</securityClassification>
+					</item>
+					<item>
+						<label>SPECIAL OP1</label>
+						<value>SPECIAL_OP1</value>
+						<securityClassification>DIFFUSION RESTREINTE</securityClassification>
+						<securityClassification>CONFIDENTIEL</securityClassification>
+						<securityClassification>SECRET</securityClassification>
+					</item>
+					<item>
+						<label>SPECIAL OP2</label>
+						<value>SPECIAL_OP2</value>
+						<securityClassification>DIFFUSION RESTREINTE</securityClassification>
+						<securityClassification>CONFIDENTIEL</securityClassification>
+						<securityClassification>SECRET</securityClassification>
+					</item>
+					<item>
+						<label>DIFFUSABLE A</label>
+						<value>DIFFUSABLE_A</value>
+						<securityClassification>CONFIDENTIEL</securityClassification>
+						<securityClassification>SECRET</securityClassification>
+					</item>
+					<item>
+						<label>EYES ONLY</label>
+						<value>EYES_ONLY</value>
+						<securityClassification>CONFIDENTIEL</securityClassification>
+						<securityClassification>SECRET</securityClassification>
+					</item>
+				</root>
+			</xf:instance>
+
+			<xf:instance id="primaryPrecedence-Instance">
+				<root>
+					<item>
+						<label>Routine</label>
+						<value>Routine</value>
+						<correspondenceType>Personal</correspondenceType>
+						<correspondenceType>Professional</correspondenceType>
+						<correspondenceType>Official</correspondenceType>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+					<item>
+						<label>Urgent</label>
+						<value>Priority</value>
+						<correspondenceType>Professional</correspondenceType>
+						<correspondenceType>Official</correspondenceType>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+					<item>
+						<label>Immédiat</label>
+						<value>Immediate</value>
+						<correspondenceType>Official</correspondenceType>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+					<item>
+						<label>Flash</label>
+						<value>Flash</value>
+						<correspondenceType>Operational</correspondenceType>
+					</item>
+				</root>
+			</xf:instance>
+
+			<xf:instance id="attributionKeyWord-Instance">
+				<root>
+					<item>
+						<label>AAA</label>
+						<value>AAA</value>
+					</item>
+					<item>
+						<label>BBB</label>
+						<value>BBB</value>
+					</item>
+					<item>
+						<label>CCC</label>
+						<value>CCC</value>
+					</item>
+					<item>
+						<label>DDD</label>
+						<value>DDD</value>
+					</item>
+					<item>
+						<label>EEE</label>
+						<value>EEE</value>
+					</item>
+					<item>
+						<label>FFF</label>
+						<value>FFF</value>
+					</item>
+					<item>
+						<label>GGG</label>
+						<value>GGG</value>
+					</item>
+					<item>
+						<label>HHH</label>
+						<value>HHH</value>
+					</item>
+				</root>
+			</xf:instance>
+
+		</xf:model>
+
+		<tabbox id="tablist">
+			<tabs>
+				<tab label="Urgence et sécurité" />
+				<tab label="Informations générales" />
+				<tab label="Options de transmission" />
+			</tabs>
+			<tabpanels>
+				<tabpanel>
+
+					<groupbox>
+						<caption label="Restriction de diffusion du message" />
+
+						<xf:group>
+							<xf:select1 ref="instance('currentValues-Instance')/correspondenceType" mailXFormsHeaderName="X-XIMF-Correspondence-Type">
+								<xf:label>Type de correspondance :</xf:label>
+								<xf:itemset nodeset="instance('correspondenceType-Instance')/item">
+									<xf:label ref="label" />
+									<xf:value ref="value" />
+								</xf:itemset>
+
+								<xf:action ev:event="xforms-value-changed">
+									<xf:setvalue ref="instance('currentValues-Instance')/primaryPrecedence" value="instance('primaryPrecedence-Instance')/item[correspondenceType=instance('currentValues-Instance')/correspondenceType]/value" />
+									<xf:setvalue ref="instance('currentValues-Instance')/securityClassification" value="instance('securityClassification-Instance')/item[correspondenceType=instance('currentValues-Instance')/correspondenceType]/value" />
+								</xf:action>
+
+							</xf:select1>
+
+							<xf:select1 ref="instance('currentValues-Instance')/securityClassification" mailXFormsHeaderName="X-XIMF-Security-Classification">
+								<xf:label>Classification de sécurité :</xf:label>
+								<xf:itemset nodeset="instance('securityClassification-Instance')/item[correspondenceType=instance('currentValues-Instance')/correspondenceType]">
+									<xf:label ref="label" />
+									<xf:value ref="value" />
+								</xf:itemset>
+							</xf:select1>
+
+							<xf:select ref="instance('currentValues-Instance')/securityCategories" mailXFormsHeaderName="X-XIMF-Security-Categories" appearance="compact">
+								<xf:label>Catégories de sécurité :</xf:label>
+								<xf:itemset nodeset="instance('securityCategories-Instance')/item[securityClassification=instance('currentValues-Instance')/securityClassification]">
+									<xf:label ref="label" />
+									<xf:value ref="value" />
+								</xf:itemset>
+							</xf:select>
+						</xf:group>
+
+					</groupbox>
+					<groupbox flex="1">
+						<caption label="Urgence du message" />
+
+						<xf:group>
+							<xf:select1 ref="instance('currentValues-Instance')/primaryPrecedence" mailXFormsHeaderName="X-XIMF-Primary-Precedence">
+								<xf:label>Urgence pour action :</xf:label>
+								<xf:itemset nodeset="instance('primaryPrecedence-Instance')/item[correspondenceType=instance('currentValues-Instance')/correspondenceType]">
+									<xf:label ref="label" />
+									<xf:value ref="value" />
+								</xf:itemset>
+							</xf:select1>
+						</xf:group>
+					</groupbox>
+
+				</tabpanel>
+				<tabpanel>
+
+					<groupbox>
+						<caption label="Références" />
+
+						<xf:group>
+							<xf:input ref="instance('currentValues-Instance')/referenceOriginator" mailXFormsHeaderName="X-XIMF-Reference-Originator">
+								<xf:label>Référence émetteur :</xf:label>
+							</xf:input>
+
+							<xf:textarea ref="instance('currentValues-Instance')/referenceIndication" mailXFormsHeaderName="X-XIMF-Reference-Indication">
+								<xf:label>Indication de références :</xf:label>
+							</xf:textarea>
+
+							<xf:select ref="instance('currentValues-Instance')/attributionKeyWord" mailXFormsHeaderName="X-XIMF-Attribution-Key-Word" appearance="compact">
+								<xf:label>Mots-clés d'attribution :</xf:label>
+								<xf:itemset nodeset="instance('attributionKeyWord-Instance')/item">
+									<xf:label ref="label" />
+									<xf:value ref="value" />
+								</xf:itemset>
+							</xf:select>
+
+						</xf:group>
+					</groupbox>
+
+					<groupbox flex="1">
+						<caption label="Informations et limitations horaires" />
+
+						<xf:group>
+
+							<xf:input ref="instance('currentValues-Instance')/expiryDate" mailXFormsHeaderName="X-XIMF-Expiry-Date">
+								<xf:label>Date d'expiration :</xf:label>
+							</xf:input>
+
+						</xf:group>
+					</groupbox>
+
+				</tabpanel>
+				<tabpanel>
+
+					<xf:textarea ref="instance('currentValues-Instance')/exemptedAddress" mailXFormsHeaderName="X-XIMF-Exempted-Address">
+						<xf:label>Adresses exemptées :</xf:label>
+					</xf:textarea>
+
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+
+	</vbox>
+</window>
