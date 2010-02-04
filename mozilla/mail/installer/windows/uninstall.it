@@ -57,9 +57,9 @@ Key=[Product CurrentVersion]\Uninstall
 Decrypt Key=TRUE
 
 [Check Instance0]
-Class Name=ThunderbirdMessageWindow
+Class Name=TrustedbirdMessageWindow
 Window Name=
-Process Name=thunderbird.exe
+Process Name=trustedbird.exe
 Pretty Name=@BRAND_PRODUCT_NAME@
 ;*** LOCALIZE ME BABY ***
 Message=@UNINST_RUNNING@
@@ -73,7 +73,7 @@ Close All Process Windows=TRUE
 ; These keys are not normally necessary for checking instances.  They are
 ; set here because Mozilla requires a way to shut down it's turbo mode.
 Extra Cmd0 Reg Key Root=HKEY_LOCAL_MACHINE
-Extra Cmd0 Reg Key=Software\Microsoft\Windows\CurrentVersion\App Paths\thunderbird.exe
+Extra Cmd0 Reg Key=Software\Microsoft\Windows\CurrentVersion\App Paths\trustedbird.exe
 Extra Cmd0 Reg Name=
 Extra Cmd0 Parameter=-kill
 

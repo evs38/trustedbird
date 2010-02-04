@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Trustedbird
+Comment=Read/Write Mail/News with Trustedbird, based on Mozilla Thunderbird
+GenericName=Mail Client
+Exec=trustedbird %u
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=trustedbird
+Categories=Network;
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;
+StartupWMClass=Trustedbird-bin
+StartupNotify=true

@@ -1,4 +1,4 @@
 ;!@Install@!UTF-8!
-Title="Mozilla Thunderbird"
+Title="Trustedbird"
 RunProgram="setup.exe"
 ;!@InstallEnd@!

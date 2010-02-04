@@ -61,7 +61,7 @@ bin\extensions\talkback@mozilla.org\components\talkback.hlp
 [mail]
 
 bin\xpicleanup.exe
-bin\thunderbird.exe
+bin\trustedbird.exe
 bin\LICENSE.txt
 bin\license.html
 bin\README.txt

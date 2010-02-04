@@ -52,6 +52,9 @@ CRCCheck on
 ; prevents compiling of the reg write logging.
 !define NO_LOG
 
+!define NO_UNINSTALL_SURVEY
+
+
 Var TmpVal
 
 ; Other included files may depend upon these includes!

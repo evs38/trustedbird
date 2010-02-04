@@ -188,11 +188,11 @@
 			<isset property="isUnix" />
 			<then>
 				<property name="local.checkbuild.file"
-				          value="dist/bin/thunderbird" />
+				          value="dist/bin/trustedbird" />
 			</then>
 			<else>
 				<property name="local.checkbuild.file"
-				          value="dist/bin/thunderbird.exe" />
+				          value="dist/bin/trustedbird.exe" />
 			</else>
 		</if>
 
@@ -376,7 +376,7 @@
 							<arg value="${local.build.dir}" />
 							<arg value="${local.build.dir}/${tb.name}_${local.tb.version}.tar.gz" />
 							<arg value="${local.tb.version}" />
-							<arg value="${local.tools.dir}/debian-control" />
+							<arg value="${local.tools.dir}" />
 						</exec>
 						<copy file="${local.build.dir}/trustedbird.deb"
 						      tofile="${local.dist.dir}/${tb.name}_${local.tb.version}_i686.deb" />
@@ -450,7 +450,7 @@
 				<property name="sed.name" value="sed" />
 			</then>
 			<else>
-				<property name="sed.name" value="sed-cygwin" />
+				<property name="sed.name" value="c:\cygwin\bin\sed.exe" />
 			</else>
 		</if>
 

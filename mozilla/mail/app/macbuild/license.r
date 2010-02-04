@@ -27,7 +27,7 @@ resource 'STR#' (5000, "English") {
     // Save As, ellipsis is 0xC9
     "Save As…",
     // Descriptive text, curly quotes are 0xD2 and 0xD3
-    "You are about to install Mozilla Thunderbird.\n"
+    "You are about to install Trustedbird.\n"
     "\n"
     "Please read the license agreement.  If you agree to its terms and accept, click “Agree” to access the software.  Otherwise, click “Disagree” to cancel."
   };

@@ -36,15 +36,15 @@
 
 # NSIS defines for nightly builds.
 # The release build branding.nsi is located in other-license/branding/thunderbird/
-!define BrandShortName        "Thunderbird"
-!define BrandFullName         "Mozilla Thunderbird"
+!define BrandShortName        "Trustedbird"
+!define BrandFullName         "Trustedbird"
 # BrandFullNameInternal is used for some registry and file system values that
 # should not contain release that may be in the BrandFullName (e.g. Beta 1, etc.)
-!define BrandFullNameInternal "Mozilla Thunderbird"
+!define BrandFullNameInternal "Trustedbird"
 !define CompanyName           "Mozilla"
-!define URLInfoAbout          "http://www.mozilla.org/"
-!define URLUpdateInfo         "http://www.mozilla.org/products/thunderbird/"
-!define SurveyURL             "https://survey.mozilla.com/1/Mozilla%20Thunderbird/${AppVersion}/${AB_CD}/exit.html"
+!define URLInfoAbout          "http://www.trustedbird.org/"
+!define URLUpdateInfo         "http://www.trustedbird.org/"
+!define SurveyURL             "http://www.trustedbird.org/"
 
 # Percentage of new "Standard" installs to enable talkback for
 !define RandomPercent         "100"
