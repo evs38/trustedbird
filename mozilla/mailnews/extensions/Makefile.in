@@ -44,7 +44,7 @@ VPATH		= @srcdir@
 include $(DEPTH)/config/autoconf.mk
 
 # these extensions are not optional
-DIRS	= mdn dsn mailviews bayesian-spam-filter offline-startup securitylabel
+DIRS	= mdn dsn mailviews bayesian-spam-filter offline-startup securitylabel secureheaders
 
 ifdef MOZ_PSM
 BUILD_SMIME=1

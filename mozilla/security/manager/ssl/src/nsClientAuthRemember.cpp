@@ -244,6 +244,110 @@ nsClientAuthRememberService::AddEntryToList(const nsACString &aHostName,
   return NS_OK;
 }
 
+nsresult
+nsClientAuthRememberService::RememberDecision(const nsACString & aHostName,
+                                              CERTCertificate *aServerCert, CERTCertificate *aClientCert, const nsACString & aClientLogin)
+{
+  // aClientCert == NULL means: remember that user does not want to use a cert
+  NS_ENSURE_ARG_POINTER(aServerCert);
+  if (aHostName.IsEmpty())
+    return NS_ERROR_INVALID_ARG;
+
+  nsCAutoString fpStr;
+  nsresult rv = GetCertFingerprintByOidTag(aServerCert, SEC_OID_SHA256, fpStr);
+  if (NS_FAILED(rv))
+    return rv;
+
+  {
+    nsAutoMonitor lock(monitor);
+    if (aClientCert && aClientLogin.IsEmpty()) {
+      AddEntryToList(aHostName, fpStr,
+                     nsDependentCString(aClientCert->nickname));
+    }
+	else if(aClientCert && !aClientLogin.IsEmpty()){
+		AddEntryToList(aHostName, fpStr,
+					 nsDependentCString(aClientCert->nickname),
+					 aClientLogin);
+	}
+    else {
+      nsCString empty;
+      AddEntryToList(aHostName, fpStr, empty);
+    }
+  }
+
+  return NS_OK;
+}
+
+nsresult
+nsClientAuthRememberService::HasRememberedDecision(const nsACString & aHostName,
+                                                   CERTCertificate *aCert,
+                                                   nsACString & aClientNickname,
+                                                   PRBool *_retval,
+                                                   const nsACString & aClientLogin)
+{
+  if (aHostName.IsEmpty())
+    return NS_ERROR_INVALID_ARG;
+
+  NS_ENSURE_ARG_POINTER(aCert);
+  NS_ENSURE_ARG_POINTER(_retval);
+  *_retval = PR_FALSE;
+
+  nsresult rv;
+  nsCAutoString fpStr;
+  rv = GetCertFingerprintByOidTag(aCert, SEC_OID_SHA256, fpStr);
+  if (NS_FAILED(rv))
+    return rv;
+
+  nsCAutoString hostCert;
+  GetHostWithCert(aHostName, fpStr, hostCert);
+  nsClientAuthRemember settings;
+
+  {
+    nsAutoMonitor lock(monitor);
+    nsClientAuthRememberEntry *entry = mSettingsTable.GetEntry(hostCert.get());
+    if (!entry)
+      return NS_OK;
+    settings = entry->mSettings; // copy
+  }
+
+  aClientNickname = settings.mClientNickname;
+  if(aClientLogin.IsEmpty() || aClientLogin.Equals(settings.mClientLogin))
+	*_retval = PR_TRUE;
+
+  return NS_OK;
+}
+
+nsresult
+nsClientAuthRememberService::AddEntryToList(const nsACString &aHostName,
+                                      const nsACString &fingerprint,
+                                      const nsACString &client_nickname,
+                                      const nsACString &client_login)
+
+{
+  nsCAutoString hostCert;
+  GetHostWithCert(aHostName, fingerprint, hostCert);
+
+  {
+    nsAutoMonitor lock(monitor);
+    nsClientAuthRememberEntry *entry = mSettingsTable.PutEntry(hostCert.get());
+
+    if (!entry) {
+      NS_ERROR("can't insert a null entry!");
+      return NS_ERROR_OUT_OF_MEMORY;
+    }
+
+    entry->mHostWithCert = hostCert;
+
+    nsClientAuthRemember &settings = entry->mSettings;
+    settings.mAsciiHost = aHostName;
+    settings.mFingerprint = fingerprint;
+    settings.mClientNickname = client_nickname;
+	settings.mClientLogin = client_login;
+  }
+
+  return NS_OK;
+}
+
 void
 nsClientAuthRememberService::GetHostWithCert(const nsACString & aHostName, 
                                              const nsACString & fingerprint, 

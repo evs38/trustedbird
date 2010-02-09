@@ -957,6 +957,53 @@ NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecuri
 }
 
 /*
+ * NSS_CMSSignerInfo_AddSecureHeader - add Secure Headers attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddSecureHeader(NSSCMSSignerInfo *signerinfo, SecHeaderField * arrayHeaderField, const int nbHeaders, PRInt32 canonAlgo)
+{
+    NSSCMSAttribute *attr;
+    SECItem *secureHeaders = NULL;
+    void *mark;
+    PLArenaPool *poolp;
+
+    poolp = signerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    secureHeaders = SECITEM_AllocItem(poolp, NULL, 0);
+    if (secureHeaders == NULL)
+      goto loser;
+
+    /* create new secureHeaders attribute */
+    if (NSS_SMIMEUtil_CreateSecureHeader(poolp, secureHeaders, arrayHeaderField, nbHeaders, canonAlgo) != SECSuccess)
+      goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_SECURE_HEADERS, secureHeaders, PR_TRUE)) == NULL)
+      goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
+      goto loser;
+
+    PORT_ArenaUnmark (poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease (poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetSecureHeader - get S/MIME SecureHeaders attr value
+ */
+SECStatus
+NSS_CMSSignerInfo_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader *secHeaders)
+{
+    return NSS_SMIMEUtil_GetSecureHeader(signerinfo, secHeaders);
+}
+
+/*
  * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the
  * authenticated (i.e. signed) attributes of "signerinfo".
  */

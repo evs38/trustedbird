@@ -38,6 +38,7 @@
 
 #include "secoid.h"
 #include "pkcs11t.h"
+#include "secmodt.h"
 #include "secitem.h"
 #include "secerr.h"
 #include "prenv.h"
@@ -262,6 +263,9 @@ CONST_OID smimeReceiptRequest[]                 = { PKCS9_SMIME_ATTRS, 1 };
 CONST_OID smimeReceipt[]                        = { PKCS9_SMIME_IDS, 1, 1 };
 CONST_OID smimeMsgSigDigest[]                   = { PKCS9_SMIME_ATTRS, 2, 5 };
 CONST_OID smimeSecurityLabel[]                  = { PKCS9_SMIME_ATTRS, 2 };
+
+/*Signed Headers*/
+CONST_OID smimeSignedHeader[] = {PKCS9_SMIME_ATTRS, 80};
 
 /* RFC2633 SMIME message attributes */
 CONST_OID smimeEncryptionKeyPreference[] 	= { PKCS9_SMIME_ATTRS, 11 };
@@ -1605,7 +1609,10 @@ const static SECOidData oids[SEC_OID_TOTAL] = {
     OD( smimeSecurityLabel, SEC_OID_SMIME_SECURITY_LABEL,
         "S/MIME Security Label",
         CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
-
+    /*Signed Header*/
+    OD( smimeSignedHeader, SEC_OID_SMIME_SECURE_HEADERS,
+        "S/MIME Signed Header",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
 };
 
 /* PRIVATE EXTENDED SECOID Table

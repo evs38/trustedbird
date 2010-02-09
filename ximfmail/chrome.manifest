@@ -1,0 +1,9 @@
+content ximfmail chrome/content/kernel/ xpcnativewrappers=yes
+content theme_ximfmail chrome/content/theme/ xpcnativewrappers=yes
+locale ximfmail en chrome/locale/en-US/
+locale ximfmail fr chrome/locale/fr/ 
+skin ximfmail classic/1.0 chrome/skin/
+overlay chrome://messenger/content/messenger.xul chrome://ximfmail/content/messenger-ov-ximfmail.xul
+overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://ximfmail/content/messengerCompose-ov-ximfmail.xul
+overlay chrome://messenger/content/messageWindow.xul chrome://ximfmail/content/messageWindow-ov-ximfmail.xul
+overlay chrome://messenger/content/messenger.xul chrome://ximfmail/content/messageWindow-ov-ximfmail.xul

@@ -25,6 +25,7 @@
    -   Håkan Waara <hwaara@chello.se>
    -   Neil Rashbrook <neil@parkwaycc.co.uk> (ass'td polish fix)
    -   Ian Neal <bugzilla@arlen.demon.co.uk>
+   -   EADS Defence and Security
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -100,6 +101,9 @@
 <!-- drag and drop -->
 <script type="application/x-javascript" src="chrome://global/content/nsDragAndDrop.js"/>
 <script type="application/x-javascript" src="chrome://global/content/nsTransferable.js"/>
+
+<!-- Signed Headers -->
+<script type="application/x-javascript" src="chrome://messenger/content/msgCompSMIMESignedHeaders.js"/>
 
 <commandset id="composeCommands">
   <commandset id="msgComposeCommandUpdate"

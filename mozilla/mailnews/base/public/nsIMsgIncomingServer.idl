@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Seth Spitzer <sspitzer@netscape.com>
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -417,6 +418,9 @@ interface nsIMsgIncomingServer : nsISupports {
 
   // check if new hdr is a duplicate of a recently arrived header
   boolean isNewHdrDuplicate(in nsIMsgDBHdr aNewHdr);
+
+  //check if the authentication by certificate is activated
+  boolean isAuthenticationByCertificate();
 };
 
 %{C++

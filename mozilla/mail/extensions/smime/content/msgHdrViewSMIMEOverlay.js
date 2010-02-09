@@ -23,6 +23,7 @@
 #   Scott MacGreogr <mscott@netscape.com>
 #   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
 #   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+#   EADS Defence and Security Systems
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,6 +40,10 @@
 # ***** END LICENSE BLOCK *****
 
 const MSG_FLAG_SIGNED_RECEIPT_SENT = 0x2000000;
+const nsIMsgSMIMESecureHeader = Components.interfaces.nsIMsgSMIMESecureHeader;
+const nsIMimeConverter = Components.interfaces.nsIMimeConverter;
+const nsIMIMEHeaderParam = Components.interfaces.nsIMIMEHeaderParam;
+const nsIArray = Components.interfaces.nsIArray;
 
 var gSignedUINode = null;
 var gEncryptedUINode = null;
@@ -54,6 +59,9 @@ var gSMIMEBundle = null;
 //var gBrandBundle; -- defined in mailWindow.js
 
 // manipulates some globals from msgReadSMIMEOverlay.js
+
+const SECURE_HEADER_SEPARATOR = "###HEADER_SEPARATOR###";
+const HEADER_VAL_SEPARATOR = "###HEADER_VAL###";
 
 const nsICMSMessageErrors = Components.interfaces.nsICMSMessageErrors;
 
@@ -302,6 +310,74 @@ var smimeHeaderSink =
     msgHdr.setStringProperty("smimeReceiptOriginatorContentType", gOriginatorContentType);
   },
 
+  secureHeadersStatus: function(aSecureHeaders, aCanonAlgo)
+  {
+
+	var secStatus = true; //flag for the global secure headers status, set at true as default means all secure headers were not modified
+	gSecureHeaders = "";
+	if(aSecureHeaders)
+	{
+		gSecureHeadersState=1;
+		var secureHeaders=aSecureHeaders.QueryInterface(nsIArray);
+		var hdrArray=getMsgHdr(); //get selected mime message headers list
+		for(var i=0;i<secureHeaders.length;++i)
+		{
+			var sHeader = secureHeaders.queryElementAt(i,nsIMsgSMIMESecureHeader);
+			if(sHeader){
+				var hdrName = sHeader.headerName;
+				var hdrValue = sHeader.headerValue; // Value in the signature
+				var hdrStatus = ""+sHeader.headerStatus;
+				var hdrValidity = "ok" //set the default header validity to ok, it means the header was not modified
+				//var headerEncrypted = sHeader.headerEncrypted;
+				if(hdrStatus == "0") //Verify the value validity only in the case where header status is duplicated
+				{
+					for(var j=0;j<hdrArray.length;++j)
+					{
+						if(aCanonAlgo)
+						{
+							hdrArray[j]._hdrName = canonilizeHeaderName(hdrArray[j]._hdrName);
+							hdrArray[j]._hdrValue = canonilizeHeaderValue(hdrArray[j]._hdrValue);
+						}
+						if(hdrName==hdrArray[j]._hdrName)
+						{
+							var mimeValue=hdrArray[j]._hdrValue; //Value in the mime
+							var mimeParam = Components.classes["@mozilla.org/network/mime-hdrparam;1"].createInstance(nsIMIMEHeaderParam);
+							var charset = getMimeValueCharset(mimeValue);
+							var valdecoded = _from_utf8(mimeParam.decodeRFC2047Header(hdrValue,charset,false,true)); //decode the value to display
+							reg=new RegExp("\r\n", "g");
+							hdrValue=hdrValue.replace(reg,"");
+							mimeValue=mimeValue.replace(reg,"");
+							if(hdrValue!=mimeValue) //test if the header value in the signature and that one in the mime message is the same
+							{
+								hdrValidity="nok"; //header was modified
+								secStatus=false;
+							}
+						}
+					}
+				}
+
+				//set the display secure headers information in the string to parse after in the GUI
+				gSecureHeaders+=hdrName+HEADER_VAL_SEPARATOR;
+				gSecureHeaders+=valdecoded+HEADER_VAL_SEPARATOR; //put the value decoded instead of the value in the signature (encoded RFC2047) for the diplay
+				gSecureHeaders+=""+hdrStatus+HEADER_VAL_SEPARATOR;
+				gSecureHeaders+=""+hdrValidity+HEADER_VAL_SEPARATOR;
+				//gSecureHeaders+=""+headerEncrypted+HEADER_VAL_SEPARATOR;
+				gSecureHeaders+=SECURE_HEADER_SEPARATOR;
+			}
+		}
+
+
+		if((!secStatus) && (gSignatureStatus == nsICMSMessageErrors.SUCCESS))
+		{
+			//At least one secure header was modified, set the signed status to mismastch
+			gSignedUINode.setAttribute("signed", "mismatch");
+			gStatusBar.setAttribute("signed", "mismatch");
+			gSecureHeadersState=0;
+		}
+
+	}
+  },
+
   QueryInterface : function(iid)
   {
     if (iid.equals(Components.interfaces.nsIMsgSMIMEHeaderSink) || iid.equals(Components.interfaces.nsISupports))
@@ -478,6 +554,194 @@ function msgHdrViewSMIMEOnMessagePaneUnhide()
     }
   }
 }
+
+function MsgHdrObj(){
+		this._hdrName;
+		this._hdrValue;
+}
+
+/**
+* Get the Message header list
+*/
+function getMsgHdr(){
+		var _HdrArray = new Array;
+		var msgURI = GetLoadedMessage();
+		var cmessenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);
+		var msgSvc =  cmessenger.messageServiceFromURI(msgURI);
+		//var xmsgHdr = _messenger.msgHdrFromURI(gCurrentMessageUri); // ok, entetes basic de messages
+		var MsgStream =  Components.classes["@mozilla.org/network/sync-stream-listener;1"].createInstance();
+ 		var consumer = MsgStream.QueryInterface(Components.interfaces.nsIInputStream);
+ 		var ScriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
+ 		var ScriptInputStream = ScriptInput.QueryInterface(Components.interfaces.nsIScriptableInputStream);
+ 		ScriptInputStream.init(consumer);
+ 		try{
+   			msgSvc.streamMessage(msgURI, MsgStream, msgWindow, null, false, null);
+ 		}catch (e){
+   			dump("Error line " + Error().lineNumber + " : "+ e + " - file "+ Error().fileName);
+ 		}
+
+		// analyse des donnees du message selectionne
+ 		ScriptInputStream.available();
+ 		var content = "";
+ 		var tmpBuf = "";
+ 		while (ScriptInputStream .available()) {
+ 			tmpBuf = ScriptInputStream.read(512);
+ 			content = content + tmpBuf;
+ 			// extrac headers
+ 			// RFC 2822 :  The body is simply a sequence of characters that
+   			// follows the header and is separated from the header by an empty line
+   			// (i.e., a line with nothing preceding the CRLF).
+ 			if(tmpBuf.indexOf("\r\n\r\n",0) != -1){
+ 				break;
+ 			}
+		}
+
+
+		var cur_pos_CRLF = 0; //position courante du caractere CRLF
+		var cur_pos_str = 0; //position courante de la chaine
+		var ligne_header = "";
+		while((cur_pos_CRLF=content.indexOf("\r\n",cur_pos_str))!=-1)
+		{
+
+			if(content.charAt(cur_pos_CRLF+2)==" ")
+			{
+				ligne_header+=content.substring(cur_pos_str,cur_pos_CRLF);
+				cur_pos_str=cur_pos_CRLF+3;
+				continue;
+			}
+			else
+			{
+				ligne_header+=content.substring(cur_pos_str,cur_pos_CRLF+2);
+				var msghdr = new MsgHdrObj();
+				msghdr._hdrName = ligne_header.substring(0,ligne_header.indexOf(": ",0));
+				msghdr._hdrValue = ligne_header.substring(ligne_header.indexOf(": ",ligne_header)+2);
+				ligne_header="";
+				cur_pos_str=cur_pos_CRLF+2;
+				_HdrArray.push(msghdr);
+			}
+
+		}
+
+		/*var separator = new RegExp("[\r\n]+","g"); // fin de ligne
+		var tab = content.split(separator);
+		for(i=0;i<tab.length;i++){
+				var msghdr = new MsgHdrObj();
+				msghdr._hdrName = tab[i].substring(0,tab[i].indexOf(": ",0));
+				msghdr._hdrValue = tab[i].substring(tab[i].indexOf(": ",tab[i])+2);
+				_HdrArray.push(msghdr);
+		}*/
+		return _HdrArray;
+}
+
+function getMimeValueCharset(val)
+{
+	var res="";
+	if(val.indexOf("=?")!=-1)
+	{
+		val=val.substring(val.indexOf("=?")+2);
+		if(val.indexOf("?")!=-1)
+		{
+			res=val.substring(0,val.indexOf("?"));
+		}
+	}
+	return res;
+}
+
+function _to_utf8(s) {
+  var c, d = "";
+  for (var i = 0; i < s.length; i++) {
+    c = s.charCodeAt(i);
+    if (c <= 0x7f) {
+      d += s.charAt(i);
+    } else if (c >= 0x80 && c <= 0x7ff) {
+      d += String.fromCharCode(((c >> 6) & 0x1f) | 0xc0);
+      d += String.fromCharCode((c & 0x3f) | 0x80);
+    } else {
+      d += String.fromCharCode((c >> 12) | 0xe0);
+      d += String.fromCharCode(((c >> 6) & 0x3f) | 0x80);
+      d += String.fromCharCode((c & 0x3f) | 0x80);
+    }
+  }
+  return d;
+}
+
+function _from_utf8(s) {
+  var c, d = "", flag = 0, tmp;
+  for (var i = 0; i < s.length; i++) {
+    c = s.charCodeAt(i);
+    if (flag == 0) {
+      if ((c & 0xe0) == 0xe0) {
+        flag = 2;
+        tmp = (c & 0x0f) << 12;
+      } else if ((c & 0xc0) == 0xc0) {
+        flag = 1;
+        tmp = (c & 0x1f) << 6;
+      } else if ((c & 0x80) == 0) {
+        d += s.charAt(i);
+      } else {
+        flag = 0;
+      }
+    } else if (flag == 1) {
+      flag = 0;
+      d += String.fromCharCode(tmp | (c & 0x3f));
+    } else if (flag == 2) {
+      flag = 3;
+      tmp |= (c & 0x3f) << 6;
+    } else if (flag == 3) {
+      flag = 0;
+      d += String.fromCharCode(tmp | (c & 0x3f));
+    } else {
+      flag = 0;
+    }
+  }
+  return d;
+}
+
+/*
+ * Supprime les sauts de ligne.
+ */
+function removeJumpSymb( str )
+{
+	var rv=str;
+	var reg=new RegExp("\n\r", "g");
+	rv=rv.replace(reg, "");
+	reg=new RegExp("\r\n", "g");
+	rv=rv.replace(reg, "");
+	reg=new RegExp("\r", "g");
+	rv=rv.replace(reg, "");
+	reg=new RegExp("\n", "g");
+	rv=rv.replace(reg, "");
+	rv+="\r\n";
+	return rv;
+}
+
+/*
+ * Transforme les tabulations et les occurences multiples d'espace en un espace unique.
+ */
+function onlyOneWhiteSpace(str)
+{
+	var rv=str;
+	var reg=new RegExp("\t", "g");
+	rv=rv.replace(reg, " ");
+	reg=new RegExp("  ", "g");
+	rv=rv.replace(reg, " ");
+	return rv;
+}
+
+function canonilizeHeaderValue(hdrval)
+{
+	var val=removeJumpSymb(hdrval);
+	val=onlyOneWhiteSpace(val);
+	return val;
+}
+
+function canonilizeHeaderName(hdrname)
+{
+	var val=hdrname.toLowerCase();
+	val=onlyOneWhiteSpace(val);
+	return val;
+}
+
 
 addEventListener('messagepane-loaded', msgHdrViewSMIMEOnLoad, true);
 addEventListener('messagepane-unloaded', msgHdrViewSMIMEOnUnload, true);

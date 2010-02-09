@@ -455,6 +455,9 @@ typedef enum {
     SEC_OID_SMIME_MSG_SIG_DIGEST            = 305,
     SEC_OID_SMIME_SECURITY_LABEL            = 306,
 
+    /* Signed Header */
+    SEC_OID_SMIME_SECURE_HEADERS            = 307,
+
     SEC_OID_TOTAL
 } SECOidTag;
 

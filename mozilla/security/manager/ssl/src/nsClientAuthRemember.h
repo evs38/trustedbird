@@ -67,12 +67,14 @@ public:
     mAsciiHost = other.mAsciiHost;
     mFingerprint = other.mFingerprint;
     mClientNickname = other.mClientNickname;
+    mClientLogin = other.mClientLogin;
     return *this;
   }
 
   nsCString mAsciiHost;
   nsCString mFingerprint;
   nsCString mClientNickname;
+  nsCString mClientLogin;
 };
 
 
@@ -159,6 +161,11 @@ public:
   nsresult HasRememberedDecision(const nsACString & aHostName, 
                                  CERTCertificate *aCert, nsACString & aClientNickname, PRBool *_retval);
 
+  nsresult RememberDecision(const nsACString & aHostName,
+                            CERTCertificate *aServerCert, CERTCertificate *aClientCert, const nsACString & aClientLogin);
+  nsresult HasRememberedDecision(const nsACString & aHostName,
+                                 CERTCertificate *aCert, nsACString & aClientNickname, PRBool *_retval, const nsACString & aClientLogin);
+
   void ClearRememberedDecisions();
 
 protected:
@@ -169,6 +176,10 @@ protected:
     nsresult AddEntryToList(const nsACString &host, 
                             const nsACString &server_fingerprint,
                             const nsACString &client_nickname);
+	nsresult AddEntryToList(const nsACString &host,
+                            const nsACString &server_fingerprint,
+                            const nsACString &client_nickname,
+                            const nsACString &client_login);
 };
 
 #endif

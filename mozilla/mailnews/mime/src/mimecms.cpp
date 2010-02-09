@@ -22,6 +22,7 @@
  * Contributor(s): 
  *   Kai Engert <kengert@redhat.com>
  *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -58,6 +59,8 @@
 #include "nsIMsgHeaderParser.h"
 #include "nsIProxyObjectManager.h"
 
+
+#include "nsArray.h" //DRA
 
 #define MIME_SUPERCLASS mimeEncryptedClass
 MimeDefClass(MimeEncryptedCMS, MimeEncryptedCMSClass,
@@ -396,6 +399,12 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
           PR_Free(originatorSignatureValue);
         if (originatorContentType)
           PR_Free(originatorContentType);
+
+        // Handle Signed Headers
+        nsCOMPtr<nsIMutableArray> secureHeaders;
+        PRInt32 canonAlgo;
+        msg->GetSecureHeader(getter_AddRefs(secureHeaders),&canonAlgo);
+        proxySink->SecureHeadersStatus(secureHeaders,canonAlgo);
       }
     }
   }

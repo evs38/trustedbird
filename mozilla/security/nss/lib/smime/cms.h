@@ -782,6 +782,19 @@ NSS_CMSSignerInfo_GetReceiptRequest(
 extern PRBool
 NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo);
 
+/*
+ * NSS_CMSSignerInfo_AddSecureHeader - add Secure Header attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddSecureHeader(NSSCMSSignerInfo *signerinfo, SecHeaderField * arrayHeaderField, const int nbHeaders, PRInt32 canonAlgo);
+
+/*
+ * NSS_CMSSignerInfo_GetSecureHeader - get S/MIME Secure Header attr value
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader *secuHeaders);
+
 /* 
  * NSS_CMSSignerInfo_AddCounterSignature - countersign a signerinfo
  */

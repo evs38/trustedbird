@@ -26,6 +26,7 @@
  *   racham@netscape.com
  *   hwaara@chello.se
  *   bienvenu@nventure.com
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -53,6 +54,41 @@ function onInit(aPageId, aServerId)
     setupMailOnServerUI();
     setupFixedUI();
     setupNotifyUI();
+     //XPS
+  	try {
+  		//set mail.server.%serverkey%.authByCert for sasl external
+  		if(gServer){
+  			var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+      		var prefAuthByCert = "mail.server." + gServer.key + ".authByCert";
+			if(prefs.prefHasUserValue(prefAuthByCert)){		
+				var bAuthByCert = prefs.getBoolPref(prefAuthByCert);
+				if(bAuthByCert){
+					document.getElementById("server.authByCert").setAttribute("checked", "true");
+				}else{
+					document.getElementById("server.authByCert").setAttribute("checked", "false");
+				}
+			}else{
+				prefs.setBoolPref(prefAuthByCert,false);
+		}
+  	}
+   }catch (ex) { }
+}
+
+//XPS
+// save mail.server.%serverkey%.authByCert for sasl external
+function onSave(){
+	try{ 
+		if(gServer){  		
+			var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+			var prefAuthByCert = "mail.server." + gServer.key + ".authByCert";
+			var isAuthByCert = document.getElementById("server.authByCert").getAttribute("checked");
+			if(isAuthByCert == "true"){					
+				prefs.setBoolPref(prefAuthByCert,true);
+			}else{			
+				prefs.setBoolPref(prefAuthByCert,false);
+			}
+  		}
+	}catch (ex) { }
 }
 
 function onPreInit(account, accountValues)
@@ -89,6 +125,7 @@ function onPreInit(account, accountValues)
   if (hideButton)
     document.getElementById("server.advancedbutton").setAttribute("hidden", "true");  
   // otherwise let hideShowControls decide
+ 
 }
 
 function initServerType()
@@ -109,6 +146,15 @@ function initServerType()
     isSecureSelected = document.getElementById("server.isSecure").checked;
   var protocolInfo = Components.classes["@mozilla.org/messenger/protocol/info;1?type=" + serverType].getService(Components.interfaces.nsIMsgProtocolInfo);
   document.getElementById("defaultPort").value = protocolInfo.getDefaultServerPort(isSecureSelected);
+  
+  //DRA
+  if(document.getElementById("server.socketType").value == 0){
+   	document.getElementById("server.authByCert").setAttribute("disabled", "true");
+ 	document.getElementById("server.authByCert").setAttribute("checked","false");
+  }else{
+   	document.getElementById("server.authByCert").removeAttribute("disabled");
+  }
+  //DRA 
 }
 
 function setDivText(divname, value) 
@@ -200,7 +246,16 @@ function secureSelect()
         portDefault.value = defaultPort;
         if (port.value == "" || (port.value == defaultPortSecure && prevDefaultPort != portDefault.value))
           port.value = defaultPort;
-    } 
+    }
+    
+    //DRA
+    if(document.getElementById("server.socketType").value == 0){
+    	document.getElementById("server.authByCert").setAttribute("disabled", "true");
+ 		document.getElementById("server.authByCert").setAttribute("checked","false");
+    }else{
+    	document.getElementById("server.authByCert").removeAttribute("disabled");
+    }
+    //DRA 
 }
 
 function setupBiffUI()

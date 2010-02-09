@@ -50,6 +50,11 @@
 #include "nsCertVerificationThread.h"
 #include "nsUUIDGenerator.h"
 
+#include "nsISupportsArray.h"
+#include "nsIMsgSMIMESecureHeader.h"
+#include "nsMsgSMIMECID.h"
+#include "nsStringAPI.h"
+
 #include "prlog.h"
 #ifdef PR_LOGGING
 extern PRLogModuleInfo* gPIPNSSLog;
@@ -728,7 +733,7 @@ NS_IMETHODIMP nsCMSMessage::CreateReceipt(const PRUint8 *aSignedReceiptContentId
   return NS_OK;
 }
 
-NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert* aEncryptCert, unsigned char* aDigestData, PRUint32 aDigestDataLen, const char* aSecurityPolicyIdentifier, PRInt32 aSecurityClassification, const char* aPrivacyMark, const char* aSecurityCategories, unsigned char* aReceiptsTo, const PRBool aSignedReceipt)
+NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert* aEncryptCert, unsigned char* aDigestData, PRUint32 aDigestDataLen, const char* aSecurityPolicyIdentifier, PRInt32 aSecurityClassification, const char* aPrivacyMark, const char* aSecurityCategories, unsigned char* aReceiptsTo, const PRBool aSignedReceipt, nsIArray * secureHeaders, PRInt32 canonAlgo)
 {
   nsNSSShutDownPreventionLock locker;
   if (isAlreadyShutDown())
@@ -830,6 +835,82 @@ NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert*
       goto loser;
     }
   }
+
+ //Add Secure Headers
+  if(secureHeaders!=NULL){
+
+	PRUint32 nbHeaders=0;
+	SecHeaderField * headerFields= NULL;
+	secureHeaders->GetLength(&nbHeaders);
+	if(nbHeaders>0)
+	{
+		PRInt32 i=0;
+		headerFields = (SecHeaderField *)PORT_Alloc(nbHeaders * sizeof(SecHeaderField));
+		//init to null
+		for(i=0;i<nbHeaders;++i){
+			headerFields[i].headerName = NULL;
+			headerFields[i].headerValue = NULL;
+		}
+
+		for(i=0;i<nbHeaders;++i){
+
+				nsCOMPtr<nsIMsgSMIMESecureHeader> _secureHeader= do_QueryElementAt(secureHeaders,i);
+			if (_secureHeader){
+				nsAutoString _headerName;
+				nsAutoString _headerValue;
+				_secureHeader->GetHeaderStatus(&headerFields[i].headerStatus);
+				//_secureHeader->GetHeaderEncrypted(&headerFields[i].headerEncrypted);
+				_secureHeader->GetHeaderName(_headerName);
+				_secureHeader->GetHeaderValue(_headerValue);
+				if(_headerName.Length()>0){
+					/*headerFields[i].headerName = (char *)PORT_Alloc((_headerName.Length()+1) * sizeof (char));
+					PORT_Memcpy (headerFields[i].headerName,(char *)(NS_ConvertUTF16toUTF8(_headerName).get()),_headerName.Length());
+					headerFields[i].headerName[_headerName.Length()]='\0';*/
+					nsCAutoString hdrNameUTF8 = NS_ConvertUTF16toUTF8(_headerName);
+					headerFields[i].headerName = (char *)PORT_Alloc((hdrNameUTF8.Length()+1) * sizeof (char));
+					PORT_Memcpy (headerFields[i].headerName,(char *)hdrNameUTF8.get(),hdrNameUTF8.Length());
+					headerFields[i].headerName[hdrNameUTF8.Length()]='\0';
+
+				}
+				if(_headerValue.Length()>0){
+					/*headerFields[i].headerValue = (char *)PORT_Alloc((_headerValue.Length()+1) * sizeof (char));
+					PORT_Memcpy (headerFields[i].headerValue,(char *)(NS_ConvertUTF16toUTF8(_headerValue).get()),_headerValue.Length());
+					headerFields[i].headerValue[_headerValue.Length()]='\0';*/
+					nsCAutoString hdrValueUTF8 = NS_ConvertUTF16toUTF8(_headerValue);
+					headerFields[i].headerValue = (char *)PORT_Alloc((hdrValueUTF8.Length()+1) * sizeof (char));
+					PORT_Memcpy (headerFields[i].headerValue,(char *)hdrValueUTF8.get(),hdrValueUTF8.Length());
+					headerFields[i].headerValue[hdrValueUTF8.Length()]='\0';
+				}
+
+			}
+		}
+
+		if (NSS_CMSSignerInfo_AddSecureHeader(signerinfo, headerFields,nbHeaders,canonAlgo) != SECSuccess) {
+			PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add Secure Headers\n"));
+			//free memory
+			for(i=0;i<nbHeaders;++i)
+			{
+				if(headerFields[i].headerName!=NULL)
+					PORT_Free((char *)(headerFields[i].headerName));
+				if(headerFields[i].headerValue!=NULL)
+					PORT_Free((char *)(headerFields[i].headerValue));
+			}
+			PORT_Free((SecHeaderField *)headerFields);
+			//free memory
+			goto loser;
+		}
+		//free memory
+		for(i=0;i<nbHeaders;++i)
+		{
+			if(headerFields[i].headerName!=NULL)
+				PORT_Free((char *)(headerFields[i].headerName));
+			if(headerFields[i].headerValue!=NULL)
+				PORT_Free((char *)(headerFields[i].headerValue));
+		}
+		PORT_Free((SecHeaderField *)headerFields);
+		//free memory
+	}
+  }
   
   // Add Signed Receipt Request
   if (aReceiptsTo != NULL && aReceiptsTo[0] != '\0') {
@@ -902,6 +983,99 @@ loser:
     m_cmsMsg = nsnull;
   }
   return rv;
+}
+
+NS_IMETHODIMP nsCMSMessage::GetSecureHeader( nsIMutableArray ** _secureHeaders, PRInt32 * canonAlgo){
+
+	nsresult rv;
+
+	rv=NS_NewArray(_secureHeaders);
+	if(NS_SUCCEEDED(rv)){
+		NSSCMSSecureHeader secureHeaders;
+		int i=0;
+		int secureHeaderItem=0;
+		int ca_len = 0;
+
+		NSSCMSSignerInfo *signerinfo = GetTopLevelSignerInfo();
+		if (!signerinfo) return NS_ERROR_FAILURE;
+
+		if(NSS_CMSSignerInfo_GetSecureHeader(signerinfo,&secureHeaders)==SECSuccess)
+		{
+			for(secureHeaderItem=0;secureHeaderItem<2;++secureHeaderItem){
+				if(secureHeaders.element[secureHeaderItem]!=NULL){
+					switch(secureHeaders.element[secureHeaderItem]->selector){
+						case NSSCMSSecureHeaderElement_canonAlgorithm :
+							ca_len=secureHeaders.element[secureHeaderItem]->id.canonAlgorithm.len;
+							*canonAlgo=0;
+							if((ca_len>0) &&(secureHeaders.element[secureHeaderItem]->id.canonAlgorithm.data!=NULL))
+							{
+								PORT_Memcpy(canonAlgo,secureHeaders.element[secureHeaderItem]->id.canonAlgorithm.data,4);
+							}
+						break;
+						case NSSCMSSecureHeaderElement_secHeaderField :
+							for(i=0;secureHeaders.element[secureHeaderItem]->id.secHeaderFields[i]!=NULL;++i)
+							{
+								nsAutoString headerValue;
+								nsAutoString headerName;
+								PRInt32 headerStatus=0;
+								//PRInt32 headerEncrypted=0;
+								NSSCMSSecHeaderFieldElement * secHeaderElement = NULL;
+								secHeaderElement=secureHeaders.element[secureHeaderItem]->id.secHeaderFields[i];
+								if(secHeaderElement!=NULL){
+									int hn_len=secHeaderElement->HeaderFieldName.len;
+									if(hn_len>0){
+										char * tmp_name=(char *) PORT_Alloc((hn_len+1) * sizeof(char));
+										PORT_Memcpy(tmp_name,secHeaderElement->HeaderFieldName.data,hn_len);
+										tmp_name[hn_len]='\0';
+										headerName.Assign(NS_ConvertUTF8toUTF16(tmp_name));
+										PORT_Free((char *)tmp_name);
+									}
+									int hv_len=secHeaderElement->HeaderFieldValue.len;
+									if(hv_len>0){
+										char * tmp_value=(char *) PORT_Alloc((hv_len+1) * sizeof(char));
+										PORT_Memcpy(tmp_value,secHeaderElement->HeaderFieldValue.data,hv_len);
+										tmp_value[hv_len]='\0';
+										headerValue.Assign(NS_ConvertUTF8toUTF16(tmp_value));
+										PORT_Free((char *)tmp_value);
+									}
+									int hs_len=secHeaderElement->HeaderFieldStatus.len;
+									if((hs_len>0) && (secHeaderElement->HeaderFieldStatus.data!=NULL)){
+
+											PORT_Memcpy(&headerStatus,secHeaderElement->HeaderFieldStatus.data,1);
+									}
+									else{
+											headerStatus = -1;
+									}
+
+									/*int he_len=secHeaderElement->HeaderFieldEncrypted.len;
+									if((he_len>0) && (secHeaderElement->HeaderFieldEncrypted.data!=NULL)){
+
+											PORT_Memcpy(&headerEncrypted,secHeaderElement->HeaderFieldEncrypted.data,1);
+									}
+									else{
+											headerEncrypted = -1;
+									}*/
+
+									nsCOMPtr<nsIMsgSMIMESecureHeader> secureHeader = do_CreateInstance(NS_SMIMESECUREHEADER_CONTRACTID,&rv);
+									if(NS_SUCCEEDED(rv))
+									{
+										secureHeader->SetHeaderName(headerName);
+										secureHeader->SetHeaderValue(headerValue);
+										secureHeader->SetHeaderStatus(headerStatus);
+										//secureHeader->SetHeaderEncrypted(headerEncrypted);
+										(*_secureHeaders)->AppendElement(secureHeader,PR_FALSE);
+									}
+								}
+							}
+						break;
+					}
+				}
+			}
+		}
+	}
+
+
+	return NS_OK;
 }
 
 NS_IMPL_THREADSAFE_ISUPPORTS1(nsCMSDecoder, nsICMSDecoder)

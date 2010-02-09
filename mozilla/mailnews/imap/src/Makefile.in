@@ -75,6 +75,7 @@ REQUIRES	= xpcom \
       uriloader \
 		  windowwatcher \
 		  embed_base \
+		  pipnss \
 		  $(NULL)
 
 EXPORTS		= \

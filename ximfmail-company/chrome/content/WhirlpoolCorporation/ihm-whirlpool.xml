@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ximf:instance name="Whirlpool" version="1.0" ximfVersion="2.0" xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eads.org/ximf/ ximf.xsd">
+	<ximf:ihm xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<ximf:panel id="pane_security" ilk="ilk-security-panel">
+			<ximf:groupbox id="group-classification" ilk="ilk-classification-panel">
+				<ximf:headerRef>header-classification</ximf:headerRef>			
+				<ximf:headerRef>header-privacy-mark</ximf:headerRef>
+			</ximf:groupbox>						
+		</ximf:panel>	
+		<ximf:panel id="pane_general" ilk="ilk-general-panel">		
+			<ximf:groupbox id="group-ref" ilk="ilk-urgence-box">			
+				<ximf:headerRef>header-originator-reference</ximf:headerRef>	
+				<ximf:headerRef>header-reply-before</ximf:headerRef>			
+			</ximf:groupbox>		
+		</ximf:panel>
+		<ximf:panel id="pane_address" ilk="ilk-address">				
+				<ximf:headerRef>header-exempted-address</ximf:headerRef>		
+		</ximf:panel>
+		<ximf:treeRcv>
+			<ximf:headerRef>header-classification</ximf:headerRef>	
+			<ximf:headerRef>header-privacy-mark</ximf:headerRef>
+		</ximf:treeRcv>
+	</ximf:ihm>
+</ximf:instance>

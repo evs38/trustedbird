@@ -274,6 +274,55 @@ typedef enum {
 } NSSCMSCertChainMode;
 
 
+
+/*
+ * SECURE HEADERS  : Datas structures
+ * */
+
+typedef struct NSSCMSSecHeaderFieldElementStr NSSCMSSecHeaderFieldElement;
+
+typedef struct NSSCMSSecureHeaderElementStr NSSCMSSecureHeaderElement;
+
+typedef struct NSSCMSSecureHeaderStr NSSCMSSecureHeader;
+
+typedef struct SecHeaderFieldStr SecHeaderField;
+
+typedef enum {
+	NSSCMSSecureHeaderElement_canonAlgorithm = 0,
+	NSSCMSSecureHeaderElement_secHeaderField = 1
+} NSSCMSSecureHeaderElementSelector;
+
+struct NSSCMSSecHeaderFieldElementStr{
+	SECItem HeaderFieldName;
+	SECItem HeaderFieldValue;
+	SECItem HeaderFieldStatus;
+	/*SECItem HeaderFieldEncrypted;*/
+};
+
+struct NSSCMSSecureHeaderElementStr{
+	NSSCMSSecureHeaderElementSelector selector;
+	union {
+		SECItem canonAlgorithm;
+		NSSCMSSecHeaderFieldElement** secHeaderFields;
+	} id;
+};
+
+struct NSSCMSSecureHeaderStr {
+	NSSCMSSecureHeaderElement** element;
+};
+
+
+struct SecHeaderFieldStr{
+	char * headerName;
+	char * headerValue;
+	PRInt32 headerStatus;
+	/*PRInt32 headerEncrypted;*/
+};
+/*
+ *END SECURE HEADERS : Datas structures
+ * */
+
+
 /* ESS Security Label */
 typedef enum {
     NSSCMSSecurityLabelElement_securityPolicyIdentifier   = 0,

@@ -20,7 +20,19 @@
 * a Java JDK for ant (java-gcj-compat-dev, sun-java6-jdk, openjdk-6-jdk,...)
 
 ==== Windows ====
+* Microsoft Visual C++ 6 with Service Pack 5 (not Service Pack 6 because Processor Pack needs SP5)
+* Visual C++ 6.0 Processor Pack
+* Latest MozillaBuild
+* Java JDK
+* Ant
+* Cygwin (for sed.exe and sha1sum.exe, used in Ant build script for add-ons)
+
 See http://developer.mozilla.org/en/docs/Windows_Build_Prerequisites
+
+* Add Ant path, Cygwin path and JDK path to the PATH variable in c:\mozilla-build\start-msvc6.bat:
+    SET PATH=%PATH%;%MOZ_TOOLS%\bin;C:\mozilla-build\apache-ant-1.8.0RC1-bin\bin;C:\cygwin\bin;C:\Program Files\Java\jdk1.6.0_18\bin
+* Set JAVA_HOME as environment variable
+* Launch build environment with c:\mozilla-build\start-msvc6.bat
 
 === Get build scripts/packager ===
 ==== Read only / through SVN protocol (TCP port 3690) ====

@@ -92,3 +92,5 @@
 <!ENTITY newsrcPicker.label "Select newsrc File">
 <!ENTITY browseNewsrc.label "Browse...">
 <!ENTITY browseNewsrc.accesskey "e">
+<!ENTITY authByCert.label "Authentication by certificate, if available">
+<!ENTITY authByCert.accesskey "c">

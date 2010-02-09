@@ -25,6 +25,7 @@
  *   Scott MacGreogr <mscott@netscape.com>
  *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
  *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -458,6 +459,7 @@ function showMessageComposeSecurityStatus()
 
   var encryptionCertName = gCurrentIdentity.getUnicharAttribute("encryption_cert_name");
   var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+  var secureHeaderCheck = gCurrentIdentity.getBoolAttribute(SECURE_HEADERS_ATTRIBUTE_CHECK);
   
   window.openDialog('chrome://messenger-smime/content/msgCompSecurityInfo.xul',
     '',
@@ -468,6 +470,7 @@ function showMessageComposeSecurityStatus()
       smFields : gSMFields,
       isSigningCertAvailable : (signingCertName.length > 0),
       isEncryptionCertAvailable : (encryptionCertName.length > 0),
+      isSecureHeaderAvailable : secureHeaderCheck,
       currentIdentity : gCurrentIdentity
     }
   );

@@ -23,6 +23,7 @@
  *   Pierre Phaneuf <pp@ludusdesign.com>
  *   Lorenzo Colitti <lorenzo@colitti.com>
  *   Hans-Andreas Engel <engel@physics.harvard.edu>
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -2188,6 +2189,10 @@ void nsImapServerResponseParser::capability_data()
         fCapabilityFlag |= kHasLanguageCapability;
       else if (! PL_strcasecmp(fNextToken, "IDLE"))
         fCapabilityFlag |= kHasIdleCapability;
+      //DRA - SASL - EXTERNAL
+      else if (! PL_strcasecmp(fNextToken, "AUTH=EXTERNAL"))
+        fCapabilityFlag |= kHasAuthExternalCapability;
+      //DRA
     }
   } while (fNextToken && 
 			 !fAtEndOfLine &&

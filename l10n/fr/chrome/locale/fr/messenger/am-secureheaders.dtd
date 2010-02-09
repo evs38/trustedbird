@@ -1,0 +1,8 @@
+<!ENTITY pane.title 					"En-têtes sécurisés">
+<!ENTITY secureHeaderFolderPicker.label	"Fichier des en-têtes sécurisés">
+<!ENTITY secureHeaderPath.label 		"Fichier des en-têtes sécurisés">
+<!ENTITY browseFolder.label 			"Parcourir...">
+<!ENTITY browseFolder.accesskey 		"P">
+<!ENTITY useSecureHeaders.label 		"Activer les en-têtes sécurisés pour ce compte">
+<!ENTITY secureHeadersDescription.label	"Définition des en-têtes sécurisés">
+<!ENTITY secureHeadersDatas.label 		"En-têtes sécurisés" >

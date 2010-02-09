@@ -22,6 +22,7 @@
  *
  * Contributor(s):
  *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -51,6 +52,8 @@
 #include "nsIArray.h"
 #include "nsString.h"
 
+#include "nsIMsgSMIMESecureHeader.h"
+
 class nsIMsgCompFields;
 
 class nsMsgSMIMEComposeFields : public nsIMsgSMIMECompFields
@@ -78,7 +81,32 @@ private:
   PRUint8 *mOriginatorContentType;
   PRUint32 mOriginatorContentTypeLen;
   PRBool mTripleWrapMessage;
+
+  //DRA
+  nsCOMPtr<nsIMutableArray> m_secureHeaders;
+  PRInt32 mCanonAlgorithm;
+  //DRA
 };
+
+//DRA
+class nsMsgSMIMESecureHeader : public nsIMsgSMIMESecureHeader
+{
+
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIMSGSMIMESECUREHEADER
+
+  nsMsgSMIMESecureHeader();
+  virtual ~nsMsgSMIMESecureHeader();
+
+private:
+  nsString mHeaderName;
+  nsString mHeaderValue;
+  PRInt32 mHeaderStatus;
+  PRInt32 mHeaderEncrypted;
+
+};
+//DRA
 
 typedef enum {
   mime_crypto_none,				/* normal unencapsulated MIME message */
@@ -118,6 +146,7 @@ private:
   nsresult ExtractSecurityLabelState(nsIMsgCompFields *aComposeFields, PRInt32 *aSecurityLabelLocation, nsACString& aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories);
   nsresult ExtractSignedReceiptRequestState(nsIMsgIdentity *aIdentity, nsIMsgCompFields *aComposeFields, PRBool *aSignedReceiptRequest);
   nsresult ExtractSignedReceiptState(nsIMsgCompFields *aComposeFields, PRUint8 **aSignedContentIdentifier, PRUint32 *aSignedContentIdentifierLen, PRUint8 **aOriginatorSignatureValue, PRUint32 *aOriginatorSignatureValueLen, PRUint8 **aOriginatorContentType, PRUint32 *aOriginatorContentTypeLen);
+  nsresult ReadHeadersToSecure(nsIMsgIdentity * aIdentity,nsIMsgCompFields * aComposeFields);
 
   mimeDeliveryCryptoState mCryptoState;
   nsOutputFileStream *mStream;
@@ -162,6 +191,10 @@ private:
   PRUint32 mOriginatorSignatureValueLen;
   PRUint8 *mOriginatorContentType;
   PRUint32 mOriginatorContentTypeLen;
+  //DRA
+  nsCOMPtr<nsIMutableArray> mSecureHeaders;
+  PRInt32 mCanonAlgorithm;
+  //DRA
 };
 
 #endif

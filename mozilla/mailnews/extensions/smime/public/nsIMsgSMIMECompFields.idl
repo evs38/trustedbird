@@ -23,6 +23,7 @@
  *   Scott MacGregor         <mscott@netscape.com>
  *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
  *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -47,6 +48,11 @@
 
 [ptr] native PRUint8Ptr(PRUint8);
 
+//DRA
+interface nsIMsgSMIMESecureHeader;
+interface nsIMutableArray;
+//DRA
+
 [scriptable, uuid(052D6790-5C8E-45B9-8632-34D1DFF1DCF2)]
 interface nsIMsgSMIMECompFields : nsISupports 
 {
@@ -65,4 +71,11 @@ interface nsIMsgSMIMECompFields : nsISupports
   [noscript] attribute PRUint8Ptr originatorContentType;
   attribute PRUint32 originatorContentTypeLen;
   attribute boolean tripleWrapMessage;
+
+  //DRA
+  attribute PRInt32 canonAlgorithm;
+  void addSecureHeader(in nsIMsgSMIMESecureHeader secureHeader);
+  void clearSecureHeaders();
+  void getSecureHeadersList(out nsIMutableArray secureHeadersList);
+  //DRA
 };

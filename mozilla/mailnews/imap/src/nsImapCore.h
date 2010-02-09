@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Lorenzo Colitti <lorenzo@colitti.com>
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -139,7 +140,8 @@ typedef enum {
     kHasAuthMSNCapability = 0x00200000,   /* AUTH MSN extension */
     kHasStartTLSCapability = 0x00400000,   /* STARTTLS support */
     kLoginDisabled = 0x00800000,        /* login disabled */
-    kHasAuthGssApiCapability = 0x01000000
+    kHasAuthGssApiCapability = 0x01000000,
+    kHasAuthExternalCapability = 0x80000000 /*DRA - SASL EXTERNAL*/
 } eIMAPCapabilityFlag;
 
 // this used to be part of the connection object class - maybe we should move it into 

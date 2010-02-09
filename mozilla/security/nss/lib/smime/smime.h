@@ -196,6 +196,18 @@ extern SECStatus NSS_SMIMEUtil_GetReceipt(
     PRUint32 *aContentTypeLen);
 
 /*
+ *
+ *
+ * NSS_SMIMEUtil_CreateSecureHeaders - create S/MIME Secure Headers attr value
+ *
+*/
+extern SECStatus
+NSS_SMIMEUtil_CreateSecureHeader(PLArenaPool *poolp, SECItem *dest, SecHeaderField * arrayHeaderField, const unsigned int nbHeaders, PRInt32 canonAlgo);
+
+extern SECStatus
+NSS_SMIMEUtil_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader * secuHeaders);
+
+/*
  * NSS_SMIMEUtil_GetCertFromEncryptionKeyPreference - find cert marked by EncryptionKeyPreference
  *          attribute
  */

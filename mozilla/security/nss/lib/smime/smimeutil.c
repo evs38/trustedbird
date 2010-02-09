@@ -137,6 +137,33 @@ static const SEC_ASN1Template smime_encryptionkeypref_template[] = {
     { 0, }
 };
 
+/*
+ *
+ * XIMF HEADERS SIGNED : ASN.1 BER
+ *
+ */
+
+static const SEC_ASN1Template NSSCMSHeaderFieldElementTemplate[] = {
+	{ SEC_ASN1_SEQUENCE, 0, NULL, sizeof(NSSCMSSecHeaderFieldElement) },
+	{ SEC_ASN1_IA5_STRING, offsetof(NSSCMSSecHeaderFieldElement, HeaderFieldName)},
+	{ SEC_ASN1_IA5_STRING, offsetof(NSSCMSSecHeaderFieldElement, HeaderFieldValue)},
+	{ SEC_ASN1_INTEGER | SEC_ASN1_OPTIONAL, offsetof(NSSCMSSecHeaderFieldElement, HeaderFieldStatus)}, /* OPTIONAL, default=-1 */
+	/*{ SEC_ASN1_INTEGER | SEC_ASN1_OPTIONAL | 1, offsetof(NSSCMSSecHeaderFieldElement, HeaderFieldEncrypted)},*/ /* OPTIONAL, default=-1 */
+	{ 0 }
+};
+
+static const SEC_ASN1Template NSSCMSSecureHeaderElementTemplate[] = {
+	{ SEC_ASN1_CHOICE, offsetof(NSSCMSSecureHeaderElement, selector), NULL, sizeof(NSSCMSSecureHeaderElement) },
+	{ SEC_ASN1_ENUMERATED, offsetof(NSSCMSSecureHeaderElement,id.canonAlgorithm),NULL,NSSCMSSecureHeaderElement_canonAlgorithm},
+	{ SEC_ASN1_SET_OF, offsetof(NSSCMSSecureHeaderElement,id.secHeaderFields), NSSCMSHeaderFieldElementTemplate, NSSCMSSecureHeaderElement_secHeaderField},
+	{ 0 }
+};
+
+static const SEC_ASN1Template NSSCMSSecureHeaderTemplate[] = {
+	{ SEC_ASN1_SET_OF, 0, NSSCMSSecureHeaderElementTemplate},
+};
+
+
 
 /* 
  * ESS Security Label
@@ -1800,4 +1827,214 @@ NSSSMIME_VersionCheck(const char *importedVersion)
     c = __nss_smime_rcsid[0] + __nss_smime_sccsid[0]; 
 
     return NSS_VersionCheck(importedVersion);
+}
+
+/*
+ *
+ *
+ * NSS_SMIMEUtil_CreateSecureHeaders - create S/MIME Secure Headers attr value
+ *
+*/
+SECStatus
+NSS_SMIMEUtil_CreateSecureHeader(PLArenaPool *poolp, SECItem *dest, SecHeaderField * arrayHeaderField, const unsigned int nbHeaders, PRInt32 canonAlgo)
+{
+	NSSCMSSecureHeaderElement** secureHeader = NULL;
+	SECItem * dummy = NULL;
+	int	secureHeaderItem = 0;
+	int i=0;
+	int len=0;
+
+
+	/* Alloc 2 elements max + 1 NULL at the end = 3 elements */
+	secureHeader = (NSSCMSSecureHeaderElement**) PORT_Alloc(3 * sizeof(NSSCMSSecureHeaderElement*));
+	for (i = 0; i < 3; ++i) secureHeader[i] = NULL;
+
+	secureHeaderItem = 0;
+
+	/* CanonAlgorithm */
+	secureHeader[secureHeaderItem] = (NSSCMSSecureHeaderElement *) PORT_Alloc(sizeof(NSSCMSSecureHeaderElement));
+	secureHeader[secureHeaderItem]->selector=NSSCMSSecureHeaderElement_canonAlgorithm;
+
+
+	secureHeader[secureHeaderItem]->id.canonAlgorithm.data = (unsigned char*) PORT_Alloc(4 * sizeof(unsigned char));
+	if (secureHeader[secureHeaderItem]->id.canonAlgorithm.data == NULL) goto loser;
+	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[0] = 0;
+	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[1] = 0;
+	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[2] = (unsigned char) (canonAlgo>>8 & 0xFF);
+	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[3] = (unsigned char) (canonAlgo & 0xFF);
+	secureHeader[secureHeaderItem]->id.canonAlgorithm.len = 4;
+
+
+	/* Secure Header Field Element */
+	secureHeaderItem++;
+	secureHeader[secureHeaderItem] = (NSSCMSSecureHeaderElement *) PORT_Alloc(sizeof(NSSCMSSecureHeaderElement));
+	secureHeader[secureHeaderItem]->selector=NSSCMSSecureHeaderElement_secHeaderField;
+	/* Alloc table which will contain the encode result of each header element */
+	secureHeader[secureHeaderItem]->id.secHeaderFields = ( NSSCMSSecHeaderFieldElement** ) PORT_Alloc((nbHeaders + 1) * sizeof( NSSCMSSecHeaderFieldElement * ));
+
+	/* init to NULL each header element */
+	for(i=0;i<nbHeaders;++i)
+	{
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i] = NULL;
+	}
+
+	/* the last must be null */
+	secureHeader[secureHeaderItem]->id.secHeaderFields[nbHeaders] = NULL;
+
+	for(i=0;i<nbHeaders;++i)
+	{
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i] = (NSSCMSSecHeaderFieldElement *) PORT_Alloc(sizeof(NSSCMSSecHeaderFieldElement));
+
+		if(secureHeader[secureHeaderItem]->id.secHeaderFields[i] == NULL) goto loser;
+
+		/* init all *.data to null */
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.data = NULL;
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.data = NULL;
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data = NULL;
+		/* secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data = NULL; */
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.len = 0;
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.len = 0;
+		secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.len = 0;
+		/* secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.len = 0; */
+
+		/* headername */
+		if(arrayHeaderField[i].headerName!=NULL)
+		{
+			len=PORT_Strlen((const char *)(arrayHeaderField[i].headerName));
+			if(len>0){
+				secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.len=len;
+				secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.data = (char *)PORT_Alloc(len * sizeof(char));
+				if(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.data == NULL) goto loser;
+				PORT_Memcpy(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.data,arrayHeaderField[i].headerName,len);
+			}
+		}
+		/* headervalue */
+		if(arrayHeaderField[i].headerValue!=NULL)
+		{
+			len=PORT_Strlen((const char *)arrayHeaderField[i].headerValue);
+			if(len>0){
+				secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.len=len;
+				secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.data = (char *)PORT_Alloc(len * sizeof(char));
+				if(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.data == NULL) goto loser;
+				PORT_Memcpy(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.data,arrayHeaderField[i].headerValue,len);
+			}
+		}
+		/* headerstatus */
+		if(arrayHeaderField[i].headerStatus!=-1)
+		{
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data = (unsigned char*) PORT_Alloc(4 * sizeof(unsigned char));
+			if (secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data == NULL) goto loser;
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data[0] = 0;
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data[1] = 0;
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data[2] = (unsigned char) (arrayHeaderField[i].headerStatus>>8 & 0xFF);
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data[3] = (unsigned char) (arrayHeaderField[i].headerStatus & 0xFF);
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.len = 4;
+		}
+
+		/* headerEncrypted */
+		/*if(arrayHeaderField[i].headerEncrypted!=-1)
+		{
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data = (unsigned char*) PORT_Alloc(4 * sizeof(unsigned char));
+			if (secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data == NULL) goto loser;
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data[0] = 0;
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data[1] = 0;
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data[2] = (unsigned char) (arrayHeaderField[i].headerEncrypted>>8 & 0xFF);
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data[3] = (unsigned char) (arrayHeaderField[i].headerEncrypted & 0xFF);
+			secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.len = 4;
+		}*/
+
+	}
+
+	/* Now encode */
+	dummy = SEC_ASN1EncodeItem(poolp, dest, &secureHeader, NSSCMSSecureHeaderTemplate);
+
+loser:
+	/* Free memory */
+	for(secureHeaderItem=0;secureHeader[secureHeaderItem]!=NULL;++secureHeaderItem)
+	{
+
+		switch (secureHeader[secureHeaderItem]->selector)
+		{
+			case NSSCMSSecureHeaderElement_canonAlgorithm:
+				if(secureHeader[secureHeaderItem]->id.canonAlgorithm.data!=NULL)
+				{
+					PORT_Free((unsigned char *)secureHeader[secureHeaderItem]->id.canonAlgorithm.data);
+				}
+			break;
+			case NSSCMSSecureHeaderElement_secHeaderField:
+				for(i=0;secureHeader[secureHeaderItem]->id.secHeaderFields[i]!=NULL;++i)
+				{
+					if(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.data != NULL){
+						PORT_Free((char *)(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.data));
+						secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldName.data=NULL;
+					}
+
+					if(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.data!=NULL){
+						PORT_Free((char*) (secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.data));
+						secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldValue.data=NULL;
+					}
+
+					if(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data!=NULL){
+						PORT_Free((unsigned char*) (secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data));
+						secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldStatus.data=NULL;
+					}
+
+					/*if(secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data!=NULL){
+						PORT_Free((unsigned char*) (secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data));
+						secureHeader[secureHeaderItem]->id.secHeaderFields[i]->HeaderFieldEncrypted.data=NULL;
+					}*/
+
+					PORT_Free((NSSCMSSecHeaderFieldElement *) (secureHeader[secureHeaderItem]->id.secHeaderFields[i]) );
+					secureHeader[secureHeaderItem]->id.secHeaderFields[i] = NULL;
+				}
+
+				if(secureHeader[secureHeaderItem]->id.secHeaderFields!=NULL){
+					PORT_Free(( NSSCMSSecHeaderFieldElement** )(secureHeader[secureHeaderItem]->id.secHeaderFields));
+					secureHeader[secureHeaderItem]->id.secHeaderFields = NULL;
+				}
+			break;
+
+
+		}
+
+		if(secureHeader[secureHeaderItem]!=NULL){
+			PORT_Free((NSSCMSSecureHeaderElement *) secureHeader[secureHeaderItem]);
+			secureHeader[secureHeaderItem] = NULL;
+		}
+
+	}
+
+	if(secureHeader!=NULL)
+	{
+		PORT_Free((NSSCMSSecureHeaderElement **) secureHeader);
+		secureHeader = NULL;
+	}
+
+	return (dummy == NULL) ? SECFailure : SECSuccess;
+
+}
+
+SECStatus
+NSS_SMIMEUtil_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader * secuHeaders)
+{
+	NSSCMSAttribute *attr;
+    SECStatus rv;
+
+    PLArenaPool *poolp;
+    void *mark;
+
+    poolp = signerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    attr = NSS_CMSAttributeArray_FindAttrByOidTag(signerinfo->authAttr, SEC_OID_SMIME_SECURE_HEADERS, PR_TRUE);
+    if (attr != NULL && attr->values != NULL && attr->values[0] != NULL)
+    {
+      rv = SEC_ASN1DecodeItem(poolp, secuHeaders, NSSCMSSecureHeaderTemplate, attr->values[0]);
+    } else {
+      rv = SECFailure;
+    }
+
+    PORT_ArenaUnmark (poolp, mark);
+    return rv;
+
 }

@@ -22,6 +22,7 @@
  * Contributor(s):
  *   ddrinan@netscape.com
  *   Scott MacGreogr <mscott@netscape.com>
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -295,6 +296,7 @@ function showMessageComposeSecurityStatus()
 
   var encryptionCertName = gCurrentIdentity.getUnicharAttribute("encryption_cert_name");
   var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+  var secureHeaderCheck = gCurrentIdentity.getBoolAttribute(SECURE_HEADERS_ATTRIBUTE_CHECK);
   
   window.openDialog('chrome://messenger-smime/content/msgCompSecurityInfo.xul',
     '',
@@ -305,6 +307,7 @@ function showMessageComposeSecurityStatus()
       smFields : gSMFields,
       isSigningCertAvailable : (signingCertName.length > 0),
       isEncryptionCertAvailable : (encryptionCertName.length > 0),
+      isSecureHeaderAvailable : secureHeaderCheck,
       currentIdentity : gCurrentIdentity
     }
   );

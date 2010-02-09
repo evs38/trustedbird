@@ -7,7 +7,7 @@ This software is an email client based on Mozilla Thunderbird with several addit
 ** Signed Receipt
 ** Security Labels 
 * DSN
-* Handling priority at the envelope level 
+* SMTP PRIORITY extension
 
 
 Trustedbird/Milimail project

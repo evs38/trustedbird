@@ -65,6 +65,8 @@ interface nsIClientAuthDialogs : nsISupports
 interface nsIClientAuthUserDecision : nsISupports
 {
   attribute boolean rememberClientAuthCertificate;
+  //EADS save user login
+  attribute ACString clientLogin;
 };
 
 %{C++

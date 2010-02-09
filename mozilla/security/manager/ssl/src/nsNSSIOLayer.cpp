@@ -262,6 +262,20 @@ nsNSSSocketInfo::GetHostName(char **host)
 }
 
 nsresult
+nsNSSSocketInfo::SetClientLogin(const nsACString & aClientLogin)
+{
+  mClientLogin = aClientLogin;
+  return NS_OK;
+}
+
+nsresult
+nsNSSSocketInfo::GetClientLogin(nsACString & aClientLogin)
+{
+  aClientLogin = mClientLogin;
+  return NS_OK;
+}
+
+nsresult
 nsNSSSocketInfo::SetPort(PRInt32 aPort)
 {
   mPort = aPort;
@@ -2410,6 +2424,9 @@ SECStatus nsNSS_SSLGetClientAuthData(void* arg, PRFileDesc* socket,
     nsXPIDLCString hostname;
     info->GetHostName(getter_Copies(hostname));
 
+    nsCAutoString clientlogin;
+    info->GetClientLogin(clientlogin);
+
     nsresult rv;
     NS_DEFINE_CID(nssComponentCID, NS_NSSCOMPONENT_CID);
     nsCOMPtr<nsINSSComponent> nssComponent(do_GetService(nssComponentCID, &rv));
@@ -2422,9 +2439,17 @@ SECStatus nsNSS_SSLGetClientAuthData(void* arg, PRFileDesc* socket,
     nsCString rememberedNickname;
     if (cars) {
       PRBool found;
-      nsresult rv = cars->HasRememberedDecision(hostname, 
+	  nsresult rv;
+	  if(clientlogin.IsEmpty()){
+		rv = cars->HasRememberedDecision(hostname,
                                                 serverCert,
                                                 rememberedNickname, &found);
+	  }
+	  else{
+		rv = cars->HasRememberedDecision(hostname,
+                                                serverCert,
+                                                rememberedNickname, &found,clientlogin);
+      }
       if (NS_SUCCEEDED(rv) && found) {
         hasRemembered = PR_TRUE;
       }
@@ -2604,9 +2629,16 @@ else
     }
 
     if (cars && wantRemember) {
-      cars->RememberDecision(hostname, 
-                             serverCert, 
-                             canceled ? 0 : cert);
+		if(clientlogin.IsEmpty()){
+			cars->RememberDecision(hostname,
+									serverCert,
+									canceled ? 0 : cert);
+		}
+		else{
+			cars->RememberDecision(hostname,
+									serverCert,
+									canceled ? 0 : cert,clientlogin);
+		}
     }
 }
 

@@ -124,6 +124,8 @@ NSS_CMSSignerInfo_AddSMIMEEncKeyPrefs;
 NSS_CMSSignerInfo_AddSigningTime;
 NSS_CMSSignerInfo_AddSecurityLabel;
 NSS_CMSSignerInfo_GetSecurityLabel;
+NSS_CMSSignerInfo_AddSecureHeader;
+NSS_CMSSignerInfo_GetSecureHeader;
 NSS_CMSSignerInfo_AddReceiptRequest;
 NSS_CMSSignerInfo_GetReceiptRequest;
 NSS_CMSSignerInfo_HasReceipt;

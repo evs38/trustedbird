@@ -1,6 +1,7 @@
 trustedbird (0.3.5)
   * Rebranding
--- 4 February 2010
+  * Merged new features: Secure Headers and SASL external
+-- 9 February 2010
 
 trustedbird (0.3.4)
   * S/MIME Receipts: receipt generation and reception
