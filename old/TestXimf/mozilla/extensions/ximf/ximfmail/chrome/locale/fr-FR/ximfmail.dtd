@@ -1,0 +1,28 @@
+<!ENTITY ximfmail.accountWizard.pageTitle "Voulez-vous utiliser des en-têtes XIMF?">
+<!ENTITY ximfmail.am.themeChoice "Utiliser un thème ximfmail pour ce compte : ">
+<!ENTITY ximfmail.am.instanceGroup "Instances XIMF">
+<!ENTITY ximfmail.am.instanceGroup.composition  "Rédaction">
+<!ENTITY ximfmail.am.instanceComposeChoice "Créer un message avec l'instance : ">
+<!ENTITY ximfmail.am.instanceAnswerChoice "Répondre à un message avec l'instance : ">
+<!ENTITY ximfmail.am.instanceTransferChoice "Transférer un message avec l'instance : ">
+<!ENTITY ximfmail.am.xsmtpCompatibilityCheck "Assurer la compatibilité XSMTP des entêtes XIMF">
+<!ENTITY ximfmail.am.dialogTitle "XIMFMAIL : entêtes de messages">
+<!ENTITY ximfmail.am.description "Gestion et utilisation d'entêtes XIMF pour les messages envoyés">
+<!ENTITY ximfmail.compose.headerTab "chargement...">
+<!ENTITY ximfmail.compose.advancedTab "Avancé">
+<!ENTITY ximfmail.am.instanceGroup.reception "Réception">
+<!ENTITY ximfmail.am.instanceTreeThreadChoice "Trier les entêtes de messages avec l'instance : ">
+<!ENTITY ximfmail.am.instanceMailPanelChoice "Afficher les messages stoqués avec l'instance : ">
+<!ENTITY dlgheader.hdrInfo.descr "Sélection courante d'entête XIMF">
+<!ENTITY ximfmail.composer.context.erase	"Effacer la derniere valeur">
+<!ENTITY ximfmail.composer.context.eraseall	"Effacer toutes les valeurs">
+<!ENTITY ximfmail.composer.context.details "Détailler les valeurs">
+<!ENTITY ximfmail.composer.context.info	"Information">
+<!ENTITY ximfmail.compose.focus "Agrandir Alt +">
+<!ENTITY ximfmail.compose.unfocus "Réduire Alt -">
+<!ENTITY treedialog.buttonlabelcancel "Annuler">	
+<!ENTITY treedialog.buttonlabelaccept "Sélectionner">
+<!ENTITY ximfmail.am.secureHeadersRuleCheck "Signer les entêtes du message">
+<!ENTITY ximfmail.am.signMsgAlwaysRuleCheck "Signer systématiquement le message">
+<!ENTITY ximfmail.dialogtree.title.col0 "Mot clé">
+<!ENTITY ximfmail.dialogtree.title.col1 "Libellé">

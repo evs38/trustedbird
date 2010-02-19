@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<ximf:instance name="Amoco" version="1.0" ximfVersion="2.0" xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eads.org/ximf/ ximf.xsd">
+	<ximf:rule id="compatibility-rule" description="Règle sur la compatibilités X-SMTP / XIMF" >
+		<ximf:compatibility targetName="X-SMTP" targetVersion="1.1">
+			<ximf:aliasHeader headerName="X-P772-Version">
+				 <ximf:aliasValue valueName="1.1"/> 
+			</ximf:aliasHeader>				
+			<ximf:aliasHeader headerName="X-P772-Originator-Reference" headerRef="X-XIMF-Originator-Reference"/>
+			<ximf:aliasHeader headerName="X-P772-Security-Classification" headerRef="X-XIMF-Security-Classification"/>
+		</ximf:compatibility>		
+	</ximf:rule>
+	<ximf:rule id="association-rule" description="Règle d'associations de valeurs" >
+		<ximf:association>
+			<ximf:aliasHeader headerName="X-XIMF-Privacy-Mark" headerRef="X-XIMF-Security-Classification">
+				<ximf:aliasValue valueName="amoco-minimum,amoco-medium" valueRef="amoco-general" />
+				<ximf:aliasValue valueName="amoco-minimum,amoco-medium,amoco-maximum" valueRef="amoco-confidential" />
+				<ximf:aliasValue valueName="amoco-minimum,amoco-medium,amoco-maximum,amoco-critical" valueRef="amoco-highly-confidential" />
+			</ximf:aliasHeader>					
+		</ximf:association>
+	</ximf:rule>			
+</ximf:instance>
