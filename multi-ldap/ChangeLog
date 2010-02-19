@@ -1,3 +1,7 @@
+multi-ldap (1.1.0)
+  * Update add-on for Thunderbird 3
+-- Feb 19 2010
+
 multi-ldap (1.0.0)
   * Tag version 1
   * ChangeLog/README
@@ -9,7 +13,7 @@ multi-ldap (0.2.6)
   * Refactoring
 
 multi-ldap (0.2.5.0)
-  * Add update.rdf file to the extension. Manage the update functionnality.
+  * Add update.rdf file to the extension. Manage the update feature.
 
 multi-ldap (0.2.4.0)
   * Fix for [#484] Data are saved on cancel
@@ -19,7 +23,7 @@ multi-ldap (0.2.4.0)
   * Fix for [#495] Uncheck the collected address disable the autocompletion.
   * Fix for [#496] ldap_2.autoComplete.useDirectory set to false disable the autocompletion.
   * Fix for [#497] the string 'Use Custom Preferences' from account settings is not localized.
-  * Fix for [#504] If the name of a server is the beginning of another one, it is automaticaly selected.
+  * Fix for [#504] If the name of a server is the beginning of another one, it is automatically selected.
 
 multi-ldap (0.2.3.0)
   * Fix for [#475] autoComplete.ldapServers not updated
