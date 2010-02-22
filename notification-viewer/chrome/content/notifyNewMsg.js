@@ -136,7 +136,7 @@ var notifyListener = {
 		if (nViewerSeen == "") {
 			/* Message has not been already analyzed */
 			SetBusyCursor(window, true);
-			
+
 			/* Get message source and parse it */
 			notifyListener.getMsgSrc(header, notifyListener.parseMsg);
 			
@@ -707,5 +707,5 @@ var notifyListener = {
 function notifyInit() {
 	srv.logSrv("notifyInit()");
 	var notificationService = Components.classes["@mozilla.org/messenger/msgnotificationservice;1"].getService(Components.interfaces.nsIMsgFolderNotificationService);
-	notificationService.addListener(notifyListener, notificationService.allMsgNotifications);
+	notificationService.addListener(notifyListener, notificationService.msgAdded | notificationService.msgsDeleted | notificationService.msgsMoveCopyCompleted);
 }

@@ -40,6 +40,8 @@
 	@author Daniel Rocher / Etat francais Ministere de la Defense
 */
 
+/* Load utils in order to open a window in Thunderbird 3 */
+if (typeof Components.utils.import == "function") Components.utils.import("resource://app/modules/MailUtils.js");
 
 /**
 	@class open a window and display notifications
@@ -335,8 +337,13 @@ var notificationsWidgets = {
 			// message found
 			var folderUri = msgDBHdrFound.folder.URI;
 			var messageUri = msgDBHdrFound.folder.getUriForMsg(msgDBHdrFound);
-				
-			window.openDialog("chrome://messenger/content/messageWindow.xul", "_blank", "all,chrome,dialog=no,status,toolbar", messageUri, folderUri, null);
+			if (typeof MailUtils == "object") {
+				/* Thunderbird 3 */
+				MailUtils.displayMessages([msgDBHdrFound], null, document.getElementById("tabmail"));
+			} else {
+				/* Thunderbird 2 */
+				window.openDialog("chrome://messenger/content/messageWindow.xul", "_blank", "all,chrome,dialog=no,status,toolbar", messageUri, folderUri, null);
+			}
 		} else {
 			messageBox.warning(this.services.tr("Error"),this.services.tr("message_not_found"));
 		}
