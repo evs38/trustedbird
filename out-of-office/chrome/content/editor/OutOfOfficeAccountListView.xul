@@ -83,7 +83,7 @@
 					<button id="btnEnable" label="Enable" oncommand="onEnableClick(this);"/>
 					<!--        <spacer flex="1"/>
 								<button id="btnHelp" label="Help" oncommand="onHelpClick();"/>         
-								<spacer flex="1"/>-->
+								<spacer flex="1"/> -->
 				</vbox>
 			</row>
 		</rows>
