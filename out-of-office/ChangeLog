@@ -1,3 +1,7 @@
+out-of-office (1.0.1)
+  * Fix Thunderbird 3 compatibility
+-- Feb 23 2010
+
 out-of-office (1.0.0)
   * Tag version 1
   * ChangeLog/README

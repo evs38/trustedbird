@@ -230,7 +230,11 @@ OutOfOfficeSettings.prototype = {
 	 */
 	getRedirectionAddress : function()
 	{
-		return this.redirectionDestinationAddress;
+		if (this.redirectionDestinationAddress != null) {
+			return this.redirectionDestinationAddress;
+		} else {
+			return "";
+		}
 	},
 
 	/**
@@ -543,7 +547,7 @@ OutOfOfficeSettings.prototype = {
 	{	// Don't use the comment /* */ the sieve compiler doesn't works correctly
 		this.insertLine();
 		this.insertLine("# ******************************************************************************");
-		this.insertLine("# * End of script file generated automaticaly by the '"+ this.services.getExtensionNameDisplayable() +"'.");
+		this.insertLine("# * End of script file generated automatically by the '"+ this.services.getExtensionNameDisplayable() +"'.");
 		this.insertLine("# * Do not modify this part.");
 		this.insertLine("# ******************************************************************************");
 		this.insertLine();
