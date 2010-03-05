@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <hbox align="center">
+    <label value="Room number (label):" />
+    <label flex="1" dctLdapAttribute="roomNumber" />
+  </hbox>
+
+  <hbox align="center">
+    <label value="Telephone numbers (listbox):" />
+    <listbox flex="1" dctLdapAttribute="telephoneNumber" rows="7" />
+  </hbox>
+
+  <groupbox style="margin-top: 1em;">
+    <caption label="Business categories (several checkboxes with the same multi-valued LDAP attribute)" />
+    <hbox align="center">
+      <checkbox dctLdapAttribute="businessCategory" label="Category 1"  dctValue="cat 1" />
+      <checkbox dctLdapAttribute="businessCategory" label="Category 2"  dctValue="cat 2" />
+      <checkbox dctLdapAttribute="businessCategory" label="Category 3"  dctValue="cat 3" />
+      <checkbox dctLdapAttribute="businessCategory" label="Sales"       dctValue="sales" />
+      <checkbox dctLdapAttribute="businessCategory" label="Office"      dctValue="office" />
+      <checkbox dctLdapAttribute="businessCategory" label="Engineering" dctValue="engineering" />
+      <!-- These checkboxes are checked if the multi-valued LDAP attribute "businessCategory" has one value equal to the value of their dctValue attribute -->
+    </hbox>
+  </groupbox>
+
+</window>

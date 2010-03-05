@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <hbox align="center">
+    <label value="Name (textbox):" />
+    <textbox flex="1" dctLdapAttribute="displayName" />
+  </hbox>
+
+  <hbox align="center">
+    <label value="Email addresses (listbox):" />
+    <listbox flex="1" dctLdapAttribute="mail" rows="3" />
+  </hbox>
+
+  <hbox style="margin-top: 0.5em;">
+
+    <hbox align="center" style="width: 240px;">
+      <label value="Photo (image):" />
+      <image dctLdapAttribute="jpegPhoto" style="width: 90px; height: 90px; border: solid 1px #777;" />
+    </hbox>
+
+    <vbox>
+      <hbox align="center">
+        <label value="Accept HTML mail (radiogroup):" style="width: 200px;" />
+        <radiogroup dctLdapAttribute="mozillaUseHtmlMail">
+          <radio label="Yes" dctValue="TRUE" />
+          <radio label="No"  dctValue="FALSE" />
+        </radiogroup>
+      </hbox>
+
+      <hbox align="center" style="margin-top: 0.5em;">
+        <label value="Accept HTML mail (checkbox):" style="width: 200px;" />
+        <checkbox dctLdapAttribute="mozillaUseHtmlMail" />
+      </hbox>
+
+      <hbox align="center" style="margin-top: 0.5em;">
+        <label value="Don't accept HTML mail (checkbox with value):" />
+        <checkbox dctLdapAttribute="mozillaUseHtmlMail" dctValue="FALSE" />
+        <!-- This checkbox is checked if the LDAP attribute "mozillaUseHtmlMail" is equal to the value of the dctValue attribute, i.e. "FALSE" -->
+      </hbox>
+    </vbox>
+
+  </hbox>
+
+</window>

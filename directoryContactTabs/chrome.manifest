@@ -1,0 +1,9 @@
+content directoryContactTabs chrome/content/
+locale  directoryContactTabs en chrome/locale/en/
+locale  directoryContactTabs fr chrome/locale/fr/
+skin    directoryContactTabs classic/1.0 chrome/skin/
+
+overlay chrome://messenger/content/addressbook/abEditCardDialog.xul   chrome://directoryContactTabs/content/abEditCardDialog.xul
+overlay chrome://messenger/content/addressbook/pref-directory-add.xul chrome://directoryContactTabs/content/pref-directory-add.xul
+
+resource directoryContactTabs modules/
