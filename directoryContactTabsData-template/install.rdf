@@ -39,18 +39,16 @@
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <rdf:Description about="urn:mozilla:install-manifest">
 
-    <em:id>directoryContactTabsData-sample@trustedbird.org</em:id>
-    <em:name>Directory Contact Tabs (Data) - sample</em:name>
+    <em:id>directoryContactTabsData-DCT_PACKAGE_NAME@trustedbird.org</em:id>
+    <em:name>Directory Contact Tabs (Data) - DCT_PACKAGE_NAME</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Trustedbird/Milimail project</em:creator>
 
-    <em:developer>Raphael Fairise</em:developer>
-
     <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
-    <em:iconURL>chrome://directoryContactTabsData-sample/skin/directoryContactTabs.png</em:iconURL>
+    <em:iconURL>chrome://directoryContactTabsData-DCT_PACKAGE_NAME/skin/directoryContactTabs.png</em:iconURL>
 
-    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
-    <em:updateKey>__UPDATE_KEY__</em:updateKey>
+    <em:updateURL></em:updateURL>
+    <em:updateKey></em:updateKey>
 
     <em:targetApplication>
       <rdf:Description>
@@ -70,6 +68,6 @@
       </rdf:Description>
     </em:requires>
 
-    <em:description>Provides sample panels for Directory Contact Tabs (Engine) add-on.</em:description>
+    <em:description>Provides panels for Directory Contact Tabs (Engine) add-on.</em:description>
   </rdf:Description>
 </rdf:RDF>

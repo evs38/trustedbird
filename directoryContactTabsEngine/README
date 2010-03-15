@@ -1,0 +1,15 @@
+Directory Contact Tabs (Engine)
+-------------------------------
+
+This add-on for Mozilla Thunderbird 3 permits to fetch and display additional
+information about contacts from LDAP directory servers.
+It adds new panels (tabs) to contact info window.
+
+The new panels are defined with XUL files provided by one or several customized "Directory Contact Tabs (Data)" add-ons.
+
+
+This add-on is written in XUL and Javascript.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+

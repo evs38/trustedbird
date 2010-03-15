@@ -176,6 +176,7 @@ ldapQuery.prototype.QueryInterface = function(iid) {
 ldapQuery.prototype.onLDAPInit = function(aConnection, aStatus) {
   if (aStatus == 0 && this.bind()) return;
 
+  this.release();
   if (this.endCallback) this.endCallback(ldapQuery.CONNECT_ERROR, this.endCallbackParameter);
 }
 
@@ -189,6 +190,7 @@ ldapQuery.prototype.onLDAPMessage = function(aMessage) {
         Components.utils.reportError(errorMessage);
         dump(errorMessage + "\n");
       }
+      this.release();
       if (this.endCallback) this.endCallback(ldapQuery.SEARCH_ERROR, this.endCallbackParameter);
       return;
       break;
@@ -210,7 +212,17 @@ ldapQuery.prototype.onLDAPMessage = function(aMessage) {
       break;
   }
 
+  this.release();
   if (this.endCallback) this.endCallback(this.error, this.endCallbackParameter);
+}
+
+/**
+ * Try to release the LDAP connection
+ */
+ldapQuery.prototype.release = function() {
+  this.ldapURL = null;
+  this.ldapOperation = null;
+  this.ldapConnection = null;
 }
 
 /**
