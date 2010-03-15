@@ -42,7 +42,7 @@
     <em:creator>Trustedbird/Milimail project</em:creator>
 
     <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
-    <em:iconURL>chrome://mailXFormsData-sample/skin/xforms.png</em:iconURL>
+    <em:iconURL>chrome://mailXFormsData-MXD_PACKAGE_NAME/skin/xforms.png</em:iconURL>
 
     <em:updateURL></em:updateURL>
     <em:updateKey></em:updateKey>

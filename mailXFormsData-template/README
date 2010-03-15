@@ -13,6 +13,7 @@ Step 2 - replace all instances of the "MXD_PACKAGE_NAME" string by the package n
 - defaults/preferences/default.js
 
 Step 3 - add the new form file(s) (*.xul or *.xhtml) in the directory chrome/content/
+         -> all XForms elements with "mailXFormsHeaderName" attribute will be used as email headers
          *.dtd should go in the sub-directories chrome/locale/*/
          *.css should go in the directory chrome/skin/
 
