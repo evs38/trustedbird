@@ -292,6 +292,7 @@ function messageCallback(aLdapURL, aLdapMessage, aMessageCallbackParameter) {
                 directoryContactTabsElementList[j].selectedItem = childNodes[k];
                 /* Enable selected radio so as to make it more visible */
                 childNodes[k].removeAttribute("disabled");
+                break;
               }
             }
             break;

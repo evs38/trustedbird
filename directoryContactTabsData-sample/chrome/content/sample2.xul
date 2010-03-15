@@ -9,7 +9,7 @@
 
   <hbox align="center">
     <label value="Telephone numbers (listbox):" />
-    <listbox flex="1" dctLdapAttribute="telephoneNumber" rows="7" />
+    <listbox flex="1" dctLdapAttribute="telephoneNumber" rows="6" />
   </hbox>
 
   <groupbox style="margin-top: 1em;">

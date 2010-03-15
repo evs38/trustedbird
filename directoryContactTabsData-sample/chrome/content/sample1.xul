@@ -2,6 +2,32 @@
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+<!--
+This file define one tab panel displayed in a LDAP contact card.
+
+XUL elements with a "dctLdapAttribute" attribute are taken into account.
+The value of the "dctLdapAttribute" attribute is the LDAP attribute requested to the directory.
+
+* textbox, label: (multi-valued attributes are displayed as a comma-separated list of values)
+  Received value is displayed as a string in the widget
+
+* listbox: (can display multi-valued attributes)
+  Each received value is used as a listitem in the listbox
+
+* image:
+  Received binary data are used as an image
+
+* radiogroup:
+  If received value is equal to the value of the "dctValue" attribute of a child radio element, the child element is selected
+
+* checkbox: (can manage multi-valued attributes)
+  * If the checkbox has no "dctValue" attribute:
+    If received value (or one of the received values in case of a multi-valued attribute) is equal to the string "TRUE", the checkbox is checked
+  * If the checkbox has a "dctValue" attribute:
+    If received value (or one of the received values in case of a multi-valued attribute) is equal to the value of the "dctValue" attribute, the checkbox is checked
+
+ -->
+
   <hbox align="center">
     <label value="Name (textbox):" />
     <textbox flex="1" dctLdapAttribute="displayName" />
