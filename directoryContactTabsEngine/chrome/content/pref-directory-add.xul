@@ -48,7 +48,9 @@
   <tabpanels id="directoryTabPanels">
     <vbox>
       <label value="&directoryContactTabs.directoryTabPanelsLabel;" />
-      <vbox id="directoryContactTabsPrefBox" />
+      <vbox id="directoryContactTabsPrefBox">
+        <label id="directoryContactTabsPrefBoxEmpty" value="&directoryContactTabs.prefBoxEmpty;" />
+      </vbox>
     </vbox>
   </tabpanels>
 

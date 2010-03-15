@@ -85,6 +85,10 @@ function directoryContactTabsCreateList() {
     box.appendChild(checkbox);
   }
 
+  if (directoryContactTabsTabList.length > 0) {
+    document.getElementById("directoryContactTabsPrefBoxEmpty").setAttribute("hidden", true);
+  }
+
   /* Disable settings if directory settings don't already exist */
   var newDirectory = true;
   try {

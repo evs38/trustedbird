@@ -1,2 +1,3 @@
-<!ENTITY directoryContactTabs.directoryTabBoxTabTitle "Additional tabs">
-<!ENTITY directoryContactTabs.directoryTabPanelsLabel "Display the following tabs in contact cards:">
+<!ENTITY directoryContactTabs.directoryTabBoxTabTitle "Additional panels">
+<!ENTITY directoryContactTabs.directoryTabPanelsLabel "Display the following panels in contact cards:">
+<!ENTITY directoryContactTabs.prefBoxEmpty "No panel installed.">
