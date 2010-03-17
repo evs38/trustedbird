@@ -61,7 +61,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Fetchs and displays additional information about contacts from LDAP directory servers. New tab panels, displayed in contact info windows, are defined with XUL files provided by one or several customized "Directory Contact Tabs (Data)" add-ons.</em:description>
+    <em:description>Displays additional information about contacts from LDAP directory servers. The new panels are provided by one or several customized Directory Contact Tabs (Data) add-ons.</em:description>
 
   </rdf:Description>
 </rdf:RDF>
