@@ -1,29 +1,10 @@
 Directory Contact Tabs (Data)
 -----------------------------
 
-This add-on contains no panels.
+This add-on is a template which contains no panels.
 It can be used to package panels (tabs) for the "Directory Contact Tabs (Engine)" add-on.
 
 Panels are defined with XUL files.
-
-
-In order to package new panel(s):
-
-Step 1 - choose a new package name (a-z, A-Z, 0-9, without spaces)
-
-Step 2 - replace all instances of the "DCT_PACKAGE_NAME" string by the package name in the following files:
-- install.rdf
-- chrome.manifest
-- defaults/preferences/default.js
-
-Step 3 - add .xul file(s) in the directory chrome/content/
-         *.dtd should go in the sub-directories chrome/locale/*/
-         *.css should go in the directory chrome/skin/
-
-Step 4 - register the panels by editing the file defaults/preferences/default.js
-
-Step 5 - zip the add-on directory (root must be where install.rdf is located) and name the zip file with the ".xpi" extension
-
 
 
 Trustedbird/Milimail project
