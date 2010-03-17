@@ -37,7 +37,7 @@
   <rdf:Description about="urn:mozilla:install-manifest">
 
     <em:id>mailXFormsData-sample@trustedbird.org</em:id>
-    <em:name>Mail XForms Data - sample</em:name>
+    <em:name>Mail XForms (Data) - sample</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Trustedbird/Milimail project</em:creator>
 
@@ -58,13 +58,14 @@
 
     <em:requires>
       <rdf:Description>
-        <!-- Mail XForms Engine -->
+        <!-- Mail XForms (Engine) -->
         <em:id>mailXFormsEngine@trustedbird.org</em:id>
         <em:minVersion>1.0.0beta</em:minVersion>
         <em:maxVersion>*</em:maxVersion>
       </rdf:Description>
     </em:requires>
 
-    <em:description>Sample form data. Requires Mail XForms Engine add-on.</em:description>
+    <em:description>Sample form data. Requires Mail XForms (Engine) add-on.</em:description>
+
   </rdf:Description>
 </rdf:RDF>

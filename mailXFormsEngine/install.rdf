@@ -40,7 +40,7 @@
   <rdf:Description about="urn:mozilla:install-manifest">
 
     <em:id>mailXFormsEngine@trustedbird.org</em:id>
-    <em:name>Mail XForms Engine</em:name>
+    <em:name>Mail XForms (Engine)</em:name>
     <em:version>__VERSION__</em:version>
     <em:creator>Trustedbird/Milimail project</em:creator>
 
@@ -71,5 +71,6 @@
     </em:requires>
 
     <em:description>Provides integration of XForms-based forms into Thunderbird GUI and converts form data into email headers. Requires Mozilla XForms add-on.</em:description>
+
   </rdf:Description>
 </rdf:RDF>
