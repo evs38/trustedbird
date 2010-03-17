@@ -522,9 +522,9 @@
 		<!-- Get revision from SVN -->
 		<if>
 			<equals arg1="${local.addon.name}"
-			        arg2="all-addons" />
+			        arg2="all-addons-tb2" />
 			<then>
-				<!-- Get last project revision for all-addons -->
+				<!-- Get last project revision for all-addons-tb2 -->
 				<exec executable="sh"
 				      outputproperty="local.addon.revision"
 				      failonerror="true">
@@ -647,13 +647,13 @@
 			</else>
 		</if>
 
-		<!-- Only for special add-on 'all-addons': copy all already built add-ons -->
+		<!-- Only for special add-on 'all-addons-tb2': copy all already built add-ons -->
 		<if>
 			<equals arg1="${local.addon.name}"
-			        arg2="all-addons" />
+			        arg2="all-addons-tb2" />
 			<then>
 				<copy todir="${local.build.dir}/${local.addon.name}/">
-					<fileset dir="${local.dist.dir}" includes="*.xpi" excludes="mrs-* trustedbird-l10n-*" />
+					<fileset dir="${local.dist.dir}" includes="*.xpi" excludes="mrs-* trustedbird-l10n-* xsmtp* ximfmail* mailXForms* directoryContactTabs*" />
 				</copy>
 			</then>
 		</if>

@@ -39,8 +39,8 @@
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <rdf:Description about="urn:mozilla:install-manifest">
 
-    <em:id>all-addons@trustedbird.org</em:id>
-    <em:name>Trustedbird Add-ons</em:name>
+    <em:id>all-addons-tb2@trustedbird.org</em:id>
+    <em:name>Add-ons for Thunderbird 2</em:name>
     <em:version>__VERSION__</em:version>
 
     <em:creator>Trustedbird/Milimail project</em:creator>
@@ -58,6 +58,7 @@
       </rdf:Description>
     </em:targetApplication>
 
-    <em:description>Meta-package with several Trustedbird add-ons.</em:description>
+    <em:description>Meta-package with several add-ons for Thunderbird 2.</em:description>
+
   </rdf:Description>
 </rdf:RDF>
