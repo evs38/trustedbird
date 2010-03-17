@@ -413,7 +413,7 @@
 	<target name="package-addons"
 	        description="Get add-ons from SVN and create packages"
 	        depends="clean-addons">
-		<foreach list="${addon.list},all-addons"
+		<foreach list="${addon.list}"
 		         target="-package-addon"
 		         param="local.addon.tempname" />
 	</target>
