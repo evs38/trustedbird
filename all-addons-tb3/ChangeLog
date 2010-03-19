@@ -1,5 +1,5 @@
-all-addons-tb2 (1.0.1)
-  * Split package with Thunderbird 2 add-ons only
+all-addons-tb3 (1.0.1)
+  * Split package with Thunderbird 3 add-ons only
 -- Mar 19 2010
 
 all-addons (1.0.0)
