@@ -199,6 +199,10 @@ $ ant -Damo=1 package-addons
         <!-- Patch config -->
         <copy file="${local.tools.dir}/mozconfig"
          tofile="${local.build.dir}/mozilla/.mozconfig"/>
+
+        <!-- Patch needed for Windows -->
+        <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
+        <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
     </target>
 
 
