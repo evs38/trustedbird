@@ -93,4 +93,4 @@
 <!ENTITY browseNewsrc.label "Parcourir…">
 <!ENTITY browseNewsrc.accesskey "a">
 <!ENTITY authByCert.label "Authentification par certificat, si disponible">
-<!ENTITY authByCert.accesskey "c">
+<!ENTITY authByCert.accesskey "u">
