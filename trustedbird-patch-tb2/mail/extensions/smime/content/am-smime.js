@@ -22,6 +22,7 @@
 # Contributor(s):
 #   ddrinan@netscape.com
 #   Scott MacGregor <mscott@netscape.com>
+#   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -51,8 +52,11 @@ var gHiddenEncryptionPolicy = null;
 var gEncryptionChoices = null;
 var gSignCertName  = null;
 var gSignMessages  = null;
+var gRequestSignedReceipt = null;
+var gSignedReceiptSendPolicy = null;
 var gEncryptAlways = null;
 var gNeverEncrypt = null;
+var gTripleWrapMessages = null;
 var gBundle = null;
 var gBrandBundle;
 var gSmimePrefbranch;
@@ -69,10 +73,13 @@ function onInit()
   gEncryptionChoices = document.getElementById("encryptionChoices");
   gSignCertName       = document.getElementById(kSigningCertPref);
   gSignMessages       = document.getElementById("identity.sign_mail");
+  gRequestSignedReceipt = document.getElementById("identity.request_signed_return_receipt_on");
+  gSignedReceiptSendPolicy = document.getElementById("identity.signed_receipt_send_policy");
   gEncryptAlways      = document.getElementById("encrypt_mail_always");
   gNeverEncrypt       = document.getElementById("encrypt_mail_never");
   gBundle             = document.getElementById("bundle_smime");
   gBrandBundle        = document.getElementById("bundle_brand");
+  gTripleWrapMessages = document.getElementById("identity.triple_wrap_mail");
 
   gEncryptionChoicesLocked = false;
   gSigningChoicesLocked = false;
@@ -92,9 +99,12 @@ function onInit()
 
   gSignCertName.value = gIdentity.getUnicharAttribute("signing_cert_name");
   gSignMessages.checked = gIdentity.getBoolAttribute("sign_mail");
+  gRequestSignedReceipt.checked = gIdentity.getBoolAttribute("request_signed_return_receipt_on");
+  gSignedReceiptSendPolicy.value = gIdentity.getIntAttribute("signed_receipt_send_policy");
   if (!gSignCertName.value)
   {
     gSignMessages.setAttribute("disabled", true);
+    gRequestSignedReceipt.setAttribute("disabled", true);
   }
   else {
     enableSigningControls(true);
@@ -107,6 +117,11 @@ function onInit()
 
   // Disable all locked elements on the panel
   onLockPreference();
+
+  gTripleWrapMessages.checked = gIdentity.getBoolAttribute("triple_wrap_mail");
+
+  // Update UI to match triple wrapping choices
+  updateTripleWrapUI();
 }
 
 function onPreInit(account, accountValues)
@@ -123,7 +138,11 @@ function onSave()
   gIdentity.setUnicharAttribute("encryption_cert_name", gEncryptionCertName.value);
 
   gIdentity.setBoolAttribute("sign_mail", gSignMessages.checked);
+  gIdentity.setBoolAttribute("request_signed_return_receipt_on", gRequestSignedReceipt.checked);
+  gIdentity.setIntAttribute("signed_receipt_send_policy", gSignedReceiptSendPolicy.value);
   gIdentity.setUnicharAttribute("signing_cert_name", gSignCertName.value);
+
+  gIdentity.setBoolAttribute("triple_wrap_mail", gTripleWrapMessages.checked);
 }
 
 function onLockPreference()
@@ -146,6 +165,60 @@ function onLockPreference()
   disableIfLocked( allPrefElements );
 }
 
+// Toggle request Signed Receipt flag and update UI
+function toggleRequestSignedReceipt()
+{
+  // Toggle request Signed Receipt flag
+  gRequestSignedReceipt.checked != gRequestSignedReceipt.checked;
+
+  // If request Signed Receipt is enable, force signing
+  if (gRequestSignedReceipt.checked)
+    gSignMessages.checked = true;
+}
+
+function toggleSignMail()
+{
+  if (!gSignMessages.checked)
+    gRequestSignedReceipt.checked = false;
+}
+
+// Update UI to match triple wrapping choices
+function updateTripleWrapUI()
+{
+  // Disable or enable signing and encryption part
+  gSignMessages.setAttribute("disabled", gTripleWrapMessages.checked || !gSignCertName.value);
+  document.getElementById("signingCertClearButton").setAttribute("disabled", gTripleWrapMessages.checked || !gSignCertName.value);
+  document.getElementById("signingCertSelectButton").setAttribute("disabled", gTripleWrapMessages.checked);
+
+  gEncryptAlways.setAttribute("disabled", gTripleWrapMessages.checked || !gEncryptionCertName.value);
+  gNeverEncrypt.setAttribute("disabled", gTripleWrapMessages.checked || !gEncryptionCertName.value);
+  document.getElementById("encryptionCertClearButton").setAttribute("disabled", gTripleWrapMessages.checked || !gEncryptionCertName.value);
+  document.getElementById("encryptionCertSelectButton").setAttribute("disabled", gTripleWrapMessages.checked);
+
+  // Disable triple wrapping if certificates for signing and encryption are not both defined
+  if (!gSignCertName.value || !gEncryptionCertName.value) {
+    gTripleWrapMessages.setAttribute("disabled", true);
+    gTripleWrapMessages.checked = false;
+  }
+  else
+    gTripleWrapMessages.setAttribute("disabled", false);
+}
+
+// Toggle triple wrap flag and update UI
+function toggleTripleWrapMail()
+{
+  // Toggle triple wrap flag
+  gTripleWrapMessages.checked != gTripleWrapMessages.checked;
+
+  // If triple wrapping is enable, force signing and encryption
+  if (gTripleWrapMessages.checked) {
+    gSignMessages.checked = true;
+    gEncryptionChoices.value = gEncryptAlways.value;
+  }
+
+  // Update UI to match triple wrapping choices
+  updateTripleWrapUI();
+}
 
 // Does the work of disabling an element given the array which contains xul id/prefstring pairs.
 // Also saves the id/locked state in an array so that other areas of the code can avoid
@@ -334,6 +407,9 @@ function smimeSelectCert(smime_cert)
   }
 
   enableCertSelectButtons();
+
+  // Update UI to match triple wrapping choices
+  updateTripleWrapUI();
 }
 
 function enableEncryptionControls(do_enable)
@@ -359,10 +435,15 @@ function enableSigningControls(do_enable)
 
   if (do_enable) {
     gSignMessages.removeAttribute("disabled");
+
+    gRequestSignedReceipt.removeAttribute("disabled");
   }
   else {
     gSignMessages.setAttribute("disabled", "true");
     gSignMessages.checked = false;
+
+    gRequestSignedReceipt.setAttribute("disabled", "true");
+    gRequestSignedReceipt.checked = false;
   }
 }
 
@@ -399,6 +480,9 @@ function smimeClearCert(smime_cert)
   }
   
   enableCertSelectButtons();
+
+  // Update UI to match triple wrapping choices
+  updateTripleWrapUI();
 }
 
 function openCertManager()
@@ -429,4 +513,3 @@ function openDeviceManager()
                 'chrome,centerscreen,resizable=yes,dialog=no');
   }
 }
-

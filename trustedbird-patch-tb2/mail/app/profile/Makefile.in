@@ -20,6 +20,7 @@
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
+#   EADS Defence and Security Systems
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -49,11 +50,14 @@ include $(topsrcdir)/config/rules.mk
 FILES := \
 	mimeTypes.rdf \
     localstore.rdf \
+    securityLabelPolicy-sample.xml \
+    securityLabelPolicy-schema.xsd \
 	$(NULL)
 
 libs:: $(FILES)
 	$(INSTALL) $^ $(DIST)/bin/defaults/profile
 	$(INSTALL) $^ $(DIST)/bin/defaults/profile/US
+	$(INSTALL) $(srcdir)/secureHeaderDefault.xml $(DIST)/bin/defaults/profile/secureHeader
 
 install:: $(FILES)
 	$(SYSINSTALL) $(IFLAGS1) $^ $(DESTDIR)$(mozappdir)/defaults/profile

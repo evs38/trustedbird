@@ -48,7 +48,7 @@ static const nsXREAppData kAppData = {
   sizeof(nsXREAppData),
   nsnull,
   nsnull,
-  "Thunderbird",
+  "Trustedbird",
   NS_STRINGIFY(APP_VERSION),
   NS_STRINGIFY(BUILD_ID),
   "{3550f703-e582-4d05-9a08-453d09bdfdc6}",

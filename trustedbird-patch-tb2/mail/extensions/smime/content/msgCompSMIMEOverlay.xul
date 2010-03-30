@@ -23,7 +23,9 @@
 #
 # Contributor(s):
 #   David Drinan <ddrinan@netscape.com>
-#   Scott MacGregor <mscott@netscape.com
+#   Scott MacGregor <mscott@netscape.com>
+#   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+#   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,15 +46,17 @@
 <!DOCTYPE overlay SYSTEM "chrome://messenger-smime/locale/msgCompSMIMEOverlay.dtd">
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://messenger-smime/content/securityLabel.js"/>
   <script type="application/x-javascript" src="chrome://messenger-smime/content/msgCompSMIMEOverlay.js"/>
   <script type="application/x-javascript"><![CDATA[
     window.addEventListener("load", smimeComposeOnLoad, true);
   ]]></script>
 
   <window id="msgcomposeWindow">
-    <broadcaster id="securityStatus" crypto="" signing=""/>
+    <broadcaster id="securityStatus" crypto="" signing="" tripleWrap=""/>
     <observes element="securityStatus" attribute="crypto" />
     <observes element="securityStatus" attribute="signing" />
+    <observes element="securityStatus" attribute="tripleWrap" />
     <stringbundle id="bundle_comp_smime" src="chrome://messenger-smime/locale/msgCompSMIMEOverlay.properties"/>
     <stringbundle id="bundle_brand" src="chrome://branding/locale/brand.properties"/>
   </window>
@@ -67,6 +71,11 @@
           accesskey="&menu_securityEncryptRequire.accesskey;" label="&menu_securityEncryptRequire.label;" oncommand="encryptMessage()"/>
         <menuseparator/>
         <menuitem id="menu_securitySign1" type="checkbox" accesskey="&menu_securitySign.accesskey;" label="&menu_securitySign.label;" oncommand="signMessage()"/>
+        <menuitem id="menu_securitySignedReceiptRequest1" type="checkbox" accesskey="&menu_securitySignedReceiptRequest.accesskey;" label="&menu_securitySignedReceiptRequest.label;" oncommand="toggleSignedReceiptRequest()"/>
+        <menuseparator/>
+        <menuitem id="menu_securityTripleWrap1" type="checkbox" accesskey="&menu_securityTripleWrap.accesskey;" label="&menu_securityTripleWrap.label;" oncommand="toggleTripleWrapMessage()" tooltiptext="&tripleWrap.description;"/>
+        <menuseparator/>
+        <menuitem id="menu_securityLabelDialog1" accesskey="&menu_securityLabel.accesskey;" label="&menu_securityLabel.label;" oncommand="showSecurityLabelDialog();" />
       </menupopup>
     </menu>
   </menupopup>
@@ -82,6 +91,11 @@
           accesskey="&menu_securityEncryptRequire.accesskey;" label="&menu_securityEncryptRequire.label;" oncommand="setNextCommand('encryptMessage')"/>
         <menuseparator/>
         <menuitem id="menu_securitySign2" type="checkbox" accesskey="&menu_securitySign.accesskey;" label="&menu_securitySign.label;" oncommand="setNextCommand('signMessage');"/>
+        <menuitem id="menu_securitySignedReceiptRequest2" type="checkbox" accesskey="&menu_securitySignedReceiptRequest.accesskey;" label="&menu_securitySignedReceiptRequest.label;" oncommand="setNextCommand('signedReceiptRequest');"/>
+        <menuseparator/>
+        <menuitem id="menu_securityTripleWrap2" type="checkbox" accesskey="&menu_securityTripleWrap.accesskey;" label="&menu_securityTripleWrap.label;" oncommand="setNextCommand('tripleWrapMessage');" tooltiptext="&tripleWrap.description;"/>
+        <menuseparator/>
+        <menuitem id="menu_securityLabelDialog2" accesskey="&menu_securityLabel.accesskey;" label="&menu_securityLabel.label;" oncommand="setNextCommand('securityLabelDialog');" />
         <menuseparator/>
         <menuitem id="menu_securityStatus2" accesskey="&menu_securityStatus.accesskey;" label="&menu_securityStatus.label;" oncommand="setNextCommand('show');"/>
       </menupopup>
@@ -91,8 +105,12 @@
   <statusbar id="status-bar">
     <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
       id="signing-status" oncommand="showMessageComposeSecurityStatus();"/>
+    <statusbarpanel insertbefore="offline-status" collapsed="true"
+      id="securityLabelSecurityClassification-status" onclick="showMessageComposeSecurityStatus();"/>
     <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
       id="encryption-status" oncommand="showMessageComposeSecurityStatus();"/>
+    <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
+      id="tripleWrapping-status" oncommand="showMessageComposeSecurityStatus();"/>
   </statusbar>
 
   <commandset id="composeCommands">

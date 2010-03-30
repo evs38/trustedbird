@@ -20,6 +20,9 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,10 +40,21 @@
 
 var gEncryptionStatus = -1;
 var gSignatureStatus = -1;
+var gSecurityPolicyIdentifier = null;
+var gSecurityClassification = -1;
+var gPrivacyMark = null;
+var gSecurityCategories = null;
+var gTripleWrapStatus = -1;
+var gSmimeReceiptType = null;
+var gSignedContentIdentifier = null;
+var gOriginatorSignatureValue = null;
+var gOriginatorContentType = null;
 var gSignerCert = null;
 var gEncryptionCert = null;
 var gBundle;
 var gBrandBundle;
+var gSecureHeaders = "";
+var gSecureHeadersState = -1;
 
 const nsPKIParamBlock    = "@mozilla.org/security/pkiparamblock;1";
 const nsIPKIParamBlock    = Components.interfaces.nsIPKIParamBlock;
@@ -94,7 +108,19 @@ function showMessageReadSecurityInfo()
   // int array starts with index 0, but that is used for window exit status
   params.SetInt(1, gSignatureStatus);
   params.SetInt(2, gEncryptionStatus);
-  
+  params.SetInt(3, gSecurityClassification);
+  params.SetInt(4, gTripleWrapStatus);
+  params.SetInt(5, gSecureHeadersState);
+
+  params.SetString(0, gSecurityPolicyIdentifier);
+  params.SetString(1, gPrivacyMark);
+  params.SetString(2, gSecurityCategories);
+  params.SetString(3, gSmimeReceiptType);
+  params.SetString(4, gSignedContentIdentifier);
+  params.SetString(5, gOriginatorSignatureValue);
+  params.SetString(6, gOriginatorContentType);
+  params.SetString(7, gSecureHeaders);
+
   window.openDialog('chrome://messenger-smime/content/msgReadSecurityInfo.xul',
     '', 'chrome,resizable=1,modal=1,dialog=1', pkiParams );
 }

@@ -66,6 +66,10 @@
   locale/@AB_CD@/messenger/am-mdn.dtd                                   (%chrome/messenger/am-mdn.dtd)
   locale/@AB_CD@/messenger/am-mdn.properties                            (%chrome/messenger/am-mdn.properties)
   locale/@AB_CD@/messenger/msgmdn.properties                            (%chrome/messenger/msgmdn.properties)
+  locale/@AB_CD@/messenger/am-dsn.dtd                                   (%chrome/messenger/am-dsn.dtd)
+  locale/@AB_CD@/messenger/am-dsn.properties                            (%chrome/messenger/am-dsn.properties)
+  locale/@AB_CD@/messenger/am-securitylabel.dtd                         (%chrome/messenger/am-securitylabel.dtd)
+  locale/@AB_CD@/messenger/am-securitylabel.properties                  (%chrome/messenger/am-securitylabel.properties)
   locale/@AB_CD@/messenger/mailviews.properties                         (%chrome/messenger/mailviews.properties)
   locale/@AB_CD@/messenger/msgViewPickerOverlay.dtd                     (%chrome/messenger/msgViewPickerOverlay.dtd)
   locale/@AB_CD@/messenger/mailViewSetup.dtd                            (%chrome/messenger/mailViewSetup.dtd)
@@ -112,6 +116,7 @@
   locale/@AB_CD@/messenger/preferences/viewpasswords.dtd                (%chrome/messenger/preferences/viewpasswords.dtd)
   locale/@AB_CD@/messenger/preferences/advanced.dtd                     (%chrome/messenger/preferences/advanced.dtd)
   locale/@AB_CD@/messenger/preferences/receipts.dtd                     (%chrome/messenger/preferences/receipts.dtd)
+  locale/@AB_CD@/messenger/preferences/dsn.dtd                          (%chrome/messenger/preferences/dsn.dtd)
   locale/@AB_CD@/messenger/preferences/connection.dtd                   (%chrome/messenger/preferences/connection.dtd)
   locale/@AB_CD@/messenger/preferences/downloads.dtd                    (%chrome/messenger/preferences/downloads.dtd)
   locale/@AB_CD@/messenger/preferences/downloadactions.dtd              (%chrome/messenger/preferences/downloadactions.dtd)
@@ -141,6 +146,9 @@
   locale/@AB_CD@/messenger-smime/msgReadSecurityInfo.dtd                (%chrome/messenger-smime/msgReadSecurityInfo.dtd)
   locale/@AB_CD@/messenger-smime/certFetchingStatus.dtd                 (%chrome/messenger-smime/certFetchingStatus.dtd)
   locale/@AB_CD@/messenger-smime/msgSecurityInfo.properties             (%chrome/messenger-smime/msgSecurityInfo.properties)
+  locale/@AB_CD@/messenger-smime/msgsignedreceipt.properties            (%chrome/messenger-smime/msgsignedreceipt.properties)
+  locale/@AB_CD@/messenger-smime/securityLabelTreeColOverlay.dtd        (%chrome/messenger-smime/securityLabelTreeColOverlay.dtd)
+  locale/@AB_CD@/messenger-smime/securityLabel.properties               (%chrome/messenger-smime/securityLabel.properties)
 % locale messenger-region @AB_CD@ %locale/@AB_CD@/messenger-region/
   locale/@AB_CD@/messenger-region/region.properties                     (%chrome/messenger-region/region.properties)
 % locale mozldap @AB_CD@ %locale/@AB_CD@/mozldap/

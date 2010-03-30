@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *   Dr Vipul Gupta <vipul.gupta@sun.com>, Sun Microsystems Laboratories
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,6 +38,7 @@
 
 #include "secoid.h"
 #include "pkcs11t.h"
+#include "secmodt.h"
 #include "secitem.h"
 #include "secerr.h"
 #include "prenv.h"
@@ -255,6 +257,15 @@ CONST_OID pkcs9X509CRL[]                	= { PKCS9_CRL_TYPES, 1 };
 CONST_OID cmsESDH[]     			= { PKCS9_SMIME_ALGS, 5 };
 CONST_OID cms3DESwrap[] 			= { PKCS9_SMIME_ALGS, 6 };
 CONST_OID cmsRC2wrap[]  			= { PKCS9_SMIME_ALGS, 7 };
+
+/* RFC2634 SMIME message attributes */
+CONST_OID smimeReceiptRequest[]                 = { PKCS9_SMIME_ATTRS, 1 };
+CONST_OID smimeReceipt[]                        = { PKCS9_SMIME_IDS, 1, 1 };
+CONST_OID smimeMsgSigDigest[]                   = { PKCS9_SMIME_ATTRS, 2, 5 };
+CONST_OID smimeSecurityLabel[]                  = { PKCS9_SMIME_ATTRS, 2 };
+
+/*Signed Headers*/
+CONST_OID smimeSignedHeader[] = {PKCS9_SMIME_ATTRS, 80};
 
 /* RFC2633 SMIME message attributes */
 CONST_OID smimeEncryptionKeyPreference[] 	= { PKCS9_SMIME_ATTRS, 11 };
@@ -1586,6 +1597,22 @@ const static SECOidData oids[SEC_OID_TOTAL] = {
     OD( seed_CBC, SEC_OID_SEED_CBC,
 	"SEED-CBC", CKM_SEED_CBC, INVALID_CERT_EXTENSION),
 
+    OD( smimeReceiptRequest, SEC_OID_SMIME_RECEIPT_REQUEST,
+        "S/MIME Signed Receipt Request",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+    OD( smimeReceipt, SEC_OID_SMIME_RECEIPT,
+        "S/MIME Receipt",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+    OD( smimeMsgSigDigest, SEC_OID_SMIME_MSG_SIG_DIGEST,
+        "S/MIME Msg Sig Digest",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+    OD( smimeSecurityLabel, SEC_OID_SMIME_SECURITY_LABEL,
+        "S/MIME Security Label",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+    /*Signed Header*/
+    OD( smimeSignedHeader, SEC_OID_SMIME_SECURE_HEADERS,
+        "S/MIME Signed Header",
+        CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
 };
 
 /* PRIVATE EXTENDED SECOID Table

@@ -129,6 +129,8 @@
 
 <!ENTITY returnReceiptMenu.label "Return Receipt">
 <!ENTITY returnReceiptMenu.accesskey "t">
+<!ENTITY dsnMenu.label "Delivery Receipt">
+<!ENTITY dsnMenu.accesskey "d">
 <!ENTITY outputFormatMenu.label "Format">
 <!ENTITY outputFormatMenu.accesskey "f">
 <!ENTITY autoFormatCmd.label "Auto-Detect">
@@ -152,6 +154,18 @@
 <!ENTITY highPriorityCmd.accesskey "i">
 <!ENTITY highestPriorityCmd.label "Highest">
 <!ENTITY highestPriorityCmd.accesskey "H">
+<!ENTITY deliveringPriorityMenu.label "Delivering Priority">
+<!ENTITY deliveringPriorityMenu.accesskey "l">
+<!ENTITY noneDeliveringPriorityCmd.label "None">
+<!ENTITY noneDeliveringPriorityCmd.accesskey "N">
+<!ENTITY routineDeliveringPriorityCmd.label "Routine">
+<!ENTITY routineDeliveringPriorityCmd.accesskey "R">
+<!ENTITY priorityDeliveringPriorityCmd.label "Priority">
+<!ENTITY priorityDeliveringPriorityCmd.accesskey "P">
+<!ENTITY immediateDeliveringPriorityCmd.label "Immediate">
+<!ENTITY immediateDeliveringPriorityCmd.accesskey "I">
+<!ENTITY flashDeliveringPriorityCmd.label "Flash">
+<!ENTITY flashDeliveringPriorityCmd.accesskey "F">
 <!ENTITY fileCarbonCopyCmd.label "Send a Copy To">
 <!ENTITY fileCarbonCopyCmd.accesskey "d">
 <!ENTITY fileHereMenu.label "File Here">
@@ -279,4 +293,3 @@
 
 <!-- Title for the address picker panel -->
 <!ENTITY addressesSidebarTitle.label "Contacts">
-

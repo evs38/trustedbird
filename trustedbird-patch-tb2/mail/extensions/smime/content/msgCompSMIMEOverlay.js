@@ -23,6 +23,9 @@
  * Contributor(s):
  *   ddrinan@netscape.com
  *   Scott MacGreogr <mscott@netscape.com>
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -54,7 +57,9 @@ function onComposerClose()
   gSMFields = null;
   setNoEncryptionUI();
   setNoSignatureUI();
-
+  setTripleWrapUI(false);
+  securityLabelSetUIStatusBar();
+  
   if (!gMsgCompose)
     return;
 
@@ -89,6 +94,8 @@ function onComposerReOpen()
 
     gSMFields.signMessage = gCurrentIdentity.getBoolAttribute("sign_mail");
 
+    gSMFields.signedReceiptRequest = gCurrentIdentity.getBoolAttribute("request_signed_return_receipt_on");
+
     if (gEncryptedURIService && !gSMFields.requireEncryptMessage)
     {
       if (gEncryptedURIService.isEncrypted(gMsgCompose.originalMsgURI))
@@ -115,6 +122,13 @@ function onComposerReOpen()
     {
       setNoSignatureUI();
     }
+
+    gSMFields.tripleWrapMessage = gCurrentIdentity.getBoolAttribute("triple_wrap_mail");
+    setTripleWrapUI(gSMFields.tripleWrapMessage);
+    
+    gSMFields.securityLabelLocation = gCurrentIdentity.getIntAttribute("securityLabelLocation");
+
+    securityLabelSetUIStatusBar();
   }
 }
 
@@ -237,6 +251,111 @@ function signMessage()
   }
 }
 
+/**
+ * Show a dialog to define Security Label settings
+ */
+function showSecurityLabelDialog() {
+	window.openDialog('chrome://messenger-smime/content/securityLabelDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=500,height=350');
+	
+	/* make sure we have a cert name for signing */
+	if (gSMFields.securityPolicyIdentifier != "") {
+		var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+		if (!signingCertName) {
+			gSMFields.securityPolicyIdentifier = "";
+			gSMFields.securityClassification = "";
+			gSMFields.privacyMark = "";
+			gSMFields.securityCategories = "";
+			showNeedSetupInfo();
+			return;
+		}
+
+		securityLabelSetUIStatusBar(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification);
+
+		// Enable signing if disable
+		if (!gSMFields.signMessage) signMessage();
+	}
+}
+
+/**
+ * Display Security Label info in status bar of compose window
+ * @param securityPolicyIdentifier Security Policy Identifier
+ * @param securityClassification Security Classification
+ */
+function securityLabelSetUIStatusBar(securityPolicyIdentifier, securityClassification) {
+	if (securityPolicyIdentifier != undefined && securityPolicyIdentifier != "") {
+		if (securityClassification != undefined && securityClassification != "" && securityClassification != "-1") {
+			top.document.getElementById("securityLabelSecurityClassification-status").label = securityLabelGetSecurityClassificationName(securityPolicyIdentifier, securityClassification)
+				+ " [" + securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+		} else {
+			top.document.getElementById("securityLabelSecurityClassification-status").label = "[" + securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) + "]";
+		}
+		top.document.getElementById("securityLabelSecurityClassification-status").collapsed = false;
+	} else {
+		  top.document.getElementById("securityLabelSecurityClassification-status").label = "";
+		  top.document.getElementById("securityLabelSecurityClassification-status").collapsed = true;
+	}
+}
+
+// Toggle SignedReceiptRequest flag and update UI
+function toggleSignedReceiptRequest()
+{
+  if (!gSMFields)
+    return;
+
+  // Toggle SignedReceiptRequest flag
+  gSMFields.signedReceiptRequest = !gSMFields.signedReceiptRequest;
+
+  // make sure we have a cert name for signing ...
+  if (gSMFields.signedReceiptRequest)
+  {
+    var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+
+    if (!signingCertName) {
+      gSMFields.signedReceiptRequest = false;
+      showNeedSetupInfo();
+      return;
+    }
+
+    // Enable signing if disable
+    if (!gSMFields.signMessage)
+      signMessage();
+  }
+}
+
+// Toggle triple wrap flag and update UI
+function toggleTripleWrapMessage()
+{
+  if (!gSMFields)
+    return;
+
+  // Toggle tripleWrap flag
+  gSMFields.tripleWrapMessage = !gSMFields.tripleWrapMessage;
+
+  // make sure we have a cert name for encrypting and one for signing ...
+  if (gSMFields.tripleWrapMessage)
+  {
+    var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+    var encryptionCertName = gCurrentIdentity.getUnicharAttribute("encryption_cert_name");
+
+    if (!signingCertName || !encryptionCertName) {
+      gSMFields.tripleWrapMessage = false;
+      showNeedSetupInfo();
+      return;
+    }
+
+    // Enable encryption
+    encryptMessage();
+
+    // Enable signing if disable
+    if (!gSMFields.signMessage)
+      signMessage();
+
+    setTripleWrapUI(true);
+  }
+  else
+    setTripleWrapUI(false);
+}
+
 function setSecuritySettings(menu_id)
 { 
   if (!gSMFields)
@@ -245,6 +364,20 @@ function setSecuritySettings(menu_id)
   document.getElementById("menu_securityEncryptRequire" + menu_id).setAttribute("checked", gSMFields.requireEncryptMessage);
   document.getElementById("menu_securityNoEncryption" + menu_id).setAttribute("checked", !gSMFields.requireEncryptMessage);
   document.getElementById("menu_securitySign" + menu_id).setAttribute("checked", gSMFields.signMessage);
+
+  // Enable or disable menuitem "sign" according to signedReceiptRequest and tripleWrapMessage flags
+  document.getElementById("menu_securitySign" + menu_id).setAttribute("disabled",
+    gSMFields.signedReceiptRequest || gSMFields.tripleWrapMessage || (gSMFields.securityPolicyIdentifier != ""));
+
+  // Set checked status for SignedReceiptRequest menuitem
+  document.getElementById("menu_securitySignedReceiptRequest" + menu_id).setAttribute("checked", gSMFields.signedReceiptRequest);
+
+  // Enable or disable menuitem "encrypt" according to tripleWrapMessage flag
+  document.getElementById("menu_securityEncryptRequire" + menu_id).setAttribute("disabled", gSMFields.tripleWrapMessage);
+  document.getElementById("menu_securityNoEncryption" + menu_id).setAttribute("disabled", gSMFields.tripleWrapMessage);
+
+  // Set checked status for tripleWrapMessage menuitem
+  document.getElementById("menu_securityTripleWrap" + menu_id).setAttribute("checked", gSMFields.tripleWrapMessage);
 }
 
 function setNextCommand(what)
@@ -271,6 +404,18 @@ function doSecurityButton()
       signMessage();
       break;
     
+    case "signedReceiptRequest":
+      toggleSignedReceiptRequest();
+      break;
+
+    case "tripleWrapMessage":
+      toggleTripleWrapMessage();
+      break;
+
+    case "securityLabelDialog":
+      showSecurityLabelDialog();
+      break;
+
     case "show":
     default:
       showMessageComposeSecurityStatus();
@@ -302,12 +447,19 @@ function setEncryptionUI()
   top.document.getElementById("encryption-status").collapsed = false;
 }
 
+function setTripleWrapUI(isEnable)
+{
+  top.document.getElementById("securityStatus").setAttribute("tripleWrap", (isEnable) ? "ok" : "");
+  top.document.getElementById("tripleWrapping-status").collapsed = isEnable;
+}
+
 function showMessageComposeSecurityStatus()
 {
   Recipients2CompFields(gMsgCompose.compFields);
 
   var encryptionCertName = gCurrentIdentity.getUnicharAttribute("encryption_cert_name");
   var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+  var secureHeaderCheck = gCurrentIdentity.getBoolAttribute(SECURE_HEADERS_ATTRIBUTE_CHECK);
   
   window.openDialog('chrome://messenger-smime/content/msgCompSecurityInfo.xul',
     '',
@@ -318,6 +470,7 @@ function showMessageComposeSecurityStatus()
       smFields : gSMFields,
       isSigningCertAvailable : (signingCertName.length > 0),
       isEncryptionCertAvailable : (encryptionCertName.length > 0),
+      isSecureHeaderAvailable : secureHeaderCheck,
       currentIdentity : gCurrentIdentity
     }
   );
@@ -438,6 +591,7 @@ function onComposerFromChanged()
     if (!signMessage)
     {
       gSMFields.signMessage = false;
+      gSMFields.signedReceiptRequest = false;
       setNoSignatureUI();
     }
   }

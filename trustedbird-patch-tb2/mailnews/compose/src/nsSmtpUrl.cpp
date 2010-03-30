@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -529,6 +530,8 @@ nsSmtpUrl::nsSmtpUrl() : nsMsgMailNewsUrl()
 
   m_fileName = nsnull;
   m_isPostMessage = PR_TRUE;
+  m_requestDSN = PR_FALSE;
+  m_deliveringPriority = 0;
 }
  
 nsSmtpUrl::~nsSmtpUrl()
@@ -614,7 +617,11 @@ NS_IMETHODIMP nsSmtpUrl::GetPostMessageFile(nsIFileSpec ** aFileSpec)
   return rv;
 }
 
-NS_IMETHODIMP 
+NS_IMPL_GETSET(nsSmtpUrl, RequestDSN, PRBool, m_requestDSN)
+
+NS_IMPL_GETSET(nsSmtpUrl, DeliveringPriority, PRInt32, m_deliveringPriority)
+
+NS_IMETHODIMP
 nsSmtpUrl::GetSenderIdentity(nsIMsgIdentity * *aSenderIdentity)
 {
   NS_ENSURE_ARG_POINTER(aSenderIdentity); 
@@ -704,4 +711,3 @@ nsSmtpUrl::GetSmtpServer(nsISmtpServer ** aSmtpServer)
     NS_ADDREF(*aSmtpServer);
     return NS_OK;
 }
-

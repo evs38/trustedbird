@@ -330,6 +330,7 @@ bin\components\mapihook.xpt
 bin\components\msgmdn.dll
 bin\components\msgmdn.xpt
 bin\components\mdn-service.js
+bin\components\dsn-service.js
 bin\components\nsSetDefaultMail.js
 bin\components\nsUnsetDefaultMail.js
 ;these Palm Sync files are conditionally built so would not exist unless built

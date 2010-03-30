@@ -21,6 +21,8 @@
  *
  * Contributor(s):
  *   Pierre Phaneuf <pp@ludusdesign.com>
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -68,9 +70,11 @@ nsMsgCompFields::nsMsgCompFields()
   m_uuEncodeAttachments = PR_FALSE;
   m_returnReceipt = PR_FALSE;
   m_receiptHeaderType = nsIMsgMdnGenerator::eDntType;
+  m_DSN = PR_FALSE;
   m_bodyIsAsciiOnly = PR_FALSE;
   m_forceMsgEncoding = PR_FALSE;
   m_needToCheckCharset = PR_TRUE;
+  m_deliveringPriority = 0;
 
   // Get the default charset from pref, use this as a mail charset.
   nsXPIDLString charset;
@@ -326,6 +330,18 @@ NS_IMETHODIMP nsMsgCompFields::GetPriority(char **_retval)
   return *_retval ? NS_OK : NS_ERROR_OUT_OF_MEMORY;
 }
 
+NS_IMETHODIMP nsMsgCompFields::SetDeliveringPriority(PRInt32 value)
+{
+    m_deliveringPriority = value;
+    return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgCompFields::GetDeliveringPriority(PRInt32 *_retval)
+{
+    *_retval = m_deliveringPriority;
+    return NS_OK;
+}
+
 NS_IMETHODIMP nsMsgCompFields::SetCharacterSet(const char *value)
 {
   return SetAsciiHeader(MSG_CHARACTER_SET_HEADER_ID, value);
@@ -391,6 +407,19 @@ NS_IMETHODIMP nsMsgCompFields::GetReceiptHeaderType(PRInt32 *_retval)
 {
     *_retval = m_receiptHeaderType;
     return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgCompFields::SetDSN(PRBool value)
+{
+  m_DSN = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgCompFields::GetDSN(PRBool *_retval)
+{
+  NS_ENSURE_ARG_POINTER(_retval);
+  *_retval = m_DSN;
+  return NS_OK;
 }
 
 NS_IMETHODIMP nsMsgCompFields::SetAttachVCard(PRBool value)

@@ -20,6 +20,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -40,7 +42,7 @@
 #include "nsIMsgAttachment.idl"
 #include "nsISupportsArray.idl"
 
-[scriptable, uuid(f5a85828-e9ef-4821-a045-6dc7a09351d6)]
+[scriptable, uuid(92b53528-65fa-4d3d-9f32-3abb761b84f8)]
 interface nsIMsgCompFields : nsISupports {
 
   attribute AString from;
@@ -69,6 +71,7 @@ interface nsIMsgCompFields : nsISupports {
   attribute AString organization;
   attribute string  references;
   attribute string  priority;
+  attribute PRInt32 deliveringPriority;
   attribute string  messageId;
   attribute string  characterSet;
   readonly attribute string defaultCharacterSet;
@@ -78,6 +81,7 @@ interface nsIMsgCompFields : nsISupports {
 
   attribute boolean returnReceipt;
   attribute long receiptHeaderType;
+  attribute boolean DSN;
   attribute boolean attachVCard;
   attribute boolean forcePlainText;
   attribute boolean useMultipartAlternative;
@@ -118,4 +122,3 @@ interface nsIMsgCompFields : nsISupports {
 
   attribute nsISupports securityInfo;
 };
-

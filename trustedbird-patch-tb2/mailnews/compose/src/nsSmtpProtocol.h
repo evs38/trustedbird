@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -112,6 +113,8 @@ SMTP_SEND_AUTH_GSSAPI_STEP                          // 25
 #define SMTP_AUTH_ANY_ENABLED           0x0000BC1C
 #define SMTP_EHLO_SIZE_ENABLED          0x00004000
 #define SMTP_AUTH_GSSAPI_ENABLED        0x00008000
+
+#define SMTP_EHLO_PRIORITY_ENABLED      0x00010000
 
 typedef enum _PrefAuthMethod {
     PREF_AUTH_NONE = 0,

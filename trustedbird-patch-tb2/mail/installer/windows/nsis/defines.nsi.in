@@ -6,8 +6,8 @@
 !define FileInstallerMSI      "@PKG_BASENAME@.installer.msi"
 !define FileInstallerNETRoot  "@PKG_BASENAME@.net-installer"
 
-!define FileMainEXE           "thunderbird.exe"
-!define WindowClass           "ThunderbirdMessageWindow"
+!define FileMainEXE           "trustedbird.exe"
+!define WindowClass           "TrustedbirdMessageWindow"
 
-!define AppRegNameMail        "Thunderbird"
-!define AppRegNameNews        "Thunderbird (News)"
+!define AppRegNameMail        "Trustedbird"
+!define AppRegNameNews        "Trustedbird (News)"

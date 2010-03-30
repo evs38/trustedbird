@@ -1,0 +1,16 @@
+#include "nsISupports.idl"
+
+
+
+// {A1BBE613-DA57-4766-84F0-343DAAFF6EB2}
+//static const GUID <<name>> = 
+//{ 0xa1bbe613, 0xda57, 0x4766, { 0x84, 0xf0, 0x34, 0x3d, 0xaa, 0xff, 0x6e, 0xb2 } };
+
+[scriptable, uuid(A1BBE613-DA57-4766-84F0-343DAAFF6EB2)]
+interface nsIMsgSMIMESecureHeader : nsISupports 
+{
+  attribute AString headerName;
+  attribute AString headerValue;
+  attribute PRInt32 headerStatus;
+  attribute PRInt32 headerEncrypted;
+};

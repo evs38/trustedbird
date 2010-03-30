@@ -114,6 +114,10 @@ messenger.jar:
     content/messenger/mailViewList.js               (/mailnews/extensions/mailviews/resources/content/mailViewList.js)
     content/messenger/am-mdn.xul                    (/mailnews/extensions/mdn/resources/content/am-mdn.xul)
     content/messenger/am-mdn.js                     (/mailnews/extensions/mdn/resources/content/am-mdn.js)
+    content/messenger/am-dsn.xul                    (/mailnews/extensions/dsn/resources/content/am-dsn.xul)
+    content/messenger/am-dsn.js                     (/mailnews/extensions/dsn/resources/content/am-dsn.js)
+    content/messenger/am-securitylabel.xul          (/mailnews/extensions/securitylabel/resources/content/am-securitylabel.xul)
+    content/messenger/am-securitylabel.js           (/mailnews/extensions/securitylabel/resources/content/am-securitylabel.js)
 #ifdef XP_MACOSX
     content/messenger/macMenuOverlay.xul            (content/macMenuOverlay.xul)
 #endif

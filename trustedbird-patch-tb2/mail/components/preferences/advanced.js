@@ -21,6 +21,7 @@
 #
 # Contributor(s):
 #   Scott MacGregor <mscott@mozilla.org>
+#   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -210,6 +211,15 @@ var gAdvancedPane = {
   showReturnReceipts: function()
   {
     document.documentElement.openSubDialog("chrome://messenger/content/preferences/receipts.xul",
+                                           "", null);
+  },  
+  
+  /** 
+   * open the Delivery Status Nofification dialog
+   */
+  showDSN: function()
+  {
+    document.documentElement.openSubDialog("chrome://messenger/content/preferences/dsn.xul",
                                            "", null);
   },  
   

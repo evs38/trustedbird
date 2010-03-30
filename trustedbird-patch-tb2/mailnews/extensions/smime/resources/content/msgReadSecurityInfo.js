@@ -19,7 +19,11 @@
  * Portions created by the Initial Developer are Copyright (C) 2002
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): Kai Engert <kaie@netscape.com>
+ * Contributor(s):
+ *   Kai Engert <kaie@netscape.com>
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -47,8 +51,21 @@ var gEncryptionCert = null;
 
 var gSignatureStatus = -1;
 var gEncryptionStatus = -1;
-
+var gSecurityPolicyIdentifier = null;
+var gSecurityClassification = -1;
+var gPrivacyMark = null;
+var gSecurityCategories = null;
+var gTripleWrapStatus = -1;
+var gSmimeReceiptType = null;
+var gSignedContentIdentifier = null;
+var gOriginatorSignatureValue = null;
+var gOriginatorContentType = null;
+var gSecureHeaders = "";
+var gSecureHeadersState = -1;
 var params = null;
+
+const SECURE_HEADER_SEPARATOR = "###HEADER_SEPARATOR###";
+const HEADER_VAL_SEPARATOR = "###HEADER_VAL###";
 
 function setText(id, value) {
   var element = document.getElementById(id);
@@ -76,8 +93,21 @@ function onLoad()
   
   gSignatureStatus = params.GetInt(1);
   gEncryptionStatus = params.GetInt(2);
+  gSecurityClassification = params.GetInt(3);
+  gTripleWrapStatus = params.GetInt(4);
+  gSecureHeadersState = params.GetInt(5);
+
+  gSecurityPolicyIdentifier = params.GetString(0);
+  gPrivacyMark = params.GetString(1);
+  gSecurityCategories = params.GetString(2);
+  gSmimeReceiptType = params.GetString(3);
+  gSignedContentIdentifier = params.GetString(4);
+  gOriginatorSignatureValue = params.GetString(5);
+  gOriginatorContentType = params.GetString(6);
+  gSecureHeaders = params.GetString(7);
   
   var bundle = document.getElementById("bundle_smime_read_info");
+  var bundle_secure_headers = document.getElementById("bundle_smime_secure_headers");
 
   if (bundle) {
     var sigInfoLabel = null;
@@ -166,7 +196,25 @@ function onLoad()
       str = bundle.getString("SIClueless") + " (" + gSignatureStatus + ")";
     }
     setText("signatureExplanation", str);
-    
+
+    if (gSignatureStatus == nsICMSMessageErrors.SUCCESS && gSmimeReceiptType) {
+      var smimeReceiptBox = document.getElementById("smimeReceiptBox");
+      var smimeReceiptLabel = document.getElementById("smimeReceiptLabel");
+      var smimeReceiptDescription = document.getElementById("smimeReceiptDescription");
+
+      switch (gSmimeReceiptType) {
+        case "request":
+          smimeReceiptLabel.value = bundle.getString("smimeReceiptLabelRequest");
+          smimeReceiptDescription.value = bundle.getString("smimeReceiptDescriptionRequest");
+          smimeReceiptBox.collapsed = false;
+          break;
+        case "receipt":
+          smimeReceiptLabel.value = bundle.getString("smimeReceiptLabelReceipt");
+          smimeReceiptDescription.value = bundle.getString("smimeReceiptDescriptionReceipt");
+          smimeReceiptBox.collapsed = false;
+          break;
+      }
+    }
 
     var encInfoLabel = null;
     var encInfoHeader = null;
@@ -213,6 +261,47 @@ function onLoad()
       str = bundle.getString("EIClueless");
     }
     setText("encryptionExplanation", str);
+
+    // Triple wrapping
+    var twInfoLabel = null;
+    var twInfoHeader = null;
+    var twInfo = null;
+    var twInfo_clueless = false;
+
+    switch (gTripleWrapStatus) {
+      case -1:
+        twInfoLabel = "TWINoneLabel";
+        twInfo = "TWINone";
+        break;
+
+      case nsICMSMessageErrors.SUCCESS:
+        twInfoLabel = "TWIValidLabel";
+        twInfo = "TWIValid";
+        break;
+
+      case nsICMSMessageErrors.GENERAL_ERROR:
+        twInfoLabel = "TWIInvalidLabel";
+        twInfoHeader = "TWIInvalidHeader";
+        twInfo_clueless = true;
+        break;
+    }
+
+
+    document.getElementById("tripleWrapLabel").value = bundle.getString(twInfoLabel);
+
+    if (twInfoHeader) {
+      label = document.getElementById("tripleWrapHeader");
+      label.collapsed = false;
+      label.value = bundle.getString(twInfoHeader);
+    }
+
+    if (twInfo) {
+      str = bundle.getString(twInfo);
+    }
+    else if (twInfo_clueless) {
+      str = bundle.getString("TWIClueless");
+    }
+    setText("tripleWrapExplanation", str);
   }
   
   if (gSignerCert) {
@@ -240,6 +329,49 @@ function onLoad()
       document.getElementById("encCertIssuedBy").value = gEncryptionCert.issuerCommonName;
     }
   }
+
+  if (gSecurityPolicyIdentifier != "") {
+    document.getElementById("securityLabelBox").collapsed = false;
+    document.getElementById("securityLabelSecurityPolicyIdentifierValue").value = securityLabelGetSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
+    if (gSecurityClassification != -1) {
+    	document.getElementById("securityLabelSecurityClassificationValue").value = securityLabelGetSecurityClassificationName(gSecurityPolicyIdentifier, gSecurityClassification);
+    	document.getElementById("securityLabelSecurityClassificationRow").collapsed = false;
+    }
+    if (gPrivacyMark != "") {
+    	document.getElementById("securityLabelPrivacyMarkValue").value = gPrivacyMark;
+    	document.getElementById("securityLabelPrivacyMarkRow").collapsed = false;
+    }
+    if (gSecurityCategories != "") {
+    	var securityLabelSecurityCategoriesListbox = document.getElementById("securityLabelSecurityCategoriesListbox");
+    	
+    	securityCategoriesArray = gSecurityCategories.split("|");
+    	var listboxSize = securityCategoriesArray.length / 3;
+    	if (listboxSize > 5) listboxSize = 5;
+    	securityLabelSecurityCategoriesListbox.setAttribute("rows", listboxSize);
+
+    	for (var i = 0; i < securityCategoriesArray.length; i += 3) {
+    		var listitem = document.createElement("listitem");
+    		listitem.setAttribute("label", securityLabelGetSecurityCategoryName(gSecurityPolicyIdentifier, gSecurityClassification, securityCategoriesArray[i], securityCategoriesArray[i + 1], securityCategoriesArray[i + 2]));
+    		securityLabelSecurityCategoriesListbox.appendChild(listitem);
+    	}
+    	document.getElementById("securityLabelSecurityCategoriesRow").collapsed = false;
+    }
+  }
+
+  if (gSecureHeaders != "") {
+	document.getElementById("secureHeaderBox").collapsed = false;
+	label = document.getElementById("secureHeadersLabel");
+	label.collapsed = false;
+	label.value = bundle_secure_headers.getString("secureInfo.secureheaders.label");
+
+	var secureStatelabel = document.getElementById("secureHeadersStateLabel");
+	secureStatelabel.hidden = false;
+	if (gSecureHeadersState > 0) {
+		secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.valid.label");
+	} else {
+		secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.invalid.label");
+	}
+  }
 }
 
 function viewCertHelper(parent, cert) {
@@ -264,4 +396,12 @@ function viewEncryptionCert()
 function doHelpButton()
 {
   openHelp('received_security');
+}
+
+function viewSecureHeaders(){
+	if(gSecureHeaders!="")
+	{
+		window.openDialog('chrome://messenger-smime/content/msgReadSecureHeadersView.xul',
+		'', 'chrome,resizable=1,modal=1,dialog=1', gSecureHeaders );
+	}
 }

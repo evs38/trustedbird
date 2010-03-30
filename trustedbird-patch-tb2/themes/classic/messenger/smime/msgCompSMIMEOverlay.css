@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *  Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -89,4 +90,20 @@
 #msgcomposeWindow[crypto="notok"] #encryption-status {
   list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoNotOk.gif");
   visibility: visible;
+}
+
+
+#msgcomposeWindow #tripleWrapping-status {
+    list-style-image: none;
+    visibility: collapse;
+}
+
+#msgcomposeWindow[tripleWrap="ok"] #tripleWrapping-status {
+    list-style-image: url("chrome://messenger/skin/smime/icons/sbTripleWrapOk.gif");
+    visibility: visible;
+}
+
+#msgcomposeWindow[tripleWrap="notok"] #tripleWrapping-status {
+    list-style-image: url("chrome://messenger/skin/smime/icons/sbTripleWrapNotOk.gif");
+    visibility: visible;
 }

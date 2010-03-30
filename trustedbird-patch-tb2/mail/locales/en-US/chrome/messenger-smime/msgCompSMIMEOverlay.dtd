@@ -15,6 +15,13 @@
 <!ENTITY menu_securitySign.label "Digitally Sign This Message">
 <!ENTITY menu_securitySign.accesskey "S">
 
+<!ENTITY menu_securitySignedReceiptRequest.label "Request a Signed Receipt">
+<!ENTITY menu_securitySignedReceiptRequest.accesskey "R">
+
+<!ENTITY menu_securityTripleWrap.label "Triple Wrap This Message">
+<!ENTITY menu_securityTripleWrap.accesskey "T">
+<!ENTITY tripleWrap.description "A triple wrapped message is a message signed, then encrypted, then signed.">
+
 <!ENTITY menu_securityStatus.label "View Security Info">
 <!ENTITY menu_securityStatus.accesskey "I">
 
@@ -23,3 +30,6 @@
 
 <!ENTITY menu_viewSecurityStatus.label "Message Security Info">
 <!ENTITY menu_viewSecurityStatus.accesskey "I">
+
+<!ENTITY menu_securityLabel.label "Security Label...">
+<!ENTITY menu_securityLabel.accesskey "L">

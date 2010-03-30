@@ -318,6 +318,7 @@ bin\components\msgsmime.xpt
 bin\components\smime-service.js
 bin\components\msgmdn.xpt
 bin\components\mdn-service.js
+bin\components\dsn-service.js
 bin\components\mapihook.xpt
 bin\components\mailview.xpt
 bin/components\offlineStartup.js 

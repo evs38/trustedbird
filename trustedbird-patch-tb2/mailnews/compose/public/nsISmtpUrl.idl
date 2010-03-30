@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -45,7 +46,7 @@ interface nsISmtpServer;
 interface nsIInterfaceRequestor;
 interface nsIFileSpec;
 
-[scriptable, uuid(16ADF2F1-BBAD-11d2-804E-006008128C4E)]
+[scriptable, uuid(B9ED9B05-1F7D-4B23-9415-9B49FECAEACC)]
 interface nsISmtpUrl : nsISupports {
 	/////////////////////////////////////////////////////////////////////////////// 
 	// SMTP Parse specific getters --> retrieves portions from the url spec...
@@ -61,7 +62,11 @@ interface nsISmtpUrl : nsISupports {
 	// the file name to post...
 	attribute nsIFileSpec PostMessageFile;
 
-	/////////////////////////////////////////////////////////////////////////////// 
+    attribute boolean requestDSN;
+
+    attribute PRInt32 deliveringPriority;
+
+	///////////////////////////////////////////////////////////////////////////////
 	// SMTP Url instance specific getters and setters --> info the protocol needs
 	// to know in order to run the url...these are NOT event sinks which are things
 	// the caller needs to know...

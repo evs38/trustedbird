@@ -23,6 +23,7 @@
  *   Pierre Phaneuf <pp@ludusdesign.com>
  *   Henry Jia <Henry.Jia@sun.com>
  *   Lorenzo Colitti <lorenzo@colitti.com>
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -108,6 +109,9 @@ PRLogModuleInfo *IMAP;
 #include "nsIProxyInfo.h"
 #include "nsEventQueueUtils.h"
 #include "nsISSLSocketControl.h"
+
+#include "nsImapIncomingServer.h"
+#include "nsIClientAuthDialogs.h"
 
 #define ONE_SECOND ((PRUint32)1000)    // one second
 
@@ -1377,6 +1381,13 @@ PRBool nsImapProtocol::ProcessCurrentURL()
             if (NS_SUCCEEDED(rv) && secInfo) 
             {
               nsCOMPtr<nsISSLSocketControl> sslControl = do_QueryInterface(secInfo, &rv);
+
+              //give current username to socket
+              nsCOMPtr<nsIClientAuthUserDecision> clientAuth = do_QueryInterface(secInfo, &rv);
+              if(clientAuth){
+                nsCAutoString username(GetImapUserName());
+                clientAuth->SetClientLogin(username);
+              }
 
               if (NS_SUCCEEDED(rv) && sslControl)
               {
@@ -5306,6 +5317,29 @@ nsresult nsImapProtocol::AuthLogin(const char *userName, const char *password, e
       } // if last command successful
     } // if last command successful
   } // if has auth login capability
+  //DRA - SASL EXTERNAL
+  else if (flag & kHasAuthExternalCapability)
+  {
+    PR_snprintf(m_dataOutputBuf, OUTPUT_BUFFER_SIZE, "%s authenticate external" CRLF, GetServerCommandTag());
+    rv = SendData(m_dataOutputBuf);
+    NS_ENSURE_SUCCESS(rv, rv);
+    currentCommand = PL_strdup(m_dataOutputBuf); /* StrAllocCopy(currentCommand, GetOutputBuffer()); */
+    ParseIMAPandCheckForNewMail();
+    if (GetServerStateParser().LastCommandSuccessful())
+    {
+
+        PR_snprintf(m_dataOutputBuf, OUTPUT_BUFFER_SIZE, CRLF);
+        rv = SendData(m_dataOutputBuf, PR_TRUE /* suppress logging */);
+        if (NS_SUCCEEDED(rv))
+            ParseIMAPandCheckForNewMail(currentCommand);
+        if (GetServerStateParser().LastCommandSuccessful())
+        {
+          PR_Free(currentCommand);
+          return NS_OK;
+        } // if the last command succeeded
+    } // if the last command succeeded
+  }
+  //DRA
 
   // Fall back to InsecureLogin() if the user did not request secure authentication
   if (!m_useSecAuth && ! (GetServerStateParser().GetCapabilityFlag() & kLoginDisabled))
@@ -7710,9 +7744,21 @@ PRBool nsImapProtocol::TryToLogon()
           m_hostSessionList->SetCapabilityForHost(GetImapServerKey(), kCapabilityUndefined);
           break;
         }
+		
+		//DRA  - SASL EXTERNAL
+		PRBool isAuthCert=PR_FALSE;
+		if(server)
+		{
+			server->IsAuthenticationByCertificate(&isAuthCert);
+		}
 
-        rv = GetPassword(password);
-        if(NS_FAILED(rv)) break;
+		//check if Authentification by cert is activated & if it's available to desactivate password prompt
+		if(!isAuthCert || !(GetServerStateParser().GetCapabilityFlag() & kHasAuthExternalCapability) )
+		{
+			rv = GetPassword(password);
+			if(NS_FAILED(rv)) break;
+		}
+		//DRA
 
         clientSucceeded = PR_TRUE;
         // Use CRAM/NTLM/MSN only if secure auth is enabled. This is for servers that
@@ -7722,6 +7768,13 @@ PRBool nsImapProtocol::TryToLogon()
         {
           clientSucceeded = NS_SUCCEEDED(AuthLogin(userName, password, kHasAuthGssApiCapability));
         }
+        //DRA - SASL EXTERNAL
+        else if (GetServerStateParser().GetCapabilityFlag() & kHasAuthExternalCapability)
+        {
+          AuthLogin (userName, password, kHasAuthExternalCapability);
+          logonTries++;
+        }
+        //DRA
         else if (m_useSecAuth && GetServerStateParser().GetCapabilityFlag() & kHasCRAMCapability)
         {
           AuthLogin (userName, password, kHasCRAMCapability);

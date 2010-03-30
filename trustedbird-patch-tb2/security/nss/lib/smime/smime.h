@@ -19,6 +19,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -137,6 +139,73 @@ extern SECStatus NSS_SMIMEUtil_CreateSMIMEEncKeyPrefs(PLArenaPool *poolp, SECIte
  * NSS_SMIMEUtil_CreateMSSMIMEEncKeyPrefs - create S/MIME encryption key preferences attr value using MS oid
  */
 extern SECStatus NSS_SMIMEUtil_CreateMSSMIMEEncKeyPrefs(PLArenaPool *poolp, SECItem *dest, CERTCertificate *cert);
+
+/*
+ * NSS_SMIMEUtil_CreateSecurityLabel - create S/MIME SecurityLabel attr value
+ */
+extern SECStatus NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *poolp, SECItem *dest, const char *securityPolicyIdentifier, PRInt32 securityClassification, const char *privacyMark, const char *securityCategories);
+
+/*
+ * NSS_SMIMEUtil_GetSecurityLabel - get S/MIME SecurityLabel attr value
+ */
+extern SECStatus NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, char **aPrivacyMark, char **aSecurityCategories);
+
+/*
+ * NSS_SMIMEUtil_CreateReceiptRequest - create S/MIME ReceiptRequest attr value
+ */
+extern SECStatus NSS_SMIMEUtil_CreateReceiptRequest(PLArenaPool *poolp, SECItem *dest, unsigned char *receiptsTo, unsigned char *uuid);
+
+/*
+ * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ */
+extern SECStatus NSS_SMIMEUtil_GetReceiptRequest(
+    NSSCMSSignerInfo *aSignerinfo,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aContentType,
+    PRUint32 *aContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo);
+
+/*
+ * NSS_SMIMEUtil_CreateReceipt - create S/MIME Receipt
+ */
+extern SECStatus NSS_SMIMEUtil_CreateReceipt(
+    PLArenaPool *poolp,
+    SECItem *dest,
+    const PRUint8 *signedContentIdentifier,
+    const PRUint32 signedContentIdentifierLen,
+    const PRUint8 *originatorSignatureValue,
+    const PRUint32 originatorSignatureValueLen,
+    const PRUint8 *contentType,
+    const PRUint32 contentTypeLen);
+
+/*
+ * NSS_SMIMEUtil_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ */
+extern SECStatus NSS_SMIMEUtil_GetReceipt(
+    PLArenaPool *aPoolp,
+    SECItem *aEncodedReceipt,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aContentType,
+    PRUint32 *aContentTypeLen);
+
+/*
+ *
+ *
+ * NSS_SMIMEUtil_CreateSecureHeaders - create S/MIME Secure Headers attr value
+ *
+*/
+extern SECStatus
+NSS_SMIMEUtil_CreateSecureHeader(PLArenaPool *poolp, SECItem *dest, SecHeaderField * arrayHeaderField, const unsigned int nbHeaders, PRInt32 canonAlgo);
+
+extern SECStatus
+NSS_SMIMEUtil_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader * secuHeaders);
 
 /*
  * NSS_SMIMEUtil_GetCertFromEncryptionKeyPreference - find cert marked by EncryptionKeyPreference

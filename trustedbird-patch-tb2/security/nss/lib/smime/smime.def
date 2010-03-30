@@ -20,6 +20,7 @@
 ;+# the Initial Developer. All Rights Reserved.
 ;+#
 ;+# Contributor(s):
+;+#   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
 ;+#
 ;+# Alternatively, the contents of this file may be used under the terms of
 ;+# either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -52,6 +53,7 @@
 ;+    global:
 LIBRARY smime3 ;-
 EXPORTS	;-
+NSS_CMSContentInfo_GetChildContentInfo;
 NSS_CMSContentInfo_GetBulkKey;
 NSS_CMSContentInfo_GetBulkKeySize;
 NSS_CMSContentInfo_GetContent;
@@ -120,6 +122,13 @@ NSS_CMSSignedData_VerifySignerInfo;
 NSS_CMSSignerInfo_AddSMIMECaps;
 NSS_CMSSignerInfo_AddSMIMEEncKeyPrefs;
 NSS_CMSSignerInfo_AddSigningTime;
+NSS_CMSSignerInfo_AddSecurityLabel;
+NSS_CMSSignerInfo_GetSecurityLabel;
+NSS_CMSSignerInfo_AddSecureHeader;
+NSS_CMSSignerInfo_GetSecureHeader;
+NSS_CMSSignerInfo_AddReceiptRequest;
+NSS_CMSSignerInfo_GetReceiptRequest;
+NSS_CMSSignerInfo_HasReceipt;
 NSS_CMSSignerInfo_Create;
 NSS_CMSSignerInfo_Destroy;
 NSS_CMSSignerInfo_GetCertList;
@@ -132,6 +141,8 @@ NSS_CMSSignerInfo_GetVersion;
 NSS_CMSSignerInfo_IncludeCerts;
 NSS_CMSUtil_VerificationStatusToString;
 NSS_SMIMEUtil_FindBulkAlgForRecipients;
+NSS_SMIMEUtil_CreateReceipt;
+NSS_SMIMEUtil_GetReceipt;
 CERT_DecodeCertPackage;
 SEC_PKCS7AddRecipient;
 SEC_PKCS7AddSigningTime;

@@ -26,6 +26,7 @@
  Contributor(s):
    Håkan Waara <hwaara@chello.se>
    bienvenu@nventure.com
+   EADS Defence and Security
 
  Alternatively, the contents of this file may be used under the terms of
  either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -138,6 +139,9 @@
               accesskey="&useSecAuth.accesskey;"
               prefattribute="value"
               prefstring="mail.server.%serverkey%.useSecAuth"/>
+    <checkbox id="server.authByCert"
+              label="&authByCert.label;"
+              accesskey="&authByCert.accesskey;" />
   </groupbox>
 
   <groupbox>

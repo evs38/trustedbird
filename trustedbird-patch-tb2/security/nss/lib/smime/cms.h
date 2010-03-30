@@ -19,6 +19,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -741,6 +743,57 @@ NSS_CMSSignerInfo_AddSMIMEEncKeyPrefs(NSSCMSSignerInfo *signerinfo, CERTCertific
  */
 SECStatus
 NSS_CMSSignerInfo_AddMSSMIMEEncKeyPrefs(NSSCMSSignerInfo *signerinfo, CERTCertificate *cert, CERTCertDBHandle *certdb);
+
+/*
+ * NSS_CMSSignerInfo_AddSecurityLabel - add a SecurityLabel attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char *securityPolicyIdentifier, PRInt32 securityClassification, const char *privacyMark, const char *securityCategories);
+
+/*
+ * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, char **aPrivacyMark, char **aSecurityCategories);
+
+/*
+ * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char *receiptsTo, unsigned char *uuid);
+
+/*
+ * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetReceiptRequest(
+    NSSCMSSignerInfo *signerinfo,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aContentType,
+    PRUint32 *aContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo);
+
+extern PRBool
+NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo);
+
+/*
+ * NSS_CMSSignerInfo_AddSecureHeader - add Secure Header attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddSecureHeader(NSSCMSSignerInfo *signerinfo, SecHeaderField * arrayHeaderField, const int nbHeaders, PRInt32 canonAlgo);
+
+/*
+ * NSS_CMSSignerInfo_GetSecureHeader - get S/MIME Secure Header attr value
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader *secuHeaders);
 
 /* 
  * NSS_CMSSignerInfo_AddCounterSignature - countersign a signerinfo

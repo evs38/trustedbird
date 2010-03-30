@@ -21,6 +21,8 @@
  *
  * Contributor(s): 
  *   Kai Engert <kengert@redhat.com>
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -57,6 +59,8 @@
 #include "nsIMsgHeaderParser.h"
 #include "nsIProxyObjectManager.h"
 
+
+#include "nsArray.h" //DRA
 
 #define MIME_SUPERCLASS mimeEncryptedClass
 MimeDefClass(MimeEncryptedCMS, MimeEncryptedCMSClass,
@@ -338,7 +342,71 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
     proxyman->GetProxyForObject(NS_UI_THREAD_EVENTQ, NS_GET_IID(nsIMsgSMIMEHeaderSink),
                                 mHeaderSink, PROXY_SYNC, getter_AddRefs(proxySink));
     if (proxySink)
+    {
       proxySink->SignedStatus(mMimeNestingLevel, signature_status, signerCert);
+
+      if (signature_status == nsICMSMessageErrors::SUCCESS)
+      {
+        // Handle Security Label
+        nsXPIDLCString securityPolicyIdentifier;
+        PRInt32 securityClassification = -1;
+        nsXPIDLCString privacyMark;
+        nsXPIDLCString securityCategories;
+        msg->GetSecurityLabel(getter_Copies(securityPolicyIdentifier), &securityClassification, getter_Copies(privacyMark), getter_Copies(securityCategories));
+
+        if (securityPolicyIdentifier) proxySink->SecurityLabelStatus(securityPolicyIdentifier, securityClassification, NS_ConvertUTF8toUTF16(privacyMark), NS_ConvertUTF8toUTF16(securityCategories));
+
+
+        // Handle Signed Receipt Request
+        PRUint8 *signedContentIdentifier = NULL;
+        PRUint32 signedContentIdentifierLen = 0;
+        PRUint8 *originatorSignatureValue = NULL;
+        PRUint32 originatorSignatureValueLen = 0;
+        PRUint8 *originatorContentType = NULL;
+        PRUint32 originatorContentTypeLen = 0;
+        PRInt32 receiptsFrom = -1;
+        nsXPIDLCString receiptsTo;
+        msg->GetReceiptRequest(&signedContentIdentifier, &signedContentIdentifierLen, &originatorSignatureValue, &originatorSignatureValueLen, &originatorContentType, &originatorContentTypeLen, &receiptsFrom, getter_Copies(receiptsTo));
+
+        if (signedContentIdentifierLen > 0 && originatorSignatureValueLen > 0 && originatorContentTypeLen > 0 && (receiptsFrom == 0) && receiptsTo)
+          proxySink->SignedReceiptRequestStatus(signedContentIdentifier, signedContentIdentifierLen, originatorSignatureValue, originatorSignatureValueLen, originatorContentType, originatorContentTypeLen, receiptsFrom, receiptsTo);
+
+        if (signedContentIdentifier)
+          PR_Free(signedContentIdentifier);
+        if (originatorSignatureValue)
+          PR_Free(originatorSignatureValue);
+        if (originatorContentType)
+          PR_Free(originatorContentType);
+
+
+        // Handle Signed Receipt
+        PRBool hasReceipt = PR_FALSE;
+        signedContentIdentifier = NULL;
+        signedContentIdentifierLen = 0;
+        originatorSignatureValue = NULL;
+        originatorSignatureValueLen = 0;
+        originatorContentType = NULL;
+        originatorContentTypeLen = 0;
+
+        msg->GetReceipt(&hasReceipt, &signedContentIdentifier, &signedContentIdentifierLen, &originatorSignatureValue, &originatorSignatureValueLen, &originatorContentType, &originatorContentTypeLen);
+
+        if (hasReceipt)
+          proxySink->SignedReceiptStatus(signedContentIdentifier, signedContentIdentifierLen, originatorSignatureValue, originatorSignatureValueLen, originatorContentType, originatorContentTypeLen);
+
+        if (signedContentIdentifier)
+          PR_Free(signedContentIdentifier);
+        if (originatorSignatureValue)
+          PR_Free(originatorSignatureValue);
+        if (originatorContentType)
+          PR_Free(originatorContentType);
+
+        // Handle Signed Headers
+        nsCOMPtr<nsIMutableArray> secureHeaders;
+        PRInt32 canonAlgo;
+        msg->GetSecureHeader(getter_AddRefs(secureHeaders),&canonAlgo);
+        proxySink->SecureHeadersStatus(secureHeaders,canonAlgo);
+      }
+    }
   }
 
   return NS_OK;
@@ -715,4 +783,3 @@ MimeCMS_generate (void *crypto_closure)
 {
   return nsnull;
 }
-

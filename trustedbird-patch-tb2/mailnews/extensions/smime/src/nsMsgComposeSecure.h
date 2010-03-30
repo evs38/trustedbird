@@ -21,6 +21,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -50,6 +52,8 @@
 #include "nsIArray.h"
 #include "nsString.h"
 
+#include "nsIMsgSMIMESecureHeader.h"
+
 class nsIMsgCompFields;
 
 class nsMsgSMIMEComposeFields : public nsIMsgSMIMECompFields
@@ -64,14 +68,53 @@ public:
 private:
   PRBool mSignMessage;
   PRBool mAlwaysEncryptMessage;
+  PRInt32 mSecurityLabelLocation;
+  nsCString mSecurityPolicyIdentifier;
+  PRInt32 mSecurityClassification;
+  nsString mPrivacyMark;
+  nsString mSecurityCategories;
+  PRBool mSignedReceiptRequest;
+  PRUint8 *mSignedContentIdentifier;
+  PRUint32 mSignedContentIdentifierLen;
+  PRUint8 *mOriginatorSignatureValue;
+  PRUint32 mOriginatorSignatureValueLen;
+  PRUint8 *mOriginatorContentType;
+  PRUint32 mOriginatorContentTypeLen;
+  PRBool mTripleWrapMessage;
+
+  //DRA
+  nsCOMPtr<nsIMutableArray> m_secureHeaders;
+  PRInt32 mCanonAlgorithm;
+  //DRA
 };
+
+//DRA
+class nsMsgSMIMESecureHeader : public nsIMsgSMIMESecureHeader
+{
+
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIMSGSMIMESECUREHEADER
+
+  nsMsgSMIMESecureHeader();
+  virtual ~nsMsgSMIMESecureHeader();
+
+private:
+  nsString mHeaderName;
+  nsString mHeaderValue;
+  PRInt32 mHeaderStatus;
+  PRInt32 mHeaderEncrypted;
+
+};
+//DRA
 
 typedef enum {
   mime_crypto_none,				/* normal unencapsulated MIME message */
   mime_crypto_clear_signed,		/* multipart/signed encapsulation */
   mime_crypto_opaque_signed,	/* application/x-pkcs7-mime (signedData) */
   mime_crypto_encrypted,		/* application/x-pkcs7-mime */
-  mime_crypto_signed_encrypted	/* application/x-pkcs7-mime */
+  mime_crypto_signed_encrypted,	/* application/x-pkcs7-mime */
+  mime_crypto_signed_encrypted_signed /* application/x-pkcs7-mime (triple wrapping) */
 } mimeDeliveryCryptoState;
 
 class nsMsgComposeSecure : public nsIMsgComposeSecure
@@ -84,6 +127,8 @@ public:
   virtual ~nsMsgComposeSecure();
   /* additional members */
   nsOutputFileStream *GetOutputStream() { return mStream;}
+  /* Getter to be able to access the outer hash from static method like mime_cryptoencoder_output_fn */
+  nsCOMPtr<nsICryptoHash> GetDataOuterHash() { return mDataOuterHash;}
 private:
   nsresult MimeInitMultipartSigned(PRBool aOuter, nsIMsgSendReport *sendReport);
   nsresult MimeInitEncryption(PRBool aSign, nsIMsgSendReport *sendReport);
@@ -97,14 +142,20 @@ private:
 					   const PRUnichar **params,
 					   PRUint32 numParams,
 					   PRUnichar **outString);
-  nsresult ExtractEncryptionState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignMessage, PRBool * aEncrypt);
+  nsresult ExtractEncryptionState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignMessage, PRBool * aEncrypt, PRBool * aTripleWrap);
+  nsresult ExtractSecurityLabelState(nsIMsgCompFields *aComposeFields, PRInt32 *aSecurityLabelLocation, nsACString& aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories);
+  nsresult ExtractSignedReceiptRequestState(nsIMsgIdentity *aIdentity, nsIMsgCompFields *aComposeFields, PRBool *aSignedReceiptRequest);
+  nsresult ExtractSignedReceiptState(nsIMsgCompFields *aComposeFields, PRUint8 **aSignedContentIdentifier, PRUint32 *aSignedContentIdentifierLen, PRUint8 **aOriginatorSignatureValue, PRUint32 *aOriginatorSignatureValueLen, PRUint8 **aOriginatorContentType, PRUint32 *aOriginatorContentTypeLen);
+  nsresult ReadHeadersToSecure(nsIMsgIdentity * aIdentity,nsIMsgCompFields * aComposeFields);
 
   mimeDeliveryCryptoState mCryptoState;
   nsOutputFileStream *mStream;
   PRInt16 mHashType;
-  nsCOMPtr<nsICryptoHash> mDataHash;
+  nsCOMPtr<nsICryptoHash> mDataInnerHash;
+  nsCOMPtr<nsICryptoHash> mDataOuterHash;
   MimeEncoderData *mSigEncoderData;
-  char *mMultipartSignedBoundary;
+  char *mMultipartInnerSignedBoundary;
+  char *mMultipartOuterSignedBoundary;
   nsXPIDLString mSigningCertName;
   nsCOMPtr<nsIX509Cert> mSelfSigningCert;
   nsXPIDLString mEncryptionCertName;
@@ -124,6 +175,26 @@ private:
   PRBool mErrorAlreadyReported;
   void SetError(nsIMsgSendReport *sendReport, const PRUnichar *bundle_string);
   void SetErrorWithParam(nsIMsgSendReport *sendReport, const PRUnichar *bundle_string, const char *param);
+
+  PRInt32 mSecurityLabelLocation;
+  nsCString mSecurityPolicyIdentifier;
+  PRInt32 mSecurityClassification;
+  nsString mPrivacyMark;
+  nsString mSecurityCategories;
+
+  PRBool mSignedReceiptRequest;
+  nsXPIDLCString mSignedReceiptRequest_ReceiptTo;
+
+  PRUint8 *mSignedContentIdentifier;
+  PRUint32 mSignedContentIdentifierLen;
+  PRUint8 *mOriginatorSignatureValue;
+  PRUint32 mOriginatorSignatureValueLen;
+  PRUint8 *mOriginatorContentType;
+  PRUint32 mOriginatorContentTypeLen;
+  //DRA
+  nsCOMPtr<nsIMutableArray> mSecureHeaders;
+  PRInt32 mCanonAlgorithm;
+  //DRA
 };
 
 #endif

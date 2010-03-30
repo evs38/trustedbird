@@ -36,6 +36,7 @@ chrome\icons\default\msgcomposeWindow.ico
 components\offlineStartup.js
 
 components\mdn-service.js
+components\dsn-service.js
 
 components\smime-service.js
 components\msgsmime.xpt

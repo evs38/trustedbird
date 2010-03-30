@@ -410,7 +410,7 @@ Message Retry0=Some files have failed the CRC check and are being downloaded aga
 Show Dialog=AUTO
 
 [Check Instance0]
-Class Name=ThunderbirdMessageWindow
+Class Name=TrustedbirdMessageWindow
 Window Name=
 Process Name=$MainExeFile$
 Pretty Name=$ProductNameInternal$

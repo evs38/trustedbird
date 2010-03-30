@@ -3,10 +3,10 @@
 # This file is in the UTF-8 encoding
 
 #define BRAND_COMPANY_NAME Mozilla
-#define BRAND_PRODUCT_NAME Mozilla Thunderbird
+#define BRAND_PRODUCT_NAME Trustedbird
 
-#define UNINST_RUNNING Mozilla Thunderbird is detected to be currently running.  Please quit Mozilla Thunderbird before continuing.  Click OK to exit Mozilla Thunderbird automatically and proceed with uninstallation.
-#define UNINST_SHUTDOWN Shutting down Mozilla Thunderbird.  Please wait...
+#define UNINST_RUNNING Trustedbird is detected to be currently running.  Please quit Trustedbird before continuing.  Click OK to exit Trustedbird automatically and proceed with uninstallation.
+#define UNINST_SHUTDOWN Shutting down Trustedbird.  Please wait...
 #define UNINST_FONT MS Sans Serif
 #define UNINST_FONTSIZE 8
 #define UNINST_CHARSET 0
@@ -20,7 +20,7 @@
 #  CHINESEBIG5_CHARSET = 136
 #  OEM_CHARSET 255
 
-#define UNINST_TITLE Mozilla Thunderbird Uninstaller
+#define UNINST_TITLE Trustedbird Uninstaller
 #define UNINST_MESSAGE0 Are you sure you want to completely remove %s and all of its components?
 #define BTN_UNINST &Uninstall
 #define BTN_CANCEL &Cancel
@@ -54,6 +54,6 @@
 #define MSG_FORCE_QUIT_PROCESS Uninstall has detected that %s (%s) is still running.  Click OK to quit %s and proceed with uninstallation. Alternatively, use the Windows Task Manager to quit %s, and then click OK to continue with uninstallation.
 #define MSG_FORCE_QUIT_PROCESS_FAILED Uninstall will now exit.  Uninstall could not continue because %s (%s) is still running. Try manually quitting %s using Windows Task Manager, and then run Uninstall again.
 #define MSG_DELETE_INSTALLATION_PATH Not all files were uninstalled from the installation directory:\n\n  %s\n\nDo you want to completely delete this directory?
-#define MSG_INSTALLATION_PATH_WITHIN_WINDIR Uninstall has detected that the installation path of Mozilla Thunderbird is installed to a folder within your Windows folder.  Uninstall will not attempt to delete this installation due to the potential removal of critical system files.
+#define MSG_INSTALLATION_PATH_WITHIN_WINDIR Uninstall has detected that the installation path of Trustedbird is installed to a folder within your Windows folder.  Uninstall will not attempt to delete this installation due to the potential removal of critical system files.
 
 #unfilter emptyLines

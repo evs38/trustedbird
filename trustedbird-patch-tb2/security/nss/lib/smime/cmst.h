@@ -19,6 +19,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -90,6 +92,15 @@ typedef struct NSSCMSContentInfoStr NSSCMSContentInfo;
 typedef struct NSSCMSSignedDataStr NSSCMSSignedData;
 typedef struct NSSCMSSignerInfoStr NSSCMSSignerInfo;
 typedef struct NSSCMSSignerIdentifierStr NSSCMSSignerIdentifier;
+
+typedef struct NSSCMSSecurityLabelStr NSSCMSSecurityLabel;
+typedef struct NSSCMSSecurityLabelElementStr NSSCMSSecurityLabelElement;
+typedef struct NSSCMSSecurityLabelSecurityCategoryStr NSSCMSSecurityLabelSecurityCategory;
+
+typedef struct NSSCMSReceiptRequestStr NSSCMSReceiptRequest;
+typedef struct NSSCMSReceiptRequestGeneralNamesStr NSSCMSReceiptRequestGeneralNames;
+
+typedef struct NSSCMSReceiptStr NSSCMSReceipt;
 
 typedef struct NSSCMSEnvelopedDataStr NSSCMSEnvelopedData;
 typedef struct NSSCMSOriginatorInfoStr NSSCMSOriginatorInfo;
@@ -261,6 +272,112 @@ typedef enum {
     NSSCMSCM_CertChain = 2,
     NSSCMSCM_CertChainWithRoot = 3
 } NSSCMSCertChainMode;
+
+
+
+/*
+ * SECURE HEADERS  : Datas structures
+ * */
+
+typedef struct NSSCMSSecHeaderFieldElementStr NSSCMSSecHeaderFieldElement;
+
+typedef struct NSSCMSSecureHeaderElementStr NSSCMSSecureHeaderElement;
+
+typedef struct NSSCMSSecureHeaderStr NSSCMSSecureHeader;
+
+typedef struct SecHeaderFieldStr SecHeaderField;
+
+typedef enum {
+	NSSCMSSecureHeaderElement_canonAlgorithm = 0,
+	NSSCMSSecureHeaderElement_secHeaderField = 1
+} NSSCMSSecureHeaderElementSelector;
+
+struct NSSCMSSecHeaderFieldElementStr{
+	SECItem HeaderFieldName;
+	SECItem HeaderFieldValue;
+	SECItem HeaderFieldStatus;
+	/*SECItem HeaderFieldEncrypted;*/
+};
+
+struct NSSCMSSecureHeaderElementStr{
+	NSSCMSSecureHeaderElementSelector selector;
+	union {
+		SECItem canonAlgorithm;
+		NSSCMSSecHeaderFieldElement** secHeaderFields;
+	} id;
+};
+
+struct NSSCMSSecureHeaderStr {
+	NSSCMSSecureHeaderElement** element;
+};
+
+
+struct SecHeaderFieldStr{
+	char * headerName;
+	char * headerValue;
+	PRInt32 headerStatus;
+	/*PRInt32 headerEncrypted;*/
+};
+/*
+ *END SECURE HEADERS : Datas structures
+ * */
+
+
+/* ESS Security Label */
+typedef enum {
+    NSSCMSSecurityLabelElement_securityPolicyIdentifier   = 0,
+    NSSCMSSecurityLabelElement_securityClassification     = 1,
+    NSSCMSSecurityLabelElement_privacyMarkPrintableString = 2,
+    NSSCMSSecurityLabelElement_privacyMarkUTF8            = 3,
+    NSSCMSSecurityLabelElement_securityCategories         = 4
+} NSSCMSSecurityLabelElementSelector;
+
+struct NSSCMSSecurityLabelElementStr {
+    NSSCMSSecurityLabelElementSelector selector;
+    union {
+        SECItem securityPolicyIdentifier;
+        SECItem securityClassification;
+        SECItem privacyMarkPrintableString;
+        SECItem privacyMarkUTF8;
+        NSSCMSSecurityLabelSecurityCategory **securityCategories;
+    } id;
+};
+
+struct NSSCMSSecurityLabelStr {
+    NSSCMSSecurityLabelElement **element;
+};
+
+struct NSSCMSSecurityLabelSecurityCategoryStr {
+    SECItem securityCategoryIdentifier;
+    SECItem securityCategoryValue;
+};
+
+enum {
+    SECURITY_CATEGORY_VALUE_TYPE_UNKNOWN = 0,
+    SECURITY_CATEGORY_VALUE_TYPE_UTF8    = 1,
+    SECURITY_CATEGORY_VALUE_TYPE_INTEGER = 2
+};
+
+
+/* ESS Signed Receipt Request */
+struct NSSCMSReceiptRequestGeneralNamesStr {
+    SECItem **generalNameSeq;
+};
+
+struct NSSCMSReceiptRequestStr {
+    SECItem signedContentIdentifier;
+    SECItem receiptsFrom;
+    NSSCMSReceiptRequestGeneralNames **receiptsTo;
+};
+
+
+/* ESS Signed Receipt */
+struct NSSCMSReceiptStr {
+    SECItem version;
+    SECItem contentType;
+    SECItem signedContentIdentifier;
+    SECItem originatorSignatureValue;
+};
 
 /* =============================================================================
  * ENVELOPED DATA

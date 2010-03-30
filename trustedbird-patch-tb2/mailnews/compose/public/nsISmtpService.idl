@@ -20,6 +20,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -47,7 +49,7 @@ interface nsIFileSpec;
 interface nsIMsgStatusFeedback;
 interface nsIRequest;
 
-[scriptable, uuid(FBAF0F10-CA9B-11d2-8063-006008128C4E)]
+[scriptable, uuid(2B7FA4A1-A73E-4B7A-A789-7D0CFBE5AC97)]
 interface nsISmtpService : nsISupports {
   
   ///////////////////////////////////////////////////////////////////////////
@@ -76,6 +78,8 @@ interface nsISmtpService : nsISupports {
                        in nsIUrlListener aUrlListener, 
 					             in nsIMsgStatusFeedback aStatusListener, 
                        in nsIInterfaceRequestor aNotificationCallbacks,
+                       in boolean requestDSN,
+                       in PRInt32 aDeliveringPriority,
                        out nsIURI aURL,
 					             out nsIRequest aRequest);
 

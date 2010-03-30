@@ -208,6 +208,8 @@ protected:
 
   nsSSLSocketThreadData *mThreadData;
 
+  nsCString mClientLogin;
+
 private:
   virtual void virtualDestroyNSSReference();
   void destructorSafeDestroyNSSReference();

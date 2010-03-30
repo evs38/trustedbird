@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *   Dr Vipul Gupta <vipul.gupta@sun.com>, Sun Microsystems Laboratories
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -447,6 +448,15 @@ typedef enum {
     SEC_OID_ISO_SHA1_WITH_RSA_SIGNATURE     = 301,
 
     SEC_OID_SEED_CBC			    = 302,
+
+    /* SMIME attributes */
+    SEC_OID_SMIME_RECEIPT_REQUEST           = 303,
+    SEC_OID_SMIME_RECEIPT                   = 304,
+    SEC_OID_SMIME_MSG_SIG_DIGEST            = 305,
+    SEC_OID_SMIME_SECURITY_LABEL            = 306,
+
+    /* Signed Header */
+    SEC_OID_SMIME_SECURE_HEADERS            = 307,
 
     SEC_OID_TOTAL
 } SECOidTag;

@@ -20,6 +20,8 @@
  *
  * Contributor(s):
  *   Dr Vipul Gupta <vipul.gupta@sun.com>, Sun Microsystems Laboratories
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -905,6 +907,178 @@ NSS_CMSSignerInfo_AddCounterSignature(NSSCMSSignerInfo *signerinfo,
 {
     /* XXXX TBD XXXX */
     return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_AddSecurityLabel - add a SecurityLabel attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo, const char* securityPolicyIdentifier, PRInt32 securityClassification, const char* privacyMark, const char* securityCategories)
+{
+    NSSCMSAttribute *attr;
+    SECItem *securityLabel = NULL;
+    void *mark;
+    PLArenaPool *poolp;
+
+    poolp = signerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    securityLabel = SECITEM_AllocItem(poolp, NULL, 0);
+    if (securityLabel == NULL)
+        goto loser;
+
+    /* create new SecurityLabel attribute */
+    if (NSS_SMIMEUtil_CreateSecurityLabel(poolp, securityLabel, securityPolicyIdentifier, securityClassification, privacyMark, securityCategories) != SECSuccess)
+        goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_SECURITY_LABEL, securityLabel, PR_TRUE)) == NULL)
+        goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
+        goto loser;
+
+    PORT_ArenaUnmark (poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease (poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value
+ */
+SECStatus
+NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo, char **aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, char **aPrivacyMark, char **aSecurityCategories)
+{
+    return NSS_SMIMEUtil_GetSecurityLabel(aSignerinfo, aSecurityPolicyIdentifier, aSecurityClassification, aPrivacyMark, aSecurityCategories);
+}
+
+/*
+ * NSS_CMSSignerInfo_AddSecureHeader - add Secure Headers attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddSecureHeader(NSSCMSSignerInfo *signerinfo, SecHeaderField * arrayHeaderField, const int nbHeaders, PRInt32 canonAlgo)
+{
+    NSSCMSAttribute *attr;
+    SECItem *secureHeaders = NULL;
+    void *mark;
+    PLArenaPool *poolp;
+
+    poolp = signerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    secureHeaders = SECITEM_AllocItem(poolp, NULL, 0);
+    if (secureHeaders == NULL)
+      goto loser;
+
+    /* create new secureHeaders attribute */
+    if (NSS_SMIMEUtil_CreateSecureHeader(poolp, secureHeaders, arrayHeaderField, nbHeaders, canonAlgo) != SECSuccess)
+      goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_SECURE_HEADERS, secureHeaders, PR_TRUE)) == NULL)
+      goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
+      goto loser;
+
+    PORT_ArenaUnmark (poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease (poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetSecureHeader - get S/MIME SecureHeaders attr value
+ */
+SECStatus
+NSS_CMSSignerInfo_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader *secHeaders)
+{
+    return NSS_SMIMEUtil_GetSecureHeader(signerinfo, secHeaders);
+}
+
+/*
+ * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *signerinfo, unsigned char *receiptsTo, unsigned char *uuid)
+{
+    NSSCMSAttribute *attr;
+    SECItem *receiptRequest = NULL;
+    void *mark;
+    PLArenaPool *poolp;
+
+    poolp = signerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    receiptRequest = SECITEM_AllocItem(poolp, NULL, 0);
+    if (receiptRequest == NULL)
+        goto loser;
+
+    /* create new receiptRequest attribute */
+    if (NSS_SMIMEUtil_CreateReceiptRequest(poolp, receiptRequest, receiptsTo, uuid) != SECSuccess)
+        goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_RECEIPT_REQUEST, receiptRequest, PR_TRUE)) == NULL)
+        goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
+        goto loser;
+
+    PORT_ArenaUnmark(poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease(poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest values
+ */
+SECStatus
+NSS_CMSSignerInfo_GetReceiptRequest(
+    NSSCMSSignerInfo *signerinfo,
+    PRUint8 **aSignedContentIdentifier,
+    PRUint32 *aSignedContentIdentifierLen,
+    PRUint8 **aOriginatorSignatureValue,
+    PRUint32 *aOriginatorSignatureValueLen,
+    PRUint8 **aOriginatorContentType,
+    PRUint32 *aOriginatorContentTypeLen,
+    PRInt32 *aReceiptsFrom,
+    char **aReceiptsTo)
+{
+    return NSS_SMIMEUtil_GetReceiptRequest(signerinfo, aSignedContentIdentifier, aSignedContentIdentifierLen, aOriginatorSignatureValue, aOriginatorSignatureValueLen, aOriginatorContentType, aOriginatorContentTypeLen, aReceiptsFrom, aReceiptsTo);
+}
+
+/*
+ * NSS_CMSSignerInfo_HasReceipt - check if signer info has a S/MIME Receipt content-type
+ */
+PRBool
+NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo)
+{
+    NSSCMSAttribute *attr;
+    SECOidData *smimeReceiptOid;
+
+    /* Get content-type */
+    attr = NSS_CMSAttributeArray_FindAttrByOidTag(signerinfo->authAttr, SEC_OID_PKCS9_CONTENT_TYPE, PR_TRUE);
+    if (attr == NULL || attr->values == NULL || attr->values[0] == NULL)
+        return PR_FALSE;
+
+    /* Compare content-type with receipt content-type */
+    smimeReceiptOid = SECOID_FindOIDByTag(SEC_OID_SMIME_RECEIPT);
+    if (!smimeReceiptOid || !NSS_CMSAttribute_CompareValue(attr, &(smimeReceiptOid->oid)))
+        return PR_FALSE;
+
+    return PR_TRUE;
 }
 
 /*

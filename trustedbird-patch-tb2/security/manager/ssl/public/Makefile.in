@@ -93,6 +93,7 @@ XPIDLSRCS = \
     nsICipherInfo.idl \
     nsIStreamCipher.idl \
     nsIKeyModule.idl \
+    nsIMsgSMIMESecureHeader.idl \
     $(NULL)
 
 ifdef MOZ_XUL

@@ -21,6 +21,8 @@
  *
  * Contributor(s):
  *   Scott MacGregor <mscott@netscape.com>
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -52,11 +54,14 @@
 #include "nsMsgComposeSecure.h"
 #include "nsSMimeJSHelper.h"
 #include "nsEncryptedSMIMEURIsService.h"
+#include "nsMsgSignedReceiptGenerator.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgComposeSecure)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMEComposeFields)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsSMimeJSHelper)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEncryptedSMIMEURIsService)
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSignedReceiptGenerator)
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMESecureHeader)
 
 ////////////////////////////////////////////////////////////
 //
@@ -79,7 +84,19 @@ static const nsModuleComponentInfo components[] =
   { "SMIME Encrypted URI Cache Service",
     NS_SMIMEENCRYPTURISERVICE_CID,
     NS_SMIMEENCRYPTURISERVICE_CONTRACTID,
-    nsEncryptedSMIMEURIsServiceConstructor }
+    nsEncryptedSMIMEURIsServiceConstructor },
+  { NS_MSGSIGNEDRECEIPT_GENERATOR_CLASSNAME,
+    NS_MSGSIGNEDRECEIPT_GENERATOR_CID,
+    NS_MSGSIGNEDRECEIPT_GENERATOR_CONTRACTID,
+    nsMsgSignedReceiptGeneratorConstructor,
+  },
+  //DRA
+  { "SMIME Secure Header",
+    NS_SMIMESECUREHEADER_CID,
+    NS_SMIMESECUREHEADER_CONTRACTID,
+    nsMsgSMIMESecureHeaderConstructor,
+  }
+  //DRA
 };
 
   

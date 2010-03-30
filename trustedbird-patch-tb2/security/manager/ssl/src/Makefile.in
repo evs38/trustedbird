@@ -123,6 +123,7 @@ REQUIRES	= nspr \
 		  xpconnect \
 		  unicharutil \
 		  pipboot \
+		  msgsmime \
 		  $(NULL)
 
 EXTRA_DEPS = $(NSS_DEP_LIBS)

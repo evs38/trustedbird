@@ -20,6 +20,7 @@
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
+   -   EADS Defence and Security Systems
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,7 +39,12 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://messenger/skin/smime/msgCompSecurityInfo.css" type="text/css"?>
 
-<!DOCTYPE dialog SYSTEM "chrome://messenger-smime/locale/msgCompSecurityInfo.dtd">
+<!DOCTYPE dialog [
+<!ENTITY % msgCompSecurityInfoDTD SYSTEM "chrome://messenger-smime/locale/msgCompSecurityInfo.dtd">
+<!ENTITY % secureheadersDTD SYSTEM "chrome://messenger/locale/secureheaders.dtd">
+%msgCompSecurityInfoDTD;
+%secureheadersDTD;
+]>
 
 <dialog id="msgCompSecurityInfo" title="&title.label;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"      
@@ -72,6 +78,19 @@
       </row>
     </rows>
   </grid>
+
+  <vbox id="secureheaderbox" flex="1" style="width:40px; height:50px;" collapsed="true">
+    <label id="secureheaderlabel"/>
+    <tree flex="1">
+      <treecols>
+        <treecol id="headerName" label="&headername.label;" flex="1"/>
+        <treecol id="headerStatus" label="&headerstatus.label;" flex="1"/>
+        <treecol id="headerEncrypted" label="&headerencrypted.label;" flex="1"/>
+      </treecols>
+      <treechildren id="secHeader_treechild_id">
+      </treechildren>
+    </tree>
+  </vbox>
 
   <separator class="thin"/>
   <label value="&status.certificates;"/>

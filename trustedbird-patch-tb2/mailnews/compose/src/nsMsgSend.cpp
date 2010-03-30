@@ -22,6 +22,8 @@
  * Contributor(s):
  *   Jean-Francois Ducarroz <ducarroz@netscape.com>
  *   Pierre Phaneuf <pp@ludusdesign.com>
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -3125,6 +3127,10 @@ nsMsgComposeAndSend::InitCompositionFields(nsMsgCompFields *fields,
   mCompFields->SetReturnReceipt(fields->GetReturnReceipt());
   mCompFields->SetReceiptHeaderType(receiptType);
 
+  mCompFields->SetDSN(fields->GetDSN());
+
+  mCompFields->SetDeliveringPriority(fields->GetDeliveringPriority());
+
   mCompFields->SetUuEncodeAttachments(fields->GetUuEncodeAttachments());
 
   mCompFields->SetBodyIsAsciiOnly(fields->GetBodyIsAsciiOnly());
@@ -3665,9 +3671,13 @@ nsMsgComposeAndSend::DeliverFileAsMail()
     if (!msgStatus)
       msgStatus = do_QueryInterface(mStatusFeedback);
 
+    PRBool requestDSN = mCompFields->GetDSN();
+    PRInt32 deliveringPriority = mCompFields->GetDeliveringPriority();
     rv = smtpService->SendMailMessage(aFileSpec, buf, mUserIdentity,
                                       mSmtpPassword.get(), uriListener, msgStatus,
-                                      callbacks, nsnull, getter_AddRefs(mRunningRequest));
+                                      callbacks,
+                                      requestDSN, deliveringPriority,
+                                      nsnull, getter_AddRefs(mRunningRequest));
   }
   
   PR_FREEIF(buf); // free the buf because we are done with it....
@@ -5087,4 +5097,3 @@ NS_IMETHODIMP nsMsgComposeAndSend::SetCryptoclosure(nsIMsgComposeSecure * aCrypt
   m_crypto_closure = aCryptoclosure;
   return NS_OK;
 }
-

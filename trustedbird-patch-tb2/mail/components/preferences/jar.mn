@@ -17,6 +17,8 @@ messenger.jar:
 *   content/messenger/preferences/advanced.js
 *   content/messenger/preferences/advanced.xul
 *   content/messenger/preferences/receipts.xul
+*   content/messenger/preferences/dsn.xul
+*   content/messenger/preferences/dsn.js
 *   content/messenger/preferences/connection.js
 *   content/messenger/preferences/connection.xul
 *   content/messenger/preferences/downloads.js

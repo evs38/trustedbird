@@ -35,6 +35,9 @@
 <!ENTITY returnReceiptsInfo.label      "Determine how &brandShortName; handles return receipts">
 <!ENTITY showReturnReceipts.label      "Return Receipts...">
 <!ENTITY showReturnReceipts.accesskey  "R">
+<!ENTITY dsnInfo.label                 "Determine how &brandShortName; handles delivery receipts">
+<!ENTITY showDSN.label                 "Delivery Receipts...">
+<!ENTITY showDSN.accesskey             "D">
 
 <!-- Update -->
 <!ENTITY autoCheck.label                "Automatically check for updates to:">

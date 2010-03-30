@@ -23,6 +23,8 @@
  * Contributor(s):
  *   David Drinan <ddrinan@netscape.com>
  *   Stephane Saux <ssaux@netscape.com>
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -57,6 +59,7 @@
 #include "nsCRT.h"
 #include "nsReadableUtils.h"
 #include "nsArray.h"
+#include "nsVoidArray.h"
 
 // String bundle for smime. Class static.
 nsCOMPtr<nsIStringBundle> nsMsgComposeSecure::mSMIMEBundle = nsnull;
@@ -70,9 +73,17 @@ nsCOMPtr<nsIStringBundle> nsMsgComposeSecure::mSMIMEBundle = nsnull;
 
 #define SMIME_STRBUNDLE_URL "chrome://messenger/locale/am-smime.properties"
 
+/* Location of Security Label with triple wrapping */
+enum {
+	SECURITY_LABEL_LOCATION_BOTH_SIGNATURES = 0,
+	SECURITY_LABEL_LOCATION_INNER_SIGNATURE_ONLY = 1,
+	SECURITY_LABEL_LOCATION_OUTER_SIGNATURE_ONLY = 2
+};
+
 static void mime_crypto_write_base64 (void *closure, const char *buf,
               unsigned long size);
 static nsresult PR_CALLBACK mime_encoder_output_fn(const char *buf, PRInt32 size, void *closure);
+static nsresult PR_CALLBACK mime_cryptoencoder_output_fn(const char *buf, PRInt32 size, void *closure);
 static nsresult PR_CALLBACK mime_nested_encoder_output_fn (const char *buf, PRInt32 size, void *closure);
 static int make_multipart_signed_header_string(PRBool outer_p,
                   char **header_return,
@@ -195,6 +206,71 @@ char
 
 // end of copied code which needs fixed....
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Implementation of nsMsgSMIMESecureHeader
+/////////////////////////////////////////////////////////////////////////////////////////
+//DRA
+NS_IMPL_ISUPPORTS1(nsMsgSMIMESecureHeader, nsIMsgSMIMESecureHeader)
+
+nsMsgSMIMESecureHeader::nsMsgSMIMESecureHeader():mHeaderStatus(-1),mHeaderEncrypted(-1)
+{
+
+}
+
+nsMsgSMIMESecureHeader::~nsMsgSMIMESecureHeader()
+{
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderName( const nsAString & value)
+{
+	mHeaderName = value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderName( nsAString & _retval)
+{
+	_retval=mHeaderName;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderValue( const nsAString & value)
+{
+	mHeaderValue = value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderValue( nsAString & _retval)
+{
+	_retval=mHeaderValue;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderStatus( PRInt32 value )
+{
+	mHeaderStatus=value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderStatus(PRInt32 * _retval)
+{
+	*_retval=mHeaderStatus;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderEncrypted( PRInt32 value )
+{
+	mHeaderEncrypted=value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderEncrypted(PRInt32 * _retval)
+{
+	*_retval = mHeaderEncrypted;
+	return NS_OK;
+}
+//DRA
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of nsMsgSMIMEComposeFields
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -202,8 +278,16 @@ char
 NS_IMPL_ISUPPORTS1(nsMsgSMIMEComposeFields, nsIMsgSMIMECompFields)
 
 nsMsgSMIMEComposeFields::nsMsgSMIMEComposeFields()
-:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE)
+:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE),
+mSecurityLabelLocation(SECURITY_LABEL_LOCATION_BOTH_SIGNATURES), mSecurityClassification(-1),
+mSignedReceiptRequest(PR_FALSE),
+mSignedContentIdentifierLen(0), mOriginatorSignatureValueLen(0), mOriginatorContentTypeLen(0),
+mTripleWrapMessage(PR_FALSE),
+mCanonAlgorithm(0)
 {
+	//DRA
+	NS_NewArray(getter_AddRefs(m_secureHeaders));
+	//DRA
 }
 
 nsMsgSMIMEComposeFields::~nsMsgSMIMEComposeFields()
@@ -222,6 +306,66 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignMessage(PRBool *_retval)
   return NS_OK;
 }
 
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityLabelLocation(PRInt32 value)
+{
+  mSecurityLabelLocation = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityLabelLocation(PRInt32 *_retval)
+{
+  *_retval = mSecurityLabelLocation;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityPolicyIdentifier(const nsACString &value)
+{
+  mSecurityPolicyIdentifier = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityPolicyIdentifier(nsACString &_retval)
+{
+  _retval = mSecurityPolicyIdentifier;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityClassification(PRInt32 value)
+{
+  mSecurityClassification = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityClassification(PRInt32 *_retval)
+{
+  *_retval = mSecurityClassification;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetPrivacyMark(const nsAString &value)
+{
+  mPrivacyMark = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetPrivacyMark(nsAString &_retval)
+{
+  _retval = mPrivacyMark;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityCategories(const nsAString &value)
+{
+  mSecurityCategories = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityCategories(nsAString &_retval)
+{
+  _retval = mSecurityCategories;
+  return NS_OK;
+}
+
 NS_IMETHODIMP nsMsgSMIMEComposeFields::SetRequireEncryptMessage(PRBool value)
 {
   mAlwaysEncryptMessage = value;
@@ -234,6 +378,143 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::GetRequireEncryptMessage(PRBool *_retval)
   return NS_OK;
 }
 
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSignedReceiptRequest(PRBool value)
+{
+  mSignedReceiptRequest = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignedReceiptRequest(PRBool *_retval)
+{
+  *_retval = mSignedReceiptRequest;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSignedContentIdentifier(PRUint8 *value)
+{
+  mSignedContentIdentifier = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignedContentIdentifier(PRUint8 **_retval)
+{
+  *_retval = mSignedContentIdentifier;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSignedContentIdentifierLen(const PRUint32 value)
+{
+  mSignedContentIdentifierLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSignedContentIdentifierLen(PRUint32 *_retval)
+{
+  *_retval = mSignedContentIdentifierLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorSignatureValue(PRUint8 *value)
+{
+  mOriginatorSignatureValue = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorSignatureValue(PRUint8 **_retval)
+{
+  *_retval = mOriginatorSignatureValue;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorSignatureValueLen(const PRUint32 value)
+{
+  mOriginatorSignatureValueLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorSignatureValueLen(PRUint32 *_retval)
+{
+  *_retval = mOriginatorSignatureValueLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorContentType(PRUint8 *value)
+{
+  mOriginatorContentType = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorContentType(PRUint8 **_retval)
+{
+  *_retval = mOriginatorContentType;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetOriginatorContentTypeLen(const PRUint32 value)
+{
+  mOriginatorContentTypeLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetOriginatorContentTypeLen(PRUint32 *_retval)
+{
+  *_retval = mOriginatorContentTypeLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetTripleWrapMessage(PRBool value)
+{
+  mTripleWrapMessage = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetTripleWrapMessage(PRBool *_retval)
+{
+  NS_ENSURE_ARG_POINTER(_retval);
+  *_retval = mTripleWrapMessage;
+  return NS_OK;
+}
+
+//Secure Headers
+NS_IMETHODIMP nsMsgSMIMEComposeFields::AddSecureHeader(nsIMsgSMIMESecureHeader * secureHeader)
+{
+	nsresult rv = NS_OK;
+
+	if (!secureHeader)
+		return NS_ERROR_FAILURE;
+	rv=m_secureHeaders->AppendElement(secureHeader,PR_FALSE);
+	return rv;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecureHeadersList(nsIMutableArray ** _SecureHeaders)
+{
+	*_SecureHeaders=m_secureHeaders;
+	NS_ADDREF(*_SecureHeaders);
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::ClearSecureHeaders()
+{
+	if(m_secureHeaders)
+	{
+		m_secureHeaders->Clear();
+	}
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetCanonAlgorithm(PRInt32 value)
+{
+	mCanonAlgorithm=value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetCanonAlgorithm(PRInt32 * retval)
+{
+	*retval = mCanonAlgorithm;
+	return NS_OK;
+}
+//
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of nsMsgComposeSecure
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -244,9 +525,11 @@ nsMsgComposeSecure::nsMsgComposeSecure()
 {
   /* member initializers and constructor code */
   mStream = 0;
-  mDataHash = 0;
+  mDataInnerHash = 0;
+  mDataOuterHash = 0;
   mSigEncoderData = 0;
-  mMultipartSignedBoundary  = 0;
+  mMultipartInnerSignedBoundary = 0;
+  mMultipartOuterSignedBoundary = 0;
   mSelfSigningCert = 0;
   mSelfEncryptionCert = 0;
   mCerts = 0;
@@ -255,6 +538,9 @@ nsMsgComposeSecure::nsMsgComposeSecure()
   mCryptoEncoderData = 0;
   mBuffer = 0;
   mBufferedBytes = 0;
+  mSecurityLabelLocation = SECURITY_LABEL_LOCATION_BOTH_SIGNATURES;
+  mSecurityClassification = -1;
+  mCanonAlgorithm=0;
 }
 
 nsMsgComposeSecure::~nsMsgComposeSecure()
@@ -277,7 +563,8 @@ nsMsgComposeSecure::~nsMsgComposeSecure()
 
   delete [] mBuffer;
 
-  PR_FREEIF(mMultipartSignedBoundary);
+  PR_FREEIF(mMultipartInnerSignedBoundary);
+  PR_FREEIF(mMultipartOuterSignedBoundary);
 }
 
 NS_IMETHODIMP nsMsgComposeSecure::RequiresCryptoEncapsulation(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aCompFields, PRBool * aRequiresEncryptionWork)
@@ -289,9 +576,10 @@ NS_IMETHODIMP nsMsgComposeSecure::RequiresCryptoEncapsulation(nsIMsgIdentity * a
 
   PRBool alwaysEncryptMessages = PR_FALSE;
   PRBool signMessage = PR_FALSE;
-  rv = ExtractEncryptionState(aIdentity, aCompFields, &signMessage, &alwaysEncryptMessages);
+  PRBool tripleWrapMessage = PR_FALSE;
+  rv = ExtractEncryptionState(aIdentity, aCompFields, &signMessage, &alwaysEncryptMessages, &tripleWrapMessage);
 
-  if (alwaysEncryptMessages || signMessage)
+  if (alwaysEncryptMessages || signMessage || tripleWrapMessage)
     *aRequiresEncryptionWork = PR_TRUE;
 
   return NS_OK;
@@ -415,13 +703,14 @@ void nsMsgComposeSecure::SetErrorWithParam(nsIMsgSendReport *sendReport, const P
   }
 }
 
-nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignMessage, PRBool * aEncrypt)
+nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignMessage, PRBool * aEncrypt, PRBool * aTripleWrap)
 {
   if (!aComposeFields && !aIdentity)
     return NS_ERROR_FAILURE; // kick out...invalid args....
 
   NS_ENSURE_ARG(aSignMessage);
   NS_ENSURE_ARG(aEncrypt);
+  NS_ENSURE_ARG(aTripleWrap);
 
   nsCOMPtr<nsISupports> securityInfo;
   if (aComposeFields)
@@ -434,6 +723,7 @@ nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, 
     {
       smimeCompFields->GetSignMessage(aSignMessage);
       smimeCompFields->GetRequireEncryptMessage(aEncrypt);
+      smimeCompFields->GetTripleWrapMessage(aTripleWrap);
       return NS_OK;
     }
   }
@@ -453,6 +743,104 @@ nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, 
   {
     *aSignMessage = PR_FALSE;
   }
+
+  testrv = aIdentity->GetBoolAttribute("triple_wrap_mail", aTripleWrap);
+  if (NS_FAILED(testrv))
+  {
+    *aTripleWrap = PR_FALSE;
+  }
+  return NS_OK;
+}
+
+nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, PRInt32 * aSecurityLabelLocation, nsACString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories)
+{
+  if (!aComposeFields)
+    return NS_ERROR_FAILURE; // kick out...invalid args....
+
+  NS_ENSURE_ARG(aSecurityLabelLocation);
+  NS_ENSURE_ARG(aSecurityClassification);
+
+  nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+        smimeCompFields->GetSecurityLabelLocation(aSecurityLabelLocation);
+        smimeCompFields->GetSecurityPolicyIdentifier(aSecurityPolicyIdentifier);
+        smimeCompFields->GetSecurityClassification(aSecurityClassification);
+        smimeCompFields->GetPrivacyMark(aPrivacyMark);
+        smimeCompFields->GetSecurityCategories(aSecurityCategories);
+        return NS_OK;
+      }
+    }
+  }
+
+  *aSecurityClassification = -1; // Not found
+  return NS_OK;
+}
+
+nsresult nsMsgComposeSecure::ExtractSignedReceiptRequestState(nsIMsgIdentity *aIdentity, nsIMsgCompFields *aComposeFields, PRBool *aSignedReceiptRequest)
+{
+  if (!aComposeFields && !aIdentity)
+    return NS_ERROR_FAILURE; // kick out...invalid args....
+
+  NS_ENSURE_ARG(aSignedReceiptRequest);
+
+  nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+        smimeCompFields->GetSignedReceiptRequest(aSignedReceiptRequest);
+        return NS_OK;
+      }
+    }
+  }
+
+  *aSignedReceiptRequest = PR_FALSE; // Not found
+  return NS_OK;
+}
+
+nsresult nsMsgComposeSecure::ExtractSignedReceiptState(nsIMsgCompFields *aComposeFields, PRUint8 **aSignedContentIdentifier, PRUint32 *aSignedContentIdentifierLen, PRUint8 **aOriginatorSignatureValue, PRUint32 *aOriginatorSignatureValueLen, PRUint8 **aOriginatorContentType, PRUint32 *aOriginatorContentTypeLen)
+{
+  if (!aComposeFields)
+    return NS_ERROR_FAILURE; // kick out...invalid args....
+
+  nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+        smimeCompFields->GetSignedContentIdentifier(aSignedContentIdentifier);
+        smimeCompFields->GetSignedContentIdentifierLen(aSignedContentIdentifierLen);
+        smimeCompFields->GetOriginatorSignatureValue(aOriginatorSignatureValue);
+        smimeCompFields->GetOriginatorSignatureValueLen(aOriginatorSignatureValueLen);
+        smimeCompFields->GetOriginatorContentType(aOriginatorContentType);
+        smimeCompFields->GetOriginatorContentTypeLen(aOriginatorContentTypeLen);
+        return NS_OK;
+      }
+    }
+  }
+
+  *aSignedContentIdentifierLen = 0;
+  *aOriginatorSignatureValueLen = 0;
+  *aOriginatorContentTypeLen = 0;
+
   return NS_OK;
 }
 
@@ -469,14 +857,36 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsOutputFileStream * 
 
   PRBool encryptMessages = PR_FALSE;
   PRBool signMessage = PR_FALSE;
-  ExtractEncryptionState(aIdentity, aCompFields, &signMessage, &encryptMessages);
+  PRBool tripleWrapMessage = PR_FALSE;
+  ExtractEncryptionState(aIdentity, aCompFields, &signMessage, &encryptMessages, &tripleWrapMessage);
 
-  if (!signMessage && !encryptMessages) return NS_ERROR_FAILURE;
+  if (!signMessage && !encryptMessages && !tripleWrapMessage) return NS_ERROR_FAILURE;
+  
+  // Extract SecurityLabel State
+  ExtractSecurityLabelState(aCompFields, &mSecurityLabelLocation, mSecurityPolicyIdentifier, &mSecurityClassification, mPrivacyMark, mSecurityCategories);
+
+  // Extract SignedReceiptRequest State
+  mSignedReceiptRequest = PR_FALSE;
+  ExtractSignedReceiptRequestState(aIdentity, aCompFields, &mSignedReceiptRequest);
+
+  //Extract Headers to secure
+  ReadHeadersToSecure(aIdentity,aCompFields);
+
+  if (mSignedReceiptRequest) {
+    aIdentity->GetEmail(getter_Copies(mSignedReceiptRequest_ReceiptTo));
+  }
+
+  // Extract SignedReceipt State
+  ExtractSignedReceiptState(aCompFields, &mSignedContentIdentifier, &mSignedContentIdentifierLen, &mOriginatorSignatureValue, &mOriginatorSignatureValueLen, &mOriginatorContentType, &mOriginatorContentTypeLen);
 
   mStream = aStream;
   mIsDraft = aIsDraft;
 
-  if (encryptMessages && signMessage)
+  if (tripleWrapMessage) {
+    mCryptoState = mime_crypto_signed_encrypted_signed;
+    encryptMessages = PR_TRUE; /* Force encryption, even if this should be already the case. */
+    signMessage = PR_TRUE; /* Force signing, even if this should be already the case. */
+  } else if (encryptMessages && signMessage)
     mCryptoState = mime_crypto_signed_encrypted;
   else if (encryptMessages)
     mCryptoState = mime_crypto_encrypted;
@@ -504,6 +914,11 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsOutputFileStream * 
     break;
   case mime_crypto_signed_encrypted:
     rv = MimeInitEncryption(PR_TRUE, sendReport);
+    break;
+  case mime_crypto_signed_encrypted_signed:
+    rv = MimeInitMultipartSigned(PR_TRUE, sendReport);
+    if (!NS_FAILED(rv))
+      rv = MimeInitEncryption(PR_TRUE, sendReport);
     break;
   case mime_crypto_encrypted:
     rv = MimeInitEncryption(PR_FALSE, sendReport);
@@ -539,6 +954,13 @@ NS_IMETHODIMP nsMsgComposeSecure::FinishCryptoEncapsulation(PRBool aAbort, nsIMs
     case mime_crypto_signed_encrypted:
       rv = MimeFinishEncryption (PR_TRUE, sendReport);
       break;
+    case mime_crypto_signed_encrypted_signed:
+      /* Finish inner signature */
+      rv = MimeFinishEncryption (PR_TRUE, sendReport);
+      
+      /* Finish outer signature */
+      if (!NS_FAILED(rv)) rv = MimeFinishMultipartSigned (PR_TRUE, sendReport);
+      break;
     case mime_crypto_encrypted:
       rv = MimeFinishEncryption (PR_FALSE, sendReport);
       break;
@@ -560,7 +982,7 @@ nsresult nsMsgComposeSecure::MimeInitMultipartSigned(PRBool aOuter, nsIMsgSendRe
   PRInt32 L;
 
   rv = make_multipart_signed_header_string(aOuter, &header,
-                    &mMultipartSignedBoundary);
+                    (aOuter) ? &mMultipartOuterSignedBoundary : &mMultipartInnerSignedBoundary);
   if (NS_FAILED(rv)) goto FAIL;
 
   L = strlen(header);
@@ -585,10 +1007,10 @@ nsresult nsMsgComposeSecure::MimeInitMultipartSigned(PRBool aOuter, nsIMsgSendRe
   mHashType = nsICryptoHash::SHA1;
 
   PR_SetError(0,0);
-  mDataHash = do_CreateInstance("@mozilla.org/security/hash;1", &rv);
+  ((aOuter) ? mDataOuterHash : mDataInnerHash) = do_CreateInstance("@mozilla.org/security/hash;1", &rv);
   if (NS_FAILED(rv)) return 0;
 
-  rv = mDataHash->Init(mHashType);
+  rv = ((aOuter) ? mDataOuterHash : mDataInnerHash)->Init(mHashType);
   if (NS_FAILED(rv)) {
     goto FAIL;
   }
@@ -617,6 +1039,14 @@ nsresult nsMsgComposeSecure::MimeInitEncryption(PRBool aSign, nsIMsgSendReport *
   PRInt32 L;
   if (!s) return NS_ERROR_OUT_OF_MEMORY;
   L = strlen(s);
+
+  /* If we're triple wrapping, feed this data into the computation of the outer hash. */
+  if (mDataOuterHash) {
+    PR_SetError(0,0);
+    mDataOuterHash->Update((const PRUint8*) s, L);
+    if (PR_GetError() < 0) return NS_ERROR_FAILURE;
+  }
+
   if (PRInt32(mStream->write(s, L)) < L) {
     return NS_ERROR_FAILURE;
   }
@@ -636,7 +1066,7 @@ nsresult nsMsgComposeSecure::MimeInitEncryption(PRBool aSign, nsIMsgSendReport *
 
   /* Initialize the base64 encoder. */
   PR_ASSERT(!mCryptoEncoderData);
-  mCryptoEncoderData = MIME_B64EncoderInit(mime_encoder_output_fn,
+  mCryptoEncoderData = MIME_B64EncoderInit(mime_cryptoencoder_output_fn,
                           this);
   if (!mCryptoEncoderData) {
     return NS_ERROR_OUT_OF_MEMORY;
@@ -694,9 +1124,9 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
    */
 
   nsCAutoString hashString;
-  mDataHash->Finish(PR_FALSE, hashString);
+  ((aOuter) ? mDataOuterHash : mDataInnerHash)->Finish(PR_FALSE, hashString);
 
-  mDataHash = 0;
+  ((aOuter) ? mDataOuterHash : mDataInnerHash) = 0;
 
   status = PR_GetError();
   if (status < 0) goto FAIL;
@@ -714,7 +1144,7 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
             "filename=\"smime.p7s\"" CRLF
           "Content-Description: %s" CRLF
           CRLF,
-          mMultipartSignedBoundary,
+          (aOuter) ? mMultipartOuterSignedBoundary : mMultipartInnerSignedBoundary,
           MIME_SMIME_SIGNATURE_CONTENT_DESCRIPTION);
   if (!header) {
     rv = NS_ERROR_OUT_OF_MEMORY;
@@ -742,9 +1172,21 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
   PR_ASSERT (mSelfSigningCert);
   PR_SetError(0,0);
   
-
-
-  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length());
+  PRBool tripleWrapped;
+  if (mCryptoState == mime_crypto_signed_encrypted_signed) tripleWrapped = PR_TRUE; else tripleWrapped = PR_FALSE;
+  
+  rv = cinfo->CreateSigned(mSelfSigningCert,
+						   mSelfEncryptionCert,
+						   (unsigned char*)hashString.get(),
+						   hashString.Length(),
+						   (tripleWrapped && ((aOuter && mSecurityLabelLocation == SECURITY_LABEL_LOCATION_INNER_SIGNATURE_ONLY) || (!aOuter && mSecurityLabelLocation == SECURITY_LABEL_LOCATION_OUTER_SIGNATURE_ONLY))) ? NULL : (char*)mSecurityPolicyIdentifier.get(),
+						   mSecurityClassification,
+						   (char*)(NS_ConvertUTF16toUTF8(mPrivacyMark).get()),
+						   (char*)(NS_ConvertUTF16toUTF8(mSecurityCategories).get()),
+						   ((tripleWrapped && aOuter) || !mSignedReceiptRequest) ? NULL : (unsigned char*)mSignedReceiptRequest_ReceiptTo.get(),
+						   (mSignedContentIdentifierLen > 0 && mOriginatorSignatureValueLen > 0 && mOriginatorContentTypeLen > 0) ? PR_TRUE : PR_FALSE,
+						   mSecureHeaders, mCanonAlgorithm
+						  );
   if (NS_FAILED(rv))  {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;
@@ -772,6 +1214,23 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
     goto FAIL;
   }
 
+  if (mSignedContentIdentifierLen > 0 && mOriginatorSignatureValueLen > 0 && mOriginatorContentTypeLen > 0) {
+    /* Create receipt */
+    PRUint8 *receiptBuffer = NULL;
+    PRUint32 receiptBufferLength = 0;
+    rv = cinfo->CreateReceipt(mSignedContentIdentifier, mSignedContentIdentifierLen, mOriginatorSignatureValue, mOriginatorSignatureValueLen, mOriginatorContentType, mOriginatorContentTypeLen, &receiptBuffer, &receiptBufferLength);
+    if (NS_FAILED(rv)) {
+      SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+      goto FAIL;
+    }
+
+    rv = encoder->Update((char*)receiptBuffer, (PRInt32)receiptBufferLength);
+    if (NS_FAILED(rv)) {
+      SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+      goto FAIL;
+    }
+  }
+
   // We're not passing in any data, so no update needed.
   rv = encoder->Finish();
   if (NS_FAILED(rv)) {
@@ -792,9 +1251,9 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
   {
   PRInt32 L;
   char *header = PR_smprintf(CRLF "--%s--" CRLF,
-                 mMultipartSignedBoundary);
-  PR_Free(mMultipartSignedBoundary);
-  mMultipartSignedBoundary = 0;
+                 (aOuter) ? mMultipartOuterSignedBoundary : mMultipartInnerSignedBoundary);
+  PR_Free((aOuter) ? mMultipartOuterSignedBoundary : mMultipartInnerSignedBoundary);
+  ((aOuter) ? mMultipartOuterSignedBoundary : mMultipartInnerSignedBoundary) = 0;
 
   if (!header) {
     rv = NS_ERROR_OUT_OF_MEMORY;
@@ -864,6 +1323,13 @@ nsresult nsMsgComposeSecure::MimeFinishEncryption (PRBool aSign, nsIMsgSendRepor
   /* Shut down the base64 encoder. */
   rv = MIME_EncoderDestroy(mCryptoEncoderData, PR_FALSE);
   mCryptoEncoderData = 0;
+
+  /* If we're triple wrapping, feed this data into the computation of the outer hash. */
+  if (mDataOuterHash) {
+    PR_SetError(0,0);
+    mDataOuterHash->Update((const PRUint8*) CRLF, 2);
+    if (PR_GetError() < 0) return NS_ERROR_FAILURE;
+  }
 
   if (PRInt32(mStream->write(CRLF, 2)) < 2)
     rv = NS_ERROR_FAILURE;
@@ -1016,11 +1482,10 @@ NS_IMETHODIMP nsMsgComposeSecure::MimeCryptoWriteBlock (const char *buf, PRInt32
     return status;
   }
 
-  /* If we're signing, or signing-and-encrypting, feed this data into
-   the computation of the hash. */
-  if (mDataHash) {
+  /* If we're signing-and-encrypting or triple wrapping, feed this data into the computation of the inner hash. */
+  if (mDataInnerHash) {
     PR_SetError(0,0);
-    mDataHash->Update((const PRUint8*) buf, size);
+    mDataInnerHash->Update((const PRUint8*) buf, size);
 	  status = PR_GetError();
 	  if (status < 0) goto FAIL;
 	}
@@ -1062,11 +1527,272 @@ NS_IMETHODIMP nsMsgComposeSecure::MimeCryptoWriteBlock (const char *buf, PRInt32
     if (PRInt32(mStream->write (buf, size)) < size) {
   		return MK_MIME_ERROR_WRITING_FILE;
     }
+
+    /* If we're signing, feed this data into the computation of the outer hash. */
+    if (mDataOuterHash) {
+      PR_SetError(0,0);
+      mDataOuterHash->Update((const PRUint8*) buf, size);
+      status = PR_GetError();
+      if (status < 0) goto FAIL;
+    }
 	}
  FAIL:
   return status;
 }
 
+
+
+//DRA
+
+/*
+ * Supprime les sauts de ligne.
+ */
+nsAutoString& removeJumpSymb(nsAutoString& s)
+{
+	s.ReplaceSubstring(NS_LITERAL_STRING("\n\r"), NS_LITERAL_STRING(""));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\r\n"), NS_LITERAL_STRING(""));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\r"), NS_LITERAL_STRING(""));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\n"), NS_LITERAL_STRING(""));
+	s.Append(NS_LITERAL_STRING("\r\n"));
+	return s;
+}
+
+/*
+ * Transforme les tabulations et les occurences multiples d'espace en un espace unique.
+ */
+nsAutoString& onlyOneWhiteSpace(nsAutoString& s)
+{
+	s.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("  "), NS_LITERAL_STRING(" "));
+	return s;
+}
+
+
+nsAutoString& canonilizeHeaderValue(nsAutoString &hdrval)
+{
+	removeJumpSymb(hdrval);
+	onlyOneWhiteSpace(hdrval);
+	hdrval.CompressWhitespace();
+	return hdrval;
+}
+
+nsAutoString& canonilizeHeaderName(nsAutoString &hdrname)
+{
+	nsCAutoString utf8str =  NS_ConvertUTF16toUTF8(hdrname);
+	ToLowerCase(utf8str);
+	hdrname = NS_ConvertUTF8toUTF16(utf8str);
+	onlyOneWhiteSpace(hdrname);
+	hdrname.CompressWhitespace();
+	return hdrname;
+}
+
+void strsplit(const char separator, nsAString& strToSplit, nsStringArray & result)
+{
+    PRInt32 start = 0;
+    PRInt32 end = 0;
+    PRInt32 len = 0;
+
+    while (end != -1) {
+      end = strToSplit.FindChar(separator,start);
+      if (end == -1) {
+        len = strToSplit.Length() - start;
+      } else {
+        len = end - start;
+      }
+      // grab the name of the current header pref
+     const nsAString& str_tmp = Substring(strToSplit, start, end);
+
+      start = end + 1;
+	  result.AppendString(str_tmp);
+    }
+	
+}
+
+void parseHeaderValue(const nsAString & str, const nsAString& headerName, nsAString & headerVal)
+{
+	nsVoidArray tab_header;
+	nsAutoString ligne_header;
+	nsAutoString tmpstr(str);
+	nsAString::const_iterator cur_pos_str,cur_pos_CRLF,start,end;
+
+	tmpstr.BeginReading(start);
+	tmpstr.EndReading(end);
+	
+	cur_pos_str=start;
+	cur_pos_CRLF=end;
+	NS_NAMED_LITERAL_STRING(valuePrefix, "\r\n");
+	
+	while(FindInReadable(valuePrefix, start, end))
+	{
+		cur_pos_CRLF = end;
+		if(*cur_pos_CRLF == PRUnichar(' '))
+		{
+			ligne_header.Append(Substring(cur_pos_CRLF.start(),cur_pos_CRLF.get()-2));
+			tmpstr.Replace(0,end.get()-end.start()+1,NS_LITERAL_STRING(""));
+		}
+		else
+		{
+			ligne_header.Append(Substring(cur_pos_CRLF.start(),cur_pos_CRLF.get()));
+			nsAutoString _hdrName;
+			nsAutoString _hdrValue;
+			
+			_hdrName.Assign(Substring(ligne_header,0,ligne_header.FindChar(':',0)));
+			_hdrValue.Assign(Substring(ligne_header,ligne_header.FindChar(':',0)+2,ligne_header.Length()-ligne_header.FindChar(':',0)+1));
+			if(_hdrName.Equals(headerName)){
+				headerVal.Assign(_hdrValue);
+				break;
+			}	
+			ligne_header.Assign(NS_LITERAL_STRING(""));
+			tmpstr.Replace(0,end.get()-end.start(),NS_LITERAL_STRING(""));
+		}
+		
+		tmpstr.BeginReading(start);
+		tmpstr.EndReading(end);
+	}
+}
+
+void GetValueHeader(nsAString& headerName,nsIMsgCompFields * aComposeFields, nsAString & result)
+{
+	nsresult rv;
+	nsAutoString otherHeaders;
+	nsAutoString to;
+    nsAutoString from;
+	nsAutoString subject;
+	nsAutoString cc;
+	nsAutoString bcc;
+	nsAutoString body;
+	nsAutoString messageId;
+	nsAutoString priority;
+	nsAutoString replyTo;
+	nsAutoString charset;
+	aComposeFields->GetTo(to);
+	aComposeFields->GetFrom(from);
+	aComposeFields->GetSubject(subject);
+	aComposeFields->GetCc(cc);
+	aComposeFields->GetBcc(bcc);
+	aComposeFields->GetBody(body);
+	aComposeFields->GetOtherRandomHeaders(otherHeaders);
+	aComposeFields->GetReplyTo(replyTo);
+	char * tmp;
+	aComposeFields->GetMessageId(&tmp);
+	messageId=NS_ConvertASCIItoUTF16(tmp);
+	aComposeFields->GetPriority(&tmp);
+	priority=NS_ConvertASCIItoUTF16(tmp);
+	aComposeFields->GetCharacterSet(&tmp);
+	charset=NS_ConvertASCIItoUTF16(tmp);
+	if(charset.IsEmpty()){
+		aComposeFields->GetDefaultCharacterSet(&tmp);
+		charset=NS_ConvertASCIItoUTF16(tmp);
+	}
+
+	//replace the tabulation by a space for each header
+	//which can be multiline to simplify the treatment
+	to.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+	cc.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+	bcc.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+
+	if(headerName.LowerCaseEqualsLiteral("from")){
+		if(!from.IsEmpty())
+			result.Assign(from);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("to")){
+		if(!to.IsEmpty())
+			result.Assign(to);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("body")){
+		if(!body.IsEmpty())
+			result.Assign(body);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("subject")){
+		if(!subject.IsEmpty()){
+			nsCOMPtr<nsIMimeConverter> mimeconverter = do_GetService(NS_MIME_CONVERTER_CONTRACTID, &rv);
+			tmp=NULL;
+			mimeconverter->EncodeMimePartIIStr_UTF8(NS_ConvertUTF16toUTF8(subject).get(),PR_FALSE,NS_ConvertUTF16toUTF8(charset).get(),0,77,&tmp);
+			if(tmp!=NULL)
+			{
+				result.Assign(NS_ConvertUTF8toUTF16(tmp));
+			}
+			else{
+				result.Assign(subject);
+			}
+			
+		}
+	}
+	else if(headerName.LowerCaseEqualsLiteral("cc")){
+		if(!cc.IsEmpty())
+			result.Assign(cc);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("bcc")){
+		if(!bcc.IsEmpty())
+			result.Assign(bcc);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("message-id")){
+		if(!messageId.IsEmpty())
+			result.Assign(messageId);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("priority")){
+		if(!priority.IsEmpty())
+			result.Assign(priority);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("reply-to")){
+		if(!replyTo.IsEmpty())
+			result.Assign(replyTo);
+	}
+	else{
+		parseHeaderValue(otherHeaders,headerName,result);
+	}
+}
+
+nsresult nsMsgComposeSecure::ReadHeadersToSecure(nsIMsgIdentity * aIdentity,nsIMsgCompFields * aComposeFields){
+
+  //Extract Signed Headers list
+   nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+		nsCOMPtr<nsIMutableArray> tmpHeaders;
+        smimeCompFields->GetSecureHeadersList(getter_AddRefs(tmpHeaders));
+		smimeCompFields->GetCanonAlgorithm(&mCanonAlgorithm);
+		if(tmpHeaders)
+		{
+			NS_NewArray(getter_AddRefs(mSecureHeaders));
+			PRUint32 nbHeaders;
+			tmpHeaders->GetLength(&nbHeaders);
+			for(int i=0;i<nbHeaders;++i)
+			{
+				nsCOMPtr<nsIMsgSMIMESecureHeader> _secureHeader= do_QueryElementAt(tmpHeaders,i);
+				if(_secureHeader)
+				{
+					nsAutoString _headerName;
+					nsAutoString _headerValue;
+					PRInt32 _headerStatus;
+					_secureHeader->GetHeaderName(_headerName);
+					GetValueHeader(_headerName,aComposeFields,_headerValue);
+					if(!_headerValue.IsEmpty()){
+						if(mCanonAlgorithm){
+							canonilizeHeaderName(_headerName);
+							canonilizeHeaderValue(_headerValue);
+						}
+						_secureHeader->SetHeaderName(_headerName);
+						_secureHeader->SetHeaderValue(_headerValue);
+						mSecureHeaders->AppendElement(_secureHeader,PR_FALSE);
+					}
+				}
+			}
+		}
+	  }
+    }
+  }
+
+	return NS_OK;
+}
+//DRA
 /* Returns a string consisting of a Content-Type header, and a boundary
    string, suitable for moving from the header block, down into the body
    of a multipart object.  The boundary itself is also returned (so that
@@ -1137,6 +1863,31 @@ mime_crypto_write_base64 (void *closure, const char *buf,
 nsresult mime_encoder_output_fn(const char *buf, PRInt32 size, void *closure)
 {
   nsMsgComposeSecure *state = (nsMsgComposeSecure *) closure;
+  nsOutputFileStream *stream = state->GetOutputStream();
+  if (PRInt32(stream->write((char *) buf, size)) < size)
+    return MK_MIME_ERROR_WRITING_FILE;
+  else
+    return 0;
+}
+
+/* Used as the output function of MimeEncoderData -- when we have generated
+   the encrypted data, this is used to write the base64-encoded representation
+   of the encrypted data to the file.
+   This is also used for triple wrapping to feed this encrypted data into the 
+   computation of the outer hash.
+ */
+nsresult mime_cryptoencoder_output_fn(const char *buf, PRInt32 size, void *closure)
+{
+  nsMsgComposeSecure *state = (nsMsgComposeSecure *) closure;
+
+  /* If we're triple wrapping, feed this data into the computation of the outer hash. */
+  nsCOMPtr<nsICryptoHash> dataOuterHash = state->GetDataOuterHash();
+  if (dataOuterHash) {
+    PR_SetError(0,0);
+    dataOuterHash->Update((const PRUint8*) buf, size);
+    if (PR_GetError() < 0) return NS_ERROR_FAILURE;
+  }
+
   nsOutputFileStream *stream = state->GetOutputStream();
   if (PRInt32(stream->write((char *) buf, size)) < size)
     return MK_MIME_ERROR_WRITING_FILE;

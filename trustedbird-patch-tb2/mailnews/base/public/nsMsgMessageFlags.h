@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -120,6 +121,7 @@ typedef PRInt32 MsgFlags;
 											 * MDN report should be sent to the
 											 * sender
 											 */
+#define MSG_FLAG_SIGNED_RECEIPT_SENT 0x2000000
 #define MSG_FLAG_TEMPLATE       0x1000000	/* this message is a template */
 #define MSG_FLAG_ATTACHMENT		0x10000000	/* this message has files attached to it */
 

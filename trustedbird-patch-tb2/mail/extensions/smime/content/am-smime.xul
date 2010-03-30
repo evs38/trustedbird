@@ -24,6 +24,7 @@
 # Contributor(s):
 #   ddrinan@netscape.com
 #   Scott MacGregor <mscott@netscape.com>
+#   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -79,7 +80,20 @@
     
     <separator class="thin"/>
 
-    <checkbox id="identity.sign_mail" wsm_persist="true" label="&signMessage.label;"/>
+    <checkbox id="identity.sign_mail" wsm_persist="true" label="&signMessage.label;" oncommand="toggleSignMail()"/>
+
+    <checkbox id="identity.request_signed_return_receipt_on" wsm_persist="true" label="&requestSignedReceipt.label;" oncommand="toggleRequestSignedReceipt()"/>
+
+    <hbox align="center">
+      <label id="signedReceiptSendPolicyLabel" value="&signedReceiptSendPolicy.label;" control="identity.signed_receipt_send_policy"/>
+      <menulist id="identity.signed_receipt_send_policy" wsm_persist="true">
+        <menupopup>
+          <menuitem value="0" label="&signedReceiptNeverSend.label;"/>
+          <menuitem value="2" label="&signedReceiptAlwaysSend.label;"/>
+          <menuitem value="1" label="&signedReceiptAskMe.label;"/>
+        </menupopup>
+      </menulist>
+    </hbox>
   </groupbox>
 
   <groupbox id="encryption.titlebox">
@@ -111,6 +125,10 @@
       <radio id="encrypt_mail_always" wsm_persist="true" value="2"
               label="&alwaysEncryptMessage.label;"/>
     </radiogroup>
+
+    <separator class="thin"/>
+
+    <checkbox id="identity.triple_wrap_mail" wsm_persist="true" label="&tripleWrapMessage.label;" oncommand="toggleTripleWrapMail()"/>
   </groupbox> 
   
   <!-- Certificate manager -->

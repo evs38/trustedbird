@@ -885,7 +885,9 @@ nsresult nsMsgMdnGenerator::SendMdnMsg()
 
     nsCOMPtr<nsIRequest> aRequest;
     smtpService->SendMailMessage(m_fileSpec, m_dntRrt, m_identity,
-                                     nsnull, this, nsnull, nsnull, nsnull,
+                                     nsnull, this, nsnull, nsnull,
+                                     PR_FALSE, 0,
+                                     nsnull,
                                      getter_AddRefs(aRequest));
     
     return NS_OK;

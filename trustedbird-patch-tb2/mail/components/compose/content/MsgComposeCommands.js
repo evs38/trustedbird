@@ -22,6 +22,8 @@
 #
 # Contributor(s):
 #   David Bienvenu <bienvenu@nventure.com>
+#   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+#   Olivier Parniere BT Global Services / Etat francais Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -118,6 +120,7 @@ var gCharsetConvertManager;
 
 var gLastWindowToHaveFocus;
 var gReceiptOptionChanged;
+var gDSNOptionChanged;
 var gAttachVCardOptionChanged;
 
 var gMailSession;
@@ -171,6 +174,7 @@ function InitializeGlobalVariables()
 
   gLastWindowToHaveFocus = null;
   gReceiptOptionChanged = false;
+  gDSNOptionChanged = false;
   gAttachVCardOptionChanged = false;
 }
 InitializeGlobalVariables();
@@ -243,6 +247,7 @@ var gComposeRecyclingListener = {
     //Reset menu options
     document.getElementById("format_auto").setAttribute("checked", "true");
     document.getElementById("priority_normal").setAttribute("checked", "true");
+    document.getElementById("deliveringPriority_none").setAttribute("checked", "true");
 
     //Reset toolbars that could be hidden
     if (gHideMenus) {
@@ -1336,6 +1341,7 @@ function ComposeStartup(recycled, aParams)
 
       document.getElementById("returnReceiptMenu").setAttribute('checked', 
                                          gMsgCompose.compFields.returnReceipt);
+      document.getElementById("dsnMenu").setAttribute('checked', gMsgCompose.compFields.DSN);
       document.getElementById("cmd_attachVCard").setAttribute('checked', 
                                          gMsgCompose.compFields.attachVCard);
       document.getElementById("menu_inlineSpellCheck").setAttribute('checked', sPrefs.getBoolPref("mail.spellcheck.inline"));
@@ -2091,6 +2097,20 @@ function updatePriorityMenu()
   }
 }
 
+function updateDeliveringPriorityMenu()
+{
+  if (gMsgCompose)
+  {
+    var msgCompFields = gMsgCompose.compFields;
+    if (msgCompFields && msgCompFields.deliveringPriority)
+    {
+      var deliveringPriorityMenu = document.getElementById('deliveringPriorityMenu');
+      deliveringPriorityMenu.getElementsByAttribute("checked", 'true')[0].removeAttribute('checked');
+      deliveringPriorityMenu.getElementsByAttribute("value", msgCompFields.deliveringPriority)[0].setAttribute('checked', 'true');
+    }
+  }
+}
+
 function updatePriorityToolbarButton(newPriorityValue)
 {
   var prioritymenu = document.getElementById('priorityMenu-button');
@@ -2108,6 +2128,16 @@ function PriorityMenuSelect(target)
 
     // keep priority toolbar button in synch with possible changes via the menu item
     updatePriorityToolbarButton(target.getAttribute('value'));
+  }
+}
+
+function DeliveringPriorityMenuSelect(target)
+{
+  if (gMsgCompose)
+  {
+    var msgCompFields = gMsgCompose.compFields;
+    if (msgCompFields)
+      msgCompFields.deliveringPriority = target.getAttribute('value');
   }
 }
 
@@ -2321,6 +2351,17 @@ function ToggleReturnReceipt(target)
         msgCompFields.returnReceipt = ! msgCompFields.returnReceipt;
         target.setAttribute('checked', msgCompFields.returnReceipt);
         gReceiptOptionChanged = true;
+    }
+}
+
+function ToggleDSN(target)
+{
+    var msgCompFields = gMsgCompose.compFields;
+    if (msgCompFields)
+    {
+        msgCompFields.DSN = ! msgCompFields.DSN;
+        target.setAttribute('checked', msgCompFields.DSN);
+        gDSNOptionChanged = true;
     }
 }
 
@@ -3050,6 +3091,7 @@ function LoadIdentity(startup)
           var prevReplyTo = prevIdentity.replyTo;
           var prevBcc = "";
           var prevReceipt = prevIdentity.requestReturnReceipt;
+          var prevDSN = prevIdentity.DSN;
           var prevAttachVCard = prevIdentity.attachVCard;
 
           if (prevIdentity.doBcc)
@@ -3058,6 +3100,7 @@ function LoadIdentity(startup)
           var newReplyTo = gCurrentIdentity.replyTo;
           var newBcc = "";
           var newReceipt = gCurrentIdentity.requestReturnReceipt;
+          var newDSN = gCurrentIdentity.DSN;
           var newAttachVCard = gCurrentIdentity.attachVCard;
 
           if (gCurrentIdentity.doBcc)
@@ -3072,6 +3115,14 @@ function LoadIdentity(startup)
           {
             msgCompFields.returnReceipt = newReceipt;
             document.getElementById("returnReceiptMenu").setAttribute('checked',msgCompFields.returnReceipt);
+          }
+
+          if (!gDSNOptionChanged &&
+              prevDSN == msgCompFields.DSN &&
+              prevDSN != newDSN)
+          {
+            msgCompFields.DSN = newDSN;
+            document.getElementById("dsnMenu").setAttribute('checked',msgCompFields.DSN);
           }
 
           if (!gAttachVCardOptionChanged &&

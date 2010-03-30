@@ -48,12 +48,12 @@ pref("mail.biff.animate_dock_icon", false);
 // App-specific update preferences
 
 // Whether or not app updates are enabled
-pref("app.update.enabled", true);               
+pref("app.update.enabled", false);               
 
 // This preference turns on app.update.mode and allows automatic download and
 // install to take place. We use a separate boolean toggle for this to make     
 // the UI easier to construct.
-pref("app.update.auto", true);
+pref("app.update.auto", false);
 
 // Defines how the Application Update Service notifies the user about updates:
 //
@@ -69,12 +69,14 @@ pref("app.update.mode", 1);
 pref("app.update.silent", false);
 
 // Update service URL:
-pref("app.update.url", "https://aus2.mozilla.org/update/1/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/update.xml");
+//pref("app.update.url", "https://aus2.mozilla.org/update/1/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/update.xml");
+pref("app.update.url", "");
 pref("app.update.vendorName.override", "Mozilla");
 
 // URL user can browse to manually if for some reason all update installation
 // attempts fail.  TODO: Change this URL
-pref("app.update.url.manual", "http://%LOCALE%.www.mozilla.com/%LOCALE%/%APP%/");
+//pref("app.update.url.manual", "http://%LOCALE%.www.mozilla.com/%LOCALE%/%APP%/");
+pref("app.update.url.manual", "");
 // A default value for the "More information about this update" link
 // supplied in the "An update is available" page of the update wizard. 
 pref("app.update.url.details", "http://%LOCALE%.www.mozilla.com/%LOCALE%/%APP%/releases/");
@@ -342,7 +344,7 @@ pref("wallet.miscPanel.hide",               false);
 pref("mail.signature_file",             "");
 pref("mail.directory",                  "");
 pref("news.directory",                  "");
-pref("autoupdate.enabled",              true);
+pref("autoupdate.enabled",              false);
 pref("browser.editor.disabled", false);
 pref("spellchecker.dictionary", "");
 // Dictionary download preference

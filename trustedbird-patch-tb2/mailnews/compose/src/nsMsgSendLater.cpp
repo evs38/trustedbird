@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Pierre Phaneuf <pp@ludusdesign.com>
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -110,6 +111,7 @@ nsMsgSendLater::nsMsgSendLater()
   mAccountKey = nsnull;
 
   mRequestReturnReceipt = PR_FALSE;
+  mRequestDSN = PR_FALSE;
 
   NS_NewISupportsArray(getter_AddRefs(mMessagesToSend));
 }
@@ -538,6 +540,9 @@ nsMsgSendLater::CompleteMailFileSend()
 
   if (mRequestReturnReceipt)
     fields->SetReturnReceipt(PR_TRUE);
+
+  if (mRequestDSN)
+    fields->SetDSN(PR_TRUE);
 
   // Create the listener for the send operation...
   SendOperationListener * sendListener = new SendOperationListener();
@@ -980,6 +985,19 @@ SEARCH_NEWLINE:
         if ((requestForReturnReceipt == 2 || requestForReturnReceipt == 3))
           mRequestReturnReceipt = PR_TRUE;
       }
+
+      char *dsn = NULL;
+      dsn = PL_strstr(draftInfo, "DSN=");
+      if (dsn)
+      {
+        char *s = dsn+4;
+        int requestForDSN = 0;
+        PR_sscanf(s, "%d", &requestForDSN);
+
+        if (requestForDSN == 1)
+          mRequestDSN = PR_TRUE;
+      }
+
       PR_Free(draftInfo);
     }
 
@@ -1298,4 +1316,3 @@ nsMsgSendLater::GetIdentityFromKey(const char *aKey, nsIMsgIdentity  **aIdentity
   NS_ENSURE_SUCCESS(rv,rv);
   return rv;
 }
-

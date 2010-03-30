@@ -60,9 +60,9 @@ PREF_JS_EXPORTS += $(srcdir)/thunderbird-branding.js
 endif
 
 ifeq ($(USE_SHORT_LIBNAME), 1)
-PROGRAM = thunderbird$(BIN_SUFFIX)
+PROGRAM = trustedbird$(BIN_SUFFIX)
 else
-PROGRAM = thunderbird-bin$(BIN_SUFFIX)
+PROGRAM = trustedbird-bin$(BIN_SUFFIX)
 endif
 
 REQUIRES = \
@@ -265,20 +265,20 @@ endif
 endif
 
 ifneq (,$(filter-out OS2 WINNT Darwin,$(OS_ARCH)))
-thunderbird:: mozilla.in Makefile.in Makefile $(DEPTH)/config/autoconf.mk
+trustedbird:: mozilla.in Makefile.in Makefile $(DEPTH)/config/autoconf.mk
 	cat $< | sed -e "s|%MOZAPPDIR%|$(mozappdir)|" \
-                -e "s|%MOZ_USER_DIR%|.thunderbird|" \
+                -e "s|%MOZ_USER_DIR%|.trustedbird|" \
 		-e "s|%MREDIR%|$(mredir)|" \
  		-e "s|%MOZ_APP_DISPLAYNAME%|$(MOZ_APP_DISPLAYNAME)|" > $@
 	chmod +x $@
 
-libs:: thunderbird
+libs:: trustedbird
 	$(INSTALL) $< $(DIST)/bin
 
-install:: thunderbird
+install:: trustedbird
 	$(SYSINSTALL) $< $(DESTDIR)$(bindir)
 
-GARBAGE += thunderbird
+GARBAGE += trustedbird
 GARBAGE += $(addprefix $(DIST)/bin/defaults/pref/, all.js all-thunderbird.js channel-prefs.js mailnews.js)
 endif
 
@@ -304,9 +304,9 @@ ifneq (,$(filter mac cocoa,$(MOZ_WIDGET_TOOLKIT)))
 AB := $(firstword $(subst -, ,$(AB_CD)))
 
 ifdef MOZ_DEBUG
-APP_NAME = ThunderbirdDebug
+APP_NAME = TrustedbirdDebug
 else
-APP_NAME = Thunderbird
+APP_NAME = Trustedbird
 endif
 
 libs:: $(PROGRAM)

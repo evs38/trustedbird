@@ -61,7 +61,7 @@ bin\extensions\talkback@mozilla.org\components\talkback.hlp
 [mail]
 
 bin\xpicleanup.exe
-bin\thunderbird.exe
+bin\trustedbird.exe
 bin\LICENSE.txt
 bin\license.html
 bin\README.txt
@@ -73,6 +73,8 @@ bin\defaults\messenger\mailViews.dat
 bin\defaults\profile\localstore.rdf
 bin\defaults\profile\prefs.js
 bin\defaults\profile\mimeTypes.rdf
+bin\defaults\profile\securityLabelPolicy-sample.xml
+bin\defaults\profile\secureHeader\secureHeaderDefault.xml
 
 bin\isp\*
 
@@ -120,6 +122,11 @@ bin\components\mdn-service.js
 
 bin\components\smime-service.js
 bin\components\msgsmime.xpt
+
+bin\components\dsn-service.js
+
+bin\components\securitylabel-service.js
+bin\components\am-service-secureheaders.js
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Chrome Files

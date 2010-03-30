@@ -22,6 +22,7 @@
  * Contributor(s):
  *   Pierre Phaneuf <pp@ludusdesign.com>
  *   David Bienvenu <bienvenu@nventure.com>
+ *   EADS Defence and Security
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -2307,6 +2308,46 @@ NS_IMETHODIMP nsMsgIncomingServer::IsNewHdrDuplicate(nsIMsgDBHdr *aNewHdr, PRBoo
     if (m_downloadedHdrs.Count() >= kMaxDownloadTableSize)
       m_downloadedHdrs.Enumerate(evictOldEntries, this);
   }
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgIncomingServer::IsAuthenticationByCertificate( PRBool *aResult)
+{
+  *aResult = PR_FALSE;
+  nsresult rv;
+  nsCAutoString prefAuthCert;
+  nsCOMPtr<nsIMsgAccountManager> accountManager =
+           do_GetService(NS_MSGACCOUNTMANAGER_CONTRACTID, &rv);
+  NS_ENSURE_SUCCESS(rv,rv);
+
+
+  nsCOMPtr<nsIPrefBranch> prefBranch = do_GetService(NS_PREFSERVICE_CONTRACTID, &rv);
+  NS_ENSURE_SUCCESS(rv,rv);
+
+  nsCOMPtr<nsIMsgIdentity> identity;
+  rv = accountManager->GetFirstIdentityForServer(this, getter_AddRefs(identity));
+  NS_ENSURE_SUCCESS(rv,rv);
+
+  nsXPIDLCString idKey;
+
+  if (NS_SUCCEEDED(rv) && identity)
+  {
+    rv = GetKey(getter_Copies(idKey));
+  }
+
+  if(NS_SUCCEEDED(rv))
+  {
+    prefAuthCert.Append("mail.server.");
+    prefAuthCert.Append(idKey);
+    prefAuthCert.Append(".authByCert");
+    rv = prefBranch->GetBoolPref(prefAuthCert.get(),aResult);
+    if(NS_FAILED(rv))
+    {
+        *aResult=PR_FALSE;
+        prefBranch->SetBoolPref(prefAuthCert.get(),PR_FALSE);
+    }
+  }
+
   return NS_OK;
 }
 

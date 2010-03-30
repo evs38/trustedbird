@@ -21,6 +21,7 @@ content,install,url,jar:resource:/chrome/mail.jar!/content/pippki/
 content,install,url,jar:resource:/chrome/mail.jar!/content/autoconfig/
 content,install,url,jar:resource:/chrome/mail.jar!/content/messenger/
 content,install,url,jar:resource:/chrome/mail.jar!/content/messenger-mdn/
+content,install,url,jar:resource:/chrome/mail.jar!/content/messenger-dsn/
 content,install,url,jar:resource:/chrome/mail.jar!/content/messenger-views/
 content,install,url,jar:resource:/chrome/mail.jar!/content/messenger-smime/
 content,install,url,jar:resource:/chrome/mail.jar!/content/messenger-mapi/

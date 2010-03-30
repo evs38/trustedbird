@@ -202,7 +202,7 @@ nss_cms_encoder_notify(void *arg, PRBool before, void *dest, int depth)
 	    if (childtype == SEC_OID_PKCS7_DATA && (item = cinfo->content.data) != NULL)
 		/* we have data - feed it in */
 		(void)nss_cms_encoder_work_data(p7ecx, NULL, item->data, item->len, PR_TRUE, PR_TRUE);
-	    else
+	   else
 		/* else try to get it from user */
 		SEC_ASN1EncoderSetTakeFromBuf(p7ecx->ecx);
 	}
@@ -349,6 +349,7 @@ nss_cms_before_data(NSSCMSEncoderContext *p7ecx)
 	break;
 
     case SEC_OID_PKCS7_DATA:
+    case SEC_OID_SMIME_RECEIPT:
 	p7ecx->childp7ecx = NULL;
 	break;
     default:
@@ -388,6 +389,7 @@ nss_cms_after_data(NSSCMSEncoderContext *p7ecx)
 	rv = NSS_CMSEncryptedData_Encode_AfterData(p7ecx->content.encryptedData);
 	break;
     case SEC_OID_PKCS7_DATA:
+    case SEC_OID_SMIME_RECEIPT:
 	/* do nothing */
 	break;
     default:
@@ -629,7 +631,8 @@ NSS_CMSEncoder_Update(NSSCMSEncoderContext *p7ecx, const char *data, unsigned lo
 	/* find out about our inner content type - must be data */
 	cinfo = NSS_CMSContent_GetContentInfo(p7ecx->content.pointer, p7ecx->type);
 	childtype = NSS_CMSContentInfo_GetContentTypeTag(cinfo);
-	if (childtype != SEC_OID_PKCS7_DATA)
+
+	if (childtype != SEC_OID_PKCS7_DATA && childtype != SEC_OID_SMIME_RECEIPT)
 	    return SECFailure;
 	/* and we must not have preset data */
 	if (cinfo->content.data != NULL)
@@ -729,7 +732,7 @@ NSS_CMSEncoder_Finish(NSSCMSEncoderContext *p7ecx)
     /* find out about our inner content type - must be data */
     cinfo = NSS_CMSContent_GetContentInfo(p7ecx->content.pointer, p7ecx->type);
     childtype = NSS_CMSContentInfo_GetContentTypeTag(cinfo);
-    if (childtype == SEC_OID_PKCS7_DATA && cinfo->content.data == NULL) {
+    if ((childtype == SEC_OID_PKCS7_DATA || childtype == SEC_OID_SMIME_RECEIPT) && cinfo->content.data == NULL) {
 	SEC_ASN1EncoderClearTakeFromBuf(p7ecx->ecx);
 	/* now that TakeFromBuf is off, this will kick this encoder to finish encoding */
 	rv = SEC_ASN1EncoderUpdate(p7ecx->ecx, NULL, 0);

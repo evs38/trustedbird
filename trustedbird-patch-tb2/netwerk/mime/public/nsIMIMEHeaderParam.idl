@@ -155,7 +155,7 @@ interface nsIMIMEHeaderParam : nsISupports {
    * @param aEatContinuation When set, removes CR/LF
    * @return                 decoded header value
    */
-  [noscript]
+  //[noscript]
   ACString decodeRFC2047Header(in string aHeaderVal,
                                in string aDefaultCharset,
                                in boolean aOverrideCharset,

@@ -21,6 +21,9 @@
  *
  * Contributor(s):
  *   Scott MacGregor         <mscott@netscape.com>
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   EADS Defence and Security Systems
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -43,9 +46,36 @@
 
 #include "nsISupports.idl"
 
-[scriptable, uuid(338E91F9-5970-4f81-B771-0822A32B1161)]
+[ptr] native PRUint8Ptr(PRUint8);
+
+//DRA
+interface nsIMsgSMIMESecureHeader;
+interface nsIMutableArray;
+//DRA
+
+[scriptable, uuid(052D6790-5C8E-45B9-8632-34D1DFF1DCF2)]
 interface nsIMsgSMIMECompFields : nsISupports 
 {
   attribute boolean signMessage;
   attribute boolean requireEncryptMessage;
+  attribute PRInt32 securityLabelLocation;
+  attribute ACString securityPolicyIdentifier;
+  attribute PRInt32 securityClassification;
+  attribute AString privacyMark;
+  attribute AString securityCategories;
+  attribute boolean signedReceiptRequest;
+  [noscript] attribute PRUint8Ptr signedContentIdentifier;
+  attribute PRUint32 signedContentIdentifierLen;
+  [noscript] attribute PRUint8Ptr originatorSignatureValue;
+  attribute PRUint32 originatorSignatureValueLen;
+  [noscript] attribute PRUint8Ptr originatorContentType;
+  attribute PRUint32 originatorContentTypeLen;
+  attribute boolean tripleWrapMessage;
+
+  //DRA
+  attribute PRInt32 canonAlgorithm;
+  void addSecureHeader(in nsIMsgSMIMESecureHeader secureHeader);
+  void clearSecureHeaders();
+  void getSecureHeadersList(out nsIMutableArray secureHeadersList);
+  //DRA
 };

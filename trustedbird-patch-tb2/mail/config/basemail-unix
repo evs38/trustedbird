@@ -38,6 +38,8 @@ bin/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}/install.rdf
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 components/offlineStartup.js
 components/mdn-service.js
+components/dsn-service.js
+components/securitylabel-service.js
 components/libsmimestb.so
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -330,7 +332,7 @@ components/smime-service.js
 
 ; core platform files
 regxpcom
-thunderbird-bin
+trustedbird-bin
 mozilla-xremote-client
 components/libappcomps.so
 components/autocomplete.xpt

@@ -46,6 +46,10 @@ if (verifyDiskSpace(fProgram, srDest))
 
     registerChrome(CONTENT | DELAYED_CHROME,
                    getFolder("Chrome","messenger.jar"),
+                   "content/messenger-dsn/");
+
+    registerChrome(CONTENT | DELAYED_CHROME,
+                   getFolder("Chrome","messenger.jar"),
                    "content/messenger-views/");
 
     if (err==SUCCESS)

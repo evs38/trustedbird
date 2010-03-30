@@ -20,6 +20,7 @@
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
+#  Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -58,12 +59,17 @@ REQUIRES	= xpcom \
 		  necko \
 		  intl \
 		  caps \
+		  mailnews \
+		  msgdb \
+		  msgbaseutil \
+		  msgimap \
 		  $(NULL)
 
 CPPSRCS		= \
                 nsMsgComposeSecure.cpp \
                 nsSMimeJSHelper.cpp \
                 nsEncryptedSMIMEURIsService.cpp \
+                nsMsgSignedReceiptGenerator.cpp \
 		$(NULL)
 
 EXPORTS		= \
@@ -71,12 +77,23 @@ EXPORTS		= \
 		nsMsgComposeSecure.h \
 		nsSMimeJSHelper.h \
 		nsEncryptedSMIMEURIsService.h \
+		nsMsgSignedReceiptGenerator.h \
 		$(NULL)
 
 EXTRA_COMPONENTS = smime-service.js
+
+ifndef MOZ_STATIC_MAIL_BUILD
+ifeq ($(USE_SHORT_LIBNAME),1)
+EXTRA_DSO_LIBS  = msgbsutl
+else
+EXTRA_DSO_LIBS  = msgbaseutil
+endif
+
+else
+SHARED_LIBRARY_LIBS = $(DIST)/lib/$(LIB_PREFIX)msgbsutl_s.$(LIB_SUFFIX)
+endif
 
 # we don't want the shared lib, but we want to force the creation of a static lib.
 FORCE_STATIC_LIB = 1
 
 include $(topsrcdir)/config/rules.mk
-

@@ -19,7 +19,10 @@
  * Portions created by the Initial Developer are Copyright (C) 2001
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Drinan <ddrinan@netscape.com>
+ * Contributor(s):
+ *   David Drinan <ddrinan@netscape.com>
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -45,12 +48,13 @@
 
 interface nsIX509Cert;
 interface nsIArray;
+interface nsIMutableArray;
 
 /**
  * nsICMSMessage
  *  Interface to a CMS Message
  */
-[uuid(a4557478-ae16-11d5-ba4b-00108303b117)]
+[uuid(be8ade5c-ebe0-48b9-8b3e-7ca503aba0ec)]
 interface nsICMSMessage : nsISupports
 {
   void contentIsSigned(out boolean aSigned);
@@ -62,6 +66,10 @@ interface nsICMSMessage : nsISupports
   void verifySignature();
   void verifyDetachedSignature(in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
   void CreateEncrypted(in nsIArray aRecipientCerts);
-  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
+  void CreateReceipt([const,array,size_is(aSignedContentIdentifierLen)] in PRUint8 aSignedContentIdentifier, in PRUint32 aSignedContentIdentifierLen, [const,array,size_is(aOriginatorSignatureValueLen)] in PRUint8 aOriginatorSignatureValue, in PRUint32 aOriginatorSignatureValueLen, [const,array,size_is(aContentTypeLen)] in PRUint8 aContentType, in PRUint32 aContentTypeLen, [const,array,size_is(encodedReceiptLen)] out PRUint8 encodedReceipt, out PRUint32 encodedReceiptLen);
+  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen, in string aSecurityPolicyIdentifier, in long aSecurityClassification, in string aPrivacyMark, in string aSecurityCategories, in UnsignedCharPtr aReceiptsTo, in boolean aSignedReceipt, in nsIArray secureHeaders, in PRInt32 canonAlgo);
+  void getSecurityLabel(out string aSecurityPolicyIdentifier, out long aSecurityClassification, out string aPrivacyMark, out string aSecurityCategories);
+  void getReceiptRequest([const,array,size_is(aSignedContentIdentifierLen)] out PRUint8 aSignedContentIdentifier, out PRUint32 aSignedContentIdentifierLen, [const,array,size_is(aOriginatorSignatureValueLen)] out PRUint8 aOriginatorSignatureValue, out PRUint32 aOriginatorSignatureValueLen, [const,array,size_is(aContentTypeLen)] out PRUint8 aContentType, out PRUint32 aContentTypeLen, out long aReceiptsFrom, out string aReceiptsTo);
+  void getReceipt(out PRBool hasReceipt, [const,array,size_is(aSignedContentIdentifierLen)] out PRUint8 aSignedContentIdentifier, out PRUint32 aSignedContentIdentifierLen, [const,array,size_is(aOriginatorSignatureValueLen)] out PRUint8 aOriginatorSignatureValue, out PRUint32 aOriginatorSignatureValueLen, [const,array,size_is(aContentTypeLen)] out PRUint8 aContentType, out PRUint32 aContentTypeLen);
+  void getSecureHeader(out nsIMutableArray secureHeaders, out PRInt32 canonAlgo);
 };
-

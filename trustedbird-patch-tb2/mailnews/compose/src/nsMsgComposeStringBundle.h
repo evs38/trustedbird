@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -145,4 +146,6 @@ private:
 
 #define NS_ERROR_COULD_NOT_LOGIN_TO_SMTP_SERVER_WITH_STARTTLS1    NS_MSG_GENERATE_FAILURE(12573)
 #define NS_ERROR_COULD_NOT_LOGIN_TO_SMTP_SERVER_WITH_STARTTLS2    NS_MSG_GENERATE_FAILURE(12574)
+
+#define NS_ERROR_COULD_NOT_GET_DSN_REQUEST          NS_MSG_GENERATE_FAILURE(12575)
 #endif /* _nsMsgComposeStringBundle_H_ */
