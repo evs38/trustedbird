@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-Trustedbird and add-ons packager
+Trustedbird and add-on packager
 
 
 Olivier Parniere
@@ -9,675 +9,555 @@ Olivier Brun
 Raphael Fairise
 
 
-To enable SVN write access through SSH:
-- copy the file server.properties.template to server.properties
-and set your Adullact SSH username in server.properties
 
-
-Build and package everything:
+Build and package Trustedbird and all add-ons:
 $ ant build-all
 
-Build and package Trustedbird:
-$ ant extract-archive-tb update-tb package-tb-src build-tb package-tb
+Build and package Trustedbird email client:
+$ ant trustedbird
 
 Package all add-ons:
 $ ant package-addons
 
-Package only MRS add-on:
-$ ant package-mrs
 
-Get target list:
-$ ant -projecthelp
-
-Generate development builds (install.rdf and
-update.rdf linked to nightly builds):
+Generate development builds (install.rdf and update.rdf linked to nightly builds):
 $ ant -Dnightly=1 build-all
 
-Generate builds for addons.mozilla.org without updateURL/updateKey in install.rdf
+Generate builds for addons.mozilla.org without updateURL/updateKey in install.rdf:
 $ ant -Damo=1 package-addons
 
 -->
 <project name="Trustedbird Packager" default="build-all">
-    <description>Build Trustedbird and add-ons</description>
+  <description>Build Trustedbird and add-ons</description>
 
-    <property file="server.properties"/>
-    <property file="package.properties"/>
+  <property file="packager.properties" />
 
-    <property name="local.build.dir" value="work"/>
-    <property name="local.dist.dir" value="dist"/>
-    <property name="local.tools.dir" value="tools"/>
-    <property name="local.archive.file" value="trustedbird.svnarchive.tar.gz"/>
+  <property name="local.build.dir" value="build" />
+  <property name="local.dist.dir" value="dist" />
+  <property name="local.tools.dir" value="tools" />
 
-    <!-- ant-contrib library -->
-    <taskdef resource="net/sf/antcontrib/antlib.xml">
-        <classpath>
-            <pathelement location="${local.tools.dir}/ant-contrib-1.0b3.jar"/>
-        </classpath>
-    </taskdef>
+  <!-- ant-contrib library -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${local.tools.dir}/ant-contrib-1.0b3.jar" />
+    </classpath>
+  </taskdef>
 
 
-    <!-- Target: build-all -->
-    <target name="build-all"
-     description="Checkout/extract from archive, update and build Trustedbird and add-ons"
-     depends="distclean, extract-archive-tb, update-tb, build-tb, package-tb, package-addons">
-    </target>
+  <!-- Target: build-all -->
+  <target name="build-all" description="Extract Thunderbird, patch and build Trustedbird and all add-ons" depends="distclean, trustedbird, package-addons">
+  </target>
 
 
-    <!-- Target: distclean -->
-    <target name="distclean" description="Clean build/ and dist/ directories">
-        <delete dir="${local.build.dir}"/>
-        <delete dir="${local.dist.dir}"/>
-    </target>
+  <!-- Target: trustedbird -->
+  <target name="trustedbird" description="Extract Thunderbird, patch and build Trustedbird" depends="clean-trustedbird, extract-thunderbird, patch-trustedbird, package-trustedbird-source, build-trustedbird, package-trustedbird">
+  </target>
 
 
-    <!-- Target: clean-tb -->
-    <target name="clean-tb" description="Clean Trustedbird build directory">
-        <delete dir="${local.build.dir}/mozilla"/>
-    </target>
+  <!-- Target: distclean -->
+  <target name="distclean" description="Clean build and dist directories">
+    <delete dir="${local.build.dir}" />
+    <delete dir="${local.dist.dir}" />
+  </target>
 
 
-    <!-- Target: clean-addons -->
-    <target name="clean-addons" description="Clean built add-ons">
-        <delete failonerror="false">
-            <fileset dir="${local.dist.dir}">
-                <include name="*.xpi"/>
-                <include name="*.zip"/>
-            </fileset>
-        </delete>
-        <delete dir="${local.dist.dir}/updates"/>
-    </target>
+  <!-- Target: clean-trustedbird -->
+  <target name="clean-trustedbird" description="Clean Trustedbird build directory">
+    <delete dir="${local.build.dir}/mozilla" />
+  </target>
 
 
-    <!-- Target: checkout-tb -->
-    <target name="checkout-tb" description="Checkout Trustedbird from SVN" depends="clean-tb">
-        <mkdir dir="${local.build.dir}"/>
-        <exec executable="svn" dir="${local.build.dir}" failonerror="true">
-            <arg value="co"/>
-            <arg value="${tb.repository.url}"/>
-            <arg value="mozilla"/>
-        </exec>
-    </target>
+  <!-- Target: clean-addons -->
+  <target name="clean-addons" description="Clean built add-ons">
+    <delete failonerror="false">
+      <fileset dir="${local.dist.dir}">
+        <include name="*.xpi" />
+        <include name="*.zip" />
+      </fileset>
+    </delete>
+    <delete dir="${local.dist.dir}/updates" />
+  </target>
 
 
-    <!-- Target: extract-archive-tb -->
-    <target name="extract-archive-tb" description="Extract local archive of Trustedbird" depends="clean-tb">
-        <if>
-            <not>
-                <!-- Check if archive exists -->
-                <available file="${local.archive.file}"/>
-            </not>
-            <then>
-                <antcall target="create-archive-tb"/>
-            </then>
-            <else>
-                <!-- Extract archive -->
-                <mkdir dir="${local.build.dir}"/>
-                <exec executable="tar" failonerror="true">
-                    <arg value="xzf"/>
-                    <arg value="${local.archive.file}"/>
-                    <arg value="-C"/>
-                    <arg value="${local.build.dir}/"/>
-                </exec>
-            </else>
-        </if>
-    </target>
+  <!-- Target: extract-Thunderbird source -->
+  <target name="extract-thunderbird" description="Extract Thunderbird source" depends="clean-trustedbird">
+    <available file="${thunderbird.source.file.name}" property="thunderbird.source.file.available" />
+    <fail message="${thunderbird.source.file.name} not found! Download it from ftp://ftp.mozilla.org/pub/thunderbird/releases/" unless="thunderbird.source.file.available" />
+
+    <!-- Verify checksum -->
+    <checksum file="${thunderbird.source.file.name}" algorithm="sha1" property="${thunderbird.source.file.sha1sum}" verifyproperty="thunderbird.source.file.checksum.result" />
+    <if>
+      <equals arg1="${thunderbird.source.file.checksum.result}" arg2="false" />
+      <then>
+        <fail message="${thunderbird.source.file.name} has a wrong checksum!" />
+      </then>
+    </if>
+
+    <echo message="Extracting Thunderbird source..." />
+
+    <!-- Extract Thunderbird sources (with exec tar in order to preserve permissions) -->
+    <mkdir dir="${local.build.dir}" />
+    <exec executable="tar" failonerror="true">
+      <arg value="xjf" />
+      <arg value="${thunderbird.source.file.name}" />
+      <arg value="-C" />
+      <arg value="${local.build.dir}/" />
+    </exec>
+  </target>
 
 
-    <!-- Target: create-archive-tb -->
-    <target name="create-archive-tb" description="Create local archive of Trustedbird" depends="checkout-tb">
-        <exec executable="tar" failonerror="true">
-            <arg value="czf"/>
-            <arg value="${local.archive.file}"/>
-            <arg value="-C"/>
-            <arg value="${local.build.dir}/"/>
-            <arg value="mozilla"/>
-        </exec>
-    </target>
+  <!-- Target: patch Thunderbird sources with Trustedbird -->
+  <target name="patch-trustedbird" description="Copy Trustedbird patch over Thunderbird source">
+    <available file="${local.build.dir}/mozilla" property="thunderbird.source.available" />
+    <fail message="Thunderbird source not found! Launch target 'extract-thunderbird' first." unless="thunderbird.source.available" />
+
+    <echo message="Patching Thunderbird source with Trustedbird..." />
+
+    <!-- Copy patch directory (with exec tar in order to preserve permissions) -->
+    <exec executable="tar" failonerror="true">
+      <arg value="cf" />
+      <arg value=".temp.trustedbird-patch" />
+      <arg value="-C" />
+      <arg value="../${trustedbird-patch.path}" />
+      <arg value="." />
+    </exec>
+    <exec executable="tar" failonerror="true">
+      <arg value="xf" />
+      <arg value=".temp.trustedbird-patch" />
+      <arg value="-C" />
+      <arg value="${local.build.dir}/mozilla/" />
+    </exec>
+    <delete file=".temp.trustedbird-patch" />
+  </target>
 
 
-    <!-- Target: update-tb -->
-    <target name="update-tb" description="Update Trustedbird from SVN">
-        <available file="${local.build.dir}/mozilla" property="sources.available"/>
-        <fail message="Trustedbird sources not found! Use targets 'checkout-tb' or 'extract-archive-tb' first." unless="sources.available"/>
+  <!-- Target: -define-trustedbird-config (private) -->
+  <target name="-define-trustedbird-config">
+    <available file="${local.build.dir}/mozilla/version.trustedbird" property="trustedbird.source.available" />
+    <fail message="Trustedbird source not found! Launch targets 'extract-thunderbird' and 'patch-trustedbird' first." unless="trustedbird.source.available" />
 
-        <exec executable="svn" dir="${local.build.dir}" failonerror="true">
-            <arg value="up"/>
-            <arg value="mozilla"/>
-        </exec>
-    </target>
+    <condition property="isUnix">
+      <os family="unix" />
+    </condition>
 
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <property name="local.checkbuild.file" value="dist/bin/trustedbird" />
+      </then>
+      <else>
+        <property name="local.checkbuild.file" value="dist/bin/trustedbird.exe" />
+      </else>
+    </if>
 
-    <!-- Target: -define-config-tb (private) -->
-    <target name="-define-config-tb">
-        <available file="${local.build.dir}/mozilla" property="sources.available"/>
-        <fail message="Trustedbird sources not found! Use targets 'checkout-tb' or 'extract-archive-tb' first." unless="sources.available"/>
+    <!-- Get Trustedbird version -->
+    <loadfile property="local.trustedbird.versionfile" srcfile="${local.build.dir}/mozilla/version.trustedbird">
+      <filterchain>
+        <striplinebreaks />
+      </filterchain>
+    </loadfile>
 
-        <condition property="isUnix">
-            <os family="unix"/>
-        </condition>
+    <!-- Get revision from Git -->
+    <exec executable="sh" outputproperty="local.trustedbird.revision" failonerror="true">
+      <arg value="${local.tools.dir}/getGitRevisionDate.sh" />
+      <arg value="../${trustedbird-patch.path}" />
+    </exec>
 
-        <if>
-            <isset property="isUnix"/>
-            <then>
-                <property name="local.checkbuild.file"
-                 value="dist/bin/trustedbird"/>
-            </then>
-            <else>
-                <property name="local.checkbuild.file"
-                 value="dist/bin/trustedbird.exe"/>
-            </else>
-        </if>
+    <if>
+      <isset property="nightly" />
+      <then>
+        <property name="local.trustedbird.version" value="${local.trustedbird.versionfile}-nightly${local.trustedbird.revision}" />
+      </then>
+      <else>
+        <property name="local.trustedbird.version" value="${local.trustedbird.versionfile}" />
+      </else>
+    </if>
 
-        <!-- Get version -->
-        <loadfile property="local.tb.versionfile"
-         srcfile="${local.build.dir}/mozilla/version">
-            <filterchain>
-                <striplinebreaks/>
-            </filterchain>
-        </loadfile>
-
-        <!-- Get revision from SVN -->
-        <exec executable="sh"
-         outputproperty="local.tb.revision"
-         failonerror="true">
-            <arg value="${local.tools.dir}/getLastChangedRev.sh"/>
-            <arg value="${local.build.dir}/mozilla"/>
-        </exec>
-
-        <if>
-            <isset property="nightly"/>
-            <then>
-                <property name="local.tb.version"
-                 value="${local.tb.versionfile}.${local.tb.revision}-nightly"/>
-            </then>
-            <else>
-                <property name="local.tb.version"
-                 value="${local.tb.versionfile}.${local.tb.revision}"/>
-            </else>
-        </if>
-
-        <!-- Patch config -->
-        <copy file="${local.tools.dir}/mozconfig"
-         tofile="${local.build.dir}/mozilla/.mozconfig"/>
-
-        <!-- Patch needed for Windows -->
-        <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
-        <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
-    </target>
+    <!-- Patch needed for Windows -->
+    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
+    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
+  </target>
 
 
-    <!-- Target: package-tb-src -->
-    <target name="package-tb-src" description="Create source Trustedbird package" depends="-define-config-tb">
-        <available file="${local.build.dir}/mozilla/.mozconfig.out" property="not.clean"/>
-        <fail message="Clean Trustedbird first (targets 'clean-tb' or 'distclean')." if="not.clean"/>
-
-        <mkdir dir="${local.dist.dir}"/>
-
-        <delete dir="${local.build.dir}/src-package"/>
-        <mkdir dir="${local.build.dir}/src-package"/>
-
-        <!-- Make a copy of the directory with cp because ant removes permissions -->
-        <exec executable="cp" failonerror="true">
-            <arg value="-a"/>
-            <arg value="${local.build.dir}/mozilla"/>
-            <arg value="${local.build.dir}/src-package/"/>
-        </exec>
-
-        <!-- Clean directory -->
-        <delete includeemptydirs="true">
-            <fileset dir="${local.build.dir}/src-package"
-             defaultexcludes="false">
-                <include name="**/.svn/"/>
-            </fileset>
-        </delete>
-
-        <!-- Create source package -->
-        <exec executable="tar" failonerror="true">
-            <arg value="cjf"/>
-            <arg value="${local.dist.dir}/${tb.name}_${local.tb.version}_src.tar.bz2"/>
-            <arg value="-C"/>
-            <arg value="${local.build.dir}/src-package/"/>
-            <arg value="mozilla"/>
-        </exec>
-    </target>
+  <!-- Target: package-trustedbird-source -->
+  <target name="package-trustedbird-source" description="Create Trustedbird patch source package" depends="-define-trustedbird-config">
+    <mkdir dir="${local.dist.dir}" />
+    <exec executable="tar" failonerror="true">
+      <arg value="cjf" />
+      <arg value="${local.dist.dir}/trustedbird-patch-source_${local.trustedbird.version}.tar.bz2" />
+      <arg value="-C" />
+      <arg value=".." />
+      <arg value="${trustedbird-patch.path}" />
+    </exec>
+  </target>
 
 
-    <!-- Target: build-tb -->
-    <target name="build-tb" description="Build Trustedbird" depends="-define-config-tb">
-        <!-- Set version file -->
-        <if>
-            <not>
-                <available file="${local.build.dir}/mozilla/mail/config/version.txt-orig"/>
-            </not>
-            <then>
-                <move file="${local.build.dir}/mozilla/mail/config/version.txt"
-                 tofile="${local.build.dir}/mozilla/mail/config/version.txt-orig"/>
-            </then>
-        </if>
-        <loadfile property="local.mozilla.version"
-         srcfile="${local.build.dir}/mozilla/mail/config/version.txt-orig">
-            <filterchain>
-                <striplinebreaks/>
-            </filterchain>
-        </loadfile>
-        <echo message="${local.mozilla.version}-${tb.name}${local.tb.version}"
-         file="${local.build.dir}/mozilla/mail/config/version.txt"/>
+  <!-- Target: build-trustedbird -->
+  <target name="build-trustedbird" description="Build Trustedbird" depends="-define-trustedbird-config">
+    <!-- Set version file -->
+    <if>
+      <not>
+        <available file="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+      </not>
+      <then>
+        <move file="${local.build.dir}/mozilla/mail/config/version.txt" tofile="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+      </then>
+    </if>
+    <loadfile property="local.mozilla.version" srcfile="${local.build.dir}/mozilla/mail/config/version.txt-orig">
+      <filterchain>
+        <striplinebreaks />
+      </filterchain>
+    </loadfile>
+    <echo message="${local.mozilla.version}+trustedbird.${local.trustedbird.version}" file="${local.build.dir}/mozilla/mail/config/version.txt" />
 
-        <!-- Build -->
-        <exec executable="make"
-         dir="${local.build.dir}/mozilla"
-         failonerror="true">
-            <!-- Workaround multiple crashes in xulrunner in Ubuntu 8.10 and later
+    <!-- Build -->
+    <exec executable="make" dir="${local.build.dir}/mozilla" failonerror="true">
+      <!-- Workaround multiple crashes in xulrunner in Ubuntu 8.10 and later
             where "-D_FORTIFY_SOURCE=2" is set by default in GCC -->
-            <arg value="CPPFLAGS=-U_FORTIFY_SOURCE"/>
-            <arg value="-f"/>
-            <arg value="client.mk"/>
-            <arg value="build"/>
+      <arg value="CPPFLAGS=-U_FORTIFY_SOURCE" />
+      <arg value="-f" />
+      <arg value="client.mk" />
+      <arg value="build" />
+    </exec>
+
+    <!-- Restore version file -->
+    <move file="${local.build.dir}/mozilla/mail/config/version.txt-orig" tofile="${local.build.dir}/mozilla/mail/config/version.txt" />
+  </target>
+
+
+  <!-- Target: package-trustedbird -->
+  <target name="package-trustedbird" description="Create Trustedbird package" depends="-define-trustedbird-config">
+    <available file="${local.build.dir}/mozilla/obj/${local.checkbuild.file}" property="build.success" />
+    <fail message="File ${local.checkbuild.file} not found! Build Trustedbird first." unless="build.success" />
+
+    <mkdir dir="${local.dist.dir}" />
+
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <!-- Create package -->
+        <exec executable="make" dir="${local.build.dir}/mozilla/obj" failonerror="true">
+          <arg value="-C" />
+          <arg value="mail/installer" />
         </exec>
 
-        <!-- Restore version file -->
-        <move file="${local.build.dir}/mozilla/mail/config/version.txt-orig"
-         tofile="${local.build.dir}/mozilla/mail/config/version.txt"/>
-    </target>
+        <!-- Remove existing packages -->
+        <delete failonerror="false">
+          <fileset dir="${local.dist.dir}">
+            <include name="*.tar.gz" />
+            <include name="*.deb" />
+          </fileset>
+        </delete>
 
+        <!-- Rename package -->
+        <copy todir="${local.dist.dir}/">
+          <fileset dir="${local.build.dir}/mozilla/obj/dist">
+            <include name="*.tar.gz" />
+          </fileset>
+          <mapper type="regexp" from=".*\.([^\.]+)\.tar\.gz$" to="trustedbird_${local.trustedbird.version}_\1.tar.gz" />
+        </copy>
 
-    <!-- Target: package-tb -->
-    <target name="package-tb" description="Create Trustedbird package" depends="-define-config-tb">
-        <available file="${local.build.dir}/mozilla/obj/${local.checkbuild.file}" property="build.success"/>
-        <fail message="File ${local.checkbuild.file} not found! Build Trustedbird first." unless="build.success"/>
-
-        <mkdir dir="${local.dist.dir}"/>
-
+        <!-- Create Debian package -->
         <if>
-            <isset property="isUnix"/>
-            <then>
-                <!-- Create package -->
-                <exec executable="make"
-                 dir="${local.build.dir}/mozilla/obj"
-                 failonerror="true">
-                    <arg value="-C"/>
-                    <arg value="mail/installer"/>
-                </exec>
-
-                <!-- Remove existing packages -->
-                <delete failonerror="false">
-                    <fileset dir="${local.dist.dir}">
-                        <include name="*.tar.gz"/>
-                        <include name="*.deb"/>
-                    </fileset>
-                </delete>
-
-                <!-- Rename package -->
-                <copy todir="${local.dist.dir}/">
-                    <fileset dir="${local.build.dir}/mozilla/obj/dist">
-                        <include name="*.tar.gz"/>
-                    </fileset>
-                    <mapper type="regexp"
-                     from=".*\.([^\.]+)\.tar\.gz$"
-                     to="${tb.name}_${local.tb.version}_\1.tar.gz"/>
-                </copy>
-
-                <!-- Create Debian package -->
-                <if>
-                    <available file="/usr/bin/dpkg-deb"/>
-                    <then>
-                        <copy todir="${local.build.dir}/">
-                            <fileset dir="${local.build.dir}/mozilla/obj/dist">
-                                <include name="*.tar.gz"/>
-                            </fileset>
-                            <mapper type="regexp"
-                             from="(.*)$"
-                             to="${tb.name}_${local.tb.version}.tar.gz"/>
-                        </copy>
-                        <exec executable="sh" failonerror="true">
-                            <arg value="${local.tools.dir}/createDebianPackage.sh"/>
-                            <arg value="${local.build.dir}"/>
-                            <arg value="${local.build.dir}/${tb.name}_${local.tb.version}.tar.gz"/>
-                            <arg value="${local.tb.version}"/>
-                            <arg value="${local.tools.dir}"/>
-                        </exec>
-                        <copy file="${local.build.dir}/trustedbird.deb"
-                         tofile="${local.dist.dir}/${tb.name}_${local.tb.version}_i686.deb"/>
-                    </then>
-                </if>
-            </then>
-            <else>
-                <!-- Create package -->
-                <exec executable="make"
-                 dir="${local.build.dir}/mozilla/obj"
-                 failonerror="true">
-                    <arg value="-C"/>
-                    <arg value="mail/installer"/>
-                    <arg value="installer"/>
-                </exec>
-
-                <!-- Rename package -->
-                <copy todir="${local.dist.dir}/">
-                    <fileset dir="${local.build.dir}/mozilla/obj/dist/install/sea">
-                        <include name="*.exe"/>
-                    </fileset>
-                    <mapper type="regexp"
-                     from="(.*)$"
-                     to="${tb.name}_${local.tb.version}_win32.installer.exe"/>
-                </copy>
-            </else>
-        </if>
-    </target>
-
-
-    <!-- Target: package-addons -->
-    <target name="package-addons" description="Get add-ons from SVN and create packages" depends="clean-addons">
-        <foreach list="${addon.list}" target="-package-addon" param="local.addon.tempname"/>
-    </target>
-
-
-    <!-- Target: package-mrs -->
-    <target name="package-mrs"
-     description="Get from SVN and package only MRS add-on">
-
-        <antcall target="-package-addon">
-            <param name="local.addon.tempname" value="mrs"/>
-        </antcall>
-
-    </target>
-
-    <!-- Target: -define-config-addons (private) -->
-    <target name="-define-config-addons">
-
-        <mkdir dir="${local.build.dir}"/>
-        <mkdir dir="${local.dist.dir}"/>
-
-        <condition property="isUnix">
-            <os family="unix"/>
-        </condition>
-
-        <!-- Use a more recent version of sed on Windows -->
-        <if>
-            <isset property="isUnix"/>
-            <then>
-                <property name="sed.name" value="sed"/>
-            </then>
-            <else>
-                <property name="sed.name" value="c:\cygwin\bin\sed.exe"/>
-            </else>
-        </if>
-
-    </target>
-
-
-    <!-- Target: -package-addon (private) -->
-    <target name="-package-addon" depends="-define-config-addons">
-        <tstamp/>
-
-        <!-- Get URL of the repository -->
-        <propertycopy name="local.addon.repository.url"
-         from="addon.${local.addon.tempname}.repository.url"/>
-
-        <!-- Rename MRS addon for Linux/Windows -->
-        <if>
-            <equals arg1="${local.addon.tempname}" arg2="mrs"/>
-            <then>
-                <if>
-                    <isset property="isUnix"/>
-                    <then>
-                        <property name="local.addon.name"
-                         value="${local.addon.tempname}-linux-x86"/>
-                        <property name="local.addon.target.platform"
-                         value="Linux_x86-gcc3"/>
-                    </then>
-                    <else>
-                        <property name="local.addon.name"
-                         value="${local.addon.tempname}-win"/>
-                        <property name="local.addon.target.platform"
-                         value="WINNT_x86-msvc"/>
-                    </else>
-                </if>
-            </then>
-            <else>
-                <property name="local.addon.name"
-                 value="${local.addon.tempname}"/>
-                <property name="local.addon.target.platform" value=""/>
-            </else>
-        </if>
-
-        <!-- Get addon from SVN -->
-        <delete dir="${local.build.dir}/${local.addon.name}"/>
-        <exec executable="svn" dir="${local.build.dir}" failonerror="true">
-            <arg value="co"/>
-            <arg value="${local.addon.repository.url}"/>
-            <arg value="${local.addon.name}"/>
-        </exec>
-
-        <!-- Get version -->
-        <loadfile property="local.addon.versionfile"
-         srcfile="${local.build.dir}/${local.addon.name}/version">
-            <filterchain>
-                <striplinebreaks/>
-            </filterchain>
-        </loadfile>
-
-        <!-- Get update key (public key for signing updates) -->
-        <loadfile property="local.update.key" srcfile="updateKey" failonerror="false">
-            <filterchain>
-                <striplinebreaks/>
-            </filterchain>
-        </loadfile>
-        <!-- Default update key if file not found -->
-        <property name="local.update.key" value="updates disabled"/>
-
-        <!-- Get revision from SVN -->
-        <if>
-            <or>
-                <equals arg1="${local.addon.name}"
-                 arg2="all-addons-trustedbird"/>
-                <equals arg1="${local.addon.name}"
-                 arg2="all-addons-tb2"/>
-                <equals arg1="${local.addon.name}"
-                 arg2="all-addons-tb3"/>
-            </or>
-            <then>
-                <!-- Get last project revision for all-addons -->
-                <exec executable="sh"
-                 outputproperty="local.addon.revision"
-                 failonerror="true">
-                    <arg value="${local.tools.dir}/getRevision.sh"/>
-                    <arg value="${local.build.dir}/${local.addon.name}"/>
-                </exec>
-            </then>
-            <else>
-                <!-- Get last revision of the add-on -->
-                <exec executable="sh"
-                 outputproperty="local.addon.revision"
-                 failonerror="true">
-                    <arg value="${local.tools.dir}/getLastChangedRev.sh"/>
-                    <arg value="${local.build.dir}/${local.addon.name}"/>
-                </exec>
-            </else>
-        </if>
-
-        <if>
-            <isset property="nightly"/>
-            <then>
-                <property name="local.addon.version"
-                 value="${local.addon.versionfile}.${local.addon.revision}-nightly"/>
-                <property name="local.addon.update.rdf.filename"
-                 value="update-nightly.rdf"/>
-                <property name="local.addon.path"
-                 value="${addon.nightly.url}/${DSTAMP}"/>
-            </then>
-            <else>
-                <property name="local.addon.version"
-                 value="${local.addon.versionfile}.${local.addon.revision}"/>
-                <property name="local.addon.update.rdf.filename"
-                 value="update.rdf"/>
-                <property name="local.addon.path"
-                 value="${addon.releases.url}/${local.addon.name}"/>
-            </else>
-        </if>
-
-        <!-- Copy libtrustedbird.js if file libtrustedbird.js-path exists -->
-        <if>
-            <available file="${local.build.dir}/${local.addon.name}/libtrustedbird.js-path"/>
-            <then>
-                <exec executable="sh"
-                 failonerror="true">
-                    <arg value="${local.tools.dir}/copyLibtrustedbird.sh"/>
-                    <arg value="${local.build.dir}/${local.addon.name}"/>
-                </exec>
-            </then>
-        </if>
-
-        <!-- XPI file name -->
-        <property name="local.addon.filename"
-         value="${local.addon.name}_${local.addon.version}.xpi"/>
-
-        <!-- Remove updateURL and updateKey for addons.mozilla.org -->
-        <if>
-            <isset property="amo"/>
-            <then>
-                <exec executable="${sed.name}" failonerror="true">
-                    <arg value="-i"/>
-                    <arg value="s|&lt;em:updateURL&gt;.*&lt;/em:updateURL&gt;||"/>
-                    <arg value="${local.build.dir}/${local.addon.name}/install.rdf"/>
-                </exec>
-                <exec executable="${sed.name}" failonerror="true">
-                    <arg value="-i"/>
-                    <arg value="s|&lt;em:updateKey&gt;.*&lt;/em:updateKey&gt;||"/>
-                    <arg value="${local.build.dir}/${local.addon.name}/install.rdf"/>
-                </exec>
-            </then>
-        </if>
-
-        <!-- Add version -->
-        <exec executable="${sed.name}" failonerror="true">
-            <arg value="-i"/>
-            <arg value="s|__VERSION__|${local.addon.version}|"/>
-            <arg value="${local.build.dir}/${local.addon.name}/install.rdf"/>
-            <arg value="${local.build.dir}/${local.addon.name}/update.rdf"/>
-        </exec>
-
-        <!-- Add update.rdf URL -->
-        <exec executable="${sed.name}" failonerror="true">
-            <arg value="-i"/>
-            <arg value="s|__UPDATE_RDF_URL__|${addon.updates.url}/${local.addon.name}/${local.addon.update.rdf.filename}|"/>
-            <arg value="${local.build.dir}/${local.addon.name}/install.rdf"/>
-        </exec>
-
-        <!-- Add update key -->
-        <exec executable="${sed.name}" failonerror="true">
-            <arg value="-i"/>
-            <arg value="s|__UPDATE_KEY__|${local.update.key}|"/>
-            <arg value="${local.build.dir}/${local.addon.name}/install.rdf"/>
-        </exec>
-
-        <!-- Add target platform -->
-        <exec executable="${sed.name}" failonerror="true">
-            <arg value="-i"/>
-            <arg value="s|__TARGET_PLATFORM__|${local.addon.target.platform}|"/>
-            <arg value="${local.build.dir}/${local.addon.name}/install.rdf"/>
-        </exec>
-
-        <!-- Add XPI URL -->
-        <exec executable="${sed.name}" failonerror="true">
-            <arg value="-i"/>
-            <arg value="s|__XPI_URL__|${local.addon.path}/${local.addon.filename}|"/>
-            <arg value="${local.build.dir}/${local.addon.name}/update.rdf"/>
-        </exec>
-
-        <!-- Call ant if available -->
-        <if>
-            <available file="${local.build.dir}/${local.addon.name}/build.xml"/>
-            <then>
-                <ant inheritall="false"
-                 dir="${local.build.dir}/${local.addon.name}"/>
-                <property name="local.zip.basedir"
-                 value="${local.build.dir}/${local.addon.name}/xpi"/>
-            </then>
-            <else>
-                <property name="local.zip.basedir"
-                 value="${local.build.dir}/${local.addon.name}"/>
-            </else>
-        </if>
-
-        <!-- Only for special add-ons 'all-addons-trustedbird': copy all already built add-ons -->
-        <if>
-            <equals arg1="${local.addon.name}"
-             arg2="all-addons-trustedbird"/>
-            <then>
-                <copy todir="${local.build.dir}/${local.addon.name}/">
-                    <fileset dir="${local.dist.dir}" includes="*.xpi" excludes="all-addons* mailXForms* directoryContactTabs* trustedbird-l10n-* xsmtp*"/>
-                </copy>
-            </then>
-        </if>
-
-        <!-- Only for special add-ons 'all-addons-tb2': copy all already built add-ons -->
-        <if>
-          <equals arg1="${local.addon.name}"
-                  arg2="all-addons-tb2"/>
+          <available file="/usr/bin/dpkg-deb" />
           <then>
-            <copy todir="${local.build.dir}/${local.addon.name}/">
-              <fileset dir="${local.dist.dir}" includes="*.xpi" excludes="all-addons* mailXForms* mrs-* directoryContactTabs* trustedbird-l10n-* ximfmail* xsmtp*"/>
+            <copy todir="${local.build.dir}/">
+              <fileset dir="${local.build.dir}/mozilla/obj/dist">
+                <include name="*.tar.gz" />
+              </fileset>
+              <mapper type="regexp" from="(.*)$" to="trustedbird_${local.trustedbird.version}.tar.gz" />
             </copy>
+            <exec executable="sh" failonerror="true">
+              <arg value="${local.tools.dir}/createDebianPackage.sh" />
+              <arg value="${local.build.dir}" />
+              <arg value="${local.build.dir}/trustedbird_${local.trustedbird.version}.tar.gz" />
+              <arg value="${local.trustedbird.version}" />
+              <arg value="${local.tools.dir}" />
+            </exec>
+            <copy file="${local.build.dir}/trustedbird.deb" tofile="${local.dist.dir}/trustedbird_${local.trustedbird.version}_i686.deb" />
           </then>
         </if>
-
-        <!-- Only for special add-ons 'all-addons-tb3': copy all already built add-ons -->
-        <if>
-            <equals arg1="${local.addon.name}"
-             arg2="all-addons-tb3"/>
-            <then>
-                <copy todir="${local.build.dir}/${local.addon.name}/">
-                    <fileset dir="${local.dist.dir}" includes="*.xpi" excludes="all-addons* card-viewer-extended* check-recipients* mdn-extended* mrs-* send-format-ldap* trustedbird-l10n-* ximfmail* xsmtp*"/>
-                </copy>
-            </then>
-        </if>
-
+      </then>
+      <else>
         <!-- Create package -->
-        <if>
-            <available file="${local.build.dir}/${local.addon.name}/${addon.excludesfile}"/>
-            <then>
-                <zip destfile="${local.dist.dir}/${local.addon.filename}"
-                 basedir="${local.build.dir}/${local.addon.name}"
-                 excludes="${addon.excludes}"
-                 excludesfile="${local.build.dir}/${local.addon.name}/${addon.excludesfile}"/>
-            </then>
-            <else>
-                <zip destfile="${local.dist.dir}/${local.addon.filename}"
-                 basedir="${local.zip.basedir}"
-                 excludes="${addon.excludes}"/>
-            </else>
-        </if>
-
-        <!-- Get hash of XPI file -->
-        <exec executable="sh"
-         outputproperty="local.update.hash"
-         failonerror="true">
-            <arg value="${local.tools.dir}/getHash.sh"/>
-            <arg value="${local.dist.dir}/${local.addon.filename}"/>
+        <exec executable="make" dir="${local.build.dir}/mozilla/obj" failonerror="true">
+          <arg value="-C" />
+          <arg value="mail/installer" />
+          <arg value="installer" />
         </exec>
 
-        <!-- Add XPI hash -->
+        <!-- Rename package -->
+        <copy todir="${local.dist.dir}/">
+          <fileset dir="${local.build.dir}/mozilla/obj/dist/install/sea">
+            <include name="*.exe" />
+          </fileset>
+          <mapper type="regexp" from="(.*)$" to="trustedbird_${local.trustedbird.version}_win32.installer.exe" />
+        </copy>
+      </else>
+    </if>
+  </target>
+
+
+  <!-- Target: package-addons -->
+  <target name="package-addons" description="Create add-on packages" depends="clean-addons">
+    <foreach list="${addon.list}" target="-package-addon" param="local.addon.tempname" />
+  </target>
+
+
+  <!-- Target: package-mrs -->
+  <target name="package-mrs" description="Package only MRS add-on">
+    <antcall target="-package-addon">
+      <param name="local.addon.tempname" value="mrs" />
+    </antcall>
+  </target>
+
+
+  <!-- Target: -define-addons-config (private) -->
+  <target name="-define-addons-config">
+
+    <mkdir dir="${local.build.dir}" />
+    <mkdir dir="${local.dist.dir}" />
+
+    <condition property="isUnix">
+      <os family="unix" />
+    </condition>
+
+    <!-- Use a more recent version of sed on Windows -->
+    <if>
+      <isset property="isUnix" />
+      <then>
+        <property name="sed.name" value="sed" />
+      </then>
+      <else>
+        <property name="sed.name" value="c:\cygwin\bin\sed.exe" />
+      </else>
+    </if>
+
+  </target>
+
+
+  <!-- Target: -package-addon (private) -->
+  <target name="-package-addon" depends="-define-addons-config">
+    <tstamp />
+
+    <!-- Get the path of the add-on -->
+    <propertycopy name="local.addon.path" from="addon.${local.addon.tempname}.path" />
+
+    <!-- Rename MRS addon for Linux/Windows -->
+    <if>
+      <equals arg1="${local.addon.tempname}" arg2="mrs" />
+      <then>
+        <if>
+          <isset property="isUnix" />
+          <then>
+            <property name="local.addon.name" value="${local.addon.tempname}-linux-x86" />
+            <property name="local.addon.target.platform" value="Linux_x86-gcc3" />
+          </then>
+          <else>
+            <property name="local.addon.name" value="${local.addon.tempname}-win" />
+            <property name="local.addon.target.platform" value="WINNT_x86-msvc" />
+          </else>
+        </if>
+      </then>
+      <else>
+        <property name="local.addon.name" value="${local.addon.tempname}" />
+        <property name="local.addon.target.platform" value="" />
+      </else>
+    </if>
+
+    <!-- Clean addon path -->
+    <delete dir="${local.build.dir}/${local.addon.name}" />
+
+    <!-- Fetch addon -->
+    <copy todir="${local.build.dir}/${local.addon.name}">
+      <fileset dir="../${local.addon.path}" />
+    </copy>
+
+    <!-- Get version -->
+    <loadfile property="local.addon.versionfile" srcfile="${local.build.dir}/${local.addon.name}/version">
+      <filterchain>
+        <striplinebreaks />
+      </filterchain>
+    </loadfile>
+
+    <!-- Get update key (public key for signing updates) -->
+    <loadfile property="local.update.key" srcfile="updateKey" failonerror="false">
+      <filterchain>
+        <striplinebreaks />
+      </filterchain>
+    </loadfile>
+    <!-- Default update key if file not found -->
+    <property name="local.update.key" value="updates disabled" />
+
+    <!-- Get revision from Git -->
+    <if>
+      <or>
+        <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird" />
+        <equals arg1="${local.addon.name}" arg2="all-addons-tb2" />
+        <equals arg1="${local.addon.name}" arg2="all-addons-tb3" />
+      </or>
+      <then>
+        <!-- Get last project revision for all-addons -->
+        <exec executable="sh" outputproperty="local.addon.revision" failonerror="true">
+          <arg value="${local.tools.dir}/getGitRevisionDate.sh" />
+          <arg value="../" />
+        </exec>
+      </then>
+      <else>
+        <!-- Get last revision of the add-on -->
+        <exec executable="sh" outputproperty="local.addon.revision" failonerror="true">
+          <arg value="${local.tools.dir}/getGitRevisionDate.sh" />
+          <arg value="../${local.addon.path}" />
+        </exec>
+      </else>
+    </if>
+
+    <if>
+      <isset property="nightly" />
+      <then>
+        <property name="local.addon.version" value="${local.addon.versionfile}-nightly${local.addon.revision}" />
+        <property name="local.addon.update.rdf.filename" value="update-nightly.rdf" />
+        <property name="local.addon.update.path" value="${addon.nightly.url}/${DSTAMP}" />
+      </then>
+      <else>
+        <property name="local.addon.version" value="${local.addon.versionfile}" />
+        <property name="local.addon.update.rdf.filename" value="update.rdf" />
+        <property name="local.addon.update.path" value="${addon.releases.url}/${local.addon.name}" />
+      </else>
+    </if>
+
+    <!-- XPI file name -->
+    <property name="local.addon.filename" value="${local.addon.name}_${local.addon.version}.xpi" />
+
+    <!-- Remove updateURL and updateKey for addons.mozilla.org -->
+    <if>
+      <isset property="amo" />
+      <then>
         <exec executable="${sed.name}" failonerror="true">
-            <arg value="-i"/>
-            <arg value="s|__UPDATE_HASH__|${local.update.hash}|"/>
-            <arg value="${local.build.dir}/${local.addon.name}/update.rdf"/>
+          <arg value="-i" />
+          <arg value="s|&lt;em:updateURL&gt;.*&lt;/em:updateURL&gt;||" />
+          <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
         </exec>
+        <exec executable="${sed.name}" failonerror="true">
+          <arg value="-i" />
+          <arg value="s|&lt;em:updateKey&gt;.*&lt;/em:updateKey&gt;||" />
+          <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+        </exec>
+      </then>
+    </if>
 
-        <!-- Copy update.rdf -->
-        <mkdir dir="${local.dist.dir}/updates/${local.addon.name}"/>
-        <copy file="${local.build.dir}/${local.addon.name}/update.rdf"
-         tofile="${local.dist.dir}/updates/${local.addon.name}/${local.addon.update.rdf.filename}"/>
+    <!-- Add version -->
+    <exec executable="${sed.name}" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__VERSION__|${local.addon.version}|" />
+      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+      <arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
+    </exec>
 
-        <!-- Only for MRS add-on: build and package client API -->
-        <if>
-            <equals arg1="${local.addon.tempname}" arg2="mrs"/>
-            <then>
-                <ant dir="${local.build.dir}/${local.addon.name}/api/java"/>
-                <move file="${local.build.dir}/${local.addon.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip"
-                 tofile="${local.dist.dir}/${local.addon.tempname}-JavaAPI_${local.addon.version}.zip"/>
-            </then>
-        </if>
+    <!-- Add update.rdf URL -->
+    <exec executable="${sed.name}" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__UPDATE_RDF_URL__|${addon.updates.url}/${local.addon.name}/${local.addon.update.rdf.filename}|" />
+      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+    </exec>
 
-    </target>
+    <!-- Add update key -->
+    <exec executable="${sed.name}" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__UPDATE_KEY__|${local.update.key}|" />
+      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+    </exec>
+
+    <!-- Add target platform -->
+    <exec executable="${sed.name}" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__TARGET_PLATFORM__|${local.addon.target.platform}|" />
+      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
+    </exec>
+
+    <!-- Add XPI URL -->
+    <exec executable="${sed.name}" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__XPI_URL__|${local.addon.update.path}/${local.addon.filename}|" />
+      <arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
+    </exec>
+
+    <!-- Call ant if available -->
+    <if>
+      <available file="${local.build.dir}/${local.addon.name}/build.xml" />
+      <then>
+        <ant inheritall="false" dir="${local.build.dir}/${local.addon.name}" />
+        <property name="local.zip.basedir" value="${local.build.dir}/${local.addon.name}/xpi" />
+      </then>
+      <else>
+        <property name="local.zip.basedir" value="${local.build.dir}/${local.addon.name}" />
+      </else>
+    </if>
+
+    <!-- Only for special add-ons 'all-addons-trustedbird': copy all already built add-ons -->
+    <if>
+      <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird" />
+      <then>
+        <copy todir="${local.build.dir}/${local.addon.name}/">
+          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-trustedbird.includes}" excludes="all-addons* ${addon.all-addons-trustedbird.excludes}" />
+        </copy>
+      </then>
+    </if>
+
+    <!-- Only for special add-ons 'all-addons-tb2': copy all already built add-ons -->
+    <if>
+      <equals arg1="${local.addon.name}" arg2="all-addons-tb2" />
+      <then>
+        <copy todir="${local.build.dir}/${local.addon.name}/">
+          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-tb2.includes}" excludes="all-addons* ${addon.all-addons-tb2.excludes}" />
+        </copy>
+      </then>
+    </if>
+
+    <!-- Only for special add-ons 'all-addons-tb3': copy all already built add-ons -->
+    <if>
+      <equals arg1="${local.addon.name}" arg2="all-addons-tb3" />
+      <then>
+        <copy todir="${local.build.dir}/${local.addon.name}/">
+          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-tb3.includes}" excludes="all-addons* ${addon.all-addons-tb3.excludes}" />
+        </copy>
+      </then>
+    </if>
+
+    <!-- Create package -->
+    <if>
+      <available file="${local.build.dir}/${local.addon.name}/${addon.excludesfile}" />
+      <then>
+        <zip destfile="${local.dist.dir}/${local.addon.filename}" basedir="${local.build.dir}/${local.addon.name}" excludes="${addon.excludesfile} ${addon.excludes}" excludesfile="${local.build.dir}/${local.addon.name}/${addon.excludesfile}" />
+      </then>
+      <else>
+        <zip destfile="${local.dist.dir}/${local.addon.filename}" basedir="${local.zip.basedir}" excludes="${addon.excludes}" />
+      </else>
+    </if>
+
+    <!-- Get hash of XPI file -->
+    <checksum file="${local.dist.dir}/${local.addon.filename}" algorithm="sha1" property="local.update.hash" />
+
+    <!-- Add XPI hash -->
+    <exec executable="${sed.name}" failonerror="true">
+      <arg value="-i" />
+      <arg value="s|__UPDATE_HASH__|sha1:${local.update.hash}|" />
+      <arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
+    </exec>
+
+    <!-- Copy update.rdf -->
+    <mkdir dir="${local.dist.dir}/updates/${local.addon.name}" />
+    <copy file="${local.build.dir}/${local.addon.name}/update.rdf" tofile="${local.dist.dir}/updates/${local.addon.name}/${local.addon.update.rdf.filename}" />
+
+    <!-- Only for MRS add-on: build and package client API -->
+    <if>
+      <equals arg1="${local.addon.tempname}" arg2="mrs" />
+      <then>
+        <ant dir="${local.build.dir}/${local.addon.name}/api/java" />
+        <move file="${local.build.dir}/${local.addon.name}/api/java/dist/MessageRemoteServicesJavaAPI.zip" tofile="${local.dist.dir}/${local.addon.tempname}-JavaAPI_${local.addon.version}.zip" />
+      </then>
+    </if>
+
+  </target>
 
 </project>

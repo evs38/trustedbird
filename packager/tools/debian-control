@@ -1,5 +1,5 @@
 Package: trustedbird
-Version: __VERSION__.0
+Version: __VERSION__
 Section: mail
 Priority: optional
 Architecture: i386

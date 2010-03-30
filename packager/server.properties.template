@@ -1,4 +1,0 @@
-# Copy this file to server.properties and modify the value of svn.username to enable SVN write access through SSH
-
-svn.username   = SSH_USERNAME
-svn.server.url = svn+ssh://${svn.username}@svn.adullact.net/svnroot/milimail

@@ -34,37 +34,30 @@ See http://developer.mozilla.org/en/docs/Windows_Build_Prerequisites
 * Set JAVA_HOME as environment variable
 * Launch build environment with c:\mozilla-build\start-msvc6.bat
 
-=== Get build scripts/packager ===
-==== Read only / through SVN protocol (TCP port 3690) ====
- $ svn co svn://svn.adullact.net/svnroot/milimail/trunk/packager trustedbird
-
-==== Read-write / through SSH (TCP port 22) ====
- $ svn co svn+ssh://my_username@svn.adullact.net/svnroot/milimail/trunk/packager trustedbird
-   (replace my_username by your Adullact SSH username)
-
-  // Copy the file server.properties.template to server.properties
- $ cp trustedbird/server.properties.template trustedbird/server.properties
-
-  // Set your SSH username in server.properties
- $ sed -i s/SSH_USERNAME/my_username/ trustedbird/server.properties
-   (replace my_username by your Adullact SSH username)
+=== Get repository ===
+ $ git clone https://adullact.net/anonscm/git/milimail/milimail.git trustedbird
 
 === Building ===
- $ cd trustedbird
+ $ cd trustedbird/packager
+
+  // Download Thunderbird
+ $ wget ftp://ftp.mozilla.org/pub/thunderbird/releases/2.0.0.24/source/thunderbird-2.0.0.24-source.tar.bz2
 
   // Build and package Trustedbird and add-ons
  $ ant build-all
 
   // OR: build and package trustedbird
- $ ant extract-tb update-tb build-tb package-tb
+ $ ant trustedbird
 
   // OR: build and package add-ons
  $ ant package-addons
+
+* All built packages are available in trustedbird/dist/
 
 === Signed updates (optional) ===
 Generate a public key from McCoy and put it in a new "updateKey" file in same folder as build.xml.
 It will be automatically inserted in install.rdf file of all add-ons.
 
-In order to use trustedbird.org key, copy "updateKey-trustedbird.org" file to "updateKey".
+In order to use trustedbird.org key, copy "updateKey-trustedbird.org" file to "updateKey" and then build add-ons.
 
 Next, using McCoy, sign all dist/updates/*/update.rdf before publishing them.

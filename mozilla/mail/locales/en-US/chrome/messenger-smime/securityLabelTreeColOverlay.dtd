@@ -1,4 +1,0 @@
-<!--LOCALIZATION NOTE securityLabelTreeColOverlay.dtd UI -->
-
-<!ENTITY securityLabelSecurityClassificationColumn.label "Security Classification">
-<!ENTITY securityLabelSecurityClassificationColumn.tooltip "Click to sort by Security Classification">

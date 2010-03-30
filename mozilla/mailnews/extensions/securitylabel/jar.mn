@@ -1,6 +1,0 @@
-#ifndef MOZ_XUL_APP
-messenger.jar:
-    content/messenger/am-securitylabel.xul                                     (resources/content/am-securitylabel.xul)
-    content/messenger/am-securitylabel.js                                      (resources/content/am-securitylabel.js)
-*   content/messenger-securitylabel/contents.rdf                               (resources/content/contents.rdf)
-#endif

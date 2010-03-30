@@ -1,0 +1,9 @@
+CVS/
+.cvsignore
+.svn/
+/.project
+/.settings
+/packager/build/
+/packager/dist/
+/packager/updateKey
+/packager/*.bz2
