@@ -10,7 +10,7 @@ LOG=buildlog
 [ -e build.xml ] || { echo "Can't find build.xml"; exit; }
 
 # Build
-ant -Dnightly=1 distclean extract-archive-tb update-tb package-tb-src build-tb package-tb package-addons >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
+ant -Dnightly=1 build-all >"$LOG" 2>&1 || { echo "building failed" | tee -a "$LOG"; }
 
 # Prepare files
 [ -d dist ] || exit
