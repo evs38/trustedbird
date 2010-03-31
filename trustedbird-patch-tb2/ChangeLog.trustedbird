@@ -1,3 +1,8 @@
+trustedbird (0.4.1)
+  * Upgraded to Thunderbird 2.0.0.24
+  * Updated the build system for a Git repository
+-- 31 March 2010
+
 trustedbird (0.4.0)
   * Merged new features: Secure Headers and SASL external
 -- 9 February 2010
