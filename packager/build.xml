@@ -79,7 +79,7 @@ $ ant -Damo=1 package-addons
   </target>
 
 
-  <!-- Target: extract-Thunderbird source -->
+  <!-- Target: extract-thunderbird -->
   <target name="extract-thunderbird" description="Extract Thunderbird source" depends="clean-trustedbird">
     <available file="${thunderbird.source.file.name}" property="thunderbird.source.file.available" />
     <fail message="${thunderbird.source.file.name} not found! Download it from ftp://ftp.mozilla.org/pub/thunderbird/releases/" unless="thunderbird.source.file.available" />
@@ -95,7 +95,7 @@ $ ant -Damo=1 package-addons
 
     <echo message="Extracting Thunderbird source..." />
 
-    <!-- Extract Thunderbird sources (with exec tar in order to preserve permissions) -->
+    <!-- Extract with exec tar in order to preserve permissions -->
     <mkdir dir="${local.build.dir}" />
     <exec executable="tar" failonerror="true">
       <arg value="xjf" />
@@ -106,14 +106,14 @@ $ ant -Damo=1 package-addons
   </target>
 
 
-  <!-- Target: patch Thunderbird sources with Trustedbird -->
-  <target name="patch-trustedbird" description="Copy Trustedbird patch over Thunderbird source">
+  <!-- Target: patch-trustedbird -->
+  <target name="patch-trustedbird" description="Patch Thunderbird sources with Trustedbird">
     <available file="${local.build.dir}/mozilla" property="thunderbird.source.available" />
     <fail message="Thunderbird source not found! Launch target 'extract-thunderbird' first." unless="thunderbird.source.available" />
 
     <echo message="Patching Thunderbird source with Trustedbird..." />
 
-    <!-- Copy patch directory (with exec tar in order to preserve permissions) -->
+    <!-- Copy patch directory with exec tar in order to preserve permissions -->
     <exec executable="tar" failonerror="true">
       <arg value="cf" />
       <arg value=".temp.trustedbird-patch" />
