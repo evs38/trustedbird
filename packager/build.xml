@@ -80,9 +80,9 @@ $ ant -Damo=1 package-addons
 
 
   <!-- Target: extract-thunderbird -->
-  <target name="extract-thunderbird" description="Extract Thunderbird source" depends="clean-trustedbird">
+  <target name="extract-thunderbird" description="Extract Thunderbird source package" depends="clean-trustedbird">
     <available file="${thunderbird.source.file.name}" property="thunderbird.source.file.available" />
-    <fail message="${thunderbird.source.file.name} not found! Download it from ftp://ftp.mozilla.org/pub/thunderbird/releases/" unless="thunderbird.source.file.available" />
+    <fail message="File ${thunderbird.source.file.name} not found! Download it from ftp://ftp.mozilla.org/pub/thunderbird/releases/" unless="thunderbird.source.file.available" />
 
     <!-- Verify checksum -->
     <checksum file="${thunderbird.source.file.name}" algorithm="sha1" property="${thunderbird.source.file.sha1sum}" verifyproperty="thunderbird.source.file.checksum.result" />
@@ -93,7 +93,7 @@ $ ant -Damo=1 package-addons
       </then>
     </if>
 
-    <echo message="Extracting Thunderbird source..." />
+    <echo message="Extracting Thunderbird source package..." />
 
     <!-- Extract with exec tar in order to preserve permissions -->
     <mkdir dir="${local.build.dir}" />
@@ -109,25 +109,26 @@ $ ant -Damo=1 package-addons
   <!-- Target: patch-trustedbird -->
   <target name="patch-trustedbird" description="Patch Thunderbird sources with Trustedbird">
     <available file="${local.build.dir}/mozilla" property="thunderbird.source.available" />
-    <fail message="Thunderbird source not found! Launch target 'extract-thunderbird' first." unless="thunderbird.source.available" />
+    <fail message="Thunderbird source directory not found! Launch target 'extract-thunderbird' first." unless="thunderbird.source.available" />
 
     <echo message="Patching Thunderbird source with Trustedbird..." />
 
     <!-- Copy patch directory with exec tar in order to preserve permissions -->
+    <tempfile property="temp.trustedbird-patch" />
     <exec executable="tar" failonerror="true">
       <arg value="cf" />
-      <arg value=".temp.trustedbird-patch" />
+      <arg value="${temp.trustedbird-patch}" />
       <arg value="-C" />
       <arg value="../${trustedbird-patch.path}" />
       <arg value="." />
     </exec>
     <exec executable="tar" failonerror="true">
       <arg value="xf" />
-      <arg value=".temp.trustedbird-patch" />
+      <arg value="${temp.trustedbird-patch}" />
       <arg value="-C" />
       <arg value="${local.build.dir}/mozilla/" />
     </exec>
-    <delete file=".temp.trustedbird-patch" />
+    <delete file="${temp.trustedbird-patch}" />
   </target>
 
 
@@ -172,10 +173,6 @@ $ ant -Damo=1 package-addons
         <property name="local.trustedbird.version" value="${local.trustedbird.versionfile}" />
       </else>
     </if>
-
-    <!-- Patch needed for Windows -->
-    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldappr32.def" />
-    <touch file="${local.build.dir}/mozilla/directory/c-sdk/ldap/libraries/msdos/winsock/nsldap32.def" />
   </target>
 
 
@@ -265,12 +262,12 @@ $ ant -Damo=1 package-addons
               <fileset dir="${local.build.dir}/mozilla/obj/dist">
                 <include name="*.tar.gz" />
               </fileset>
-              <mapper type="regexp" from="(.*)$" to="trustedbird_${local.trustedbird.version}.tar.gz" />
+              <mapper type="regexp" from="(.*)$" to="trustedbird.tar.gz" />
             </copy>
             <exec executable="sh" failonerror="true">
               <arg value="${local.tools.dir}/createDebianPackage.sh" />
               <arg value="${local.build.dir}" />
-              <arg value="${local.build.dir}/trustedbird_${local.trustedbird.version}.tar.gz" />
+              <arg value="${local.build.dir}/trustedbird.tar.gz" />
               <arg value="${local.trustedbird.version}" />
               <arg value="${local.tools.dir}" />
             </exec>
@@ -299,7 +296,7 @@ $ ant -Damo=1 package-addons
 
 
   <!-- Target: package-addons -->
-  <target name="package-addons" description="Create add-on packages" depends="clean-addons">
+  <target name="package-addons" description="Create add-on packages">
     <foreach list="${addon.list}" target="-package-addon" param="local.addon.tempname" />
   </target>
 
@@ -312,33 +309,11 @@ $ ant -Damo=1 package-addons
   </target>
 
 
-  <!-- Target: -define-addons-config (private) -->
-  <target name="-define-addons-config">
-
+  <!-- Target: -package-addon (private) -->
+  <target name="-package-addon">
+    <tstamp />
     <mkdir dir="${local.build.dir}" />
     <mkdir dir="${local.dist.dir}" />
-
-    <condition property="isUnix">
-      <os family="unix" />
-    </condition>
-
-    <!-- Use a more recent version of sed on Windows -->
-    <if>
-      <isset property="isUnix" />
-      <then>
-        <property name="sed.name" value="sed" />
-      </then>
-      <else>
-        <property name="sed.name" value="c:\cygwin\bin\sed.exe" />
-      </else>
-    </if>
-
-  </target>
-
-
-  <!-- Target: -package-addon (private) -->
-  <target name="-package-addon" depends="-define-addons-config">
-    <tstamp />
 
     <!-- Get the path of the add-on -->
     <propertycopy name="local.addon.path" from="addon.${local.addon.tempname}.path" />
@@ -348,7 +323,7 @@ $ ant -Damo=1 package-addons
       <equals arg1="${local.addon.tempname}" arg2="mrs" />
       <then>
         <if>
-          <isset property="isUnix" />
+          <os family="unix" />
           <then>
             <property name="local.addon.name" value="${local.addon.tempname}-linux-x86" />
             <property name="local.addon.target.platform" value="Linux_x86-gcc3" />
@@ -365,13 +340,26 @@ $ ant -Damo=1 package-addons
       </else>
     </if>
 
-    <!-- Clean addon path -->
+    <!-- Clean addon directory -->
     <delete dir="${local.build.dir}/${local.addon.name}" />
+    <mkdir dir="${local.build.dir}/${local.addon.name}" />
 
-    <!-- Fetch addon -->
-    <copy todir="${local.build.dir}/${local.addon.name}">
-      <fileset dir="../${local.addon.path}" />
-    </copy>
+    <!-- Copy add-on directory with exec tar in order to preserve permissions -->
+    <tempfile property="temp.add-on" />
+    <exec executable="tar" failonerror="true">
+      <arg value="cf" />
+      <arg value="${temp.add-on}" />
+      <arg value="-C" />
+      <arg value="../${local.addon.path}" />
+      <arg value="." />
+    </exec>
+    <exec executable="tar" failonerror="true">
+      <arg value="xf" />
+      <arg value="${temp.add-on}" />
+      <arg value="-C" />
+      <arg value="${local.build.dir}/${local.addon.name}/" />
+    </exec>
+    <delete file="${temp.add-on}" />
 
     <!-- Get version -->
     <loadfile property="local.addon.versionfile" srcfile="${local.build.dir}/${local.addon.name}/version">
@@ -433,54 +421,26 @@ $ ant -Damo=1 package-addons
     <if>
       <isset property="amo" />
       <then>
-        <exec executable="${sed.name}" failonerror="true">
-          <arg value="-i" />
-          <arg value="s|&lt;em:updateURL&gt;.*&lt;/em:updateURL&gt;||" />
-          <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
-        </exec>
-        <exec executable="${sed.name}" failonerror="true">
-          <arg value="-i" />
-          <arg value="s|&lt;em:updateKey&gt;.*&lt;/em:updateKey&gt;||" />
-          <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
-        </exec>
+        <replaceregexp file="${local.build.dir}/${local.addon.name}/install.rdf" match="&lt;em:updateURL&gt;.*&lt;/em:updateURL&gt;" replace="" />
+        <replaceregexp file="${local.build.dir}/${local.addon.name}/install.rdf" match="&lt;em:updateKey&gt;.*&lt;/em:updateKey&gt;" replace="" />
       </then>
     </if>
 
     <!-- Add version -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__VERSION__|${local.addon.version}|" />
-      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
-      <arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
-    </exec>
+    <replace file="${local.build.dir}/${local.addon.name}/install.rdf" token="__VERSION__" value="${local.addon.version}" />
+    <replace file="${local.build.dir}/${local.addon.name}/update.rdf" token="__VERSION__" value="${local.addon.version}" />
 
     <!-- Add update.rdf URL -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__UPDATE_RDF_URL__|${addon.updates.url}/${local.addon.name}/${local.addon.update.rdf.filename}|" />
-      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
-    </exec>
+    <replace file="${local.build.dir}/${local.addon.name}/install.rdf" token="__UPDATE_RDF_URL__" value="${addon.updates.url}/${local.addon.name}/${local.addon.update.rdf.filename}" />
 
     <!-- Add update key -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__UPDATE_KEY__|${local.update.key}|" />
-      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
-    </exec>
+    <replace file="${local.build.dir}/${local.addon.name}/install.rdf" token="__UPDATE_KEY__" value="${local.update.key}" />
 
     <!-- Add target platform -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__TARGET_PLATFORM__|${local.addon.target.platform}|" />
-      <arg value="${local.build.dir}/${local.addon.name}/install.rdf" />
-    </exec>
+    <replace file="${local.build.dir}/${local.addon.name}/install.rdf" token="__TARGET_PLATFORM__" value="${local.addon.target.platform}" />
 
     <!-- Add XPI URL -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__XPI_URL__|${local.addon.update.path}/${local.addon.filename}|" />
-      <arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
-    </exec>
+    <replace file="${local.build.dir}/${local.addon.name}/update.rdf" token="__XPI_URL__" value="${local.addon.update.path}/${local.addon.filename}" />
 
     <!-- Call ant if available -->
     <if>
@@ -535,15 +495,11 @@ $ ant -Damo=1 package-addons
       </else>
     </if>
 
-    <!-- Get hash of XPI file -->
+    <!-- Compute hash of XPI file -->
     <checksum file="${local.dist.dir}/${local.addon.filename}" algorithm="sha1" property="local.update.hash" />
 
     <!-- Add XPI hash -->
-    <exec executable="${sed.name}" failonerror="true">
-      <arg value="-i" />
-      <arg value="s|__UPDATE_HASH__|sha1:${local.update.hash}|" />
-      <arg value="${local.build.dir}/${local.addon.name}/update.rdf" />
-    </exec>
+    <replace file="${local.build.dir}/${local.addon.name}/update.rdf" token="__UPDATE_HASH__" value="sha1:${local.update.hash}" />
 
     <!-- Copy update.rdf -->
     <mkdir dir="${local.dist.dir}/updates/${local.addon.name}" />

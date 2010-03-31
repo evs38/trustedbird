@@ -3,7 +3,7 @@
 ==== Linux (Debian) ====
 * build-essential
 * ant
-* subversion
+* git-core
 * libgtk2.0-dev
 * libglib1.2-dev
 * libidl-dev
@@ -23,9 +23,9 @@
 * Microsoft Visual C++ 6 with Service Pack 5 (not Service Pack 6 because Processor Pack needs SP5)
 * Visual C++ 6.0 Processor Pack
 * Latest MozillaBuild
+* Git
 * Java JDK
 * Ant
-* Cygwin (for sed.exe and sha1sum.exe, used in Ant build script for add-ons)
 
 See http://developer.mozilla.org/en/docs/Windows_Build_Prerequisites
 

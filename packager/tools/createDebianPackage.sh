@@ -1,6 +1,6 @@
 #!/bin/sh
 # Create a Debian package from Trustedbird tar.gz package - launched by Ant
-# Syntax: createDebianPackage.sh WORK_DIR ARCHIVE VERSION TOOLS_DIRECTORY
+# Syntax: createDebianPackage.sh BUILD_DIR ARCHIVE VERSION TOOLS_DIRECTORY
 
 [ -d "$1" ] || exit
 [ -f "$2" ] || exit
