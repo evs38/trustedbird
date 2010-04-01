@@ -114,21 +114,20 @@ $ ant -Damo=1 package-addons
     <echo message="Patching Thunderbird source with Trustedbird..." />
 
     <!-- Copy patch directory with exec tar in order to preserve permissions -->
-    <tempfile property="temp.trustedbird-patch" />
     <exec executable="tar" failonerror="true">
       <arg value="cf" />
-      <arg value="${temp.trustedbird-patch}" />
+      <arg value=".temp.trustedbird-patch" />
       <arg value="-C" />
       <arg value="../${trustedbird-patch.path}" />
       <arg value="." />
     </exec>
     <exec executable="tar" failonerror="true">
       <arg value="xf" />
-      <arg value="${temp.trustedbird-patch}" />
+      <arg value=".temp.trustedbird-patch" />
       <arg value="-C" />
       <arg value="${local.build.dir}/mozilla/" />
     </exec>
-    <delete file="${temp.trustedbird-patch}" />
+    <delete file=".temp.trustedbird-patch" />
   </target>
 
 
@@ -345,21 +344,20 @@ $ ant -Damo=1 package-addons
     <mkdir dir="${local.build.dir}/${local.addon.name}" />
 
     <!-- Copy add-on directory with exec tar in order to preserve permissions -->
-    <tempfile property="temp.add-on" />
     <exec executable="tar" failonerror="true">
       <arg value="cf" />
-      <arg value="${temp.add-on}" />
+      <arg value=".temp.add-on" />
       <arg value="-C" />
       <arg value="../${local.addon.path}" />
       <arg value="." />
     </exec>
     <exec executable="tar" failonerror="true">
       <arg value="xf" />
-      <arg value="${temp.add-on}" />
+      <arg value=".temp.add-on" />
       <arg value="-C" />
       <arg value="${local.build.dir}/${local.addon.name}/" />
     </exec>
-    <delete file="${temp.add-on}" />
+    <delete file=".temp.add-on" />
 
     <!-- Get version -->
     <loadfile property="local.addon.versionfile" srcfile="${local.build.dir}/${local.addon.name}/version">
