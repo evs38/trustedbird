@@ -118,7 +118,7 @@ $ ant -Damo=1 package-addons
       <arg value="cf" />
       <arg value=".temp.trustedbird-patch" />
       <arg value="-C" />
-      <arg value="../${trustedbird-patch.path}" />
+      <arg value="../${trustedbird-patch-tb2.path}" />
       <arg value="." />
     </exec>
     <exec executable="tar" failonerror="true">
@@ -160,7 +160,7 @@ $ ant -Damo=1 package-addons
     <!-- Get revision from Git -->
     <exec executable="sh" outputproperty="local.trustedbird.revision" failonerror="true">
       <arg value="${local.tools.dir}/getGitRevisionDate.sh" />
-      <arg value="../${trustedbird-patch.path}" />
+      <arg value="../${trustedbird-patch-tb2.path}" />
     </exec>
 
     <if>
@@ -180,10 +180,10 @@ $ ant -Damo=1 package-addons
     <mkdir dir="${local.dist.dir}" />
     <exec executable="tar" failonerror="true">
       <arg value="cjf" />
-      <arg value="${local.dist.dir}/trustedbird-patch-source_${local.trustedbird.version}.tar.bz2" />
+      <arg value="${local.dist.dir}/trustedbird-patch-tb2-source_${local.trustedbird.version}.tar.bz2" />
       <arg value="-C" />
       <arg value=".." />
-      <arg value="${trustedbird-patch.path}" />
+      <arg value="${trustedbird-patch-tb2.path}" />
     </exec>
   </target>
 
