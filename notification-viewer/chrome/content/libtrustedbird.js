@@ -209,7 +209,7 @@ function trustedBird_prefService_setBoolPref(preferenceName, value) {
  * @return Value of the preference
  */
 function trustedBird_prefService_getIntPref(preferenceName, defaultValue) {
-	if (trustedBird_prefService_branch == null) trustedBird_prefService_load();
+	if (trustedBird_prefService_branch == null) _trustedBird_prefService_load();
 	
 	var value = 0;
 	if (defaultValue !== undefined) value = defaultValue;
@@ -244,7 +244,7 @@ function trustedBird_prefService_setIntPref(preferenceName, value) {
  * @return Value of the preference
  */
 function trustedBird_prefService_getCharPref(preferenceName, defaultValue) {
-	if (trustedBird_prefService_branch == null) trustedBird_prefService_load();
+	if (trustedBird_prefService_branch == null) _trustedBird_prefService_load();
 	
 	var value = "";
 	if (defaultValue !== undefined) value = defaultValue;
