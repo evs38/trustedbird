@@ -48,7 +48,7 @@ var onInitOriginal = onInit;
 var onLoadOriginal = onLoad;
 var onSaveOriginal = onSave;
 var useCustomPref;
-var minStringLength = 2;
+var minStringLength = 1;
 var gPreferenceService = null;
 var gDirectories = null;
 var gLDAPPrefsService = null;
@@ -118,7 +118,7 @@ function savePreferences() {
     gPreferenceService.setCharPref("mail.identity." + gIdentity.key + ".directoryServers", gAutoCompletePref);
 
     minStringLength = document.getElementById("autocompleteMinStringLength").value;
-    if (!(minStringLength >= 1 && minStringLength <= 99)) minStringLength = 2;
+    if (!(minStringLength >= 1 && minStringLength <= 99)) minStringLength = 1;
     gPreferenceService.setIntPref("mail.identity." + gIdentity.key + ".autoComplete.minStringLength", minStringLength);
 
     displayTrace("savePreferences for user " + gIdentity.key + ".");

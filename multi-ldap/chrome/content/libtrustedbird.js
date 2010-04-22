@@ -194,7 +194,7 @@ function trustedBird_prefService_setBoolPref(preferenceName, value) {
  */
 function trustedBird_prefService_getIntPref(preferenceName, defaultValue) {
     if (trustedBird_prefService_branch == null)
-        trustedBird_prefService_load();
+        _trustedBird_prefService_load();
 
     var value = 0;
     if (defaultValue !== undefined)
@@ -236,7 +236,7 @@ function trustedBird_prefService_setIntPref(preferenceName, value) {
  */
 function trustedBird_prefService_getCharPref(preferenceName, defaultValue) {
     if (trustedBird_prefService_branch == null)
-        trustedBird_prefService_load();
+        _trustedBird_prefService_load();
 
     var value = "";
     if (defaultValue !== undefined)
@@ -306,6 +306,25 @@ function trustedBird_prefService_setComplexPref(preferenceName, preferenceType, 
 
     try {
         trustedBird_prefService_branch.setComplexValue(preferenceName, preferenceType, value);
+        return true;
+    } catch (e) {
+    }
+
+    return false;
+}
+
+/**
+ * Clear a user set value from a preference
+ *
+ * @param preferenceName Name of the preference
+ * @return True if the operation was successful, false otherwise
+ */
+function trustedBird_prefService_clearUserPref(preferenceName) {
+    if (trustedBird_prefService_branch == null)
+        _trustedBird_prefService_load();
+
+    try {
+        trustedBird_prefService_branch.clearUserPref(preferenceName);
         return true;
     } catch (e) {
     }
@@ -460,6 +479,96 @@ function trustedBird_LDAP_getDirectoryList(identityKey) {
         directoryListArray = directoryList.split(',');
 
     return directoryListArray;
+}
+
+/**
+ * Move old preferences
+ */
+function trustedBird_MultiLDAP_Upgrade() {
+  /* Migrate old preferences from before version 0.2.6 - only for Thunderbird 2 */
+  if (trustedBird_getPlatformVersion() < "1.9") {
+
+    var migrateTb2 = false;
+
+    if (trustedBird_prefService_branch == null) _trustedBird_prefService_load();
+
+    var newDirectoryListPrefName = "ldap_2.autoComplete.directoryServers";
+    try {
+      /* Check if the new preference already exists */
+      trustedBird_prefService_branch.getCharPref(newDirectoryListPrefName);
+    } catch (e) {
+      /* New preference doesn't exist: launch migration */
+      migrateTb2 = true;
+    }
+
+    /* Move preferences */
+    if (migrateTb2) {
+
+      dump("Multi-LDAP: updating preferences...\n");
+
+      /* Global preferences */
+      var oldDirectoryList = trustedBird_prefService_getCharPref("ldap_2.autoComplete.ldapServers");
+      trustedBird_prefService_setCharPref(newDirectoryListPrefName, oldDirectoryList);
+      trustedBird_prefService_clearUserPref("ldap_2.autoComplete.ldapServers");
+
+      /* Account-specific preferences */
+      _trustedBird_MultiLDAP_Upgrade_AccountSettings();
+    }
+  }
+}
+
+/**
+ * Move old preferences - account-specific
+ */
+function _trustedBird_MultiLDAP_Upgrade_AccountSettings() {
+  var oldRootPref = "ldap_2.identity.";
+  var newRootPref = "mail.identity.";
+
+  var oldPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(oldRootPref);
+  var newPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(newRootPref);
+
+  var prefRegexp = /^(.+)\.autoComplete\.overrideGlobalPref$/;
+
+  var prefCount = new Object();
+  var prefList = oldPrefBranch.getChildList("", prefCount);
+
+  for (var i = 0; i < prefCount.value; i++) {
+    var prefParsed = prefRegexp.exec(prefList[i]);
+    if (prefParsed && prefParsed.length == 2) {
+      var identity = prefParsed[1];
+
+      var oldOverrideGlobalPref = oldPrefBranch.getBoolPref(identity + ".autoComplete.overrideGlobalPref");
+
+      try {
+        /* Check if the new preference already exists */
+        newPrefBranch.getBoolPref(identity + ".overrideGlobal_Pref.multi-ldap");
+      } catch (e) {
+        /* New preference doesn't exist: launch migration */
+        newPrefBranch.setBoolPref(identity + ".overrideGlobal_Pref.multi-ldap", oldOverrideGlobalPref);
+        try {
+          oldPrefBranch.clearUserPref(identity + ".autoComplete.overrideGlobalPref");
+          oldPrefBranch.clearUserPref(identity + ".multi_ldap_use_custom_preferences");
+        } catch (e) {}
+      }
+
+      var oldDirectoryList = false;
+      try {
+        var oldDirectoryList = oldPrefBranch.getCharPref(identity + ".autoComplete.ldapServers");
+      } catch (e) {}
+
+      try {
+        /* Check if the new preference already exists */
+        newPrefBranch.getCharPref(identity + ".directoryServers");
+      } catch (e) {
+        /* New preference doesn't exist: launch migration */
+        newPrefBranch.setCharPref(identity + ".directoryServers", oldDirectoryList);
+        try {
+          oldPrefBranch.clearUserPref(identity + ".autoComplete.ldapServers");
+        } catch (e) {}
+      }
+
+    }
+  }
 }
 
 /**

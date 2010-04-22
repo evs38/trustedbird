@@ -20,9 +20,6 @@
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
-   -   Olivier Parniere / BT Global Services / Etat francais Ministere de la Defense
-   -   Eric Ballet Baz / BT Global Services / Etat francais Ministere de la Defense
-   -   Olivier Brun / BT Global Services / Etat francais Ministere de la Defense
    -   Raphael Fairise / BT Global Services / Etat francais Ministere de la Defense
    -
    - Alternatively, the contents of this file may be used under the terms of
@@ -39,33 +36,8 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <rdf:Description about="urn:mozilla:install-manifest">
+<overlay id="multildap_messenger_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-    <em:id>multildap@milimail.org</em:id>
-    <em:name>Multi-LDAP</em:name>
-    <em:version>__VERSION__</em:version>
+  <script type="application/x-javascript" src="chrome://multi-ldap/content/messenger-tb2.js"/>
 
-    <em:creator>Trustedbird/Milimail project</em:creator>
-    <em:developer>Olivier Parniere</em:developer>
-    <em:contributor>Eric Ballez Baz</em:contributor>
-    <em:contributor>Olivier Brun</em:contributor>
-    <em:contributor>Raphael Fairise</em:contributor>
-
-    <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
-
-    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
-    <em:updateKey>__UPDATE_KEY__</em:updateKey>
-
-    <em:targetApplication>
-      <rdf:Description>
-        <!-- Thunderbird -->
-        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>2.0</em:minVersion>
-        <em:maxVersion>3.0.*</em:maxVersion>
-      </rdf:Description>
-    </em:targetApplication>
-
-    <em:description>Permits to use several LDAP directories simultaneously for address autocompletion.</em:description>
-  </rdf:Description>
-</rdf:RDF>
+</overlay>

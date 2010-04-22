@@ -12,3 +12,5 @@ overlay chrome://messenger/content/am-addressingOverlay.xul              chrome:
 
 overlay chrome://messenger/content/preferences/preferences.xul           chrome://multi-ldap/content/preferences/preferences-tb2.xul appversion<3
 overlay chrome://messenger/content/am-addressingOverlay.xul              chrome://multi-ldap/content/account/am-addressing-tb2.xul appversion<3
+
+overlay chrome://messenger/content/messenger.xul                         chrome://multi-ldap/content/messenger-tb2.xul appversion<3

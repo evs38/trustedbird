@@ -1,3 +1,8 @@
+multi-ldap (1.1.1)
+  * Default minimum search string length is now 1
+  * Fix settings migration under Thunderbird 2
+-- Apr 22 2010
+
 multi-ldap (1.1.0)
   * Update add-on for Thunderbird 3
 -- Feb 19 2010

@@ -106,7 +106,7 @@ function setupLdapAutocompleteSession() {
     // Get autoComplete.minStringLength and autoComplete.cjkMinStringLength
 
     // don't search on non-CJK strings shorter than this
-    var minStringLength = 0;
+    var minStringLength = 1;
     var tempMinStringLength = trustedBird_prefService_getIntPref("ldap_2.autoComplete.minStringLength");
     if (tempMinStringLength >= 1 && tempMinStringLength <= 99)
         minStringLength = tempMinStringLength;
@@ -118,7 +118,7 @@ function setupLdapAutocompleteSession() {
     }
 
     // don't search on CJK strings shorter than this
-    var cjkMinStringLength = 0;
+    var cjkMinStringLength = 1;
     var tempCjkMinStringLength = trustedBird_prefService_getIntPref("ldap_2.autoComplete.cjkMinStringLength");
     if (tempCjkMinStringLength >= 1 && tempCjkMinStringLength <= 99)
         cjkMinStringLength = tempCjkMinStringLength;
