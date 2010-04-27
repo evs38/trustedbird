@@ -1,0 +1,11 @@
+<!ENTITY dsn-settings.windowTitle "Delivery Status Notifications">
+<!ENTITY dsn-settings.requestTypeLabel "When I send a message with a delivery status notification request:">
+<!ENTITY dsn-settings.requestChoice "Ask to be notified when:">
+<!ENTITY dsn-settings.requestSuccess "delivery is successful">
+<!ENTITY dsn-settings.requestFailure "delivery failed">
+<!ENTITY dsn-settings.requestDelayed "delivery is delayed">
+<!ENTITY dsn-settings.requestNever "Ask to never receive any notification">
+<!ENTITY dsn-settings.note "Note: if you don't explicitly request not to receive any notification, you may still receive some if the delivery failed.">
+<!ENTITY dsn-settings.attachLabel "Ask servers to join to delivery failure notifications:">
+<!ENTITY dsn-settings.attachFullOnlyHeaders "only message headers">
+<!ENTITY dsn-settings.attachFullMessage "full message">

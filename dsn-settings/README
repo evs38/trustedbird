@@ -1,0 +1,11 @@
+DSN Settings
+------------
+
+This add-on for Mozilla Thunderbird 3 adds user interface settings for Delivery Status Notification (DSN) requests.
+
+
+This add-on is written in XUL and Javascript.
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+

@@ -1,0 +1,5 @@
+content dsn-settings chrome/content/
+locale  dsn-settings en chrome/locale/en/
+locale  dsn-settings fr chrome/locale/fr/
+
+overlay chrome://messenger/content/preferences/advanced.xul chrome://dsn-settings/content/advanced.xul

@@ -1,0 +1,7 @@
+<!ENTITY pane.title "Avis de remise (DSN)">
+<!ENTITY useGlobalPrefs.label "Utiliser mes préférences globales d'avis de remise pour cette identité">
+<!ENTITY useGlobalPrefs.accesskey "U">
+<!ENTITY useCustomPrefs.label "Personnaliser les paramètres d'avis de remise pour cette identité">
+<!ENTITY useCustomPrefs.accesskey "P">
+<!ENTITY requestAlways.label "Lors de l'envoi d'un message, toujours demander un avis de remise au serveur">
+<!ENTITY requestAlways.accesskey "L">

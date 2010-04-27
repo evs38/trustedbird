@@ -1,0 +1,7 @@
+<!ENTITY pane.title "Delivery Status Notifications (DSN)">
+<!ENTITY useGlobalPrefs.label "Use my global delivery status notification settings for this identity">
+<!ENTITY useGlobalPrefs.accesskey "U">
+<!ENTITY useCustomPrefs.label "Customize delivery status notification settings for this identity">
+<!ENTITY useCustomPrefs.accesskey "C">
+<!ENTITY requestAlways.label "When sending messages, always request a delivery status notification from the server">
+<!ENTITY requestAlways.accesskey "W">
