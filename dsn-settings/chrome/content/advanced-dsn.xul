@@ -61,10 +61,6 @@
         <radio id="dsnRequestNeverTrue" label="&dsn-settings.requestNever;" value="true" />
       </radiogroup>
 
-      <separator />
-
-      <label id="dsnNote" width="1">&dsn-settings.note;</label>
-
       <separator class="thin"/>
       <separator class="groove"/>
       <separator class="thin"/>

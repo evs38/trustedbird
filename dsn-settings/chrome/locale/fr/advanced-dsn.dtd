@@ -5,7 +5,6 @@
 <!ENTITY dsn-settings.requestFailure "la remise a échoué">
 <!ENTITY dsn-settings.requestDelayed "la remise est retardée">
 <!ENTITY dsn-settings.requestNever "Demander à ne jamais recevoir d'avis de remise">
-<!ENTITY dsn-settings.note "Note : si vous ne demandez pas explicitement à ne pas recevoir d'avis de remise, il est quand même possible que vous en receviez si la remise échoue.">
-<!ENTITY dsn-settings.attachLabel "Demander aux serveurs de joindre aux avis de remise :">
+<!ENTITY dsn-settings.attachLabel "Demander de joindre aux avis de remise :">
 <!ENTITY dsn-settings.attachFullOnlyHeaders "seulement les en-têtes du message">
 <!ENTITY dsn-settings.attachFullMessage "le message complet">
