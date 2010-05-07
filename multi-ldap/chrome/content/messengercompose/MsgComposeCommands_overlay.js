@@ -203,11 +203,13 @@ function setupLdapAutocompleteSession() {
 
                 LDAPSession.login = login;
                 if (login != "") {
+                  try {/* Only for Thunderbird 2 */
                     var windowWatcherSvc = Components.classes["@mozilla.org/embedcomp/window-watcher;1"].getService(Components.interfaces.nsIWindowWatcher);
                     var domWin = window.QueryInterface(Components.interfaces.nsIDOMWindow);
                     var authPrompter = windowWatcherSvc.getNewAuthPrompter(domWin);
 
                     LDAPSession.authPrompter = authPrompter;
+                  } catch (e) {}
                 }
 
                 // don't search on non-CJK strings shorter than this
