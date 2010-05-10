@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 var gSMFields;
-var gStringBundle;
+var gSecurityLabelDialogStringBundle;
 var currentSecurityPolicyIdentifier;
 var currentSecurityClassification;
 var currentPrivacyMark;
@@ -46,9 +46,9 @@ function securityLabelDialogOnLoad() {
   gSMFields = window.opener.gMsgCompose.compFields.securityInfo;
   if (gSMFields == null) return;
 
-  gStringBundle = document.getElementById("securityLabelDialogStringbundle");
+  gSecurityLabelDialogStringBundle = document.getElementById("securityLabelDialogStringbundle");
   var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
-  gStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
+  gSecurityLabelDialogStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
 
 
   /* Read Security Label profiles */
@@ -69,7 +69,7 @@ function securityLabelDialogOnLoad() {
   while (securityPolicyIdentifierMenulist.menupopup.firstChild) securityPolicyIdentifierMenulist.menupopup.removeChild(securityPolicyIdentifierMenulist.menupopup.firstChild);
 
   /* Construct list */
-  securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, gStringBundle.GetStringFromName("noSecurityPolicyIdentifier"), "", "");
+  securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, gSecurityLabelDialogStringBundle.GetStringFromName("noSecurityPolicyIdentifier"), "", "");
   for (policyName in securityLabelSecurityPolicyList) {
     securityLabelDialogCreateMenuItem(securityPolicyIdentifierMenulist, policyName, securityLabelSecurityPolicyList[policyName], currentSecurityPolicyIdentifier);
   }
@@ -98,7 +98,7 @@ function securityLabelDialogInitUI() {
   while (securityClassificationMenulist.menupopup.firstChild) securityClassificationMenulist.menupopup.removeChild(securityClassificationMenulist.menupopup.firstChild);
 
   /* Construct list */
-  securityLabelDialogCreateMenuItem(securityClassificationMenulist, gStringBundle.GetStringFromName("noSecurityClassification"), "-1", "-1");
+  securityLabelDialogCreateMenuItem(securityClassificationMenulist, gSecurityLabelDialogStringBundle.GetStringFromName("noSecurityClassification"), "-1", "-1");
   for (classificationName in securityLabelSecurityClassificationList[selectedPolicyIdentifier]) {
     securityLabelDialogCreateMenuItem(securityClassificationMenulist, classificationName, securityLabelSecurityClassificationList[selectedPolicyIdentifier][classificationName], currentSecurityClassification);
   }

@@ -8,6 +8,8 @@ This software is an email client based on Mozilla Thunderbird with several addit
 ** Security Labels 
 * DSN
 * SMTP PRIORITY extension
+* Secure Headers
+* SASL external
 
 
 Trustedbird/Milimail project

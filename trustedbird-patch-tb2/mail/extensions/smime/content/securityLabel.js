@@ -41,7 +41,7 @@ var securityLabelPrivacyMarkList = [];
 var securityLabelSecurityCategoriesList = [];
 
 var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
-var gStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
+var gSecurityLabelStringBundle = stringBundleService.createBundle("chrome://messenger-smime/locale/securityLabel.properties");
 
 
 /**
@@ -58,7 +58,7 @@ function securityLabelGetSecurityPolicyIdentifierName(securityPolicyIdentifier) 
     if (securityLabelSecurityPolicyList[policyName] == securityPolicyIdentifier) return policyName;
   }
 
-  return gStringBundle.GetStringFromName("unknownSecurityPolicyIdentifier") +" (" + securityPolicyIdentifier + ")";
+  return gSecurityLabelStringBundle.GetStringFromName("unknownSecurityPolicyIdentifier") +" (" + securityPolicyIdentifier + ")";
 }
 
 
@@ -79,7 +79,7 @@ function securityLabelGetSecurityClassificationName(securityPolicyIdentifier, se
     }
   }
 
-  return gStringBundle.GetStringFromName("unknownSecurityClassification") + " (" + securityClassification + ")";
+  return gSecurityLabelStringBundle.GetStringFromName("unknownSecurityClassification") + " (" + securityClassification + ")";
 }
 
 
@@ -112,7 +112,7 @@ function securityLabelGetSecurityCategoryName(securityPolicyIdentifier, security
     }
   }
 
-  return gStringBundle.GetStringFromName("unknownSecurityCategory") + " (" + securityCategoryOid + " | " + securityCategoryValue + ")";
+  return gSecurityLabelStringBundle.GetStringFromName("unknownSecurityCategory") + " (" + securityCategoryOid + " | " + securityCategoryValue + ")";
 }
 
 
