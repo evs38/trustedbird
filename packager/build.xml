@@ -14,7 +14,8 @@ Build and package Trustedbird and all add-ons:
 $ ant build-all
 
 Build and package Trustedbird email client:
-$ ant trustedbird
+$ ant -Dversion=2 trustedbird
+$ ant -Dversion=3.1 trustedbird
 
 Package all add-ons:
 $ ant package-addons
@@ -54,6 +55,29 @@ $ ant -Damo=1 package-addons
   </target>
 
 
+  <!-- Target: -define-version (private) -->
+  <target name="-define-version">
+    <if>
+      <not>
+        <isset property="version" />
+      </not>
+      <then>
+        <!-- Default version to build -->
+        <property name="version" value="2" />
+      </then>
+    </if>
+
+    <echo message="Building with Thunderbird ${version}" />
+
+    <propertycopy name="local.source.file.name" from="thunderbird${version}.source.file.name" />
+    <propertycopy name="local.source.file.sha1sum" from="thunderbird${version}.source.file.sha1sum" />
+    <propertycopy name="local.source.directory" from="thunderbird${version}.source.directory" />
+    <propertycopy name="local.source.dist.directory" from="thunderbird${version}.source.dist.directory" />
+    <propertycopy name="local.source.version.file.name" from="thunderbird${version}.source.version.file.name" />
+    <propertycopy name="local.source.patch.path" from="thunderbird${version}.source.patch.path" />
+  </target>
+
+
   <!-- Target: distclean -->
   <target name="distclean" description="Clean build and dist directories">
     <delete dir="${local.build.dir}" />
@@ -62,8 +86,12 @@ $ ant -Damo=1 package-addons
 
 
   <!-- Target: clean-trustedbird -->
-  <target name="clean-trustedbird" description="Clean Trustedbird build directory">
-    <delete dir="${local.build.dir}/mozilla" />
+  <target name="clean-trustedbird" description="Clean Trustedbird build directory" depends="-define-version">
+    <delete dir="${local.build.dir}/${local.source.directory}" />
+    <delete dir="${local.build.dir}/debian" />
+    <delete file="${local.build.dir}/trustedbird.tar.gz" />
+    <delete file="${local.build.dir}/trustedbird.tar.bz2" />
+    <delete file="${local.build.dir}/trustedbird.deb" />
   </target>
 
 
@@ -81,15 +109,15 @@ $ ant -Damo=1 package-addons
 
   <!-- Target: extract-thunderbird -->
   <target name="extract-thunderbird" description="Extract Thunderbird source package" depends="clean-trustedbird">
-    <available file="${thunderbird.source.file.name}" property="thunderbird.source.file.available" />
-    <fail message="File ${thunderbird.source.file.name} not found! Download it from ftp://ftp.mozilla.org/pub/thunderbird/releases/" unless="thunderbird.source.file.available" />
+    <available file="${local.source.file.name}" property="thunderbird.source.file.available" />
+    <fail message="File ${local.source.file.name} not found! Download it from ftp://ftp.mozilla.org/pub/thunderbird/releases/" unless="thunderbird.source.file.available" />
 
     <!-- Verify checksum -->
-    <checksum file="${thunderbird.source.file.name}" algorithm="sha1" property="${thunderbird.source.file.sha1sum}" verifyproperty="thunderbird.source.file.checksum.result" />
+    <checksum file="${local.source.file.name}" algorithm="sha1" property="${local.source.file.sha1sum}" verifyproperty="local.source.file.checksum.result" />
     <if>
-      <equals arg1="${thunderbird.source.file.checksum.result}" arg2="false" />
+      <equals arg1="${local.source.file.checksum.result}" arg2="false" />
       <then>
-        <fail message="${thunderbird.source.file.name} has a wrong checksum!" />
+        <fail message="${local.source.file.name} has a wrong checksum!" />
       </then>
     </if>
 
@@ -99,7 +127,7 @@ $ ant -Damo=1 package-addons
     <mkdir dir="${local.build.dir}" />
     <exec executable="tar" failonerror="true">
       <arg value="xjf" />
-      <arg value="${thunderbird.source.file.name}" />
+      <arg value="${local.source.file.name}" />
       <arg value="-C" />
       <arg value="${local.build.dir}/" />
     </exec>
@@ -107,8 +135,8 @@ $ ant -Damo=1 package-addons
 
 
   <!-- Target: patch-trustedbird -->
-  <target name="patch-trustedbird" description="Patch Thunderbird sources with Trustedbird">
-    <available file="${local.build.dir}/mozilla" property="thunderbird.source.available" />
+  <target name="patch-trustedbird" description="Patch Thunderbird sources with Trustedbird" depends="-define-version">
+    <available file="${local.build.dir}/${local.source.directory}" property="thunderbird.source.available" />
     <fail message="Thunderbird source directory not found! Launch target 'extract-thunderbird' first." unless="thunderbird.source.available" />
 
     <echo message="Patching Thunderbird source with Trustedbird..." />
@@ -118,22 +146,22 @@ $ ant -Damo=1 package-addons
       <arg value="cf" />
       <arg value=".temp.trustedbird-patch" />
       <arg value="-C" />
-      <arg value="../${trustedbird-patch-tb2.path}" />
+      <arg value="../${local.source.patch.path}" />
       <arg value="." />
     </exec>
     <exec executable="tar" failonerror="true">
       <arg value="xf" />
       <arg value=".temp.trustedbird-patch" />
       <arg value="-C" />
-      <arg value="${local.build.dir}/mozilla/" />
+      <arg value="${local.build.dir}/${local.source.directory}/" />
     </exec>
     <delete file=".temp.trustedbird-patch" />
   </target>
 
 
   <!-- Target: -define-trustedbird-config (private) -->
-  <target name="-define-trustedbird-config">
-    <available file="${local.build.dir}/mozilla/version.trustedbird" property="trustedbird.source.available" />
+  <target name="-define-trustedbird-config" depends="-define-version">
+    <available file="${local.build.dir}/${local.source.directory}/version.trustedbird" property="trustedbird.source.available" />
     <fail message="Trustedbird source not found! Launch targets 'extract-thunderbird' and 'patch-trustedbird' first." unless="trustedbird.source.available" />
 
     <condition property="isUnix">
@@ -143,15 +171,22 @@ $ ant -Damo=1 package-addons
     <if>
       <isset property="isUnix" />
       <then>
-        <property name="local.checkbuild.file" value="dist/bin/trustedbird" />
+        <property name="local.checkbuild.file" value="trustedbird" />
       </then>
       <else>
-        <property name="local.checkbuild.file" value="dist/bin/trustedbird.exe" />
+        <property name="local.checkbuild.file" value="trustedbird.exe" />
       </else>
     </if>
 
+    <!-- Get Thunderbird version -->
+    <loadfile property="local.mozilla.version" srcfile="${local.build.dir}/${local.source.directory}/mail/config/${local.source.version.file.name}">
+      <filterchain>
+        <striplinebreaks />
+      </filterchain>
+    </loadfile>
+
     <!-- Get Trustedbird version -->
-    <loadfile property="local.trustedbird.versionfile" srcfile="${local.build.dir}/mozilla/version.trustedbird">
+    <loadfile property="local.trustedbird.versionfile" srcfile="${local.build.dir}/${local.source.directory}/version.trustedbird">
       <filterchain>
         <striplinebreaks />
       </filterchain>
@@ -160,13 +195,13 @@ $ ant -Damo=1 package-addons
     <!-- Get revision from Git -->
     <exec executable="sh" outputproperty="local.trustedbird.revision" failonerror="true">
       <arg value="${local.tools.dir}/getGitRevisionDate.sh" />
-      <arg value="../${trustedbird-patch-tb2.path}" />
+      <arg value="../${local.source.patch.path}" />
     </exec>
 
     <if>
       <isset property="nightly" />
       <then>
-        <property name="local.trustedbird.version" value="${local.trustedbird.versionfile}-nightly${local.trustedbird.revision}" />
+        <property name="local.trustedbird.version" value="${local.trustedbird.versionfile}+nightly${local.trustedbird.revision}" />
       </then>
       <else>
         <property name="local.trustedbird.version" value="${local.trustedbird.versionfile}" />
@@ -180,10 +215,10 @@ $ ant -Damo=1 package-addons
     <mkdir dir="${local.dist.dir}" />
     <exec executable="tar" failonerror="true">
       <arg value="cjf" />
-      <arg value="${local.dist.dir}/trustedbird-patch-tb2-source_${local.trustedbird.version}.tar.bz2" />
+      <arg value="${local.dist.dir}/trustedbird-patch-source_${local.mozilla.version}+${local.trustedbird.version}.tar.bz2" />
       <arg value="-C" />
       <arg value=".." />
-      <arg value="${trustedbird-patch-tb2.path}" />
+      <arg value="${local.source.patch.path}" />
     </exec>
   </target>
 
@@ -193,38 +228,30 @@ $ ant -Damo=1 package-addons
     <!-- Set version file -->
     <if>
       <not>
-        <available file="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+        <available file="${local.build.dir}/${local.source.directory}/mail/config/${local.source.version.file.name}-orig" />
       </not>
       <then>
-        <move file="${local.build.dir}/mozilla/mail/config/version.txt" tofile="${local.build.dir}/mozilla/mail/config/version.txt-orig" />
+        <move file="${local.build.dir}/${local.source.directory}/mail/config/${local.source.version.file.name}" tofile="${local.build.dir}/${local.source.directory}/mail/config/${local.source.version.file.name}-orig" />
       </then>
     </if>
-    <loadfile property="local.mozilla.version" srcfile="${local.build.dir}/mozilla/mail/config/version.txt-orig">
-      <filterchain>
-        <striplinebreaks />
-      </filterchain>
-    </loadfile>
-    <echo message="${local.mozilla.version}+trustedbird.${local.trustedbird.version}" file="${local.build.dir}/mozilla/mail/config/version.txt" />
+    <echo message="${local.mozilla.version}+${local.trustedbird.version}" file="${local.build.dir}/${local.source.directory}/mail/config/${local.source.version.file.name}" />
 
     <!-- Build -->
-    <exec executable="make" dir="${local.build.dir}/mozilla" failonerror="true">
-      <!-- Workaround multiple crashes in xulrunner in Ubuntu 8.10 and later
-            where "-D_FORTIFY_SOURCE=2" is set by default in GCC -->
-      <arg value="CPPFLAGS=-U_FORTIFY_SOURCE" />
+    <exec executable="make" dir="${local.build.dir}/${local.source.directory}" failonerror="true">
       <arg value="-f" />
       <arg value="client.mk" />
       <arg value="build" />
     </exec>
 
     <!-- Restore version file -->
-    <move file="${local.build.dir}/mozilla/mail/config/version.txt-orig" tofile="${local.build.dir}/mozilla/mail/config/version.txt" />
+    <move file="${local.build.dir}/${local.source.directory}/mail/config/${local.source.version.file.name}-orig" tofile="${local.build.dir}/${local.source.directory}/mail/config/${local.source.version.file.name}" />
   </target>
 
 
   <!-- Target: package-trustedbird -->
   <target name="package-trustedbird" description="Create Trustedbird package" depends="-define-trustedbird-config">
-    <available file="${local.build.dir}/mozilla/obj/${local.checkbuild.file}" property="build.success" />
-    <fail message="File ${local.checkbuild.file} not found! Build Trustedbird first." unless="build.success" />
+    <available file="${local.build.dir}/${local.source.directory}/obj/mail/${local.source.dist.directory}/bin/${local.checkbuild.file}" property="build.success" />
+    <fail message="File ${local.build.dir}/${local.source.directory}/obj/mail/${local.source.dist.directory}/bin/${local.checkbuild.file} not found! Build Trustedbird first." unless="build.success" />
 
     <mkdir dir="${local.dist.dir}" />
 
@@ -232,25 +259,23 @@ $ ant -Damo=1 package-addons
       <isset property="isUnix" />
       <then>
         <!-- Create package -->
-        <exec executable="make" dir="${local.build.dir}/mozilla/obj" failonerror="true">
+        <exec executable="make" dir="${local.build.dir}/${local.source.directory}/obj/mail" failonerror="true">
           <arg value="-C" />
           <arg value="mail/installer" />
         </exec>
 
-        <!-- Remove existing packages -->
-        <delete failonerror="false">
-          <fileset dir="${local.dist.dir}">
-            <include name="*.tar.gz" />
-            <include name="*.deb" />
-          </fileset>
-        </delete>
-
-        <!-- Rename package -->
+        <!-- Rename and copy package -->
         <copy todir="${local.dist.dir}/">
-          <fileset dir="${local.build.dir}/mozilla/obj/dist">
+          <fileset dir="${local.build.dir}/${local.source.directory}/obj/mail/${local.source.dist.directory}">
             <include name="*.tar.gz" />
           </fileset>
-          <mapper type="regexp" from=".*\.([^\.]+)\.tar\.gz$" to="trustedbird_${local.trustedbird.version}_\1.tar.gz" />
+          <mapper type="regexp" from=".*\.([^\.]+)\.tar\.gz$" to="trustedbird_${local.mozilla.version}+${local.trustedbird.version}_i686.tar.gz" />
+        </copy>
+        <copy todir="${local.dist.dir}/">
+          <fileset dir="${local.build.dir}/${local.source.directory}/obj/mail/${local.source.dist.directory}">
+            <include name="*.tar.bz2" />
+          </fileset>
+          <mapper type="regexp" from=".*\.([^\.]+)\.tar\.bz2$" to="trustedbird_${local.mozilla.version}+${local.trustedbird.version}_i686.tar.bz2" />
         </copy>
 
         <!-- Create Debian package -->
@@ -258,36 +283,43 @@ $ ant -Damo=1 package-addons
           <available file="/usr/bin/dpkg-deb" />
           <then>
             <copy todir="${local.build.dir}/">
-              <fileset dir="${local.build.dir}/mozilla/obj/dist">
+              <fileset dir="${local.build.dir}/${local.source.directory}/obj/mail/${local.source.dist.directory}">
                 <include name="*.tar.gz" />
               </fileset>
               <mapper type="regexp" from="(.*)$" to="trustedbird.tar.gz" />
             </copy>
+            <copy todir="${local.build.dir}/">
+              <fileset dir="${local.build.dir}/${local.source.directory}/obj/mail/${local.source.dist.directory}">
+                <include name="*.tar.bz2" />
+              </fileset>
+              <mapper type="regexp" from="(.*)$" to="trustedbird.tar.bz2" />
+            </copy>
             <exec executable="sh" failonerror="true">
               <arg value="${local.tools.dir}/createDebianPackage.sh" />
               <arg value="${local.build.dir}" />
-              <arg value="${local.build.dir}/trustedbird.tar.gz" />
-              <arg value="${local.trustedbird.version}" />
+              <arg value="${local.build.dir}/trustedbird" />
+              <arg value="${local.mozilla.version}+${local.trustedbird.version}" />
+              <arg value="trustedbird${version}" />
               <arg value="${local.tools.dir}" />
             </exec>
-            <copy file="${local.build.dir}/trustedbird.deb" tofile="${local.dist.dir}/trustedbird_${local.trustedbird.version}_i686.deb" />
+            <copy file="${local.build.dir}/trustedbird.deb" tofile="${local.dist.dir}/trustedbird_${local.mozilla.version}+${local.trustedbird.version}_i686.deb" />
           </then>
         </if>
       </then>
       <else>
         <!-- Create package -->
-        <exec executable="make" dir="${local.build.dir}/mozilla/obj" failonerror="true">
+        <exec executable="make" dir="${local.build.dir}/${local.source.directory}/obj/mail" failonerror="true">
           <arg value="-C" />
           <arg value="mail/installer" />
           <arg value="installer" />
         </exec>
 
-        <!-- Rename package -->
+        <!-- Rename and copy package -->
         <copy todir="${local.dist.dir}/">
-          <fileset dir="${local.build.dir}/mozilla/obj/dist/install/sea">
+          <fileset dir="${local.build.dir}/${local.source.directory}/obj/mail/${local.source.dist.directory}/install/sea">
             <include name="*.exe" />
           </fileset>
-          <mapper type="regexp" from="(.*)$" to="trustedbird_${local.trustedbird.version}_win32.installer.exe" />
+          <mapper type="regexp" from="(.*)$" to="trustedbird_${local.mozilla.version}+${local.trustedbird.version}_win32.installer.exe" />
         </copy>
       </else>
     </if>
@@ -378,7 +410,7 @@ $ ant -Damo=1 package-addons
     <!-- Get revision from Git -->
     <if>
       <or>
-        <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird" />
+        <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird2" />
         <equals arg1="${local.addon.name}" arg2="all-addons-tb2" />
         <equals arg1="${local.addon.name}" arg2="all-addons-tb3" />
       </or>
@@ -401,7 +433,7 @@ $ ant -Damo=1 package-addons
     <if>
       <isset property="nightly" />
       <then>
-        <property name="local.addon.version" value="${local.addon.versionfile}-nightly${local.addon.revision}" />
+        <property name="local.addon.version" value="${local.addon.versionfile}+nightly${local.addon.revision}" />
         <property name="local.addon.update.rdf.filename" value="update-nightly.rdf" />
         <property name="local.addon.update.path" value="${addon.nightly.url}/${DSTAMP}" />
       </then>
@@ -452,12 +484,12 @@ $ ant -Damo=1 package-addons
       </else>
     </if>
 
-    <!-- Only for special add-ons 'all-addons-trustedbird': copy all already built add-ons -->
+    <!-- Only for special add-ons 'all-addons-trustedbird2': copy all already built add-ons -->
     <if>
-      <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird" />
+      <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird2" />
       <then>
         <copy todir="${local.build.dir}/${local.addon.name}/">
-          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-trustedbird.includes}" excludes="all-addons* ${addon.all-addons-trustedbird.excludes}" />
+          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-trustedbird2.includes}" excludes="all-addons* ${addon.all-addons-trustedbird2.excludes}" />
         </copy>
       </then>
     </if>

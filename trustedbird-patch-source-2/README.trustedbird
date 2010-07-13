@@ -1,0 +1,17 @@
+Trustedbird
+-----------
+
+This software is an email client based on Mozilla Thunderbird 2 with several additional features:
+*  Enhanced Security Services for S/MIME (RFC 2634):
+** Triple Wrapping
+** Signed Receipt
+** Security Labels 
+* DSN
+* SMTP PRIORITY extension
+* Secure Headers
+* SASL external
+
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+

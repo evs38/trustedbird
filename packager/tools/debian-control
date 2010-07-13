@@ -1,9 +1,9 @@
-Package: trustedbird
+Package: __PACKAGE_NAME__
 Version: __VERSION__
 Section: mail
 Priority: optional
 Architecture: i386
-Depends: 
+Depends:
 Replaces: milimail (<< 0.2.1.001079.1)
 Conflicts: milimail (<< 0.2.1.001079.1)
 Provides: mail-reader

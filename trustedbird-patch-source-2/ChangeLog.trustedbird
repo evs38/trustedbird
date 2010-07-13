@@ -1,0 +1,40 @@
+trustedbird (2.0.0.24+0.4.2)
+  * Fix bug #4716 - missing items from Format menu in compose window
+-- 10 May 2010
+
+trustedbird (2.0.0.24+0.4.1)
+  * Upgraded to Thunderbird 2.0.0.24
+  * Updated the build system for a Git repository
+-- 31 March 2010
+
+trustedbird (2.0.0.23+0.4.0)
+  * Merged new features: Secure Headers and SASL external
+-- 9 February 2010
+
+trustedbird (2.0.0.23+0.3.5)
+  * Rebranding
+-- 4 February 2010
+
+trustedbird (2.0.0.23+0.3.4)
+  * S/MIME Receipts: receipt generation and reception
+-- 31 August 2009
+
+trustedbird (2.0.0.23+0.3.3)
+  * Upgraded to Thunderbird 2.0.0.23
+-- 27 August 2009
+
+trustedbird (2.0.0.22+0.3.2)
+  * Upgraded to Thunderbird 2.0.0.22
+-- 29 June 2009
+
+trustedbird (2.0.0.21+0.3.1)
+  * S/MIME Receipts: fixed bug #4288 - prompt before sending receipt
+  * S/MIME Receipts: fixed bug #4286 - structure of receipt request
+  * Security Labels: fixed crash while parsing OID (bugs #4276 and #4277)
+  * Security Labels: refactoring
+-- 17 June 2009
+
+trustedbird (2.0.0.21+0.3.0)
+  * Added ChangeLog/README
+  * Upgraded to Thunderbird 2.0.0.21
+-- 17 April 2009

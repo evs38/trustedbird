@@ -1,0 +1,6 @@
+?package(trustedbird2):needs="X11" \
+	section="Applications/Network/Communication" \
+	title="Trustedbird 2" \
+	icon="/usr/share/pixmaps/trustedbird2.xpm" \
+	command="/opt/trustedbird2/trustedbird" \
+	hints="Mail"
