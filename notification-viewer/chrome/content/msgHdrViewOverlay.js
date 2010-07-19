@@ -76,9 +76,6 @@ var msgHdrViewOverlay = {
 	onStartHeaders: function() {
 		this.isNotifications=false;
 
-		if (gDBView.msgFolder == null) // true, if this is an opened .eml file
-			return;
-
 		if (!this.services)
 			this.services= new Services();
 
@@ -90,10 +87,15 @@ var msgHdrViewOverlay = {
 
 		try {
 			var msgViewIndex=gDBView.currentlyDisplayedMessage;
-			var msgKey=gDBView.getKeyAt (msgViewIndex );
-			var msgDBHdr=gDBView.msgFolder.GetMessageHeader ( msgKey );
+			var msgKey=gDBView.getKeyAt (msgViewIndex);
+			var msgDBHdr=gDBView.db.GetMsgHdrForKey(msgKey);
 
-			if (msgDBHdr) this.isNotifications = notificationsWidgets.init(msgDBHdr, false);
+			if (msgDBHdr) {
+				var seen = msgDBHdr.getStringProperty("x-nviewer-seen");
+				if (seen != "request") return;
+
+				this.isNotifications = notificationsWidgets.init(msgDBHdr, false);
+			}
 		} catch (e) {}
 	},
 
@@ -101,9 +103,6 @@ var msgHdrViewOverlay = {
 		called whenever a message is displayed
 	*/
 	onEndHeaders: function() {
-		if (gDBView.msgFolder == null)
-			return;
-
 		if (this.isNotifications && this.displayHeadersView) {
 			msgHdrViewOverlay.DSNBox.collapsed = false;
 			// Summary
@@ -119,10 +118,5 @@ var msgHdrViewOverlay = {
 }
 
 
-
 // This method allows the registration of event listeners on the event target
 addEventListener('messagepane-loaded', msgHdrViewOverlay.msgHdrViewInit, true);
-
-
-
-
