@@ -60,7 +60,7 @@
       <rdf:Description>
         <!-- Directory Contact Tabs (Engine) -->
         <em:id>directoryContactTabsEngine@trustedbird.org</em:id>
-        <em:minVersion>1.0.0beta</em:minVersion>
+        <em:minVersion>0.9.9</em:minVersion>
         <em:maxVersion>*</em:maxVersion>
       </rdf:Description>
     </em:requires>
