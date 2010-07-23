@@ -94,7 +94,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 		attachments.add(attachment0);
 		message.setAttachments(attachments);
 		
-		String[] to = { "user1@test.milimail.org", "user2test.milimail.org" };
+		String[] to = { "user1@test.trustedbird.org", "user2test.trustedbird.org" };
 		message.setTo(to);
 		boolean exceptionThrown = false;
 		try {
@@ -111,7 +111,7 @@ public class MessageServiceTestWithError extends AbstractMessageServiceTest {
 	public void testSendMessageWithAttachmentWithWrongPath() {
 		Message message = new Message();
 		message.setSubject("From Api With 1 Attachment");
-		String[] to = { "user2@test.milimail.org" };
+		String[] to = { "user2@test.trustedbird.org" };
 		message.setTo(to);
 		List<Attachment> attachments = new ArrayList<Attachment>();
 

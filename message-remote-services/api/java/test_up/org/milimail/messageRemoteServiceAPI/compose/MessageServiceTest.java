@@ -101,8 +101,8 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		security.setEncrypted(true);
 		message.setSecurity(security);
 		
-		message.setSubject("Subject from API: Crypted");
-		message.setBody("body from API Crypted");
+		message.setSubject("Subject from API: Encrypted");
+		message.setBody("body from API Encrypted");
 		
 		
 		message.setTo(to);
@@ -119,8 +119,8 @@ public class MessageServiceTest extends AbstractMessageServiceTest {
 		security.setSigned(true);
 		message.setSecurity(security);
 		
-		message.setSubject("Subject from API: Crypted & Signed");
-		message.setBody("body from API Crypted & Signed");
+		message.setSubject("Subject from API: Encrypted & Signed");
+		message.setBody("body from API Encrypted & Signed");
 		
 		
 		message.setTo(to);

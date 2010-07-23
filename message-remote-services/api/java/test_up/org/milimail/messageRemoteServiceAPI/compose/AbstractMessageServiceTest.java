@@ -56,7 +56,7 @@ import org.milimail.messageRemoteServiceAPI.stubs.MessageSendListener;
  *
  */
 public abstract class AbstractMessageServiceTest extends TestCase {
-	private static final String MAIL_ADDRESS = "user2@test.milimail.org";
+	private static final String MAIL_ADDRESS = "user2@test.trustedbird.org";
 	
 	protected MessageComposeServiceProxy composeService;
 	protected AccountServiceProxy accountService;
