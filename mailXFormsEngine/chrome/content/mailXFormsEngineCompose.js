@@ -331,6 +331,9 @@ function mailXFormsEngineComposeAddNewHeaders() {
       /* Get value from form element */
       var value = elementList[i].accessors.getValue();
 
+      if (value == "")
+        continue;
+
       /* Encode newline characters */
       value = value.replace(/\n|\r\n/g, "##BR##");
 
