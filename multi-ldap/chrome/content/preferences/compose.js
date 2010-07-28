@@ -56,9 +56,9 @@ gComposePane.initMultiLDAPGui = function() {
 
     var multiLDAPStringBundle = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService).createBundle("chrome://multi-ldap/locale/preferences/compose.properties");
 
-    /* Remove current widgets */
-    while (box.firstChild)
-        box.removeChild(box.firstChild);
+    /* Hide current widgets */
+    for (var i = 0; i < box.childNodes.length; i++)
+        box.childNodes[i].setAttribute("hidden", true);
 
     var vbox = document.createElement("vbox");
     vbox.setAttribute("flex", "1");
@@ -84,7 +84,7 @@ gComposePane.initMultiLDAPGui = function() {
     vbox.appendChild(hbox);
 
     var button = document.createElement("button");
-    button.setAttribute("id", "editButton");
+    button.setAttribute("id", "editButton2");
     button.setAttribute("label", multiLDAPStringBundle.GetStringFromName("editDirectories"));
     button.setAttribute("oncommand", "gComposePane.editDirectories(); gComposePane.fillDirectoryList();");
     button.setAttribute("preference", "pref.ldap.disable_button.edit_directories");

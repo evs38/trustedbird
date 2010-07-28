@@ -91,7 +91,7 @@ function onSave(identity) {
 function initMultiLDAPGui() {
     var element = document.getElementById("identity.overrideGlobal_Pref");
     if (!element) {
-        dump("Multi-LDAP add-on: can't get find \"identity.overrideGlobal_Pref\" node in order to update GUI!\n");
+        dump("Multi-LDAP add-on: can't find \"identity.overrideGlobal_Pref\" node in order to update GUI!\n");
         return;
     }
 
@@ -102,9 +102,10 @@ function initMultiLDAPGui() {
     else
         identityKey = "undefined";
 
-    /* Remove current widgets */
     var parent = element.parentNode;
-    parent.removeChild(element);
+
+    /* Hide current widgets */
+    element.setAttribute("hidden", true);
 
     /* Override global prefs radios */
     var radiogroup = document.createElement("radiogroup");
@@ -140,7 +141,7 @@ function initMultiLDAPGui() {
     radiogroup.appendChild(hbox);
 
     var button = document.createElement("button");
-    button.setAttribute("id", "editButton");
+    button.setAttribute("id", "editButton2");
     button.setAttribute("label", multiLDAPStringBundle.GetStringFromName("editDirectoriesButton"));
     button.setAttribute("oncommand", "onEditDirectories(); fillDirectoryList();");
     button.setAttribute("accesskey", multiLDAPStringBundle.GetStringFromName("editDirectoriesButton.accesskey"));
@@ -227,7 +228,7 @@ function enableAutocomplete() {
                 elements[i].removeAttribute("disabled");
         }
 
-        document.getElementById("editButton").removeAttribute("disabled");
+        document.getElementById("editButton2").removeAttribute("disabled");
 
         document.getElementById("autocompleteMinStringLength").removeAttribute("disabled");
     } else {
@@ -239,7 +240,7 @@ function enableAutocomplete() {
                 elements[i].setAttribute("disabled", true);
         }
 
-        document.getElementById("editButton").setAttribute("disabled", true);
+        document.getElementById("editButton2").setAttribute("disabled", true);
 
         document.getElementById("autocompleteMinStringLength").setAttribute("disabled", true);
 
