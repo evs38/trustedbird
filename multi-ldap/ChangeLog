@@ -1,3 +1,7 @@
+multi-ldap (1.1.4)
+  * Fix LDAP session handling
+-- Jul 29 2010
+
 multi-ldap (1.1.3)
   * Add Thunderbird 3.1 compatibility
   * Fix UI refresh when adding/removing directories
