@@ -67,7 +67,7 @@ $ ant -Damo=1 package-addons
       </then>
     </if>
 
-    <echo message="Building with Thunderbird ${version}" />
+    <echo message="Building with Thunderbird ${version} branch" />
 
     <propertycopy name="local.source.file.name" from="thunderbird${version}.source.file.name" />
     <propertycopy name="local.source.file.sha1sum" from="thunderbird${version}.source.file.sha1sum" />
