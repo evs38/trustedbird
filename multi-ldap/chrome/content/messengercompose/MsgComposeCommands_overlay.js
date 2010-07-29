@@ -20,7 +20,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Eric Ballet Baz BT Global Services / Etat francais Ministere de la Defense
+ *   Eric Ballet Baz / BT Global Services / Etat francais Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -38,26 +39,24 @@
 
 // Global variables and constants.
 var gCurrentAutocompleteDirectoryList;
-var gLDAPSessions;
 var gLDAPSessionList;
 var gSessionsAdded;
 var bActiveDump;
 
-// Replace the built in ComposeLoad function with our own...
+// Replace ComposeLoad function
 var multildap_OriginalComposeLoad = ComposeLoad;
-ComposeLoad = function multildap_ComposeLoad() {
+ComposeLoad = function() {
     // Enable display of source address book in autocomplete popup
     trustedBird_prefService_setIntPref("mail.autoComplete.commentColumn", 1);
 
-    // Call built in ComposeLoad function
+    // Call built-in ComposeLoad function
     multildap_OriginalComposeLoad();
 }
 
-// Replace the built in InitializeGlobalVariables function with our own...
+// Replace InitializeGlobalVariables function
 var multildap_OriginalInitializeGlobalVariables = InitializeGlobalVariables;
-InitializeGlobalVariables = function multildap_InitializeGlobalVariables() {
-
-    // Call built in InitializeGlobalVariables function
+InitializeGlobalVariables = function() {
+    // Call built-in InitializeGlobalVariables function
     multildap_OriginalInitializeGlobalVariables();
 
     gCurrentAutocompleteDirectoryList = null;
@@ -67,16 +66,50 @@ InitializeGlobalVariables = function multildap_InitializeGlobalVariables() {
 
 InitializeGlobalVariables();
 
-// Replace the built in ReleaseGlobalVariables function with our own...
+// Replace ReleaseGlobalVariables function
 var multildap_OriginalReleaseGlobalVariables = ReleaseGlobalVariables;
-ReleaseGlobalVariables = function multildap_ReleaseGlobalVariables() {
-
-    // Call built in ReleaseGlobalVariables function
+ReleaseGlobalVariables = function() {
+    // Call built-in ReleaseGlobalVariables function
     multildap_OriginalReleaseGlobalVariables();
 
     gCurrentAutocompleteDirectoryList = null;
+
+    if (gLDAPSessionList) {
+        for (var k = 0; k < gLDAPSessionList.length; k++) {
+            gLDAPSessionList[k] = null;
+            gSessionsAdded[k] = false;
+        }
+    }
+
     gLDAPSessionList = null;
     gSessionsAdded = null;
+
+    try {Components.utils.forceGC();} catch (e) {}
+}
+
+// Replace ReleaseAutoCompleteState function
+var multildap_OriginalReleaseAutoCompleteState = ReleaseAutoCompleteState;
+ReleaseAutoCompleteState = function() {
+    // Call built-in ReleaseAutoCompleteState function
+    multildap_OriginalReleaseAutoCompleteState();
+
+    if (gLDAPSessionList) {
+        for (var k = 0; k < gLDAPSessionList.length; k++) {
+            if (gSessionsAdded[k]) {
+                var maxRecipients = awGetMaxRecipients();
+                for (var i = 1; i <= maxRecipients; i++)
+                    document.getElementById("addressCol2#" + i).removeSession(gLDAPSessionList[k]);
+                gSessionsAdded[k] = false;
+            }
+            gLDAPSessionList[k] = null;
+        }
+    }
+
+    gSetupLdapAutocomplete = false;
+    gLDAPSessionList = null;
+    gSessionsAdded = null;
+
+    try {Components.utils.forceGC();} catch (e) {}
 }
 
 function AddDirectorySettingsObserver(autocompleteDirectoryList) {
@@ -134,10 +167,10 @@ function setupLdapAutocompleteSession() {
     // global with a partially setup session. we'll assign the temp
     // into the global after we're done setting up the session
     //
-    var LDAPSessions = new Array();
+    var LDAPSessionList = new Array();
     var LDAPSession;
     if (gLDAPSessionList) {
-        LDAPSessions = gLDAPSessionsList;
+        LDAPSessionList = gLDAPSessionList;
     } else {
         for (var i = 0; i < directoryNb; i++) {
             LDAPSession = Components.classes["@mozilla.org/autocompleteSession;1?type=ldap"];
@@ -148,7 +181,7 @@ function setupLdapAutocompleteSession() {
                     dump("ERROR: Cannot get the LDAP autocomplete session\n" + ex + "\n");
                 }
             }
-            LDAPSessions.push(LDAPSession);
+            LDAPSessionList.push(LDAPSession);
         }
     }
 
@@ -167,9 +200,9 @@ function setupLdapAutocompleteSession() {
 
         // fill in the session params if there is a session
         //
-        if (LDAPSessions) {
+        if (LDAPSessionList) {
             for (var k = 0; k < directoryNb; k++) {
-                var LDAPSession = LDAPSessions[k];
+                var LDAPSession = LDAPSessionList[k];
                 var url;
                 try {
                     url = trustedBird_prefService_getComplexPref(autocompleteDirectoryList[k] + ".uri", Components.interfaces.nsISupportsString);
@@ -319,7 +352,8 @@ function setupLdapAutocompleteSession() {
                     // succeeded; add the session for all recipients, and
                     // remember that we've done so
                     var autoCompleteWidget;
-                    for (var i = 1; i <= awGetMaxRecipients(); i++) {
+                    var maxRecipients = awGetMaxRecipients();
+                    for (var i = 1; i <= maxRecipients; i++) {
                         autoCompleteWidget = document.getElementById("addressCol2#" + i);
                         if (autoCompleteWidget) {
                             autoCompleteWidget.addSession(LDAPSession);
@@ -337,18 +371,18 @@ function setupLdapAutocompleteSession() {
             RemoveDirectorySettingsObserver(gCurrentAutocompleteDirectoryList);
             gCurrentAutocompleteDirectoryList = null;
         }
-        if (gLDAPSessions) {
-
-            for (var k = 0; k < gLDAPSessions.Length; k++) {
+        if (gLDAPSessionList) {
+            for (var k = 0; k < gLDAPSessionList.length; k++) {
                 if (gSessionsAdded[k]) {
-                    for (var i = 1; i <= awGetMaxRecipients(); i++)
-                        document.getElementById("addressCol2#" + i).removeSession(gLDAPSessions[k]);
+                    var maxRecipients = awGetMaxRecipients();
+                    for (var i = 1; i <= maxRecipients; i++)
+                        document.getElementById("addressCol2#" + i).removeSession(gLDAPSessionList[k]);
                     gSessionsAdded[k] = false;
                 }
             }
         }
     }
 
-    gLDAPSessions = LDAPSessions;
+    gLDAPSessionList = LDAPSessionList;
     gSetupLdapAutocomplete = true;
 }
