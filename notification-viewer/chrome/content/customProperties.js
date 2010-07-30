@@ -196,7 +196,7 @@ function customProperties(deliveredToProperty) {
 	
 	this.messageDate = 0;
 	
-	if (deliveredToProperty.length != 0) {
+	if (deliveredToProperty && deliveredToProperty.length > 0) {
 		var tmpArray = deliveredToProperty.split(":"); // get rows
 		
 		this.messageDate = tmpArray[0];
@@ -240,7 +240,7 @@ function customProperties(deliveredToProperty) {
 						if (Values.length>currentIndex)
 							messageId=Values[currentIndex];
 
-						if (this.regExpCache.validAddr.test(messageId) && this.regExpCache.validDsnReport.test(actionValue))
+						if (this.regExpCache.validDsnReport.test(actionValue))
 							newDeliveredTo.dsnList.push(new dsnProperty(actionValue, messageId));
 					}
 					// now, get mdn
@@ -264,7 +264,7 @@ function customProperties(deliveredToProperty) {
 						if (Values.length>currentIndex)
 							messageId=Values[currentIndex];
 
-						if (this.regExpCache.validAddr.test(messageId) && this.regExpCache.validMdnReport.test(dispositionType))
+						if (this.regExpCache.validMdnReport.test(dispositionType))
 							newDeliveredTo.mdnList.push(new mdnProperty(dispositionType, messageId));
 					}
 				}
@@ -340,7 +340,6 @@ customProperties.prototype = {
 		var finalRecipient=dveryReport.finalRecipient;
 		var actionValue=dveryReport.actionValue;
 
-		if (! this.regExpCache.validAddr.test(messageId)) return false;
 		if (! this.regExpCache.validDsnReport.test(actionValue)) return false;
 		if (! this.regExpCache.validAddr.test(finalRecipient)) return false;
 
@@ -384,7 +383,6 @@ customProperties.prototype = {
 		var finalRecipient=report.finalRecipient;
 		var dispositionType=report.dispositionType;
 
-		if (! this.regExpCache.validAddr.test(messageId)) return false;
 		if (! this.regExpCache.validMdnReport.test(dispositionType)) return false;
 
 		// get address from final-recipient fields (see RFC3464)

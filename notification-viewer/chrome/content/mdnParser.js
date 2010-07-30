@@ -298,7 +298,7 @@ mdnParser.prototype.getReportFromFields = function(mdnFieds) {
 	if (disposition.length >1) dispositionType=disposition[1].replace(this.regExpCache.trim, "");
 
 	// minimum required (disposition field and final-recipient field)
-	if (dispositionType.length!=0 && finalRecipient.length!=0 && this.isValidDisposition(dispositionType))
+	if (dispositionType.length!=0 && finalRecipient.length!=0 && this.isValidDisposition(dispositionType) && originalMessageId.length != 0)
 	{
 		//create new object
 		var report=new mdnReport();

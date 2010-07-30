@@ -1,7 +1,8 @@
-notification-viewer (1.0.3)
+notification-viewer (-)
   * Add Thunderbird 3.1 compatibility
   * Fix notification info for messages displayed in tabs
--- Jul 19 2010
+  * Fix Microsoft Exchange DSN compatibility
+-- Jul 30 2010
 
 notification-viewer (1.0.2)
   * Fix Thunderbird 3 compatibility

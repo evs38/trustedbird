@@ -86,13 +86,10 @@ var msgHdrViewOverlay = {
 			return;
 
 		try {
-			var msgViewIndex=gDBView.currentlyDisplayedMessage;
-			var msgKey=gDBView.getKeyAt (msgViewIndex);
-			var msgDBHdr=gDBView.db.GetMsgHdrForKey(msgKey);
+			var msgDBHdr = gDBView.hdrForFirstSelectedMessage;
 
 			if (msgDBHdr) {
-				var seen = msgDBHdr.getStringProperty("x-nviewer-seen");
-				if (seen != "request") return;
+				if (msgDBHdr.getStringProperty("x-nviewer-to") == "") return;
 
 				this.isNotifications = notificationsWidgets.init(msgDBHdr, false);
 			}

@@ -161,8 +161,7 @@ findMsgDb.prototype = {
 		regular expressions cache
 	*/
 	regExpCache : {
-		validURI: new RegExp("^(imap://|mailbox://)","i"),
-		validMsgId: new RegExp("^(<|).+@.+(>|)$","i")
+		validURI: new RegExp("^(imap://|mailbox://)","i")
 	},
 
 	/**
@@ -182,8 +181,6 @@ findMsgDb.prototype = {
 		var MASK=this.FLAG_SUB_FOLDERS | this.FLAG_ALL_ACCOUNTS | this.FLAG_TRASH;
 		this.flags=(this.flags & MASK);
 
-		if (! this.regExpCache.validMsgId.test(messageId))
-			return null;
 		this.messageId=messageId.replace(/>|</ig,"");
 
 		this.services.logSrv("findMsgDb - searchByMsgId: "+this.messageId+" - flags: "+this.flags);
