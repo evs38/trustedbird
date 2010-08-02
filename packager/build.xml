@@ -410,9 +410,8 @@ $ ant -Damo=1 package-addons
     <!-- Get revision from Git -->
     <if>
       <or>
-        <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird2" />
         <equals arg1="${local.addon.name}" arg2="all-addons-tb2" />
-        <equals arg1="${local.addon.name}" arg2="all-addons-tb3" />
+        <equals arg1="${local.addon.name}" arg2="all-addons-tb30" />
       </or>
       <then>
         <!-- Get last project revision for all-addons -->
@@ -484,16 +483,6 @@ $ ant -Damo=1 package-addons
       </else>
     </if>
 
-    <!-- Only for special add-ons 'all-addons-trustedbird2': copy all already built add-ons -->
-    <if>
-      <equals arg1="${local.addon.name}" arg2="all-addons-trustedbird2" />
-      <then>
-        <copy todir="${local.build.dir}/${local.addon.name}/">
-          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-trustedbird2.includes}" excludes="all-addons* ${addon.all-addons-trustedbird2.excludes}" />
-        </copy>
-      </then>
-    </if>
-
     <!-- Only for special add-ons 'all-addons-tb2': copy all already built add-ons -->
     <if>
       <equals arg1="${local.addon.name}" arg2="all-addons-tb2" />
@@ -504,12 +493,12 @@ $ ant -Damo=1 package-addons
       </then>
     </if>
 
-    <!-- Only for special add-ons 'all-addons-tb3': copy all already built add-ons -->
+    <!-- Only for special add-ons 'all-addons-tb30': copy all already built add-ons -->
     <if>
-      <equals arg1="${local.addon.name}" arg2="all-addons-tb3" />
+      <equals arg1="${local.addon.name}" arg2="all-addons-tb30" />
       <then>
         <copy todir="${local.build.dir}/${local.addon.name}/">
-          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-tb3.includes}" excludes="all-addons* ${addon.all-addons-tb3.excludes}" />
+          <fileset dir="${local.dist.dir}" includes="${addon.all-addons-tb30.includes}" excludes="all-addons* ${addon.all-addons-tb30.excludes}" />
         </copy>
       </then>
     </if>
