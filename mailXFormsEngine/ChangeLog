@@ -1,4 +1,4 @@
-mailXFormsEngine (1.0.2)
+mailXFormsEngine (-)
   * Don't send headers with empty values
 -- Jul 26 2010
 
