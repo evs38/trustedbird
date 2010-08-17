@@ -15,8 +15,7 @@ ant -Dnightly=1 -Dversion=3.1 distclean trustedbird >"$LOG" 2>&1 || { echo "buil
 # Prepare files
 [ -d dist ] || exit
 mkdir -p dist/$DIRECTORY_NAME 
-mv dist/*.exe dist/*.xpi dist/$DIRECTORY_NAME/ >/dev/null 2>&1
+mv dist/*.exe dist/$DIRECTORY_NAME/ >/dev/null 2>&1
 
 # Upload files
 scp -r dist/$DIRECTORY_NAME $REMOTE_SERVER:$REMOTE_DIRECTORY/nightly/ >/dev/null 2>&1 || echo "scp failed"
-scp -r dist/updates $REMOTE_SERVER:$REMOTE_DIRECTORY/ >/dev/null 2>&1 || echo "scp failed"

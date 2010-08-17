@@ -19,7 +19,6 @@ mv dist/*.xpi dist/*.zip dist/*.tar.gz dist/*.tar.bz2 dist/*.deb dist/$DIRECTORY
 
 # Upload files
 scp -r dist/$DIRECTORY_NAME $REMOTE_SERVER:$REMOTE_DIRECTORY/nightly/ >/dev/null 2>&1 || echo "scp failed"
-scp -r dist/updates $REMOTE_SERVER:$REMOTE_DIRECTORY/ >/dev/null 2>&1 || echo "scp failed"
 
 # Create "latest" link
 ssh $REMOTE_SERVER rm $REMOTE_DIRECTORY/nightly/latest
