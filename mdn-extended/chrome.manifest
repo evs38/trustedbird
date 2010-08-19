@@ -1,4 +1,6 @@
 content mdn_extended chrome/content/
+locale  mdn_extended en chrome/locale/en/
+locale  mdn_extended fr chrome/locale/fr/
 
 overlay chrome://messenger/content/messenger.xul     chrome://mdn_extended/content/messenger_overlay.xul appversion>=3
 overlay chrome://messenger/content/messageWindow.xul chrome://mdn_extended/content/messageWindow_overlay.xul appversion>=3

@@ -176,7 +176,30 @@ function MDNExtendedHandleMDNDeleteResponse(aMsgDBHdr, aMimeHeaders) {
   /* Everything looks good so far, let's generate the MDN response */
   var mdnGenerator = Components.classes["@mozilla.org/messenger-mdn/generator;1"].createInstance(Components.interfaces.nsIMsgMdnGenerator);
   const MDN_DISPOSE_TYPE_DELETED = 3;
-  mdnGenerator.process(MDN_DISPOSE_TYPE_DELETED, msgWindow, msgFolder, aMsgDBHdr.messageKey, aMimeHeaders, false);
+  let askUser = mdnGenerator.process(MDN_DISPOSE_TYPE_DELETED, msgWindow, msgFolder, aMsgDBHdr.messageKey, aMimeHeaders, false);
+
+  /* Since Thunderbird 3.1, process function doesn't send directly the MDN but rely on a question through the notification bar */
+  if (typeof mdnGenerator.userAgreed == "function" && askUser) {
+    var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                  .getService(Components.interfaces.nsIPromptService);
+
+    var mdnDeleteStringBundle = Components.classes["@mozilla.org/intl/stringbundle;1"]
+                                    .getService(Components.interfaces.nsIStringBundleService)
+                                    .createBundle("chrome://mdn_extended/locale/mdn_extended.properties");
+
+    const nsIPS = Components.interfaces.nsIPromptService;
+    var result = promptService.confirmEx(null,
+                                         null,
+                                         mdnDeleteStringBundle.GetStringFromName("mdnDeletePromptMessage"),
+                                         nsIPS.BUTTON_POS_1_DEFAULT + nsIPS.BUTTON_POS_0 * nsIPS.BUTTON_TITLE_IS_STRING + nsIPS.BUTTON_POS_1 * nsIPS.BUTTON_TITLE_IS_STRING,
+                                         mdnDeleteStringBundle.GetStringFromName("mdnDeletePromptSendReceipt"),
+                                         mdnDeleteStringBundle.GetStringFromName("mdnDeletePromptIgnoreRequest"),
+                                         "", "", {});
+    if (result == 0)
+      mdnGenerator.userAgreed();
+    else
+      mdnGenerator.userDeclined();
+  }
 }
 
 /**
@@ -193,7 +216,7 @@ SetupCommandUpdateHandlers = function() {
 
   /* Change delete button command when several messages are selected
      in chrome://messenger/content/multimessageview.xhtml:
-       onlick = if (event.button == 0) window.top.DefaultController.doCommand('cmd_delete');
+       onclick = if (event.button == 0) window.top.DefaultController.doCommand('cmd_delete');
    */
   try {
     element = document.getElementById("multimessage").contentDocument.getElementById("trash");
