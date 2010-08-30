@@ -762,6 +762,56 @@ NSS_SMIMESignerInfo_SaveSMIMEProfile(NSSCMSSignerInfo *signerinfo);
 extern SECStatus
 NSS_CMSSignerInfo_IncludeCerts(NSSCMSSignerInfo *signerinfo, NSSCMSCertChainMode cm, SECCertUsage usage);
 
+/*
+ * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *aSignerinfo,
+                                    char *aSignedContentIdentifier,
+                                    char *aReceiptsTo);
+
+/*
+ * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest attr value
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo,
+                                    PRBool *aHasReceiptRequest,
+                                    PRUint8 **aSignedContentIdentifier,
+                                    PRUint32 *aSignedContentIdentifierLen,
+                                    PRUint32 *aReceiptsFrom,
+                                    char **aReceiptsTo,
+                                    PRUint8 **aOriginatorSignatureValue,
+                                    PRUint32 *aOriginatorSignatureValueLen,
+                                    PRUint8 **aOriginatorContentType,
+                                    PRUint32 *aOriginatorContentTypeLen,
+                                    PRUint8 **aMsgSigDigest,
+                                    PRUint32 *aMsgSigDigestLen);
+
+/*
+ * NSS_CMSSignerInfo_AddMsgSigDigest - add a MsgSigDigest attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddMsgSigDigest(NSSCMSSignerInfo *aSignerinfo,
+                                  PRUint8 *aReceiptMsgSigDigest,
+                                  PRUint32 aReceiptMsgSigDigestLen);
+
+/*
+ * NSS_CMSSignerInfo_GetMsgSigDigest - get the MsgSigDigest attribute from the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetMsgSigDigest(NSSCMSSignerInfo *aSignerinfo,
+                                  PRUint8 **aReceiptMsgSigDigest,
+                                  PRUint32 *aReceiptMsgSigDigestLen);
+
+/*
+ * NSS_CMSSignerInfo_HasReceipt - check if signer info's content-type attribute is S/MIME Receipt
+ */
+extern PRBool
+NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo);
+
 /************************************************************************
  * cmsenvdata.c - CMS envelopedData methods
  ************************************************************************/

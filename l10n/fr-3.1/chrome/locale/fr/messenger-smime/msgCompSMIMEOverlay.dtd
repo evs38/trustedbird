@@ -13,3 +13,6 @@
 
 <!ENTITY menu_viewSecurityStatus.label "Infos de sécurité du message">
 <!ENTITY menu_viewSecurityStatus.accesskey "I">
+
+<!ENTITY menu_securitySMIMEReceiptRequest.label "Demander un accusé de réception signé">
+<!ENTITY menu_securitySMIMEReceiptRequest.accesskey "D">

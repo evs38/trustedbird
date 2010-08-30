@@ -493,3 +493,15 @@ toolbar[iconsize="small"] #button-archive[disabled] {
 #phishingBarImage {
   list-style-image: url("chrome://messenger/skin/icons/phishing.png");
 }
+
+#SMIMEReceiptRequestBarImage {
+  list-style-image: url("chrome://messenger/skin/smime/icons/hdrSignOk.png");
+}
+
+#SMIMEReceiptVerifiedBar {
+  background-color: #9AE3B1;
+}
+
+#SMIMEReceiptBarImage {
+  list-style-image: url("chrome://messenger/skin/smime/icons/hdrSignOk.png");
+}

@@ -14,3 +14,6 @@
 
 <!ENTITY menu_viewSecurityStatus.label "Message Security Info">
 <!ENTITY menu_viewSecurityStatus.accesskey "I">
+
+<!ENTITY menu_securitySMIMEReceiptRequest.label "Request a Signed Receipt">
+<!ENTITY menu_securitySMIMEReceiptRequest.accesskey "R">

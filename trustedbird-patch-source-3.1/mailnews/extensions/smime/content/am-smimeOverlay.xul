@@ -84,6 +84,23 @@
       <checkbox id="identity.sign_mail" wsm_persist="true"
                 prefstring="mail.identity.%identitykey%.sign_mail"
                 label="&signMessage.label;" accesskey="&signMessage.accesskey;"/>
+
+      <checkbox id="identity.smime_receipt_request" wsm_persist="true"
+                prefstring="mail.identity.%identitykey%.smime_receipt_request"
+                label="&SMIMEReceiptRequest.label;" accesskey="&SMIMEReceiptRequest.accesskey;"/>
+
+      <hbox align="center">
+        <label id="SMIMEReceiptSendPolicyLabel" value="&SMIMEReceiptSendPolicy.label;"
+               control="identity.smime_receipt_send_policy" accesskey="&SMIMEReceiptSendPolicy.accesskey;"/>
+
+        <menulist id="identity.smime_receipt_send_policy" wsm_persist="true">
+          <menupopup>
+            <menuitem value="1" label="&SMIMEReceiptSendPolicy.neverSend.label;"/>
+            <menuitem value="2" label="&SMIMEReceiptSendPolicy.alwaysSend.label;"/>
+            <menuitem value="0" label="&SMIMEReceiptSendPolicy.askMe.label;"/>
+          </menupopup>
+        </menulist>
+      </hbox>
     </groupbox>
 
     <groupbox id="encryption.titlebox">

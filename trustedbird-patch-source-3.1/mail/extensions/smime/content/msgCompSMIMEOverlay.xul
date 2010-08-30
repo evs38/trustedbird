@@ -70,6 +70,11 @@
               label="&menu_securitySign.label;"
               accesskey="&menu_securitySign.accesskey;"
               oncommand="toggleSignMessage();"/>
+    <menuitem id="menu_securitySMIMEReceiptRequest1"
+              type="checkbox"
+              label="&menu_securitySMIMEReceiptRequest.label;"
+              accesskey="&menu_securitySMIMEReceiptRequest.accesskey;"
+              oncommand="toggleSMIMEReceiptRequest()"/>
   </menupopup>
 
   <toolbarpalette id="MsgComposeToolbarPalette">
@@ -87,6 +92,11 @@
                   label="&menu_securitySign.label;"
                   accesskey="&menu_securitySign.accesskey;"
                   oncommand="setNextCommand('signMessage');"/>
+        <menuitem id="menu_securitySMIMEReceiptRequest2"
+                  type="checkbox"
+                  label="&menu_securitySMIMEReceiptRequest.label;"
+                  accesskey="&menu_securitySMIMEReceiptRequest.accesskey;"
+                  oncommand="setNextCommand('SMIMEReceiptRequest');"/>
         <menuseparator id="smimeToolbarButtonSeparator"/>
         <menuitem id="menu_securityStatus2"
                   label="&menu_securityStatus.label;"

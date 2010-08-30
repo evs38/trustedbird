@@ -20,6 +20,13 @@
 <!ENTITY signMessage.label "Digitally sign messages (by default)">
 <!ENTITY signMessage.accesskey "D">
 <!ENTITY signingCert.message "Use this certificate to digitally sign messages you send:">
+<!ENTITY SMIMEReceiptRequest.label "When sending signed messages, always request a signed receipt">
+<!ENTITY SMIMEReceiptRequest.accesskey "W">
+<!ENTITY SMIMEReceiptSendPolicy.label "When I receive a request for a signed receipt:">
+<!ENTITY SMIMEReceiptSendPolicy.accesskey "R">
+<!ENTITY SMIMEReceiptSendPolicy.askMe.label "Ask me">
+<!ENTITY SMIMEReceiptSendPolicy.neverSend.label "Never send">
+<!ENTITY SMIMEReceiptSendPolicy.alwaysSend.label "Always send">
 
 <!ENTITY certificates.label "Certificates">
 <!ENTITY manageCerts.label "View Certificates">

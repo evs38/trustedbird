@@ -73,6 +73,12 @@ nss_cms_choose_content_template(void *src_or_dest, PRBool encoding);
 static const SEC_ASN1TemplateChooserPtr nss_cms_chooser
 	= nss_cms_choose_content_template;
 
+static const SEC_ASN1Template *
+nss_cms_choose_raw_content_template(void *src_or_dest, PRBool encoding);
+
+static const SEC_ASN1TemplateChooserPtr nss_cms_raw_content_chooser
+        = nss_cms_choose_raw_content_template;
+
 const SEC_ASN1Template NSSCMSMessageTemplate[] = {
     { SEC_ASN1_SEQUENCE | SEC_ASN1_MAY_STREAM,
 	  0, NULL, sizeof(NSSCMSMessage) },
@@ -99,9 +105,9 @@ static const SEC_ASN1Template NSSCMSEncapsulatedContentInfoTemplate[] = {
     { SEC_ASN1_OBJECT_ID,
 	  offsetof(NSSCMSContentInfo,contentType) },
     { SEC_ASN1_OPTIONAL | SEC_ASN1_EXPLICIT | SEC_ASN1_MAY_STREAM |
-	SEC_ASN1_CONSTRUCTED | SEC_ASN1_CONTEXT_SPECIFIC | SEC_ASN1_XTRN | 0,
+	SEC_ASN1_CONSTRUCTED | SEC_ASN1_CONTEXT_SPECIFIC | SEC_ASN1_DYNAMIC | 0,
 	  offsetof(NSSCMSContentInfo,rawContent),
-	  SEC_ASN1_SUB(SEC_PointerToOctetStringTemplate) },
+	  &nss_cms_raw_content_chooser },
     { 0 }
 };
 
@@ -573,6 +579,31 @@ nss_cms_choose_content_template(void *src_or_dest, PRBool encoding)
     case SEC_OID_PKCS7_ENCRYPTED_DATA:
 	theTemplate = NSS_PointerToCMSEncryptedDataTemplate;
 	break;
+    }
+    return theTemplate;
+}
+
+static const SEC_ASN1Template *
+nss_cms_choose_raw_content_template(void *src_or_dest, PRBool encoding)
+{
+    const SEC_ASN1Template *theTemplate;
+    NSSCMSContentInfo *cinfo;
+
+    PORT_Assert (src_or_dest != NULL);
+    if (src_or_dest == NULL)
+        return NULL;
+
+    cinfo = (NSSCMSContentInfo *)src_or_dest;
+    switch (NSS_CMSContentInfo_GetContentTypeTag(cinfo)) {
+    case SEC_OID_PKCS7_DATA:
+        theTemplate = SEC_ASN1_GET(SEC_PointerToOctetStringTemplate);
+        break;
+    case SEC_OID_SMIME_RECEIPT:
+        theTemplate = SEC_ASN1_GET(SEC_PointerToAnyTemplate);
+        break;
+    default:
+        theTemplate = SEC_ASN1_GET(SEC_PointerToOctetStringTemplate);
+        break;
     }
     return theTemplate;
 }

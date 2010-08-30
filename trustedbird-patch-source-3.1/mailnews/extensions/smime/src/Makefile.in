@@ -64,6 +64,7 @@ CPPSRCS		= \
                 nsMsgComposeSecure.cpp \
                 nsSMimeJSHelper.cpp \
                 nsEncryptedSMIMEURIsService.cpp \
+                nsMsgSMIMEReceiptGenerator.cpp \
 		$(NULL)
 
 EXTRA_COMPONENTS = smime-service.js

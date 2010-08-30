@@ -108,6 +108,10 @@ typedef struct NSSCMSEncoderContextStr NSSCMSEncoderContext;
 typedef struct NSSCMSCipherContextStr NSSCMSCipherContext;
 typedef struct NSSCMSDigestContextStr NSSCMSDigestContext;
 
+typedef struct NSSCMSReceiptRequestStr NSSCMSReceiptRequest;
+typedef struct NSSCMSReceiptRequestGeneralNamesStr NSSCMSReceiptRequestGeneralNames;
+typedef struct NSSCMSReceiptStr NSSCMSReceipt;
+
 /*
  * Type of function passed to NSSCMSDecode or NSSCMSDecoderStart.
  * If specified, this is where the content bytes (only) will be "sent"
@@ -261,6 +265,25 @@ typedef enum {
     NSSCMSCM_CertChain = 2,
     NSSCMSCM_CertChainWithRoot = 3
 } NSSCMSCertChainMode;
+
+/* ESS Signed Receipt Request */
+struct NSSCMSReceiptRequestGeneralNamesStr {
+    SECItem **generalNameSeq;
+};
+
+struct NSSCMSReceiptRequestStr {
+    SECItem signedContentIdentifier;
+    SECItem receiptsFrom;
+    NSSCMSReceiptRequestGeneralNames **receiptsTo;
+};
+
+/* ESS Signed Receipt */
+struct NSSCMSReceiptStr {
+    SECItem version;
+    SECItem contentType;
+    SECItem signedContentIdentifier;
+    SECItem originatorSignatureValue;
+};
 
 /* =============================================================================
  * ENVELOPED DATA

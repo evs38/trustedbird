@@ -53,6 +53,8 @@ var gSignCertName  = null;
 var gSignMessages  = null;
 var gEncryptAlways = null;
 var gNeverEncrypt = null;
+var gSMIMEReceiptRequest = null;
+var gSMIMEReceiptSendPolicy = null;
 var gBundle = null;
 var gBrandBundle;
 var gSmimePrefbranch;
@@ -76,6 +78,8 @@ function smimeInitializeFields()
   gSignMessages       = document.getElementById("identity.sign_mail");
   gEncryptAlways      = document.getElementById("encrypt_mail_always");
   gNeverEncrypt       = document.getElementById("encrypt_mail_never");
+  gSMIMEReceiptRequest    = document.getElementById("identity.smime_receipt_request");
+  gSMIMEReceiptSendPolicy = document.getElementById("identity.smime_receipt_send_policy");
   gBundle             = document.getElementById("bundle_smime");
   gBrandBundle        = document.getElementById("bundle_brand");
 
@@ -94,9 +98,14 @@ function smimeInitializeFields()
     gEncryptAlways.setAttribute("disabled", true);
     gNeverEncrypt.setAttribute("disabled", true);
     gSignMessages.setAttribute("disabled", true);
+    gSMIMEReceiptRequest.setAttribute("disabled", true);
+    gSMIMEReceiptSendPolicy.setAttribute("disabled", true);
 
     gSignMessages.checked = false;
     gEncryptionChoices.value = 0;
+
+    gSMIMEReceiptRequest.checked = false;
+    gSMIMEReceiptSendPolicy.value = 0;
   }
   else {
     gEncryptionCertName.value = gIdentity.getUnicharAttribute("encryption_cert_name");
@@ -113,9 +122,13 @@ function smimeInitializeFields()
 
     gSignCertName.value = gIdentity.getUnicharAttribute("signing_cert_name");
     gSignMessages.checked = gIdentity.getBoolAttribute("sign_mail");
+    gSMIMEReceiptRequest.checked = gIdentity.getBoolAttribute("smime_receipt_request");
+    gSMIMEReceiptSendPolicy.value = gIdentity.getIntAttribute("smime_receipt_send_policy");
     if (!gSignCertName.value)
     {
       gSignMessages.setAttribute("disabled", true);
+      gSMIMEReceiptRequest.setAttribute("disabled", true);
+      gSMIMEReceiptSendPolicy.setAttribute("disabled", true);
     }
     else {
       enableSigningControls(true);
@@ -152,6 +165,9 @@ function smimeSave()
 
   gIdentity.setBoolAttribute("sign_mail", gSignMessages.checked);
   gIdentity.setUnicharAttribute("signing_cert_name", gSignCertName.value);
+
+  gIdentity.setBoolAttribute("smime_receipt_request", gSMIMEReceiptRequest.checked);
+  gIdentity.setIntAttribute("smime_receipt_send_policy", gSMIMEReceiptSendPolicy.value);
 }
 
 function smimeOnAcceptEditor()
@@ -408,10 +424,18 @@ function enableSigningControls(do_enable)
 
   if (do_enable) {
     gSignMessages.removeAttribute("disabled");
+
+    gSMIMEReceiptRequest.removeAttribute("disabled");
+    gSMIMEReceiptSendPolicy.removeAttribute("disabled");
   }
   else {
     gSignMessages.setAttribute("disabled", "true");
     gSignMessages.checked = false;
+
+    gSMIMEReceiptRequest.setAttribute("disabled", "true");
+    gSMIMEReceiptRequest.checked = false;
+    gSMIMEReceiptSendPolicy.setAttribute("disabled", "true");
+    gSMIMEReceiptSendPolicy.value = 0;
   }
 }
 

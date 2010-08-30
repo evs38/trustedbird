@@ -46,11 +46,29 @@
 
 interface nsIX509Cert;
 
-[scriptable, uuid(25380FA1-E70C-4e82-B0BC-F31C2F41C470)]
+[scriptable, uuid(90c0dc42-ec4f-4ec8-9358-c3ff54a19e07)]
 interface nsIMsgSMIMEHeaderSink : nsISupports 
 {
   void signedStatus(in long aNestingLevel, in long aSignatureStatus, in nsIX509Cert aSignerCert);
   void encryptionStatus(in long aNestingLevel, in long aEncryptionStatus, in nsIX509Cert aReceipientCert);
+  void SMIMEReceiptRequestStatus([const,array,size_is(aSignedContentIdentifierLen)] in PRUint8 aSignedContentIdentifier,
+                                 in PRUint32 aSignedContentIdentifierLen,
+                                 in PRUint32 aReceiptsFrom,
+                                 in AString aReceiptsTo,
+                                 [const,array,size_is(aOriginatorSignatureValueLen)] in PRUint8 aOriginatorSignatureValue,
+                                 in PRUint32 aOriginatorSignatureValueLen,
+                                 [const,array,size_is(aOriginatorContentTypeLen)] in PRUint8 aOriginatorContentType,
+                                 in PRUint32 aOriginatorContentTypeLen,
+                                 [const,array,size_is(aMsgSigDigestLen)] in PRUint8 aMsgSigDigest,
+                                 in PRUint32 aMsgSigDigestLen);
+  void SMIMEReceiptStatus([const,array,size_is(aSignedContentIdentifierLen)] in PRUint8 aSignedContentIdentifier,
+                          in PRUint32 aSignedContentIdentifierLen,
+                          [const,array,size_is(aOriginatorSignatureValueLen)] in PRUint8 aOriginatorSignatureValue,
+                          in PRUint32 aOriginatorSignatureValueLen,
+                          [const,array,size_is(aOriginatorContentTypeLen)] in PRUint8 aOriginatorContentType,
+                          in PRUint32 aOriginatorContentTypeLen,
+                          [const,array,size_is(aMsgSigDigestLen)] in PRUint8 aMsgSigDigest,
+                          in PRUint32 aMsgSigDigestLen);
 
   long maxWantedNesting(); // 1 == only info on outermost nesting level wanted
 };

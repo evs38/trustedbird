@@ -75,6 +75,21 @@ public:
 private:
   nsCOMPtr<nsIInterfaceRequestor> m_ctx;
   NSSCMSMessage * m_cmsMsg;
+
+  PRBool mHasReceiptRequest;
+  nsCString mReceiptRequestSignedContentIdentifier;
+  nsCString mReceiptRequestReceiptsTo;
+
+  PRBool mHasReceipt;
+  PRUint8 *mReceiptSignedContentIdentifier;
+  PRUint32 mReceiptSignedContentIdentifierLen;
+  PRUint8 *mReceiptOriginatorSignatureValue;
+  PRUint32 mReceiptOriginatorSignatureValueLen;
+  PRUint8 *mReceiptOriginatorContentType;
+  PRUint32 mReceiptOriginatorContentTypeLen;
+  PRUint8 *mReceiptMsgSigDigest;
+  PRUint32 mReceiptMsgSigDigestLen;
+
   NSSCMSSignerInfo* GetTopLevelSignerInfo();
   nsresult CommonVerifySignature(unsigned char* aDigestData, PRUint32 aDigestDataLen);
 

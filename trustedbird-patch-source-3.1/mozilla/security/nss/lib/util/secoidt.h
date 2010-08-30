@@ -450,6 +450,11 @@ typedef enum {
 
     SEC_OID_X509_ANY_POLICY                 = 303,
 
+    /* SMIME attributes */
+    SEC_OID_SMIME_RECEIPT_REQUEST           = 304,
+    SEC_OID_SMIME_RECEIPT                   = 305,
+    SEC_OID_SMIME_RECEIPT_MSGSIGDIGEST      = 306,
+
     SEC_OID_TOTAL
 } SECOidTag;
 

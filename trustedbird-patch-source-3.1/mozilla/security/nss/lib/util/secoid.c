@@ -280,6 +280,11 @@ CONST_OID cmsRC2wrap[]  			= { PKCS9_SMIME_ALGS, 7 };
 CONST_OID smimeEncryptionKeyPreference[] 	= { PKCS9_SMIME_ATTRS, 11 };
 CONST_OID ms_smimeEncryptionKeyPreference[] 	= { MICROSOFT_OID, 0x10, 0x4 };
 
+/* RFC2634 SMIME message attributes */
+CONST_OID smimeReceiptRequest[]                 = { PKCS9_SMIME_ATTRS, 1 };
+CONST_OID smimeReceipt[]                        = { PKCS9_SMIME_IDS, 1, 1 };
+CONST_OID smimeReceiptMsgSigDigest[]            = { PKCS9_SMIME_ATTRS, 5 };
+
 CONST_OID x520CommonName[]                      = { X520_ATTRIBUTE_TYPE, 3 };
 CONST_OID x520SurName[]                         = { X520_ATTRIBUTE_TYPE, 4 };
 CONST_OID x520SerialNumber[]                    = { X520_ATTRIBUTE_TYPE, 5 };
@@ -1611,6 +1616,19 @@ const static SECOidData oids[SEC_OID_TOTAL] = {
     OD( x509CertificatePoliciesAnyPolicy, SEC_OID_X509_ANY_POLICY,
  	"Certificate Policies AnyPolicy",
         CKM_INVALID_MECHANISM, UNSUPPORTED_CERT_EXTENSION ),
+
+    /* SMIME attributes */
+    OD( smimeReceiptRequest, SEC_OID_SMIME_RECEIPT_REQUEST,
+	"S/MIME Receipt Request",
+	CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+
+    OD( smimeReceipt, SEC_OID_SMIME_RECEIPT,
+	"S/MIME Receipt",
+	CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+
+    OD( smimeReceiptMsgSigDigest, SEC_OID_SMIME_RECEIPT_MSGSIGDIGEST,
+	"S/MIME Receipt MsgSigDigest",
+	CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
 };
 
 /* PRIVATE EXTENDED SECOID Table

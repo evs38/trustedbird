@@ -731,6 +731,17 @@ toolbar[iconsize="small"] #button-archive[disabled] {
   -moz-border-radius-topright: 0.2em;
 }
 
+#SMIMEReceiptRequestBarImage {
+  list-style-image: url("chrome://messenger/skin/smime/icons/hdrSignOk.png");
+}
+
+#SMIMEReceiptVerifiedBar {
+  background-color: #9AE3B1;
+}
+
+#SMIMEReceiptBarImage {
+  list-style-image: url("chrome://messenger/skin/smime/icons/hdrSignOk.png");
+}
 
 #CustomizeToolbarSheet > #main-box {
   border-top: none !important;

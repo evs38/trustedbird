@@ -280,7 +280,7 @@ nss_cms_before_data(NSSCMSDecoderContext *p7dcx)
     cinfo = NSS_CMSContent_GetContentInfo(p7dcx->content.pointer, p7dcx->type);
     childtype = NSS_CMSContentInfo_GetContentTypeTag(cinfo);
 
-    if (childtype == SEC_OID_PKCS7_DATA) {
+    if (childtype == SEC_OID_PKCS7_DATA || childtype == SEC_OID_SMIME_RECEIPT) {
 	cinfo->content.pointer = (void *) nss_cms_create_decoder_data(poolp);
 	if (cinfo->content.pointer == NULL)
 	    /* set memory error */
@@ -542,10 +542,9 @@ nss_cms_decoder_work_data(NSSCMSDecoderContext *p7dcx,
     if (p7dcx->cb != NULL) {
 	(*p7dcx->cb)(p7dcx->cb_arg, (const char *)data, len);
     }
-#if 1
-    else
-#endif
-    if (NSS_CMSContentInfo_GetContentTypeTag(cinfo) == SEC_OID_PKCS7_DATA) {
+
+    if (NSS_CMSContentInfo_GetContentTypeTag(cinfo) == SEC_OID_PKCS7_DATA ||
+        NSS_CMSContentInfo_GetContentTypeTag(cinfo) == SEC_OID_SMIME_RECEIPT) {
 	/* store it in "inner" data item as well */
 	/* find the DATA item in the encapsulated cinfo and store it there */
 	NSSCMSDecoderData *decoderData = 

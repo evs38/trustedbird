@@ -52,11 +52,13 @@
 #include "nsMsgComposeSecure.h"
 #include "nsSMimeJSHelper.h"
 #include "nsEncryptedSMIMEURIsService.h"
+#include "nsMsgSMIMEReceiptGenerator.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgComposeSecure)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMEComposeFields)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsSMimeJSHelper)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEncryptedSMIMEURIsService)
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMEReceiptGenerator)
 
 ////////////////////////////////////////////////////////////
 //
@@ -79,7 +81,11 @@ static const nsModuleComponentInfo components[] =
   { "SMIME Encrypted URI Cache Service",
     NS_SMIMEENCRYPTURISERVICE_CID,
     NS_SMIMEENCRYPTURISERVICE_CONTRACTID,
-    nsEncryptedSMIMEURIsServiceConstructor }
+    nsEncryptedSMIMEURIsServiceConstructor },
+  { "SMIME Receipt Generator",
+    NS_SMIMERECEIPT_GENERATOR_CID,
+    NS_SMIMERECEIPT_GENERATOR_CONTRACTID,
+    nsMsgSMIMEReceiptGeneratorConstructor }
 };
 
   

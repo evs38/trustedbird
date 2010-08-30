@@ -273,3 +273,16 @@ SEC_PKCS12AddCertOrChainAndKey;
 ;+    local:
 ;+       *;
 ;+};
+;+NSS_XXX {   # Next release
+;+    global:
+;+# Signed Receipt
+NSS_CMSSignerInfo_AddReceiptRequest;
+NSS_CMSSignerInfo_GetReceiptRequest;
+NSS_CMSSignerInfo_AddMsgSigDigest;
+NSS_CMSSignerInfo_GetMsgSigDigest;
+NSS_CMSSignerInfo_HasReceipt;
+NSS_SMIMEUtil_CreateReceipt;
+NSS_SMIMEUtil_GetReceipt;
+;+    local:
+;+       *;
+;+};

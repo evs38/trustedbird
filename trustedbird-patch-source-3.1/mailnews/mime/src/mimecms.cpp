@@ -340,7 +340,82 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
                                       mHeaderSink, NS_PROXY_SYNC,
                                       getter_AddRefs(proxySink));
   if (NS_SUCCEEDED(rv))
+  {
     proxySink->SignedStatus(mMimeNestingLevel, signature_status, signerCert);
+
+    if (signature_status == nsICMSMessageErrors::SUCCESS)
+    {
+      // Handle S/MIME receipt and receipt request
+      PRBool hasReceiptRequest = PR_FALSE;
+      PRBool hasReceipt = PR_FALSE;
+      PRUint8 *signedContentIdentifier = NULL;
+      PRUint32 signedContentIdentifierLen = 0;
+      PRUint32 receiptsFrom = 0;
+      nsCString receiptsTo;
+      PRUint8 *originatorSignatureValue = NULL;
+      PRUint32 originatorSignatureValueLen = 0;
+      PRUint8 *originatorContentType = NULL;
+      PRUint32 originatorContentTypeLen = 0;
+      PRUint8 *msgSigDigest = NULL;
+      PRUint32 msgSigDigestLen = 0;
+
+      msg->GetReceiptRequest(&hasReceiptRequest,
+                             &signedContentIdentifier,
+                             &signedContentIdentifierLen,
+                             &receiptsFrom,
+                             receiptsTo,
+                             &originatorSignatureValue,
+                             &originatorSignatureValueLen,
+                             &originatorContentType,
+                             &originatorContentTypeLen,
+                             &msgSigDigest,
+                             &msgSigDigestLen);
+
+      if (!hasReceiptRequest)
+        msg->GetReceipt(&hasReceipt,
+                        &signedContentIdentifier,
+                        &signedContentIdentifierLen,
+                        &originatorSignatureValue,
+                        &originatorSignatureValueLen,
+                        &originatorContentType,
+                        &originatorContentTypeLen,
+                        &msgSigDigest,
+                        &msgSigDigestLen);
+
+      // Process receipt request
+      if (hasReceiptRequest)
+        proxySink->SMIMEReceiptRequestStatus(signedContentIdentifier,
+                                             signedContentIdentifierLen,
+                                             receiptsFrom,
+                                             NS_ConvertUTF8toUTF16(receiptsTo),
+                                             originatorSignatureValue,
+                                             originatorSignatureValueLen,
+                                             originatorContentType,
+                                             originatorContentTypeLen,
+                                             msgSigDigest,
+                                             msgSigDigestLen);
+
+      // Process receipt
+      if (hasReceipt)
+        proxySink->SMIMEReceiptStatus(signedContentIdentifier,
+                                      signedContentIdentifierLen,
+                                      originatorSignatureValue,
+                                      originatorSignatureValueLen,
+                                      originatorContentType,
+                                      originatorContentTypeLen,
+                                      msgSigDigest,
+                                      msgSigDigestLen);
+
+      if (signedContentIdentifier)
+        PR_Free(signedContentIdentifier);
+      if (originatorSignatureValue)
+        PR_Free(originatorSignatureValue);
+      if (originatorContentType)
+        PR_Free(originatorContentType);
+      if (msgSigDigest)
+        PR_Free(msgSigDigest);
+    }
+  }
 
   return NS_OK;
 }

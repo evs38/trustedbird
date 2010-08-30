@@ -74,6 +74,9 @@ const kMsgNotificationPhishingBar = 1;
 const kMsgNotificationJunkBar = 2;
 const kMsgNotificationRemoteImages = 3;
 const kMsgNotificationMDN = 4;
+const kMsgNotificationSMIMEReceiptRequest = 5;
+const kMsgNotificationSMIMEReceiptVerified = 6;
+const kMsgNotificationSMIMEReceiptNotVerified = 7;
 
 Components.utils.import("resource:///modules/MailUtils.js");
 Components.utils.import("resource:///modules/MailConsts.js");
@@ -2550,7 +2553,10 @@ var gMessageNotificationBar =
                     1, // 1 << (kMsgNotificationPhishingBar - 1)
                     2, // 1 << (kMsgNotificationJunkBar - 1)
                     4, // 1 << (kMsgNotificationRemoteImages - 1)
-                    8  // 1 << (kMsgNotificationMSN - 1) 
+                    8, // 1 << (kMsgNotificationMDN - 1)
+                   16, // 1 << (kMsgNotificationSMIMEReceiptRequest - 1)
+                   32, // 1 << (kMsgNotificationSMIMEReceiptVerified - 1)
+                   64  // 1 << (kMsgNotificationSMIMEReceiptNotVerified - 1)
                   ],
 
   mMsgNotificationBar: document.getElementById('msgNotificationBar'),
@@ -2593,7 +2599,23 @@ var gMessageNotificationBar =
     this.msgHeader = aMsgHeader;
     this.updateMsgNotificationBar(kMsgNotificationMDN, true);
   },
-  
+
+  setSMIMEReceiptRequestMsg: function(aSMIMEReceiptGenerator, recipient)
+  {
+    document.getElementById('SMIMEReceiptRequestBarRecipient').value = "(" + recipient + ")";
+    this.SMIMEReceiptGenerator = aSMIMEReceiptGenerator;
+    this.updateMsgNotificationBar(kMsgNotificationSMIMEReceiptRequest, true);
+  },
+
+  setSMIMEReceiptMsg: function(aRequestMsgHdr)
+  {
+    this.SMIMEReceiptRequestMsgHdr = aRequestMsgHdr;
+    if (aRequestMsgHdr)
+      this.updateMsgNotificationBar(kMsgNotificationSMIMEReceiptVerified, true);
+    else
+      this.updateMsgNotificationBar(kMsgNotificationSMIMEReceiptNotVerified, true);
+  },
+
   clearMsgNotifications: function()
   {
     this.mBarStatus = 0;
@@ -2922,6 +2944,23 @@ function IgnoreMDNResponse()
 {
   gMessageNotificationBar.mdnGenerator.userDeclined();
   gMessageNotificationBar.updateMsgNotificationBar(kMsgNotificationMDN, false);
+}
+
+function SendSMIMEReceipt()
+{
+  gMessageNotificationBar.SMIMEReceiptGenerator.userAgreed();
+  gMessageNotificationBar.updateMsgNotificationBar(kMsgNotificationSMIMEReceiptRequest, false);
+}
+
+function IgnoreSMIMEReceipt()
+{
+  gMessageNotificationBar.SMIMEReceiptGenerator.userDeclined();
+  gMessageNotificationBar.updateMsgNotificationBar(kMsgNotificationSMIMEReceiptRequest, false);
+}
+
+function OpenSMIMEReceiptRequestMessage()
+{
+  MailUtils.displayMessage(gMessageNotificationBar.SMIMEReceiptRequestMsgHdr, null, document.getElementById("tabmail"));
 }
 
 function QuickSearchFocus()

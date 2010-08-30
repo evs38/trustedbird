@@ -72,4 +72,12 @@
  0xa0134d58, 0x018f, 0x4d40,                     \
  {0xa0, 0x99, 0xfa, 0x07, 0x9e, 0x50, 0x24, 0xa6 }}
 
+#define NS_SMIMERECEIPT_GENERATOR_CONTRACTID     \
+  "@mozilla.org/messenger-smime/smimereceiptgenerator;1"
+
+#define NS_SMIMERECEIPT_GENERATOR_CID            \
+{ /* f988ef90-28ec-4f4b-aa2e-a49d067556f1 */     \
+ 0xf988ef90, 0x28ec, 0x4f4b,                     \
+ {0xaa, 0x2e, 0xa4, 0x9d, 0x06, 0x75, 0x56, 0xf1 }}
+
 #endif // nsMsgSMIMECID_h__

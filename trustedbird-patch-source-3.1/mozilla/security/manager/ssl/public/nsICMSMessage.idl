@@ -50,7 +50,7 @@ interface nsIArray;
  * nsICMSMessage
  *  Interface to a CMS Message
  */
-[uuid(a4557478-ae16-11d5-ba4b-00108303b117)]
+[uuid(337f3a17-2405-4bb4-a6d4-50c39d40b8cc)]
 interface nsICMSMessage : nsISupports
 {
   void contentIsSigned(out boolean aSigned);
@@ -59,9 +59,39 @@ interface nsICMSMessage : nsISupports
   void getSignerEmailAddress(out string aEmail);
   void getSignerCert(out nsIX509Cert scert);
   void getEncryptionCert(out nsIX509Cert ecert);
+  void setReceiptRequest(in ACString aSignedContentIdentifier, in ACString aReceiptsTo);
+  void getReceiptRequest(out boolean aHasReceiptRequest,
+                         [const,array,size_is(aSignedContentIdentifierLen)] out PRUint8 aSignedContentIdentifier,
+                         out PRUint32 aSignedContentIdentifierLen,
+                         out PRUint32 aReceiptsFrom,
+                         out ACString aReceiptsTo,
+                         [const,array,size_is(aOriginatorSignatureValueLen)] out PRUint8 aOriginatorSignatureValue,
+                         out PRUint32 aOriginatorSignatureValueLen,
+                         [const,array,size_is(aOriginatorContentTypeLen)] out PRUint8 aOriginatorContentType,
+                         out PRUint32 aOriginatorContentTypeLen,
+                         [const,array,size_is(aMsgSigDigestLen)] out PRUint8 aMsgSigDigest,
+                         out PRUint32 aMsgSigDigestLen);
+  void setReceipt([array,size_is(aSignedContentIdentifierLen)] in PRUint8 aSignedContentIdentifier,
+                  in PRUint32 aSignedContentIdentifierLen,
+                  [array,size_is(aOriginatorSignatureValueLen)] in PRUint8 aOriginatorSignatureValue,
+                  in PRUint32 aOriginatorSignatureValueLen,
+                  [array,size_is(aOriginatorContentTypeLen)] in PRUint8 aOriginatorContentType,
+                  in PRUint32 aOriginatorContentTypeLen,
+                  [array,size_is(aMsgSigDigestLen)] in PRUint8 aMsgSigDigest,
+                  in PRUint32 aMsgSigDigestLen);
+  void createReceipt([const,array,size_is(encodedReceiptLen)] out PRUint8 encodedReceipt,
+                     out PRUint32 encodedReceiptLen);
+  void getReceipt(out boolean aHasReceipt,
+                  [const,array,size_is(aSignedContentIdentifierLen)] out PRUint8 aSignedContentIdentifier,
+                  out PRUint32 aSignedContentIdentifierLen,
+                  [const,array,size_is(aOriginatorSignatureValueLen)] out PRUint8 aOriginatorSignatureValue,
+                  out PRUint32 aOriginatorSignatureValueLen,
+                  [const,array,size_is(aOriginatorContentTypeLen)] out PRUint8 aOriginatorContentType,
+                  out PRUint32 aOriginatorContentTypeLen,
+                  [const,array,size_is(aMsgSigDigestLen)] out PRUint8 aMsgSigDigest,
+                  out PRUint32 aMsgSigDigestLen);
   void verifySignature();
   void verifyDetachedSignature(in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
   void CreateEncrypted(in nsIArray aRecipientCerts);
   void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
 };
-

@@ -743,6 +743,16 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY mdnBarIgnoreButton.label "Ignore Request">
 <!ENTITY mdnBarSendButton.label "Send Receipt">
 
+<!-- S/MIME Receipt Request Bar -->
+<!ENTITY SMIMEReceiptRequestBarMessage.label "The sender of this message has asked to be notified by a signed receipt when you read this message. Do you wish to notify the sender?">
+<!ENTITY SMIMEReceiptRequestBarIgnoreButton.label "Ignore Request">
+<!ENTITY SMIMEReceiptRequestBarSendButton.label "Send Receipt">
+
+<!-- S/MIME Receipt Bar -->
+<!ENTITY SMIMEReceiptVerifiedBarMessage.label "This message is a valid signed receipt verified with the message you sent.">
+<!ENTITY SMIMEReceiptBarOpenMessageButton.label "View sent message">
+<!ENTITY SMIMEReceiptNotVerifiedBarMessage.label "This message is a valid signed receipt but it has NOT been verified with the message you sent because it can't be located or has not been read.">
+
 <!-- Quick Search Bar -->
 <!-- LOCALIZATION NOTE (quickSearchCmd.key):
      This is actually the key used for the global message search box; we have

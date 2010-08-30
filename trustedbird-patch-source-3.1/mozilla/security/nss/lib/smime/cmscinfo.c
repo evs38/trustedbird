@@ -217,6 +217,7 @@ NSS_CMSContentInfo_GetContent(NSSCMSContentInfo *cinfo)
 	                : SEC_OID_UNKNOWN;
     switch (tag) {
     case SEC_OID_PKCS7_DATA:
+    case SEC_OID_SMIME_RECEIPT:
     case SEC_OID_PKCS7_SIGNED_DATA:
     case SEC_OID_PKCS7_ENVELOPED_DATA:
     case SEC_OID_PKCS7_DIGESTED_DATA:

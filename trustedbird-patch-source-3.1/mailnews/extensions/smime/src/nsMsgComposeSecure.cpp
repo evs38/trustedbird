@@ -23,6 +23,7 @@
  * Contributor(s):
  *   David Drinan <ddrinan@netscape.com>
  *   Stephane Saux <ssaux@netscape.com>
+ *   ESS Signed Receipts: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -42,18 +43,21 @@
 
 #include "msgCore.h"
 #include "nsIMsgCompFields.h"
+#include "nsIMsgCompUtils.h"
 #include "nsIMsgHeaderParser.h"
 #include "nsIMsgIdentity.h"
 #include "nsISMimeCert.h"
 #include "nsIX509CertDB.h"
 #include "nsMimeTypes.h"
 #include "nsMsgMimeCID.h"
+#include "nsMsgCompCID.h"
 #include "nspr.h"
 
 // XXX These strings should go in properties file XXX //
 #define MIME_MULTIPART_SIGNED_BLURB "This is a cryptographically signed message in MIME format."
 #define MIME_SMIME_ENCRYPTED_CONTENT_DESCRIPTION "S/MIME Encrypted Message"
 #define MIME_SMIME_SIGNATURE_CONTENT_DESCRIPTION "S/MIME Cryptographic Signature"
+#define MIME_SMIME_RECEIPT_CONTENT_DESCRIPTION "S/MIME Receipt"
 
 #define MK_MIME_ERROR_WRITING_FILE -1
 
@@ -171,7 +175,13 @@ char
 NS_IMPL_ISUPPORTS1(nsMsgSMIMEComposeFields, nsIMsgSMIMECompFields)
 
 nsMsgSMIMEComposeFields::nsMsgSMIMEComposeFields()
-:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE)
+:mSignMessage(PR_FALSE), mAlwaysEncryptMessage(PR_FALSE),
+mSMIMEReceiptRequest(PR_FALSE),
+mSMIMEReceipt(PR_FALSE),
+mSMIMEReceiptSignedContentIdentifierLen(0),
+mSMIMEReceiptOriginatorSignatureValueLen(0),
+mSMIMEReceiptOriginatorContentTypeLen(0),
+mSMIMEReceiptMsgSigDigestLen(0)
 {
 }
 
@@ -200,6 +210,126 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::SetRequireEncryptMessage(PRBool value)
 NS_IMETHODIMP nsMsgSMIMEComposeFields::GetRequireEncryptMessage(PRBool *_retval)
 {
   *_retval = mAlwaysEncryptMessage;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptRequest(PRBool value)
+{
+  mSMIMEReceiptRequest = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptRequest(PRBool *_retval)
+{
+  *_retval = mSMIMEReceiptRequest;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceipt(PRBool value)
+{
+  mSMIMEReceipt = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceipt(PRBool *_retval)
+{
+  *_retval = mSMIMEReceipt;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptSignedContentIdentifier(PRUint8 *value)
+{
+  mSMIMEReceiptSignedContentIdentifier = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptSignedContentIdentifier(PRUint8 **_retval)
+{
+  *_retval = mSMIMEReceiptSignedContentIdentifier;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptSignedContentIdentifierLen(const PRUint32 value)
+{
+  mSMIMEReceiptSignedContentIdentifierLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptSignedContentIdentifierLen(PRUint32 *_retval)
+{
+  *_retval = mSMIMEReceiptSignedContentIdentifierLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptOriginatorSignatureValue(PRUint8 *value)
+{
+  mSMIMEReceiptOriginatorSignatureValue = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptOriginatorSignatureValue(PRUint8 **_retval)
+{
+  *_retval = mSMIMEReceiptOriginatorSignatureValue;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptOriginatorSignatureValueLen(const PRUint32 value)
+{
+  mSMIMEReceiptOriginatorSignatureValueLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptOriginatorSignatureValueLen(PRUint32 *_retval)
+{
+  *_retval = mSMIMEReceiptOriginatorSignatureValueLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptOriginatorContentType(PRUint8 *value)
+{
+  mSMIMEReceiptOriginatorContentType = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptOriginatorContentType(PRUint8 **_retval)
+{
+  *_retval = mSMIMEReceiptOriginatorContentType;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptOriginatorContentTypeLen(const PRUint32 value)
+{
+  mSMIMEReceiptOriginatorContentTypeLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptOriginatorContentTypeLen(PRUint32 *_retval)
+{
+  *_retval = mSMIMEReceiptOriginatorContentTypeLen;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptMsgSigDigest(PRUint8 *value)
+{
+  mSMIMEReceiptMsgSigDigest = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptMsgSigDigest(PRUint8 **_retval)
+{
+  *_retval = mSMIMEReceiptMsgSigDigest;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptMsgSigDigestLen(const PRUint32 value)
+{
+  mSMIMEReceiptMsgSigDigestLen = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptMsgSigDigestLen(PRUint32 *_retval)
+{
+  *_retval = mSMIMEReceiptMsgSigDigestLen;
   return NS_OK;
 }
 
@@ -398,6 +528,74 @@ nsresult nsMsgComposeSecure::ExtractEncryptionState(nsIMsgIdentity * aIdentity, 
   return NS_OK;
 }
 
+nsresult nsMsgComposeSecure::ExtractSMIMEReceiptState(nsIMsgIdentity *aIdentity,
+                                                      nsIMsgCompFields *aComposeFields,
+                                                      PRBool *aSMIMEReceiptRequest,
+                                                      PRBool *aSMIMEReceipt,
+                                                      PRUint8 **aSMIMEReceiptSignedContentIdentifier,
+                                                      PRUint32 *aSMIMEReceiptSignedContentIdentifierLen,
+                                                      PRUint8 **aSMIMEReceiptOriginatorSignatureValue,
+                                                      PRUint32 *aSMIMEReceiptOriginatorSignatureValueLen,
+                                                      PRUint8 **aSMIMEReceiptOriginatorContentType,
+                                                      PRUint32 *aSMIMEReceiptOriginatorContentTypeLen,
+                                                      PRUint8 **aSMIMEReceiptMsgSigDigest,
+                                                      PRUint32 *aSMIMEReceiptMsgSigDigestLen)
+{
+  if (!aComposeFields && !aIdentity)
+    return NS_ERROR_FAILURE; // kick out...invalid args....
+
+  NS_ENSURE_ARG(aSMIMEReceiptRequest);
+  NS_ENSURE_ARG(aSMIMEReceipt);
+  NS_ENSURE_ARG(aSMIMEReceiptSignedContentIdentifier);
+  NS_ENSURE_ARG(aSMIMEReceiptSignedContentIdentifierLen);
+  NS_ENSURE_ARG(aSMIMEReceiptOriginatorSignatureValue);
+  NS_ENSURE_ARG(aSMIMEReceiptOriginatorSignatureValueLen);
+  NS_ENSURE_ARG(aSMIMEReceiptOriginatorContentType);
+  NS_ENSURE_ARG(aSMIMEReceiptOriginatorContentTypeLen);
+  NS_ENSURE_ARG(aSMIMEReceiptMsgSigDigest);
+  NS_ENSURE_ARG(aSMIMEReceiptMsgSigDigestLen);
+
+  *aSMIMEReceiptRequest = PR_FALSE;
+  *aSMIMEReceipt = PR_FALSE;
+
+  nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+        /* Get SMIME receipt request */
+        smimeCompFields->GetSMIMEReceiptRequest(aSMIMEReceiptRequest);
+
+        if (*aSMIMEReceiptRequest)
+          return NS_OK;
+
+        /* Get SMIME receipt */
+        smimeCompFields->GetSMIMEReceipt(aSMIMEReceipt);
+        if (*aSMIMEReceipt)
+        {
+          smimeCompFields->GetSMIMEReceiptSignedContentIdentifier(aSMIMEReceiptSignedContentIdentifier);
+          smimeCompFields->GetSMIMEReceiptSignedContentIdentifierLen(aSMIMEReceiptSignedContentIdentifierLen);
+          smimeCompFields->GetSMIMEReceiptOriginatorSignatureValue(aSMIMEReceiptOriginatorSignatureValue);
+          smimeCompFields->GetSMIMEReceiptOriginatorSignatureValueLen(aSMIMEReceiptOriginatorSignatureValueLen);
+          smimeCompFields->GetSMIMEReceiptOriginatorContentType(aSMIMEReceiptOriginatorContentType);
+          smimeCompFields->GetSMIMEReceiptOriginatorContentTypeLen(aSMIMEReceiptOriginatorContentTypeLen);
+          smimeCompFields->GetSMIMEReceiptMsgSigDigest(aSMIMEReceiptMsgSigDigest);
+          smimeCompFields->GetSMIMEReceiptMsgSigDigestLen(aSMIMEReceiptMsgSigDigestLen);
+          return NS_OK;
+        }
+
+      }
+    }
+  }
+
+  return NS_OK;
+}
+
 /* void beginCryptoEncapsulation (in nsOutputFileStream aStream, in boolean aEncrypt, in boolean aSign, in string aRecipeints, in boolean aIsDraft); */
 NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsIOutputStream * aStream,
                                                            const char * aRecipients,
@@ -413,12 +611,46 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsIOutputStream * aSt
   PRBool signMessage = PR_FALSE;
   ExtractEncryptionState(aIdentity, aCompFields, &signMessage, &encryptMessages);
 
-  if (!signMessage && !encryptMessages) return NS_ERROR_FAILURE;
+  if (!signMessage && !encryptMessages)
+    return NS_ERROR_FAILURE;
+
+  // Extract SMIME receipt request and receipt state
+  mSMIMEReceiptRequest = PR_FALSE;
+  ExtractSMIMEReceiptState(aIdentity,
+                           aCompFields,
+                           &mSMIMEReceiptRequest,
+                           &mSMIMEReceipt,
+                           &mSMIMEReceiptSignedContentIdentifier,
+                           &mSMIMEReceiptSignedContentIdentifierLen,
+                           &mSMIMEReceiptOriginatorSignatureValue,
+                           &mSMIMEReceiptOriginatorSignatureValueLen,
+                           &mSMIMEReceiptOriginatorContentType,
+                           &mSMIMEReceiptOriginatorContentTypeLen,
+                           &mSMIMEReceiptMsgSigDigest,
+                           &mSMIMEReceiptMsgSigDigestLen);
+
+  if (mSMIMEReceiptRequest) {
+    signMessage = PR_TRUE;
+
+    /* Generate a random signed content identifier for the receipt request */
+    nsCOMPtr<nsIMsgCompUtils> compUtils;
+    compUtils = do_GetService(NS_MSGCOMPUTILS_CONTRACTID, &rv);
+    NS_ENSURE_SUCCESS(rv, rv);
+    rv = compUtils->MsgGenerateMessageId(aIdentity, getter_Copies(mSMIMEReceiptRequestSignedContentIdentifier));
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    /* Get sender address for the recipient field of the receipt request */
+    aIdentity->GetEmail(mSMIMEReceiptRequestReceiptsTo);
+  } else if (mSMIMEReceipt) {
+    signMessage = PR_TRUE;
+  }
 
   mStream = aStream;
   mIsDraft = aIsDraft;
 
-  if (encryptMessages && signMessage)
+  if (mSMIMEReceipt)
+    mCryptoState = mime_crypto_signed_receipt;
+  else if (encryptMessages && signMessage)
     mCryptoState = mime_crypto_signed_encrypted;
   else if (encryptMessages)
     mCryptoState = mime_crypto_encrypted;
@@ -449,6 +681,9 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsIOutputStream * aSt
     break;
   case mime_crypto_encrypted:
     rv = MimeInitEncryption(PR_FALSE, sendReport);
+    break;
+  case mime_crypto_signed_receipt:
+    /* Nothing to be done here */
     break;
   case mime_crypto_none:
     /* This can happen if mime_crypto_hack_certs() decided to turn off
@@ -483,6 +718,9 @@ NS_IMETHODIMP nsMsgComposeSecure::FinishCryptoEncapsulation(PRBool aAbort, nsIMs
       break;
     case mime_crypto_encrypted:
       rv = MimeFinishEncryption (PR_FALSE, sendReport);
+      break;
+    case mime_crypto_signed_receipt:
+      rv = MimeFinishSignedReceipt(sendReport);
       break;
     default:
       PR_ASSERT(0);
@@ -682,6 +920,11 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
 
   PR_Free(header);
 
+  /* Store the SMIME receipt request
+   */
+  if (mSMIMEReceiptRequest && !mSMIMEReceiptRequestReceiptsTo.IsEmpty())
+    cinfo->SetReceiptRequest(mSMIMEReceiptRequestSignedContentIdentifier, mSMIMEReceiptRequestReceiptsTo);
+
   /* Create the signature...
    */
 
@@ -691,7 +934,7 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
   PR_SetError(0,0);
 
   rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length());
-  if (NS_FAILED(rv))  {
+  if (NS_FAILED(rv)) {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;
   }
@@ -763,6 +1006,113 @@ FAIL:
   return rv;
 }
 
+nsresult nsMsgComposeSecure::MimeFinishSignedReceipt(nsIMsgSendReport *sendReport)
+{
+  nsresult rv;
+  PRUint32 L;
+  PRUint32 n;
+  PRUint8 *encodedReceiptObject = NULL;
+  PRUint32 encodedReceiptObjectLen = 0;
+
+  nsCOMPtr<nsICMSMessage> cinfo = do_CreateInstance(NS_CMSMESSAGE_CONTRACTID, &rv);
+  nsCOMPtr<nsICMSEncoder> encoder = do_CreateInstance(NS_CMSENCODER_CONTRACTID, &rv);
+  char * header = nsnull;
+
+  /* Write out the headers for the signature.
+   */
+  header = PR_smprintf("Content-Type: " APPLICATION_PKCS7_MIME "; smime-type=signed-receipt; name=\"smime.p7m\"" CRLF
+                       "Content-Transfer-Encoding: " ENCODING_BASE64 CRLF
+                       "Content-Disposition: attachment; filename=\"smime.p7m\"" CRLF
+                       "Content-Description: %s" CRLF CRLF,
+                       MIME_SMIME_RECEIPT_CONTENT_DESCRIPTION);
+
+  if (!header) {
+    rv = NS_ERROR_OUT_OF_MEMORY;
+    goto FAIL;
+  }
+
+  L = strlen(header);
+  rv = mStream->Write(header, L, &n);
+  if (NS_FAILED(rv) || n < L)
+    rv = MK_MIME_ERROR_WRITING_FILE;
+  PR_smprintf_free(header);
+
+  /* Store the SMIME receipt values
+   */
+  cinfo->SetReceipt(mSMIMEReceiptSignedContentIdentifier,
+                    mSMIMEReceiptSignedContentIdentifierLen,
+                    mSMIMEReceiptOriginatorSignatureValue,
+                    mSMIMEReceiptOriginatorSignatureValueLen,
+                    mSMIMEReceiptOriginatorContentType,
+                    mSMIMEReceiptOriginatorContentTypeLen,
+                    mSMIMEReceiptMsgSigDigest,
+                    mSMIMEReceiptMsgSigDigestLen);
+
+  /* Create the signature...
+   */
+
+  PR_ASSERT (mSelfSigningCert);
+  PR_SetError(0, 0);
+
+  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, NULL, 0);
+  if (NS_FAILED(rv))  {
+    SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+    goto FAIL;
+  }
+
+  /* Create receipt object and set message digest */
+  rv = cinfo->CreateReceipt(&encodedReceiptObject, &encodedReceiptObjectLen);
+  if (NS_FAILED(rv)) {
+    SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+    goto FAIL;
+  }
+
+  /* Initialize the base64 encoder for the signature data.
+   */
+  PR_ASSERT(!mSigEncoderData);
+  mSigEncoderData =
+  MIME_B64EncoderInit(mime_encoder_output_fn, this);
+  if (!mSigEncoderData) {
+    rv = NS_ERROR_OUT_OF_MEMORY;
+    goto FAIL;
+  }
+
+  /* Write out the signature.
+   */
+  PR_SetError(0, 0);
+  rv = encoder->Start(cinfo, mime_crypto_write_base64, mSigEncoderData);
+  if (NS_FAILED(rv)) {
+    SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+    goto FAIL;
+  }
+
+  /* Attach receipt object to the signature */
+  rv = encoder->Update((char*)encodedReceiptObject, (PRInt32)encodedReceiptObjectLen);
+  if (NS_FAILED(rv)) {
+    SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+    goto FAIL;
+  }
+
+  rv = encoder->Finish();
+  if (NS_FAILED(rv)) {
+    SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
+    goto FAIL;
+  }
+
+  /* Shut down the sig's base64 encoder.
+   */
+  rv = MIME_EncoderDestroy(mSigEncoderData, PR_FALSE);
+  mSigEncoderData = 0;
+  if (NS_FAILED(rv))
+    goto FAIL;
+
+  rv = mStream->Write(CRLF, 2, &n);
+  if (NS_FAILED(rv) || n < 2)
+    rv = NS_ERROR_FAILURE;
+
+FAIL:
+  return rv;
+}
 
 /* Helper function for mime_finish_crypto_encapsulation() to close off
    an opaque crypto object (for encrypted or signed-and-encrypted messages.)

@@ -746,6 +746,16 @@ you can use these alternative items. Otherwise, their values should be empty.
 <!ENTITY mdnBarIgnoreButton.label "Ignorer">
 <!ENTITY mdnBarSendButton.label "Envoyer l'accusé de réception">
 
+<!-- S/MIME Receipt Request Bar -->
+<!ENTITY SMIMEReceiptRequestBarMessage.label "L'auteur de ce message a souhaité être prévenu avec un accusé de réception signé lorsque vous lirez ce message. Souhaitez-vous avertir l'expéditeur ?">
+<!ENTITY SMIMEReceiptRequestBarIgnoreButton.label "Ignorer">
+<!ENTITY SMIMEReceiptRequestBarSendButton.label "Envoyer l'accusé de réception signé">
+
+<!-- S/MIME Receipt Bar -->
+<!ENTITY SMIMEReceiptVerifiedBarMessage.label "Ce message est un accusé de réception signé valide qui a été vérifié avec le message que vous avez envoyé.">
+<!ENTITY SMIMEReceiptBarOpenMessageButton.label "Afficher le message envoyé">
+<!ENTITY SMIMEReceiptNotVerifiedBarMessage.label "Ce message est un accusé de réception signé valide mais il n'a PAS été vérifié avec le message que vous avez envoyé car celui-ci n'a pas été trouvé ou n'a pas été lu.">
+
 <!-- Quick Search Bar -->
 <!-- LOCALIZATION NOTE (quickSearchCmd.key):
      This is actually the key used for the global message search box; we have

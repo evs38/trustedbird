@@ -21,6 +21,7 @@
 #
 # Contributor(s):
 #   Scott MacGregor <mscott@netscape.com>
+#   ESS Signed Receipts: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -150,6 +151,151 @@ var smimeHeaderSink =
     }
   },
 
+  // Check the SMIME receipt request and send a receipt
+  SMIMEReceiptRequestStatus: function(aSignedContentIdentifier,
+                                      aSignedContentIdentifierLen,
+                                      aReceiptsFrom,
+                                      aReceiptsTo,
+                                      aOriginatorSignatureValue,
+                                      aOriginatorSignatureValueLen,
+                                      aOriginatorContentType,
+                                      aOriginatorContentTypeLen,
+                                      aMsgSigDigest,
+                                      aMsgSigDigestLen)
+  {
+    var msgHdr = gMessageDisplay.displayedMessage;
+    var msgFolder = gFolderDisplay.displayedFolder;
+
+    if (!msgFolder || !(msgFolder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Mail, true)))
+      return;
+
+    if (msgFolder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Trash, true) ||
+        msgFolder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Queue, true) ||
+        msgFolder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Junk, true) ||
+        msgFolder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Templates, true) ||
+        msgFolder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Drafts, true))
+      return;
+
+    // Check if message has been deleted
+    if (msgHdr.flags & Components.interfaces.nsMsgMessageFlags.IMAPDeleted)
+      return;
+
+    // Check if message is marked as junk
+    var junkScore = msgHdr.getStringProperty("junkscore");
+    if (junkScore != "" && junkScore != "0")
+      return;
+
+    // Write S/MIME receipt request properties in message db
+    if (msgHdr.getStringProperty("SMIMEReceiptType") == "") {
+      msgHdr.setStringProperty("SMIMEReceiptType", "request");
+      msgHdr.setStringProperty("SMIMEReceiptSignedContentIdentifier", aSignedContentIdentifier);
+      msgHdr.setStringProperty("SMIMEReceiptOriginatorSignatureValue", aOriginatorSignatureValue);
+      msgHdr.setStringProperty("SMIMEReceiptOriginatorContentType", aOriginatorContentType);
+      msgHdr.setStringProperty("SMIMEReceiptMsgSigDigest", aMsgSigDigest);
+    }
+
+    // Check in local message database if this request has already been processed
+    if (msgHdr.getStringProperty("SMIMEReceiptRequestProcessed") != "")
+      return;
+
+    // Check in IMAP if this request has already been processed
+    var keywords = msgHdr.getStringProperty("keywords");
+    if (keywords != "" && keywords.indexOf("smimereceiptrequestprocessed") != -1)
+    {
+      // If IMAP flag is set, write it in local message db
+      msgHdr.setStringProperty("SMIMEReceiptRequestProcessed", "true");
+      return;
+    }
+
+    mimeHeaders = getMessageHeaders(msgHdr);
+    if (!mimeHeaders)
+      return;
+
+    // Create and send a receipt
+    var SMIMEReceiptGenerator = Components.classes["@mozilla.org/messenger-smime/smimereceiptgenerator;1"]
+                                          .createInstance(Components.interfaces.nsIMsgSMIMEReceiptGenerator);
+    var askUser = SMIMEReceiptGenerator.process(msgWindow,
+                                                msgFolder,
+                                                msgHdr.messageKey,
+                                                mimeHeaders,
+                                                aSignedContentIdentifier,
+                                                aSignedContentIdentifierLen,
+                                                aReceiptsFrom,
+                                                aReceiptsTo,
+                                                aOriginatorSignatureValue,
+                                                aOriginatorSignatureValueLen,
+                                                aOriginatorContentType,
+                                                aOriginatorContentTypeLen,
+                                                aMsgSigDigest,
+                                                aMsgSigDigestLen);
+
+    if (askUser)
+      gMessageNotificationBar.setSMIMEReceiptRequestMsg(SMIMEReceiptGenerator, aReceiptsTo);
+  },
+
+  // Check the SMIME receipt with the request
+  SMIMEReceiptStatus: function(aSignedContentIdentifier,
+                               aSignedContentIdentifierLen,
+                               aOriginatorSignatureValue,
+                               aOriginatorSignatureValueLen,
+                               aOriginatorContentType,
+                               aOriginatorContentTypeLen,
+                               aMsgSigDigest,
+                               aMsgSigDigestLen)
+  {
+    var msgHdr = gMessageDisplay.displayedMessage;
+
+    // Write S/MIME receipt properties in message db
+    if (msgHdr.getStringProperty("SMIMEReceiptType") == "") {
+      msgHdr.setStringProperty("SMIMEReceiptType", "receipt");
+      msgHdr.setStringProperty("SMIMEReceiptSignedContentIdentifier", aSignedContentIdentifier);
+      msgHdr.setStringProperty("SMIMEReceiptOriginatorSignatureValue", aOriginatorSignatureValue);
+      msgHdr.setStringProperty("SMIMEReceiptOriginatorContentType", aOriginatorContentType);
+      msgHdr.setStringProperty("SMIMEReceiptMsgSigDigest", aMsgSigDigest);
+    }
+
+    var requestMsgHdr = null;
+
+    // Find and compare the request properties with this receipt
+    try {
+      let allFolders = Components.classes["@mozilla.org/supports-array;1"]
+                                 .createInstance(Components.interfaces.nsISupportsArray);
+      msgHdr.folder.rootFolder.ListDescendents(allFolders);
+
+      // Search the request in all folders
+      for each (let folder in fixIterator(allFolders, Components.interfaces.nsIMsgFolder)) {
+
+        if (folder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Trash, true) ||
+            folder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Queue, true) ||
+            folder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Junk, true) ||
+            folder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Templates, true) ||
+            folder.isSpecialFolder(Components.interfaces.nsMsgFolderFlags.Drafts, true))
+          continue;
+
+        var enumerator = folder.getDBFolderInfoAndDB({}).EnumerateMessages();
+        while (enumerator.hasMoreElements()) {
+          let itemMsgHdr = enumerator.getNext().QueryInterface(Components.interfaces.nsIMsgDBHdr);
+
+          if (itemMsgHdr.getStringProperty("SMIMEReceiptType") == "request") {
+            if (itemMsgHdr.getStringProperty("SMIMEReceiptSignedContentIdentifier") == aSignedContentIdentifier &&
+                itemMsgHdr.getStringProperty("SMIMEReceiptOriginatorSignatureValue") == aOriginatorSignatureValue &&
+                itemMsgHdr.getStringProperty("SMIMEReceiptOriginatorContentType") == aOriginatorContentType &&
+                itemMsgHdr.getStringProperty("SMIMEReceiptMsgSigDigest") == aMsgSigDigest) {
+              requestMsgHdr = itemMsgHdr;
+              break;
+            }
+          }
+        }
+
+        if (requestMsgHdr)
+          break;
+
+      }
+    } catch (e) {}
+
+    gMessageNotificationBar.setSMIMEReceiptMsg(requestMsgHdr);
+  },
+
   QueryInterface : function(iid)
   {
     if (iid.equals(Components.interfaces.nsIMsgSMIMEHeaderSink) || iid.equals(Components.interfaces.nsISupports))
@@ -157,6 +303,53 @@ var smimeHeaderSink =
     throw Components.results.NS_NOINTERFACE;
   }
 };
+
+function getMessageHeaders(aMsgDBHdr) {
+  if (!aMsgDBHdr) return null;
+
+  try {
+
+    var streamListener = Components.classes["@mozilla.org/network/sync-stream-listener;1"].createInstance(Components.interfaces.nsISyncStreamListener);
+    var msgURI = aMsgDBHdr.folder.getUriForMsg(aMsgDBHdr);
+    var inputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance().QueryInterface(Components.interfaces.nsIScriptableInputStream);
+    inputStream.init(streamListener);
+    messenger.messageServiceFromURI(msgURI).streamMessage(msgURI, streamListener, null, null, false, null);
+
+    var content = "";
+
+    while (inputStream.available()) {
+      content += inputStream.read(512);
+      var p = content.indexOf("\r\n\r\n");
+      var p1 = content.indexOf("\r\r");
+      var p2 = content.indexOf("\n\n");
+      if (p > 0) {
+        content = content.substring(0, p);
+        break;
+      }
+      if (p1 > 0) {
+        content = content.substring(0, p1);
+        break;
+      }
+      if (p2 > 0) {
+        content = content.substring(0, p2);
+        break;
+      }
+    }
+    content += "\r\n";
+
+    var headers = content.split(/\r\n\r\n|\r\r|\n\n/, 1)[0];
+    var mimeHeaders = Components.classes["@mozilla.org/messenger/mimeheaders;1"]
+                                .createInstance(Components.interfaces.nsIMimeHeaders);
+    mimeHeaders.initialize(headers, headers.length);
+
+    return mimeHeaders;
+
+  } catch (e) {
+    dump("getMessageHeaders exception: " + e + "\n");
+  }
+
+  return null;
+}
 
 function forgetEncryptedURI()
 {

@@ -101,6 +101,9 @@ function onComposerReOpen()
     setSignatureUI();
   else
     setNoSignatureUI();
+
+  if (gSMFields.signMessage)
+    gSMFields.SMIMEReceiptRequest = gCurrentIdentity.getBoolAttribute("smime_receipt_request");
 }
 
 addEventListener("load", smimeComposeOnLoad, false);
@@ -210,14 +213,43 @@ function toggleSignMessage()
       return;
     }
 
+    gSMFields.SMIMEReceiptRequest = gCurrentIdentity.getBoolAttribute("smime_receipt_request");
+
     setSignatureUI();
   }
   else
   {
+    gSMFields.SMIMEReceiptRequest = false;
+
     setNoSignatureUI();
   }
 
   gSignOptionChanged = true;
+}
+
+function toggleSMIMEReceiptRequest()
+{
+  if (!gSMFields)
+    return;
+
+  gSMFields.SMIMEReceiptRequest = !gSMFields.SMIMEReceiptRequest;
+
+  if (gSMFields.SMIMEReceiptRequest)
+  {
+    var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+
+    if (!signingCertName)
+    {
+      gSMFields.SMIMEReceiptRequest = false;
+      showNeedSetupInfo();
+      return;
+    }
+
+    // Force signing
+    gSMFields.signMessage = true;
+
+    setSignatureUI();
+  }
 }
 
 function setSecuritySettings(menu_id)
@@ -229,6 +261,8 @@ function setSecuritySettings(menu_id)
           .setAttribute("checked", gSMFields.requireEncryptMessage);
   document.getElementById("menu_securitySign" + menu_id)
           .setAttribute("checked", gSMFields.signMessage);
+  document.getElementById("menu_securitySMIMEReceiptRequest" + menu_id)
+          .setAttribute("checked", gSMFields.SMIMEReceiptRequest);
 }
 
 function setNextCommand(what)
@@ -249,6 +283,10 @@ function doSecurityButton()
 
     case "signMessage":
       toggleSignMessage();
+      break;
+
+    case "SMIMEReceiptRequest":
+      toggleSMIMEReceiptRequest();
       break;
 
     case "show":
@@ -438,7 +476,13 @@ function onComposerFromChanged()
   }
   gSMFields.signMessage = useSigning;
   if (useSigning)
+  {
+    gSMFields.SMIMEReceiptRequest = gCurrentIdentity.getBoolAttribute("smime_receipt_request");
     setSignatureUI();
+  }
   else
+  {
+    gSMFields.SMIMEReceiptRequest = false;
     setNoSignatureUI();
+  }
 }

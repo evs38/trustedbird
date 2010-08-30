@@ -661,3 +661,15 @@ toolbar[iconsize="small"] #button-archive[disabled] {
 #mdnBarImage {
   list-style-image: url("chrome://messenger/skin/icons/warning.png");
 }
+
+#SMIMEReceiptBarImage {
+  list-style-image: url("chrome://messenger/skin/smime/icons/hdrSignOk.png");
+}
+
+#SMIMEReceiptRequestBarImage {
+  list-style-image: url("chrome://messenger/skin/smime/icons/hdrSignOk.png");
+}
+
+#SMIMEReceiptVerifiedBar {
+  background-color: #9AE3B1;
+}

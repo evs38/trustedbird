@@ -150,6 +150,60 @@ extern CERTCertificate *NSS_SMIMEUtil_GetCertFromEncryptionKeyPreference(CERTCer
 extern SECStatus
 NSS_SMIMEUtil_FindBulkAlgForRecipients(CERTCertificate **rcerts, SECOidTag *bulkalgtag, int *keysize);
 
+/*
+ * NSS_SMIMEUtil_CreateReceiptRequest - create a S/MIME receipt request attribute
+ */
+extern SECStatus
+NSS_SMIMEUtil_CreateReceiptRequest(PLArenaPool *aPoolp,
+                                   SECItem *aDest,
+                                   char *aSignedContentIdentifier,
+                                   char *aReceiptsTo);
+
+/*
+ * NSS_SMIMEUtil_GetReceiptRequest - decode S/MIME receipt request values
+ */
+extern SECStatus
+NSS_SMIMEUtil_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo,
+                                PRBool *aHasReceiptRequest,
+                                PRUint8 **aSignedContentIdentifier,
+                                PRUint32 *aSignedContentIdentifierLen,
+                                PRUint32 *aReceiptsFrom,
+                                char **aReceiptsTo,
+                                PRUint8 **aOriginatorSignatureValue,
+                                PRUint32 *aOriginatorSignatureValueLen,
+                                PRUint8 **aOriginatorContentType,
+                                PRUint32 *aOriginatorContentTypeLen,
+                                PRUint8 **aMsgSigDigest,
+                                PRUint32 *aMsgSigDigestLen);
+
+/*
+ * NSS_SMIMEUtil_CreateReceipt - create a S/MIME receipt
+ */
+extern SECStatus
+NSS_SMIMEUtil_CreateReceipt(PLArenaPool *aPoolp,
+                            SECItem *aReceipt,
+                            PRUint8 **aReceiptDigest,
+                            PRUint32 *aReceiptDigestLen,
+                            const PRUint8 *aSignedContentIdentifier,
+                            const PRUint32 aSignedContentIdentifierLen,
+                            const PRUint8 *aOriginatorSignatureValue,
+                            const PRUint32 aOriginatorSignatureValueLen,
+                            const PRUint8 *aOriginatorContentType,
+                            const PRUint32 aOriginatorContentTypeLen);
+
+/*
+ * NSS_SMIMEUtil_GetReceipt - decode a S/MIME receipt
+ */
+extern SECStatus
+NSS_SMIMEUtil_GetReceipt(PLArenaPool *aPoolp,
+                         SECItem *aEncodedReceipt,
+                         PRUint8 **aSignedContentIdentifier,
+                         PRUint32 *aSignedContentIdentifierLen,
+                         PRUint8 **aOriginatorSignatureValue,
+                         PRUint32 *aOriginatorSignatureValueLen,
+                         PRUint8 **aOriginatorContentType,
+                         PRUint32 *aOriginatorContentTypeLen);
+
 /************************************************************************/
 SEC_END_PROTOS
 

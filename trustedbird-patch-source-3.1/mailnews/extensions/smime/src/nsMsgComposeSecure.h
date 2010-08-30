@@ -65,6 +65,16 @@ public:
 private:
   PRBool mSignMessage;
   PRBool mAlwaysEncryptMessage;
+  PRBool mSMIMEReceiptRequest;
+  PRBool mSMIMEReceipt;
+  PRUint8 *mSMIMEReceiptSignedContentIdentifier;
+  PRUint32 mSMIMEReceiptSignedContentIdentifierLen;
+  PRUint8 *mSMIMEReceiptOriginatorSignatureValue;
+  PRUint32 mSMIMEReceiptOriginatorSignatureValueLen;
+  PRUint8 *mSMIMEReceiptOriginatorContentType;
+  PRUint32 mSMIMEReceiptOriginatorContentTypeLen;
+  PRUint8 *mSMIMEReceiptMsgSigDigest;
+  PRUint32 mSMIMEReceiptMsgSigDigestLen;
 };
 
 typedef enum {
@@ -72,7 +82,8 @@ typedef enum {
   mime_crypto_clear_signed,		/* multipart/signed encapsulation */
   mime_crypto_opaque_signed,	/* application/x-pkcs7-mime (signedData) */
   mime_crypto_encrypted,		/* application/x-pkcs7-mime */
-  mime_crypto_signed_encrypted	/* application/x-pkcs7-mime */
+  mime_crypto_signed_encrypted,	/* application/x-pkcs7-mime */
+  mime_crypto_signed_receipt /* application/x-pkcs7-mime with smime-type=signed-receipt */
 } mimeDeliveryCryptoState;
 
 class nsMsgComposeSecure : public nsIMsgComposeSecure
@@ -89,6 +100,7 @@ private:
   nsresult MimeInitMultipartSigned(PRBool aOuter, nsIMsgSendReport *sendReport);
   nsresult MimeInitEncryption(PRBool aSign, nsIMsgSendReport *sendReport);
   nsresult MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSendReport *sendReport);
+  nsresult MimeFinishSignedReceipt(nsIMsgSendReport *sendReport);
   nsresult MimeFinishEncryption (PRBool aSign, nsIMsgSendReport *sendReport);
   nsresult MimeCryptoHackCerts(const char *aRecipients, nsIMsgSendReport *sendReport, PRBool aEncrypt, PRBool aSign);
   PRBool InitializeSMIMEBundle();
@@ -99,6 +111,18 @@ private:
 					   PRUint32 numParams,
 					   PRUnichar **outString);
   nsresult ExtractEncryptionState(nsIMsgIdentity * aIdentity, nsIMsgCompFields * aComposeFields, PRBool * aSignMessage, PRBool * aEncrypt);
+  nsresult ExtractSMIMEReceiptState(nsIMsgIdentity *aIdentity,
+                                    nsIMsgCompFields *aComposeFields,
+                                    PRBool *aSMIMEReceiptRequest,
+                                    PRBool *aSMIMEReceipt,
+                                    PRUint8 **aSMIMEReceiptSignedContentIdentifier,
+                                    PRUint32 *aSMIMEReceiptSignedContentIdentifierLen,
+                                    PRUint8 **aSMIMEReceiptOriginatorSignatureValue,
+                                    PRUint32 *aSMIMEReceiptOriginatorSignatureValueLen,
+                                    PRUint8 **aSMIMEReceiptOriginatorContentType,
+                                    PRUint32 *aSMIMEReceiptOriginatorContentTypeLen,
+                                    PRUint8 **aSMIMEReceiptMsgSigDigest,
+                                    PRUint32 *aSMIMEReceiptMsgSigDigestLen);
 
   mimeDeliveryCryptoState mCryptoState;
   nsCOMPtr<nsIOutputStream> mStream;
@@ -125,6 +149,20 @@ private:
   PRBool mErrorAlreadyReported;
   void SetError(nsIMsgSendReport *sendReport, const PRUnichar *bundle_string);
   void SetErrorWithParam(nsIMsgSendReport *sendReport, const PRUnichar *bundle_string, const char *param);
+
+  PRBool mSMIMEReceiptRequest;
+  nsCString mSMIMEReceiptRequestSignedContentIdentifier;
+  nsCString mSMIMEReceiptRequestReceiptsTo;
+
+  PRBool mSMIMEReceipt;
+  PRUint8 *mSMIMEReceiptSignedContentIdentifier;
+  PRUint32 mSMIMEReceiptSignedContentIdentifierLen;
+  PRUint8 *mSMIMEReceiptOriginatorSignatureValue;
+  PRUint32 mSMIMEReceiptOriginatorSignatureValueLen;
+  PRUint8 *mSMIMEReceiptOriginatorContentType;
+  PRUint32 mSMIMEReceiptOriginatorContentTypeLen;
+  PRUint8 *mSMIMEReceiptMsgSigDigest;
+  PRUint32 mSMIMEReceiptMsgSigDigestLen;
 };
 
 #endif

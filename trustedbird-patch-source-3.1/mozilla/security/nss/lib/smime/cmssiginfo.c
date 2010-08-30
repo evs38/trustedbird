@@ -20,6 +20,8 @@
  *
  * Contributor(s):
  *   Dr Vipul Gupta <vipul.gupta@sun.com>, Sun Microsystems Laboratories
+ *   ESS Signed Receipts: Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   ESS Signed Receipts: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -1033,4 +1035,179 @@ NSS_CMSSignerInfo_IncludeCerts(NSSCMSSignerInfo *signerinfo, NSSCMSCertChainMode
 	return SECFailure;
     
     return SECSuccess;
+}
+
+/*
+ * NSS_CMSSignerInfo_AddReceiptRequest - add a ReceiptRequest attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddReceiptRequest(NSSCMSSignerInfo *aSignerinfo,
+                                    char *aSignedContentIdentifier,
+                                    char *aReceiptsTo)
+{
+    NSSCMSAttribute *attr;
+    SECItem *receiptRequest = NULL;
+    void *mark;
+    PLArenaPool *poolp;
+
+    poolp = aSignerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    receiptRequest = SECITEM_AllocItem(poolp, NULL, 0);
+    if (receiptRequest == NULL)
+        goto loser;
+
+    /* create new receiptRequest attribute */
+    if (NSS_SMIMEUtil_CreateReceiptRequest(poolp, receiptRequest, aSignedContentIdentifier, aReceiptsTo) != SECSuccess)
+        goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_RECEIPT_REQUEST, receiptRequest, PR_TRUE)) == NULL)
+        goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(aSignerinfo, attr) != SECSuccess)
+        goto loser;
+
+    PORT_ArenaUnmark(poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease(poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetReceiptRequest - get S/MIME ReceiptRequest values
+ */
+SECStatus
+NSS_CMSSignerInfo_GetReceiptRequest(NSSCMSSignerInfo *aSignerinfo,
+                                    PRBool *aHasReceiptRequest,
+                                    PRUint8 **aSignedContentIdentifier,
+                                    PRUint32 *aSignedContentIdentifierLen,
+                                    PRUint32 *aReceiptsFrom,
+                                    char **aReceiptsTo,
+                                    PRUint8 **aOriginatorSignatureValue,
+                                    PRUint32 *aOriginatorSignatureValueLen,
+                                    PRUint8 **aOriginatorContentType,
+                                    PRUint32 *aOriginatorContentTypeLen,
+                                    PRUint8 **aMsgSigDigest,
+                                    PRUint32 *aMsgSigDigestLen)
+{
+    return NSS_SMIMEUtil_GetReceiptRequest(aSignerinfo,
+                                           aHasReceiptRequest,
+                                           aSignedContentIdentifier,
+                                           aSignedContentIdentifierLen,
+                                           aReceiptsFrom,
+                                           aReceiptsTo,
+                                           aOriginatorSignatureValue,
+                                           aOriginatorSignatureValueLen,
+                                           aOriginatorContentType,
+                                           aOriginatorContentTypeLen,
+                                           aMsgSigDigest,
+                                           aMsgSigDigestLen);
+}
+
+/*
+ * NSS_CMSSignerInfo_AddMsgSigDigest - add a MsgSigDigest attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddMsgSigDigest(NSSCMSSignerInfo *aSignerinfo,
+                                  PRUint8 *aReceiptMsgSigDigest,
+                                  PRUint32 aReceiptMsgSigDigestLen)
+{
+    NSSCMSAttribute *attr;
+    SECItem msgSigDigest;
+    SECItem encMsgSigDigest;
+    void *mark;
+    PLArenaPool *poolp;
+    SECItem *dummy = NULL;
+
+    poolp = aSignerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    /* create new attribute */
+    msgSigDigest.data = aReceiptMsgSigDigest;
+    msgSigDigest.len = aReceiptMsgSigDigestLen;
+    if ((dummy = SEC_ASN1EncodeItem(poolp, &encMsgSigDigest, &msgSigDigest, SEC_ASN1_GET(SEC_OctetStringTemplate))) == NULL)
+        goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_RECEIPT_MSGSIGDIGEST, &encMsgSigDigest, PR_TRUE)) == NULL)
+        goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(aSignerinfo, attr) != SECSuccess)
+        goto loser;
+
+    PORT_ArenaUnmark(poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease(poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetMsgSigDigest - get the MsgSigDigest attribute from the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_GetMsgSigDigest(NSSCMSSignerInfo *aSignerinfo,
+                                  PRUint8 **aReceiptMsgSigDigest,
+                                  PRUint32 *aReceiptMsgSigDigestLen)
+{
+    NSSCMSAttribute *attr;
+    void *mark;
+    PLArenaPool *poolp;
+    SECItem decodedSECItem;
+    unsigned int len;
+
+    poolp = aSignerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    attr = NSS_CMSAttributeArray_FindAttrByOidTag(aSignerinfo->authAttr, SEC_OID_SMIME_RECEIPT_MSGSIGDIGEST, PR_TRUE);
+    if (attr == NULL || attr->values == NULL || attr->values[0] == NULL)
+        goto loser;
+
+    if ((SEC_ASN1DecodeItem(poolp, &decodedSECItem, SEC_ASN1_GET(SEC_OctetStringTemplate), attr->values[0])) != SECSuccess)
+        goto loser;
+
+    len = decodedSECItem.len;
+    if (len == 0)
+        goto loser;
+
+    *aReceiptMsgSigDigest = PORT_Alloc(len);
+    PORT_Memcpy(*aReceiptMsgSigDigest, decodedSECItem.data, len);
+    *aReceiptMsgSigDigestLen = len;
+
+    PORT_ArenaUnmark(poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease(poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_HasReceipt - check if signer info's content-type attribute is S/MIME Receipt
+ */
+PRBool
+NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo)
+{
+    NSSCMSAttribute *attr;
+    SECOidData *smimeReceiptOid;
+
+    /* Get content-type */
+    attr = NSS_CMSAttributeArray_FindAttrByOidTag(signerinfo->authAttr, SEC_OID_PKCS9_CONTENT_TYPE, PR_TRUE);
+    if (attr == NULL || attr->values == NULL || attr->values[0] == NULL)
+        return PR_FALSE;
+
+    /* Compare content-type with receipt content-type */
+    smimeReceiptOid = SECOID_FindOIDByTag(SEC_OID_SMIME_RECEIPT);
+    if (!smimeReceiptOid || !NSS_CMSAttribute_CompareValue(attr, &(smimeReceiptOid->oid)))
+        return PR_FALSE;
+
+    return PR_TRUE;
 }

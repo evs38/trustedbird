@@ -19,8 +19,10 @@
  * Portions created by the Initial Developer are Copyright (C) 2001
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Drinan <ddrinan@netscape.com>
+ * Contributor(s):
+ *   David Drinan <ddrinan@netscape.com>
  *   Kai Engert <kengert@redhat.com>
+ *   ESS Signed Receipts: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -62,10 +64,15 @@ NS_IMPL_THREADSAFE_ISUPPORTS2(nsCMSMessage, nsICMSMessage,
 nsCMSMessage::nsCMSMessage()
 {
   m_cmsMsg = nsnull;
+  mHasReceiptRequest = PR_FALSE;
+  mHasReceipt = PR_FALSE;
 }
+
 nsCMSMessage::nsCMSMessage(NSSCMSMessage *aCMSMsg)
 {
   m_cmsMsg = aCMSMsg;
+  mHasReceiptRequest = PR_FALSE;
+  mHasReceipt = PR_FALSE;
 }
 
 nsCMSMessage::~nsCMSMessage()
@@ -225,6 +232,214 @@ NS_IMETHODIMP nsCMSMessage::GetEncryptionCert(nsIX509Cert **ecert)
     return NS_ERROR_NOT_AVAILABLE;
 
     return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP nsCMSMessage::SetReceiptRequest(const nsACString& aSignedContentIdentifier, const nsACString& aReceiptsTo)
+{
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::SetReceiptRequest\n"));
+
+  mHasReceiptRequest = PR_TRUE;
+  mReceiptRequestSignedContentIdentifier = aSignedContentIdentifier;
+  mReceiptRequestReceiptsTo = aReceiptsTo;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsCMSMessage::GetReceiptRequest(PRBool *aHasReceiptRequest,
+                                              PRUint8 **aSignedContentIdentifier,
+                                              PRUint32 *aSignedContentIdentifierLen,
+                                              PRUint32 *aReceiptsFrom,
+                                              nsACString& aReceiptsTo,
+                                              PRUint8 **aOriginatorSignatureValue,
+                                              PRUint32 *aOriginatorSignatureValueLen,
+                                              PRUint8 **aOriginatorContentType,
+                                              PRUint32 *aOriginatorContentTypeLen,
+                                              PRUint8 **aMsgSigDigest,
+                                              PRUint32 *aMsgSigDigestLen)
+{
+  nsNSSShutDownPreventionLock locker;
+  if (isAlreadyShutDown())
+    return NS_ERROR_NOT_AVAILABLE;
+
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::GetReceiptRequest\n"));
+  NS_ENSURE_ARG_POINTER(aHasReceiptRequest);
+  NS_ENSURE_ARG_POINTER(aSignedContentIdentifier);
+  NS_ENSURE_ARG_POINTER(aSignedContentIdentifierLen);
+  NS_ENSURE_ARG_POINTER(aReceiptsFrom);
+  NS_ENSURE_ARG_POINTER(aOriginatorSignatureValue);
+  NS_ENSURE_ARG_POINTER(aOriginatorSignatureValueLen);
+  NS_ENSURE_ARG_POINTER(aOriginatorContentType);
+  NS_ENSURE_ARG_POINTER(aOriginatorContentTypeLen);
+  NS_ENSURE_ARG_POINTER(aMsgSigDigest);
+  NS_ENSURE_ARG_POINTER(aMsgSigDigestLen);
+
+  NSSCMSSignerInfo *si = GetTopLevelSignerInfo();
+  if (!si)
+    return NS_ERROR_FAILURE;
+
+  NSS_CMSSignerInfo_GetReceiptRequest(si,
+                                      aHasReceiptRequest,
+                                      aSignedContentIdentifier,
+                                      aSignedContentIdentifierLen,
+                                      aReceiptsFrom,
+                                      getter_Copies(aReceiptsTo),
+                                      aOriginatorSignatureValue,
+                                      aOriginatorSignatureValueLen,
+                                      aOriginatorContentType,
+                                      aOriginatorContentTypeLen,
+                                      aMsgSigDigest,
+                                      aMsgSigDigestLen);
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsCMSMessage::SetReceipt(PRUint8 *aSignedContentIdentifier,
+                                       PRUint32 aSignedContentIdentifierLen,
+                                       PRUint8 *aOriginatorSignatureValue,
+                                       PRUint32 aOriginatorSignatureValueLen,
+                                       PRUint8 *aOriginatorContentType,
+                                       PRUint32 aOriginatorContentTypeLen,
+                                       PRUint8 *aMsgSigDigest,
+                                       PRUint32 aMsgSigDigestLen)
+{
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::SetReceipt\n"));
+
+  mHasReceipt = PR_TRUE;
+  mReceiptSignedContentIdentifier = aSignedContentIdentifier;
+  mReceiptSignedContentIdentifierLen = aSignedContentIdentifierLen;
+  mReceiptOriginatorSignatureValue = aOriginatorSignatureValue;
+  mReceiptOriginatorSignatureValueLen = aOriginatorSignatureValueLen;
+  mReceiptOriginatorContentType = aOriginatorContentType;
+  mReceiptOriginatorContentTypeLen = aOriginatorContentTypeLen;
+  mReceiptMsgSigDigest = aMsgSigDigest;
+  mReceiptMsgSigDigestLen = aMsgSigDigestLen;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsCMSMessage::CreateReceipt(PRUint8 **encodedReceipt, PRUint32 *encodedReceiptLen)
+{
+  SECItem receipt;
+  SECItem digest;
+  PRUint8 *digestBuffer = NULL;
+  PRUint32 digestBufferLen;
+  nsresult rv = NS_OK;
+  NSSCMSContentInfo *cinfo;
+  NSSCMSSignedData *sigd;
+
+  if (m_cmsMsg == NULL)
+    return NS_ERROR_FAILURE;
+
+  /* Create and encode receipt object */
+  if ((rv = NSS_SMIMEUtil_CreateReceipt(m_cmsMsg->poolp,
+                                        &receipt,
+                                        &digestBuffer,
+                                        &digestBufferLen,
+                                        mReceiptSignedContentIdentifier,
+                                        mReceiptSignedContentIdentifierLen,
+                                        mReceiptOriginatorSignatureValue,
+                                        mReceiptOriginatorSignatureValueLen,
+                                        mReceiptOriginatorContentType,
+                                        mReceiptOriginatorContentTypeLen)) != SECSuccess)
+    goto loser;
+
+  /* Get SignedData */
+  cinfo = NSS_CMSMessage_GetContentInfo(m_cmsMsg);
+  if (cinfo == NULL) {
+    rv = NS_ERROR_FAILURE;
+    goto loser;
+  }
+  sigd = (NSSCMSSignedData*)NSS_CMSContentInfo_GetContent(cinfo);
+  if (sigd == NULL) {
+    rv = NS_ERROR_FAILURE;
+    goto loser;
+  }
+
+  digest.data = digestBuffer;
+  digest.len = digestBufferLen;
+
+  /* Set digest attribute */
+  rv = NSS_CMSSignedData_SetDigestValue(sigd, SEC_OID_SHA1, &digest);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  *encodedReceipt = (PRUint8*)(receipt.data);
+  *encodedReceiptLen = receipt.len;
+
+loser:
+  if (digestBuffer != NULL)
+    PORT_Free(digestBuffer);
+
+  return rv;
+}
+
+NS_IMETHODIMP nsCMSMessage::GetReceipt(PRBool *aHasReceipt,
+                                       PRUint8 **aSignedContentIdentifier,
+                                       PRUint32 *aSignedContentIdentifierLen,
+                                       PRUint8 **aOriginatorSignatureValue,
+                                       PRUint32 *aOriginatorSignatureValueLen,
+                                       PRUint8 **aOriginatorContentType,
+                                       PRUint32 *aOriginatorContentTypeLen,
+                                       PRUint8 **aMsgSigDigest,
+                                       PRUint32 *aMsgSigDigestLen)
+{
+  NSSCMSContentInfo *cinfo;
+  NSSCMSSignedData *sigd;
+  NSSCMSSignerInfo *si;
+  SECItem *receipt;
+
+  nsNSSShutDownPreventionLock locker;
+  if (isAlreadyShutDown())
+    return NS_ERROR_NOT_AVAILABLE;
+
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::GetReceipt\n"));
+  NS_ENSURE_ARG_POINTER(aHasReceipt);
+  NS_ENSURE_ARG_POINTER(aSignedContentIdentifier);
+  NS_ENSURE_ARG_POINTER(aSignedContentIdentifierLen);
+  NS_ENSURE_ARG_POINTER(aOriginatorSignatureValue);
+  NS_ENSURE_ARG_POINTER(aOriginatorSignatureValueLen);
+  NS_ENSURE_ARG_POINTER(aOriginatorContentType);
+  NS_ENSURE_ARG_POINTER(aOriginatorContentTypeLen);
+  NS_ENSURE_ARG_POINTER(aMsgSigDigest);
+  NS_ENSURE_ARG_POINTER(aMsgSigDigestLen);
+
+  si = GetTopLevelSignerInfo();
+  if (!si)
+    return NS_ERROR_FAILURE;
+
+  if (!NSS_CMSSignerInfo_HasReceipt(si))
+    return NS_OK;
+
+  cinfo = NSS_CMSMessage_ContentLevel(m_cmsMsg, 0);
+  if (!cinfo)
+    return NS_OK;
+
+  sigd = (NSSCMSSignedData*)NSS_CMSContentInfo_GetContent(cinfo);
+  if (!sigd)
+    return NS_OK;
+
+  if (NSS_CMSContentInfo_GetContentTypeTag(&(sigd->contentInfo)) != SEC_OID_SMIME_RECEIPT)
+    return NS_OK;
+
+  receipt = (SECItem*)NSS_CMSContentInfo_GetContent(&(sigd->contentInfo));
+  if (receipt == NULL)
+    return NS_ERROR_FAILURE;
+
+  if (NSS_SMIMEUtil_GetReceipt(si->cmsg->poolp,
+                               receipt,
+                               aSignedContentIdentifier,
+                               aSignedContentIdentifierLen,
+                               aOriginatorSignatureValue,
+                               aOriginatorSignatureValueLen,
+                               aOriginatorContentType,
+                               aOriginatorContentTypeLen) != SECSuccess)
+    return NS_ERROR_FAILURE;
+
+  if (NSS_CMSSignerInfo_GetMsgSigDigest(si, aMsgSigDigest, aMsgSigDigestLen) != SECSuccess)
+    return NS_ERROR_FAILURE;
+
+  *aHasReceipt = PR_TRUE;
+
+  return NS_OK;
 }
 
 NS_IMETHODIMP nsCMSMessage::VerifyDetachedSignature(unsigned char* aDigestData, PRUint32 aDigestDataLen)
@@ -668,11 +883,20 @@ NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert*
 
   cinfo = NSS_CMSSignedData_GetContentInfo(sigd);
 
-  /* we're always passing data in and detaching optionally */
-  if (NSS_CMSContentInfo_SetContent_Data(m_cmsMsg, cinfo, nsnull, PR_TRUE) 
-          != SECSuccess) {
-    PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't set content data\n"));
-    goto loser;
+  if (mHasReceipt) {
+    /* Set receipt content-type*/
+    if (NSS_CMSContentInfo_SetContent(m_cmsMsg, cinfo, SEC_OID_SMIME_RECEIPT, nsnull)
+            != SECSuccess) {
+      PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't set content receipt\n"));
+      goto loser;
+    }
+  } else {
+    /* we're always passing data in and detaching optionally */
+    if (NSS_CMSContentInfo_SetContent_Data(m_cmsMsg, cinfo, nsnull, PR_TRUE)
+            != SECSuccess) {
+      PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't set content data\n"));
+      goto loser;
+    }
   }
 
   /* 
@@ -701,6 +925,24 @@ NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert*
   if (NSS_CMSSignerInfo_AddSMIMECaps(signerinfo) != SECSuccess) {
     PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add smime caps\n"));
     goto loser;
+  }
+
+  /* Add receipt request */
+  if (mHasReceiptRequest) {
+    if (NSS_CMSSignerInfo_AddReceiptRequest(signerinfo,
+                                            (char*)(mReceiptRequestSignedContentIdentifier.get()),
+                                            (char*)(mReceiptRequestReceiptsTo.get())) != SECSuccess) {
+      PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add receipt request\n"));
+      goto loser;
+    }
+  }
+
+  /* Add msgSigDigest attribute for a receipt */
+  if (mHasReceipt) {
+    if (NSS_CMSSignerInfo_AddMsgSigDigest(signerinfo, mReceiptMsgSigDigest, mReceiptMsgSigDigestLen) != SECSuccess) {
+      PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add msgSigDigest attribute\n"));
+      goto loser;
+    }
   }
 
   if (ecert) {

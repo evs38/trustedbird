@@ -1889,6 +1889,29 @@
     <button label="&mdnBarSendButton.label;" oncommand="SendMDNResponse();"/>
   </hbox>
 
+  <hbox id="SMIMEReceiptRequestBar" class="msgNotificationBar" align="center">
+    <image id="SMIMEReceiptRequestBarImage"/>
+    <vbox flex="1">
+      <description flex="1" class="msgNotificationBarText">
+        &SMIMEReceiptRequestBarMessage.label;
+        <label id="SMIMEReceiptRequestBarRecipient" class="msgNotificaton-smallText"/>
+      </description>
+    </vbox>
+    <button label="&SMIMEReceiptRequestBarIgnoreButton.label;" oncommand="IgnoreSMIMEReceipt();"/>
+    <button label="&SMIMEReceiptRequestBarSendButton.label;" oncommand="SendSMIMEReceipt();"/>
+  </hbox>
+
+  <hbox id="SMIMEReceiptVerifiedBar" class="msgNotificationBar" align="center">
+    <image id="SMIMEReceiptBarImage"/>
+    <description flex="1" class="msgNotificationBarText">&SMIMEReceiptVerifiedBarMessage.label;</description>
+    <button id="SMIMEReceiptBarOpenMessageButton" label="&SMIMEReceiptBarOpenMessageButton.label;" oncommand="OpenSMIMEReceiptRequestMessage();"/>
+  </hbox>
+
+  <hbox id="SMIMEReceiptNotVerifiedBar" class="msgNotificationBar" align="center">
+    <image id="SMIMEReceiptBarImage"/>
+    <description flex="1" class="msgNotificationBarText">&SMIMEReceiptNotVerifiedBarMessage.label;</description>
+  </hbox>
+
 </deck>
 
 <statusbar class="chromeclass-status" id="status-bar">
