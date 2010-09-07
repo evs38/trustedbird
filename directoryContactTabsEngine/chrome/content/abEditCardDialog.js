@@ -53,9 +53,33 @@ if (typeof OnLoadEditCard == "function") {
   function OnLoadEditCard() {
     OnLoadEditCardOrig();
 
+    document.getElementById("abcardWindow").addEventListener("unload", OnUnLoadEditCard, true);
+
     directoryContactTabsDirectory = getLdapDirectory();
     if (directoryContactTabsDirectory != null) loadCustomTabs();
   }
+}
+
+/**
+ * Unload function called when the contact window is closed
+ */
+function OnUnLoadEditCard() {
+  document.getElementById("abcardWindow").removeEventListener("unload", OnUnLoadEditCard, true);
+
+  for (let j = 0; j < directoryContactTabsElementList.length; j++) {
+    directoryContactTabsElementList[j].removeEventListener("CheckboxStateChange", CheckboxStateChangeTrue, true);
+    directoryContactTabsElementList[j].removeEventListener("CheckboxStateChange", CheckboxStateChangeFalse, true);
+  }
+}
+
+function CheckboxStateChangeTrue(event) {
+  event.target.checked = true;
+  event.target.blur();
+}
+
+function CheckboxStateChangeFalse(event) {
+  event.target.checked = false;
+  event.target.blur();
 }
 
 /**
@@ -266,7 +290,7 @@ function messageCallback(aLdapURL, aLdapMessage, aMessageCallbackParameter) {
               if ((dctValue != "" && valueList[k] == dctValue) || (dctValue == "" && (valueList[k] == "TRUE" || valueList[k] == "true"))) {
                 directoryContactTabsElementList[j].setAttribute("checked", true);
                 /* Disable state change */
-                directoryContactTabsElementList[j].addEventListener("CheckboxStateChange", function(event) { event.target.checked = true; event.target.blur(); }, true);
+                directoryContactTabsElementList[j].addEventListener("CheckboxStateChange", CheckboxStateChangeTrue, true);
                 directoryContactTabsElementList[j].removeAttribute("disabled");
 
                 stateChanged = true;
@@ -276,7 +300,7 @@ function messageCallback(aLdapURL, aLdapMessage, aMessageCallbackParameter) {
 
             if (!stateChanged) {
               /* Disable state change */
-              directoryContactTabsElementList[j].addEventListener("CheckboxStateChange", function(event) { event.target.checked = false; event.target.blur(); }, true);
+              directoryContactTabsElementList[j].addEventListener("CheckboxStateChange", CheckboxStateChangeFalse, true);
               directoryContactTabsElementList[j].removeAttribute("disabled");
             }
             break;
