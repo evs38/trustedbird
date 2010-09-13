@@ -1,3 +1,8 @@
+out-of-office (1.0.2)
+  * Add Thunderbird 3.1 compatibility
+  * Fix a javascript warning
+-- Sep 13 2010
+
 out-of-office (1.0.1)
   * Fix Thunderbird 3 compatibility
 -- Feb 23 2010
@@ -17,4 +22,4 @@ out-of-office (0.0.2.0-alpha)
   * Internal bugs fix
 
 out-of-office (0.0.1.0-alpha)
- * First working release
+  * First working release

@@ -49,7 +49,6 @@
         buttons="accept,cancel"
 				onload="onDialogLoad(this);"
 				ondialogaccept="return onDialogAccept(this);"
-        persist="screenX screenY"
         style="width: 45em; height: 27em;"
         title="&outofoffice.settings.title;">
 

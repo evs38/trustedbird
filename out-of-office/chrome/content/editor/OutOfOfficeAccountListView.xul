@@ -49,7 +49,6 @@
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept"
         onload="onWindowLoad();"
-        persist="screenX screenY"
         style="width: 45em; height: 30em;"
         title="&outofoffice.list.title;">
       
