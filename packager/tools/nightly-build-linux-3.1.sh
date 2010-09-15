@@ -2,8 +2,8 @@
 # Build Trustedbird and add-ons then upload the files to packages.trustedbird.org
 # (Linux version)
 
-REMOTE_SERVER=dga@62.193.246.126
-REMOTE_DIRECTORY=/var/www/vhosts/packages.trustedbird.org/httpdocs
+REMOTE_SERVER=
+REMOTE_DIRECTORY=
 DIRECTORY_NAME=`date +"%Y%m%d"`
 LOG=buildlog-3.1
 
