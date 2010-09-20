@@ -1,3 +1,7 @@
+trustedbird (3.1.4+0.2.0)
+  * Add S/MIME security labels (RFC 2634)
+-- 20 Sep 2010
+
 trustedbird (3.1.4+0.1.0)
   * Upgrade to Thunderbird 3.1.4
 -- 17 Sep 2010

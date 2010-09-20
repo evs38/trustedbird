@@ -283,6 +283,8 @@ NSS_CMSSignerInfo_GetMsgSigDigest;
 NSS_CMSSignerInfo_HasReceipt;
 NSS_SMIMEUtil_CreateReceipt;
 NSS_SMIMEUtil_GetReceipt;
+NSS_CMSSignerInfo_AddSecurityLabel;
+NSS_CMSSignerInfo_GetSecurityLabel;
 ;+    local:
 ;+       *;
 ;+};

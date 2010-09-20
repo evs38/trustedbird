@@ -41,12 +41,13 @@
 <!DOCTYPE dialog SYSTEM "chrome://messenger-smime/locale/msgReadSecurityInfo.dtd">
 
 <dialog id="msgReadSecurityInfo" title="&status.label;"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"      
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   style="width: 40em;"
   buttons="accept"
   onload="onLoad();">
 
   <script type="application/javascript" src="chrome://messenger-smime/content/msgReadSecurityInfo.js"/>
+  <script type="application/javascript" src="chrome://messenger-smime/content/msgSecurityLabel.js"/>
 
   <stringbundle id="bundle_smime_read_info" src="chrome://messenger-smime/locale/msgSecurityInfo.properties"/> 
 
@@ -96,5 +97,35 @@
                 oncommand="viewEncryptionCert()"/>
       </hbox>
     </vbox>
+
+    <vbox id="securityLabelBox" collapsed="true">
+      <separator/>
+      <label id="securityLabel">&securityLabel.name;</label>
+      <grid id="securityLabelContent" flex="1">
+        <columns>
+          <column />
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row align="center">
+            <label id="securityLabelSecurityPolicyIdentifierLabel" value="&securityLabel.securityPolicyIdentifier.name;"/>
+            <description id="securityLabelSecurityPolicyIdentifierValue"/>
+          </row>
+          <row align="center" id="securityLabelPrivacyMarkRow" collapsed="true">
+            <label id="securityLabelPrivacyMarkLabel" value="&securityLabel.privacyMark.name;"/>
+            <description id="securityLabelPrivacyMarkValue"/>
+          </row>
+          <row align="center" id="securityLabelSecurityClassificationRow" collapsed="true">
+            <label id="securityLabelSecurityClassificationLabel" value="&securityLabel.securityClassification.name;"/>
+            <description id="securityLabelSecurityClassificationValue"/>
+          </row>
+          <row align="center" id="securityLabelSecurityCategoriesRow" collapsed="true">
+            <label id="securityLabelSecurityCategoriesLabel" value="&securityLabel.securityCategories.name;"/>
+            <listbox id="securityLabelSecurityCategoriesListBox" flex="1"/>
+          </row>
+        </rows>
+      </grid>
+    </vbox>
+
   </vbox>
 </dialog>

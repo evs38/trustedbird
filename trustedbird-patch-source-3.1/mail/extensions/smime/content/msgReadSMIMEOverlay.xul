@@ -43,6 +43,7 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/javascript" src="chrome://messenger-smime/content/msgReadSMIMEOverlay.js"/>
+  <script type="application/javascript" src="chrome://messenger-smime/content/msgSecurityLabel.js"/>
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="bundle_read_smime" src="chrome://messenger-smime/locale/msgReadSMIMEOverlay.properties"/>
@@ -58,5 +59,14 @@
               label="&menu_securityStatus.label;" accesskey="&menu_securityStatus.accesskey;"
               observes="cmd_viewSecurityStatus"/>
   </menupopup>
+
+  <tree id="threadTree">
+    <treecols id="threadCols">
+      <splitter class="tree-splitter"/>
+      <treecol id="securityLabelSecurityClassificationColumn" persist="hidden ordinal width" hidden="true"
+               currentView="unthreaded" label="&securityLabelSecurityClassificationColumn.label;"
+               tooltiptext="&securityLabelSecurityClassificationColumn.tooltip;"/>
+    </treecols>
+  </tree>
 
 </overlay>

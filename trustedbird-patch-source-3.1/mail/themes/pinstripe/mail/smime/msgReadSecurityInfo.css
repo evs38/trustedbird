@@ -57,3 +57,11 @@
 #encryptionCert {
   margin: 5px;
 }
+
+#securityLabel {
+  font-weight: bold;
+}
+
+#securityLabelContent {
+  margin: 5px;
+}

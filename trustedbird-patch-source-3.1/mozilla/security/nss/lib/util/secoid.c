@@ -289,6 +289,7 @@ CONST_OID ms_smimeEncryptionKeyPreference[] 	= { MICROSOFT_OID, 0x10, 0x4 };
 CONST_OID smimeReceiptRequest[]                 = { PKCS9_SMIME_ATTRS, 1 };
 CONST_OID smimeReceipt[]                        = { PKCS9_SMIME_IDS, 1, 1 };
 CONST_OID smimeReceiptMsgSigDigest[]            = { PKCS9_SMIME_ATTRS, 5 };
+CONST_OID smimeSecurityLabel[]                  = { PKCS9_SMIME_ATTRS, 2 };
 
 CONST_OID x520CommonName[]                      = { X520_ATTRIBUTE_TYPE, 3 };
 CONST_OID x520SurName[]                         = { X520_ATTRIBUTE_TYPE, 4 };
@@ -1653,6 +1654,10 @@ const static SECOidData oids[SEC_OID_TOTAL] = {
 
     OD( smimeReceiptMsgSigDigest, SEC_OID_SMIME_RECEIPT_MSGSIGDIGEST,
 	"S/MIME Receipt MsgSigDigest",
+	CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
+
+    OD( smimeSecurityLabel, SEC_OID_SMIME_SECURITY_LABEL,
+	"S/MIME Security Label",
 	CKM_INVALID_MECHANISM, INVALID_CERT_EXTENSION ),
 };
 

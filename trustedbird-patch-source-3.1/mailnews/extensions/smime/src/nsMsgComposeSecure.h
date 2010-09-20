@@ -75,6 +75,10 @@ private:
   PRUint32 mSMIMEReceiptOriginatorContentTypeLen;
   PRUint8 *mSMIMEReceiptMsgSigDigest;
   PRUint32 mSMIMEReceiptMsgSigDigestLen;
+  nsString mSecurityPolicyIdentifier;
+  PRInt32 mSecurityClassification;
+  nsString mPrivacyMark;
+  nsString mSecurityCategories;
 };
 
 typedef enum {
@@ -123,6 +127,7 @@ private:
                                     PRUint32 *aSMIMEReceiptOriginatorContentTypeLen,
                                     PRUint8 **aSMIMEReceiptMsgSigDigest,
                                     PRUint32 *aSMIMEReceiptMsgSigDigestLen);
+  nsresult ExtractSecurityLabelState(nsIMsgCompFields *aComposeFields, PRBool *aHasSecuritylabel, nsAString& aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories);
 
   mimeDeliveryCryptoState mCryptoState;
   nsCOMPtr<nsIOutputStream> mStream;
@@ -163,6 +168,12 @@ private:
   PRUint32 mSMIMEReceiptOriginatorContentTypeLen;
   PRUint8 *mSMIMEReceiptMsgSigDigest;
   PRUint32 mSMIMEReceiptMsgSigDigestLen;
+
+  PRBool mHasSecuritylabel;
+  nsString mSecurityPolicyIdentifier;
+  PRInt32 mSecurityClassification;
+  nsString mPrivacyMark;
+  nsString mSecurityCategories;
 };
 
 #endif

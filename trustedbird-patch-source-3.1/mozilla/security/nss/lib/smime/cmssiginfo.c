@@ -20,8 +20,8 @@
  *
  * Contributor(s):
  *   Dr Vipul Gupta <vipul.gupta@sun.com>, Sun Microsystems Laboratories
- *   ESS Signed Receipts: Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
- *   ESS Signed Receipts: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   ESS Signed Receipts/Security Labels: Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   ESS Signed Receipts/Security Labels: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -1210,4 +1210,65 @@ NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo)
         return PR_FALSE;
 
     return PR_TRUE;
+}
+
+/*
+ * NSS_CMSSignerInfo_AddSecurityLabel - add a SecurityLabel attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *signerinfo,
+                                   char *securityPolicyIdentifier,
+                                   PRInt32 securityClassification,
+                                   char *privacyMark,
+                                   char *securityCategories)
+{
+    NSSCMSAttribute *attr;
+    SECItem *securityLabel = NULL;
+    void *mark;
+    PLArenaPool *poolp;
+
+    poolp = signerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    securityLabel = SECITEM_AllocItem(poolp, NULL, 0);
+    if (securityLabel == NULL)
+        goto loser;
+
+    /* create new SecurityLabel attribute */
+    if (NSS_SMIMEUtil_CreateSecurityLabel(poolp, securityLabel, securityPolicyIdentifier, securityClassification, privacyMark, securityCategories) != SECSuccess)
+        goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_SECURITY_LABEL, securityLabel, PR_TRUE)) == NULL)
+        goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
+        goto loser;
+
+    PORT_ArenaUnmark (poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease (poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value
+ */
+SECStatus
+NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo,
+                                   PRBool *aHasSecurityLabel,
+                                   char **aSecurityPolicyIdentifier,
+                                   PRInt32 *aSecurityClassification,
+                                   char **aPrivacyMark,
+                                   char **aSecurityCategories)
+{
+    return NSS_SMIMEUtil_GetSecurityLabel(aSignerinfo,
+                                          aHasSecurityLabel,
+                                          aSecurityPolicyIdentifier,
+                                          aSecurityClassification,
+                                          aPrivacyMark,
+                                          aSecurityCategories);
 }

@@ -54,11 +54,14 @@ var gSMFields = null;
 var gEncryptOptionChanged;
 var gSignOptionChanged;
 
+var gSecurityLabelConf = null;
+
 function onComposerClose()
 {
   gSMFields = null;
   setNoEncryptionUI();
   setNoSignatureUI();
+  setSecurityLabelStatusBarUI();
 
   if (!gMsgCompose || !gMsgCompose.compFields)
     return;
@@ -104,6 +107,8 @@ function onComposerReOpen()
 
   if (gSMFields.signMessage)
     gSMFields.SMIMEReceiptRequest = gCurrentIdentity.getBoolAttribute("smime_receipt_request");
+
+  setSecurityLabelStatusBarUI();
 }
 
 addEventListener("load", smimeComposeOnLoad, false);
@@ -221,6 +226,8 @@ function toggleSignMessage()
   {
     gSMFields.SMIMEReceiptRequest = false;
 
+    gSMFields.securityPolicyIdentifier = "";
+    setSecurityLabelStatusBarUI();
     setNoSignatureUI();
   }
 
@@ -287,6 +294,10 @@ function doSecurityButton()
 
     case "SMIMEReceiptRequest":
       toggleSMIMEReceiptRequest();
+      break;
+
+    case "securityLabelDialog":
+      showSecurityLabelDialog();
       break;
 
     case "show":
@@ -485,4 +496,56 @@ function onComposerFromChanged()
     gSMFields.SMIMEReceiptRequest = false;
     setNoSignatureUI();
   }
+
+  gSMFields.securityPolicyIdentifier = "";
+  setSecurityLabelStatusBarUI();
+}
+
+/**
+ * Show a dialog to define Security Label settings
+ */
+function showSecurityLabelDialog() {
+  window.openDialog('chrome://messenger-smime/content/msgCompSecurityLabelDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=500,height=350');
+
+  /* make sure we have a cert name for signing */
+  if (gSMFields.securityPolicyIdentifier != "")
+  {
+    var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+    if (!signingCertName)
+    {
+      gSMFields.securityPolicyIdentifier = "";
+      setSecurityLabelStatusBarUI();
+      showNeedSetupInfo();
+      return;
+    }
+
+    // Enable signing if disabled
+    if (!gSMFields.signMessage)
+      toggleSignMessage();
+  }
+
+  setSecurityLabelStatusBarUI();
+}
+
+/**
+ * Display Security Label info in status bar of compose window
+ */
+function setSecurityLabelStatusBarUI() {
+  if (!gSMFields || gSMFields.securityPolicyIdentifier == "") {
+    top.document.getElementById("securityLabel-status").label = "";
+    top.document.getElementById("securityLabel-status").collapsed = true;
+    return;
+  }
+
+  if (!gSecurityLabelConf)
+    gSecurityLabelConf = new securityLabelConf();
+
+  var securityLabelValue = "";
+
+  if (gSMFields.securityClassification != -1)
+    securityLabelValue = gSecurityLabelConf.getSecurityClassificationName(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification) + " ";
+
+  securityLabelValue += "[" + gSecurityLabelConf.getSecurityPolicyIdentifierName(gSMFields.securityPolicyIdentifier) + "]";
+  top.document.getElementById("securityLabel-status").label = securityLabelValue;
+  top.document.getElementById("securityLabel-status").collapsed = false;
 }

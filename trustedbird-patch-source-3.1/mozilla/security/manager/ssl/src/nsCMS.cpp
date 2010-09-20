@@ -66,6 +66,7 @@ nsCMSMessage::nsCMSMessage()
   m_cmsMsg = nsnull;
   mHasReceiptRequest = PR_FALSE;
   mHasReceipt = PR_FALSE;
+  mHasSecurityLabel = PR_FALSE;
 }
 
 nsCMSMessage::nsCMSMessage(NSSCMSMessage *aCMSMsg)
@@ -438,6 +439,50 @@ NS_IMETHODIMP nsCMSMessage::GetReceipt(PRBool *aHasReceipt,
     return NS_ERROR_FAILURE;
 
   *aHasReceipt = PR_TRUE;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsCMSMessage::SetSecurityLabel(const nsACString& aSecurityPolicyIdentifier,
+                                             PRInt32 aSecurityClassification,
+                                             const nsACString& aPrivacyMark,
+                                             const nsACString& aSecurityCategories)
+{
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::SetSecurityLabel\n"));
+
+  mHasSecurityLabel = PR_TRUE;
+  mSecurityPolicyIdentifier = aSecurityPolicyIdentifier;
+  mSecurityClassification = aSecurityClassification;
+  mPrivacyMark = aPrivacyMark;
+  mSecurityCategories = aSecurityCategories;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsCMSMessage::GetSecurityLabel(PRBool *aHasSecurityLabel,
+                                             nsACString& aSecurityPolicyIdentifier,
+                                             PRInt32 *aSecurityClassification,
+                                             nsACString& aPrivacyMark,
+                                             nsACString& aSecurityCategories)
+{
+  nsNSSShutDownPreventionLock locker;
+  if (isAlreadyShutDown())
+    return NS_ERROR_NOT_AVAILABLE;
+
+  PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::GetSecurityLabel\n"));
+  NS_ENSURE_ARG_POINTER(aHasSecurityLabel);
+  NS_ENSURE_ARG_POINTER(aSecurityClassification);
+
+  NSSCMSSignerInfo *si = GetTopLevelSignerInfo();
+  if (!si)
+    return NS_ERROR_FAILURE;
+
+  NSS_CMSSignerInfo_GetSecurityLabel(si,
+                                     aHasSecurityLabel,
+                                     getter_Copies(aSecurityPolicyIdentifier),
+                                     aSecurityClassification,
+                                     getter_Copies(aPrivacyMark),
+                                     getter_Copies(aSecurityCategories));
 
   return NS_OK;
 }
@@ -941,6 +986,18 @@ NS_IMETHODIMP nsCMSMessage::CreateSigned(nsIX509Cert* aSigningCert, nsIX509Cert*
   if (mHasReceipt) {
     if (NSS_CMSSignerInfo_AddMsgSigDigest(signerinfo, mReceiptMsgSigDigest, mReceiptMsgSigDigestLen) != SECSuccess) {
       PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add msgSigDigest attribute\n"));
+      goto loser;
+    }
+  }
+
+  /* Add Security Label */
+  if (mHasSecurityLabel) {
+    if (NSS_CMSSignerInfo_AddSecurityLabel(signerinfo,
+                                           (char*)(mSecurityPolicyIdentifier.get()),
+                                           mSecurityClassification,
+                                           (char*)(mPrivacyMark.get()),
+                                           (char*)(mSecurityCategories.get())) != SECSuccess) {
+      PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("nsCMSMessage::CreateSigned - can't add security label\n"));
       goto loser;
     }
   }

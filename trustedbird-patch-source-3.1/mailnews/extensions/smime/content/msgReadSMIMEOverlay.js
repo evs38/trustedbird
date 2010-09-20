@@ -39,6 +39,11 @@ var gEncryptionStatus = -1;
 var gSignatureStatus = -1;
 var gSignerCert = null;
 var gEncryptionCert = null;
+var gSecurityPolicyIdentifier = null;
+var gSecurityClassification = -1;
+var gPrivacyMark = null;
+var gSecurityCategories = null;
+var gSecurityLabelConf = null;
 
 addEventListener("load", smimeReadOnLoad, false);
 
@@ -49,6 +54,13 @@ function smimeReadOnLoad()
   top.controllers.appendController(SecurityController);
 
   addEventListener("unload", smimeReadOnUnload, false);
+
+  Components.classes["@mozilla.org/observer-service;1"]
+            .getService(Components.interfaces.nsIObserverService)
+            .addObserver(securityLabelCreateDbObserver, "MsgCreateDBView", false);
+
+  if (!gSecurityLabelConf)
+    gSecurityLabelConf = new securityLabelConf();
 }
 
 function smimeReadOnUnload()
@@ -56,6 +68,10 @@ function smimeReadOnUnload()
   removeEventListener("unload", smimeReadOnUnload, false);
 
   top.controllers.removeController(SecurityController);
+
+  Components.classes["@mozilla.org/observer-service;1"]
+            .getService(Components.interfaces.nsIObserverService)
+            .removeObserver(securityLabelCreateDbObserver, "MsgCreateDBView");
 }
 
 function showImapSignatureUnknown()
@@ -93,6 +109,11 @@ function showMessageReadSecurityInfo()
   // int array starts with index 0, but that is used for window exit status
   params.SetInt(1, gSignatureStatus);
   params.SetInt(2, gEncryptionStatus);
+  params.SetInt(3, gSecurityClassification);
+
+  params.SetString(0, gSecurityPolicyIdentifier);
+  params.SetString(1, gPrivacyMark);
+  params.SetString(2, gSecurityCategories);
 
   window.openDialog("chrome://messenger-smime/content/msgReadSecurityInfo.xul",
                     "", "chrome,resizable=1,modal=1,dialog=1", pkiParams);
@@ -135,3 +156,48 @@ var SecurityController =
     }
   }
 };
+
+/* Add Security Label column */
+var securityLabelCreateDbObserver = {
+  observe: function(aMsgFolder, aTopic, aData) {
+    try {
+      if (gDBView != undefined && gDBView.addColumnHandler)
+        gDBView.addColumnHandler("securityLabelSecurityClassificationColumn", securityLabelSecurityClassificationColumnHandler);
+    } catch(e) {}
+  }
+}
+
+var securityLabelSecurityClassificationColumnHandler = {
+  getCellText: function(row, column) {
+    var key = gDBView.getKeyAt(row);
+    var hdr = gDBView.db.GetMsgHdrForKey(key);
+    var securityLabelSecurityPolicyIdentifier = hdr.getStringProperty("securityLabelSecurityPolicyIdentifier");
+    var securityLabelSecurityClassification = hdr.getStringProperty("securityLabelSecurityClassification");
+
+    if (securityLabelSecurityPolicyIdentifier != "" && securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1")
+      return gSecurityLabelConf.getSecurityClassificationName(securityLabelSecurityPolicyIdentifier, securityLabelSecurityClassification);
+
+    return "";
+  },
+  getSortStringForRow: function(hdr) {
+    var securityLabelSecurityPolicyIdentifier = hdr.getStringProperty("securityLabelSecurityPolicyIdentifier");
+    var securityLabelSecurityClassification = hdr.getStringProperty("securityLabelSecurityClassification");
+
+    if (securityLabelSecurityPolicyIdentifier != "") {
+      if (securityLabelSecurityClassification != "" && securityLabelSecurityClassification != "-1") {
+        if (securityLabelSecurityClassification < 10)
+          return "00" + securityLabelSecurityClassification;
+        else if (securityLabelSecurityClassification < 100)
+          return "0" + securityLabelSecurityClassification;
+        else
+          return securityLabelSecurityClassification;
+      }
+    }
+    return "";
+  },
+  isString:          function() {return true;},
+  getCellProperties: function(row, col, props){ },
+  getRowProperties:  function(row, props){ },
+  getImageSrc:       function(row, col) {return null;},
+  getSortLongForRow: function(hdr) {return 0;}
+}

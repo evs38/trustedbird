@@ -69,6 +69,10 @@ interface nsIMsgSMIMEHeaderSink : nsISupports
                           in PRUint32 aOriginatorContentTypeLen,
                           [const,array,size_is(aMsgSigDigestLen)] in PRUint8 aMsgSigDigest,
                           in PRUint32 aMsgSigDigestLen);
+  void securityLabelStatus(in AString aSecurityPolicyIdentifier,
+                           in PRInt32 aSecurityClassification,
+                           in AString aPrivacyMark,
+                           in AString aSecurityCategories);
 
   long maxWantedNesting(); // 1 == only info on outermost nesting level wanted
 };

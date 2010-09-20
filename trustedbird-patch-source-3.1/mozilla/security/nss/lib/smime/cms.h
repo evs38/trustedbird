@@ -812,6 +812,28 @@ NSS_CMSSignerInfo_GetMsgSigDigest(NSSCMSSignerInfo *aSignerinfo,
 extern PRBool
 NSS_CMSSignerInfo_HasReceipt(NSSCMSSignerInfo *signerinfo);
 
+/*
+ * NSS_CMSSignerInfo_AddSecurityLabel - add a SecurityLabel attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+extern SECStatus
+NSS_CMSSignerInfo_AddSecurityLabel(NSSCMSSignerInfo *aSignerinfo,
+                                   char *aSecurityPolicyIdentifier,
+                                   PRInt32 aSecurityClassification,
+                                   char *aPrivacyMark,
+                                   char *aSecurityCategories);
+
+/*
+ * NSS_CMSSignerInfo_GetSecurityLabel - get S/MIME SecurityLabel attr value
+ */
+extern SECStatus
+NSS_CMSSignerInfo_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo,
+                                   PRBool *aHasSecurityLabel,
+                                   char **aSecurityPolicyIdentifier,
+                                   PRInt32 *aSecurityClassification,
+                                   char **aPrivacyMark,
+                                   char **aSecurityCategories);
+
 /************************************************************************
  * cmsenvdata.c - CMS envelopedData methods
  ************************************************************************/

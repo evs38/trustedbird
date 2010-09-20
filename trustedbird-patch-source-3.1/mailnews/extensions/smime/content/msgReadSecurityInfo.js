@@ -47,6 +47,12 @@ var gEncryptionCert = null;
 
 var gSignatureStatus = -1;
 var gEncryptionStatus = -1;
+var gSecurityPolicyIdentifier = null;
+var gSecurityClassification = -1;
+var gPrivacyMark = null;
+var gSecurityCategories = null;
+
+var gSecurityLabelConf = null;
 
 var params = null;
 
@@ -76,7 +82,15 @@ function onLoad()
   
   gSignatureStatus = params.GetInt(1);
   gEncryptionStatus = params.GetInt(2);
-  
+  gSecurityClassification = params.GetInt(3);
+
+  gSecurityPolicyIdentifier = params.GetString(0);
+  gPrivacyMark = params.GetString(1);
+  gSecurityCategories = params.GetString(2);
+
+  if (!gSecurityLabelConf)
+    gSecurityLabelConf = new securityLabelConf();
+
   var bundle = document.getElementById("bundle_smime_read_info");
 
   if (bundle) {
@@ -238,6 +252,34 @@ function onLoad()
     }
     if (gEncryptionCert.issuerName) {
       document.getElementById("encCertIssuedBy").value = gEncryptionCert.issuerCommonName;
+    }
+  }
+
+  if (gSecurityPolicyIdentifier != "") {
+    document.getElementById("securityLabelBox").collapsed = false;
+    document.getElementById("securityLabelSecurityPolicyIdentifierValue").value = gSecurityLabelConf.getSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
+    if (gSecurityClassification != -1) {
+      document.getElementById("securityLabelSecurityClassificationValue").value = gSecurityLabelConf.getSecurityClassificationName(gSecurityPolicyIdentifier, gSecurityClassification);
+      document.getElementById("securityLabelSecurityClassificationRow").collapsed = false;
+    }
+    if (gPrivacyMark != "") {
+      document.getElementById("securityLabelPrivacyMarkValue").value = gPrivacyMark;
+      document.getElementById("securityLabelPrivacyMarkRow").collapsed = false;
+    }
+    if (gSecurityCategories != "") {
+      var securityLabelSecurityCategoriesListBox = document.getElementById("securityLabelSecurityCategoriesListBox");
+
+      securityCategoriesArray = gSecurityCategories.split("|");
+      var listboxSize = securityCategoriesArray.length / 3;
+      if (listboxSize > 5) listboxSize = 5;
+      securityLabelSecurityCategoriesListBox.setAttribute("rows", listboxSize);
+
+      for (var i = 0; i < securityCategoriesArray.length; i += 3) {
+        var listitem = document.createElement("listitem");
+        listitem.setAttribute("label", gSecurityLabelConf.getSecurityCategoryName(gSecurityPolicyIdentifier, gSecurityClassification, securityCategoriesArray[i], securityCategoriesArray[i + 1], securityCategoriesArray[i + 2]));
+        securityLabelSecurityCategoriesListBox.appendChild(listitem);
+      }
+      document.getElementById("securityLabelSecurityCategoriesRow").collapsed = false;
     }
   }
 }

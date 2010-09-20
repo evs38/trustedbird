@@ -90,6 +90,15 @@ interface nsICMSMessage : nsISupports
                   out PRUint32 aOriginatorContentTypeLen,
                   [const,array,size_is(aMsgSigDigestLen)] out PRUint8 aMsgSigDigest,
                   out PRUint32 aMsgSigDigestLen);
+  void setSecurityLabel(in ACString aSecurityPolicyIdentifier,
+                        in PRInt32 aSecurityClassification,
+                        in ACString aPrivacyMark,
+                        in ACString aSecurityCategories);
+  void getSecurityLabel(out boolean aHasSecurityLabel,
+                        out ACString aSecurityPolicyIdentifier,
+                        out PRInt32 aSecurityClassification,
+                        out ACString aPrivacyMark,
+                        out ACString aSecurityCategories);
   void verifySignature();
   void verifyDetachedSignature(in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
   void CreateEncrypted(in nsIArray aRecipientCerts);

@@ -4,6 +4,7 @@
 <!ENTITY subject.plaintextWarning "Note : Le champ « Sujet » d'un message n'est jamais chiffré.">
 <!ENTITY status.heading "Le contenu du message sera envoyé de la façon suivante :">
 <!ENTITY status.signed "Signé numériquement :">
+<!ENTITY status.securityLabel "Libellé de sécurité :">
 <!ENTITY status.encrypted "Chiffré :">
 <!ENTITY status.certificates "Certificats :">
 <!ENTITY view.label "Voir">

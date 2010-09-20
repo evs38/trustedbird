@@ -17,3 +17,6 @@
 
 <!ENTITY menu_securitySMIMEReceiptRequest.label "Request a Signed Receipt">
 <!ENTITY menu_securitySMIMEReceiptRequest.accesskey "R">
+
+<!ENTITY menu_securityLabel.label "Security Label...">
+<!ENTITY menu_securityLabel.accesskey "L">

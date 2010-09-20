@@ -296,6 +296,24 @@ var smimeHeaderSink =
     gMessageNotificationBar.setSMIMEReceiptMsg(requestMsgHdr);
   },
 
+  securityLabelStatus: function(aSecurityPolicyIdentifier, aSecurityClassification, aPrivacyMark, aSecurityCategories)
+  {
+    gSecurityPolicyIdentifier = aSecurityPolicyIdentifier;
+    gSecurityClassification = aSecurityClassification;
+    gPrivacyMark = aPrivacyMark;
+    gSecurityCategories = aSecurityCategories;
+
+    /* Add Security Label info in message database so as to be displayed in a column */
+    var msgHdr = gMessageDisplay.displayedMessage;
+    if (msgHdr && gSecurityPolicyIdentifier != "") {
+      /* Write Security Label in message database */
+      msgHdr.setStringProperty("securityLabelSecurityPolicyIdentifier", gSecurityPolicyIdentifier);
+      msgHdr.setStringProperty("securityLabelSecurityClassification", gSecurityClassification);
+      msgHdr.setStringProperty("securityLabelPrivacyMark", gPrivacyMark);
+      msgHdr.setStringProperty("securityLabelSecurityCategories", gSecurityCategories);
+    }
+  },
+
   QueryInterface : function(iid)
   {
     if (iid.equals(Components.interfaces.nsIMsgSMIMEHeaderSink) || iid.equals(Components.interfaces.nsISupports))
@@ -364,10 +382,15 @@ function onSMIMEStartHeaders()
 {
   gEncryptionStatus = -1;
   gSignatureStatus = -1;
-  
+
+  gSecurityPolicyIdentifier = null;
+  gSecurityClassification = -1;
+  gPrivacyMark = null;
+  gSecurityCategories = null;
+
   gSignerCert = null;
   gEncryptionCert = null;
-  
+
   gSMIMEContainer.collapsed = true;
 
   gSignedUINode.collapsed = true;

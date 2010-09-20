@@ -204,6 +204,26 @@ NSS_SMIMEUtil_GetReceipt(PLArenaPool *aPoolp,
                          PRUint8 **aOriginatorContentType,
                          PRUint32 *aOriginatorContentTypeLen);
 
+/*
+ * NSS_SMIMEUtil_CreateSecurityLabel - create S/MIME SecurityLabel attr value
+ */
+extern SECStatus NSS_SMIMEUtil_CreateSecurityLabel(PLArenaPool *aPoolp,
+                                                   SECItem *aDest,
+                                                   char *aSecurityPolicyIdentifier,
+                                                   PRInt32 aSecurityClassification,
+                                                   char *aPrivacyMark,
+                                                   char *aSecurityCategories);
+
+/*
+ * NSS_SMIMEUtil_GetSecurityLabel - get S/MIME SecurityLabel attr value
+ */
+extern SECStatus NSS_SMIMEUtil_GetSecurityLabel(NSSCMSSignerInfo *aSignerinfo,
+                                                PRBool *aHasSecurityLabel,
+                                                char **aSecurityPolicyIdentifier,
+                                                PRInt32 *aSecurityClassification,
+                                                char **aPrivacyMark,
+                                                char **aSecurityCategories);
+
 /************************************************************************/
 SEC_END_PROTOS
 

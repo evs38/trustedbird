@@ -60,4 +60,9 @@ interface nsIMsgSMIMECompFields : nsISupports
   attribute PRUint32 SMIMEReceiptOriginatorContentTypeLen;
   [noscript] attribute PRUint8Ptr SMIMEReceiptMsgSigDigest;
   attribute PRUint32 SMIMEReceiptMsgSigDigestLen;
+
+  attribute AString securityPolicyIdentifier;
+  attribute PRInt32 securityClassification;
+  attribute AString privacyMark;
+  attribute AString securityCategories;
 };

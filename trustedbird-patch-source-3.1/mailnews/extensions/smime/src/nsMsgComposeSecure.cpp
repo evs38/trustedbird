@@ -181,7 +181,8 @@ mSMIMEReceipt(PR_FALSE),
 mSMIMEReceiptSignedContentIdentifierLen(0),
 mSMIMEReceiptOriginatorSignatureValueLen(0),
 mSMIMEReceiptOriginatorContentTypeLen(0),
-mSMIMEReceiptMsgSigDigestLen(0)
+mSMIMEReceiptMsgSigDigestLen(0),
+mSecurityClassification(-1)
 {
 }
 
@@ -333,6 +334,54 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptMsgSigDigestLen(PRUint32 *
   return NS_OK;
 }
 
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityPolicyIdentifier(const nsAString &value)
+{
+  mSecurityPolicyIdentifier = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityPolicyIdentifier(nsAString &_retval)
+{
+  _retval = mSecurityPolicyIdentifier;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityClassification(PRInt32 value)
+{
+  mSecurityClassification = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityClassification(PRInt32 *_retval)
+{
+  *_retval = mSecurityClassification;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetPrivacyMark(const nsAString &value)
+{
+  mPrivacyMark = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetPrivacyMark(nsAString &_retval)
+{
+  _retval = mPrivacyMark;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSecurityCategories(const nsAString &value)
+{
+  mSecurityCategories = value;
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecurityCategories(nsAString &_retval)
+{
+  _retval = mSecurityCategories;
+  return NS_OK;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of nsMsgComposeSecure
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -347,6 +396,8 @@ nsMsgComposeSecure::nsMsgComposeSecure()
   mCryptoEncoderData = 0;
   mBuffer = 0;
   mBufferedBytes = 0;
+  mHasSecuritylabel = PR_FALSE;
+  mSecurityClassification = -1;
 }
 
 nsMsgComposeSecure::~nsMsgComposeSecure()
@@ -596,6 +647,37 @@ nsresult nsMsgComposeSecure::ExtractSMIMEReceiptState(nsIMsgIdentity *aIdentity,
   return NS_OK;
 }
 
+nsresult nsMsgComposeSecure::ExtractSecurityLabelState(nsIMsgCompFields * aComposeFields, PRBool * aHasSecuritylabel, nsAString& aSecurityPolicyIdentifier, PRInt32 * aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories)
+{
+  if (!aComposeFields)
+    return NS_ERROR_FAILURE; // kick out...invalid args....
+
+  NS_ENSURE_ARG_POINTER(aHasSecuritylabel);
+  NS_ENSURE_ARG_POINTER(aSecurityClassification);
+
+  nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+        smimeCompFields->GetSecurityPolicyIdentifier(aSecurityPolicyIdentifier);
+        smimeCompFields->GetSecurityClassification(aSecurityClassification);
+        smimeCompFields->GetPrivacyMark(aPrivacyMark);
+        smimeCompFields->GetSecurityCategories(aSecurityCategories);
+        if (!aSecurityPolicyIdentifier.IsEmpty())
+          *aHasSecuritylabel = PR_TRUE;
+      }
+    }
+  }
+
+  return NS_OK;
+}
+
 /* void beginCryptoEncapsulation (in nsOutputFileStream aStream, in boolean aEncrypt, in boolean aSign, in string aRecipeints, in boolean aIsDraft); */
 NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsIOutputStream * aStream,
                                                            const char * aRecipients,
@@ -644,6 +726,8 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsIOutputStream * aSt
   } else if (mSMIMEReceipt) {
     signMessage = PR_TRUE;
   }
+
+  ExtractSecurityLabelState(aCompFields, &mHasSecuritylabel, mSecurityPolicyIdentifier, &mSecurityClassification, mPrivacyMark, mSecurityCategories);
 
   mStream = aStream;
   mIsDraft = aIsDraft;
@@ -924,6 +1008,11 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
    */
   if (mSMIMEReceiptRequest && !mSMIMEReceiptRequestReceiptsTo.IsEmpty())
     cinfo->SetReceiptRequest(mSMIMEReceiptRequestSignedContentIdentifier, mSMIMEReceiptRequestReceiptsTo);
+
+  /* Store Security Label
+   */
+  if (mHasSecuritylabel)
+    rv = cinfo->SetSecurityLabel(NS_ConvertUTF16toUTF8(mSecurityPolicyIdentifier), mSecurityClassification, NS_ConvertUTF16toUTF8(mPrivacyMark), NS_ConvertUTF16toUTF8(mSecurityCategories));
 
   /* Create the signature...
    */

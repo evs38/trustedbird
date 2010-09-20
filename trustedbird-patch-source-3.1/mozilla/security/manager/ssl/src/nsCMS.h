@@ -90,6 +90,12 @@ private:
   PRUint8 *mReceiptMsgSigDigest;
   PRUint32 mReceiptMsgSigDigestLen;
 
+  PRBool mHasSecurityLabel;
+  nsCString mSecurityPolicyIdentifier;
+  PRInt32 mSecurityClassification;
+  nsCString mPrivacyMark;
+  nsCString mSecurityCategories;
+
   NSSCMSSignerInfo* GetTopLevelSignerInfo();
   nsresult CommonVerifySignature(unsigned char* aDigestData, PRUint32 aDigestDataLen);
 

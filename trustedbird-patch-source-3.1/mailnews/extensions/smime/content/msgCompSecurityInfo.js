@@ -188,7 +188,8 @@ function onLoad()
 
     var signed_element = document.getElementById("signed");
     var encrypted_element = document.getElementById("encrypted");
-    
+    var securityLabel_element = document.getElementById("securityLabel");
+
     if (params.smFields.requireEncryptMessage)
     {
       if (params.isEncryptionCertAvailable && canEncrypt.value)
@@ -220,6 +221,21 @@ function onLoad()
     {
       signed_element.value = no_string;
     }
+
+    /* Security Label */
+    if (params.smFields.securityPolicyIdentifier != "")
+    {
+      var tSecurityLabelConf = new securityLabelConf();;
+      var securityLabelValue = "";
+      if (params.smFields.securityClassification != -1)
+        securityLabelValue = tSecurityLabelConf.getSecurityClassificationName(params.smFields.securityPolicyIdentifier, params.smFields.securityClassification) + " ";
+
+      securityLabelValue += "[" + tSecurityLabelConf.getSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
+      securityLabel_element.value = securityLabelValue;
+    }
+    else
+      securityLabel_element.value = no_string;
+
   }
 
   var imax = gCount.value;

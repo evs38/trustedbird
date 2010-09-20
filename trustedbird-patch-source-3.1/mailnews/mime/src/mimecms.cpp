@@ -415,6 +415,27 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
       if (msgSigDigest)
         PR_Free(msgSigDigest);
     }
+
+    if (signature_status == nsICMSMessageErrors::SUCCESS)
+    {
+      // Handle Security Label
+      PRBool hasSecurityLabel = PR_FALSE;
+      nsCString securityPolicyIdentifier;
+      PRInt32 securityClassification = -1;
+      nsCString privacyMark;
+      nsCString securityCategories;
+      msg->GetSecurityLabel(&hasSecurityLabel,
+                            securityPolicyIdentifier,
+                            &securityClassification,
+                            privacyMark,
+                            securityCategories);
+
+      if (hasSecurityLabel)
+        proxySink->SecurityLabelStatus(NS_ConvertUTF8toUTF16(securityPolicyIdentifier),
+                                       securityClassification,
+                                       NS_ConvertUTF8toUTF16(privacyMark),
+                                       NS_ConvertUTF8toUTF16(securityCategories));
+    }
   }
 
   return NS_OK;

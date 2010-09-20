@@ -16,3 +16,6 @@
 
 <!ENTITY menu_securitySMIMEReceiptRequest.label "Demander un accusé de réception signé">
 <!ENTITY menu_securitySMIMEReceiptRequest.accesskey "D">
+
+<!ENTITY menu_securityLabel.label "Libellé de sécurité...">
+<!ENTITY menu_securityLabel.accesskey "L">

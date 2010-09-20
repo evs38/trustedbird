@@ -8,3 +8,9 @@
 <!ENTITY recipient.name "Chiffré pour :">
 <!ENTITY email.address "Adresse électronique :">
 <!ENTITY issuer.name "Certificat fourni par :">
+
+<!ENTITY securityLabel.name "Libellé de sécurité">
+<!ENTITY securityLabel.securityPolicyIdentifier.name "Politique de sécurité :">
+<!ENTITY securityLabel.securityClassification.name "Classification de sécurité :">
+<!ENTITY securityLabel.privacyMark.name "Marque de confidentialité :">
+<!ENTITY securityLabel.securityCategories.name "Catégories de sécurité :">
