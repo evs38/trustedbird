@@ -1,0 +1,262 @@
+
+#ximf-date-picker-title{
+	color: #FFFFFF;
+	font-weight: bold;
+}
+
+#oe-date-picker-overlay-box
+{
+	color: black;
+	background-color        : #F8F8F8;
+	font-size               : 12px;
+	border              : 4px solid #7090b0; 
+}
+
+ 
+#oe-date-picker-year-controls-box
+{
+	border              : 2px solid #7090b0; 
+	-moz-box-align       : center;
+	-moz-box-pack        : center;
+	background-color    : #7090b0
+}
+
+#oe-date-picker-year-title-text
+{
+	color: #FFFFFF;
+	font-weight: bold;
+	font-size:1.5em;
+}
+
+#oe-date-picker-currenttime-text
+{
+	list-style-image:url('chrome://ximfmail/content/calendar/date-n.png');
+	
+}
+
+#oe-date-picker-currenttime-text:hover
+{
+	list-style-image:url('chrome://ximfmail/content/calendar/date-h.png');
+	
+}
+
+
+#oe-date-picker-year-previous-button
+{
+  list-style-image: url("chrome://ximfmail/content/calendar/left_arrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-previous-button:hover
+{
+  list-style-image: url("chrome://ximfmail/content/calendar/left_arrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-previous-jump-button
+{
+  list-style-image: url("chrome://ximfmail/content/calendar/left_dblarrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-previous-jump-button:hover
+{
+  list-style-image: url("chrome://ximfmail/content/calendar/left_dblarrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-jump-button
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/right_dblarrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-jump-button:hover
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/right_dblarrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-button
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/right_arrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-button:hover
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/right_arrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-button-box
+{
+   -moz-box-pack           : end;
+}
+
+#oe-date-picker-year-grid
+{
+   border-top         : 1px solid #2085c4; 
+   border-left        : 1px solid #2085c4; 
+   margin	         : 1px;
+}
+
+#ximfmail-date-picker-hour-grid
+{
+  border-top         : 1px solid #2085c4; 
+  border-left        : 1px solid #2085c4; 
+  margin	         : 1px;
+}
+
+#ximfmail-date-picker-min-grid
+{ 
+	 margin	         : 1px;
+}
+	
+.oe-date-picker-year-month-box-class
+{
+   -moz-box-align       : center;
+   border-right         : 1px solid #2085c4; 
+   border-bottom        : 1px solid #2085c4;
+   background-color     : #E9E9E9;
+}
+
+
+.oe-date-picker-year-month-box-class:hover
+{
+   background-color     : #C9E8F1;
+}
+
+.oe-date-picker-year-month-box-class[selected="true"]
+{
+   background-color       : #6699CC;
+}
+
+
+.oe-date-picker-month-day-number-class
+{
+   margin                  : 1px;
+}
+
+.oe-date-picker-month-day-number-class[selected="true"]
+{
+
+   background-color       : #6699CC;
+}
+
+#oe-date-picker-month-grid
+{
+    margin	         : 1px;
+}
+
+#start-date-button
+{
+	border: 0px;
+	list-style-image        : url("chrome://ximfmail/content/calendar/calendar-down.gif");
+	margin: 0px;
+	padding: 0px;
+	max-width: 36px;
+}
+
+#start-date-button:hover
+{
+	margin: 0px;
+	padding: 0px;
+	list-style-image        : url("chrome://ximfmail/content/calendar/calendar-up.gif");
+}
+
+.oe-date-picker-month-day-box-class
+{
+   min-width            : 25px;
+   min-height           : 15px;
+   background-color     : #FFFFFF;
+}
+
+.oe-date-picker-month-day-box-class[selected="true"]
+{
+   background-color       : #6699CC;
+}
+
+.oe-date-picker-month-day-box-class:hover
+{
+   background-color     : #FFFF99;
+}
+
+.oe-date-picker-month-day-box-class
+{
+  -moz-box-align       : center;
+   border-right         : 1px solid #E2E2E2; 
+   border-bottom        : 1px solid #E2E2E2;
+   border-top           : 1px solid #E2E2E2; 
+   border-left          : 1px solid #E2E2E2;
+}
+
+.oe-date-picker-month-days-header-class
+{
+	margin					: 0px;
+	padding					: 0px;
+}
+
+.oe-date-picker-month-days-header-class-red
+{
+	color                   : #FF0000;
+}
+
+#oe-date-picker-month-days-header-box
+{
+	margin					: 0px 0px;
+}
+
+.oe-date-picker-month-days-box-header-class
+{
+	-moz-box-align			: center;
+}
+
+#ximf-date-picker-end-controls-box
+{
+	border              : 2px solid #7090b0; 
+	-moz-box-align       : center;
+	-moz-box-pack        : center;
+	background-color    : #7090b0
+}
+
+#ximf-date-picker-ok-control-box
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/ok.png");
+
+}
+
+#ximf-date-picker-ok-control-box:hover
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/ok_hov.png");
+
+}
+
+#ximf-date-picker-head-controls-box
+{
+	border              : 2px solid #7090b0; 
+	-moz-box-align       : center;
+	-moz-box-pack        : center;
+	background-color    : #7090b0
+}
+
+#ximf-date-picker-cancel-control-box
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/button_cancel_20x20.png");
+
+}
+
+#ximf-date-picker-cancel-control-box:hover
+{
+	list-style-image        : url("chrome://ximfmail/content/calendar/button_cancel_hov_20x20.png");
+
+}
+

@@ -1,0 +1,228 @@
+@import url("chrome://global/skin");
+
+datepicker{
+-moz-binding: url("chrome://ximfmail/content/datepicker/datepicker.xml#datepicker");
+}
+
+ximfaddress{
+-moz-binding: url("chrome://ximfmail/content/ximfaddress/ximfaddress.xml#ximfaddress");
+}
+
+
+
+/* Ximfmail Panel custom*/ 
+#ximfmailComposeMessagePanel richlistbox{
+	-moz-appearance: none;
+	 background-color: inherit;
+	 border: none;
+}
+
+#ximfmailComposeMessagePanel richlistitem textbox{
+	-moz-appearance: none;
+	background-color: #ffffff;
+	color: #000000;
+	border: none;
+}
+
+#ximfmailComposeMessagePanel richlistitem:hover,
+#ximfmailComposeMessagePanel richlistitem:hover *,
+#ximfmailComposeMessagePanel richlistitem[selected="true"],
+#ximfmailComposeMessagePanel richlistitem[selected="true"] *{	 
+	background-color: #0a246a;	 		 
+	color: #ffffff;
+}
+
+
+#ximfmailComposeMessagePanel,
+#ximfmailMailPanel{
+	max-height:120px;	
+	padding:5px !important;
+	background-image  : url("chrome://ximfmail/content/resource/bottom_bg.jpg"); 
+}
+
+#ximfmailComposeMessageFocusBar,
+#ximfmailMailPanelFocusBar,
+#ximfmail-custom-panel{
+	min-height:20px; 
+	max-height:20px; 
+	color: white;
+	background-image  : url("chrome://ximfmail/content/resource/titleBar_bg.jpg"); 
+	padding-left: 3px;
+	padding-right: 5px;
+}
+
+.ximfmailButton{
+	-moz-appearance: none;
+    margin: 0px;
+    border: 0px solid white;
+    cursor: pointer;
+    background-color: transparent;
+    min-width: 20px;
+    min-height: 20px;
+    margin-right:5px;
+}
+
+.ximfmailButtonTxt{
+	-moz-appearance: none;
+    margin: 0px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    min-width: 16px;
+    min-height: 16px;    
+}
+
+.ximfInputbox{
+	min-width : 250px; 
+	background-color:#ffffff; /*#5cacea;*/ 
+}
+
+#ximfmailComposeMessageMaximize{
+	list-style-image : url("chrome://ximfmail/content/resource/expand.png");	
+}
+
+#ximfmailComposeMessageMaximize:hover{
+	list-style-image : url("chrome://ximfmail/content/resource/expand_over.png");	
+}
+
+#ximfmailComposeMessageMinimize{
+	list-style-image : url("chrome://ximfmail/content/resource/collapse.png");	
+}
+
+#ximfmailComposeMessageMinimize:hover{
+	list-style-image : url("chrome://ximfmail/content/resource/collapse_over.png");	
+}
+
+#ximfmailComposeMessageHeadersTablist tab[ismandatory="true"],
+label[ximfmandatory="true"]{   
+   color:#b20000;
+}
+
+#ximfmailComposeMessageHeadersTablist .textbox-input{	 
+	color:#000064;	
+}
+#ximfmailComposeMessageHeadersTablist .textbox-input-box{
+	padding-left: 5px;
+}
+
+#ximfmailComposeMessageLogo{
+	max-height:22px;
+}
+
+#ximfmailComposeMessageTitle{
+	text-align:center;
+	font-family:"Arial";
+}
+
+
+
+#ximfmailComposeMessageHeaders{
+	overflow: auto; 
+	max-height: 100px;
+	
+}
+
+#ximfmailComposeMessageNote{
+	overflow:auto;
+	max-width:100px;
+	background-color:#ffffc1;
+	border-width:thin;
+	border-color:#ffffff;
+}
+
+.ximfEraser{
+	-moz-image-region: rect(0px 20px 20px 0px);
+	list-style-image : url("chrome://ximfmail/content/resource/erase_text.png");
+}
+
+.ximfEraser:hover,active{
+	list-style-image : url("chrome://ximfmail/content/resource/erase_text_over.png");	
+}
+
+image.ximfmailUnacceptState{
+	list-style-image : url("chrome://ximfmail/content/resource/no_ok.png");
+	max-height: 16px;
+}
+
+image.ximfmailAcceptState{
+	list-style-image : url("chrome://ximfmail/content/resource/ok.png");
+	max-height: 16px;
+}
+
+.ximfTreeDialog{
+	list-style-image:url("chrome://ximfmail/content/resource/popup_database.png");	
+}
+
+.ximfTreeDialog:hover,active{
+	list-style-image:url("chrome://ximfmail/content/resource/popup_database_over.png");	
+}
+
+.ximfDatepicker{
+	list-style-image:url('chrome://ximfmail/content/resource/calendar.png');	
+}
+
+.ximfDatepicker:hover,active{
+	list-style-image:url('chrome://ximfmail/content/resource/calendar_over.png');
+}
+
+.ximfEditor{
+	list-style-image:url('chrome://ximfmail/content/resource/textfield.png');
+}
+
+.ximfEditor:hover,active{
+	list-style-image:url('chrome://ximfmail/content/resource/textfield_over.png');
+}
+
+.ximfPopup{
+	list-style-image:url('chrome://ximfmail/content/resource/list.png');
+}
+
+.ximfPopup:hover,active{
+	list-style-image:url('chrome://ximfmail/content/resource/list_over.png');
+}
+
+/* display ximf headers*/
+
+#ximfmailMailHeadersTablist label.ximfDisplay,
+#ximfmailMailHeadersTablist .textbox-input{
+	color:#0000ff;	
+}
+
+#ximfmailMailHeadersTablist groupbox{
+	max-width:400px;
+}
+
+.ximfDetail{	
+	list-style-image : url("chrome://ximfmail/content/resource/detail_text.png");
+}
+
+.ximfDetail:hover,active{
+	list-style-image : url("chrome://ximfmail/content/resource/detail_text_over.png");	
+}
+
+#box-ilkheaderValue,
+#box-ximfheaderValue{
+	min-width:300px;
+	max-width:300px;
+}
+
+#ilkheaderName{
+	font-variant:small-caps;
+	font-weight:bold;
+}
+
+#ximfheaderName,
+#ximfheaderValue{
+	color:#b20000;
+}
+
+#ximfmail-dialog-hdrInfo{
+	min-width:500px;
+	min-height:100px;
+	max-width:500px;	
+}
+
+#signedHdrIcon[signed="ximfalert"]{
+	list-style-image : url("chrome://ximfmail/content/resource/hdr_sign_alert.png");	
+	visibility: visible;
+}

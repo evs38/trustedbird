@@ -1,0 +1,15 @@
+<!--LOCALIZATION NOTE am-secureheaders.dtd UI for secure headers preferences -->
+
+<!ENTITY pane.title "Secure Headers">
+<!ENTITY secureHeaderFolderPicker.label "Secure headers file">
+<!ENTITY secureHeaderPath.label "Secure header file">
+<!ENTITY browseFolder.label "Browse...">
+<!ENTITY browseFolder.accesskey "B">
+<!ENTITY useSecureHeaders.label "Use secure headers">
+<!ENTITY secureHeadersDescription.label "Secure headers definition" >
+<!ENTITY secureHeadersDatas.label "Secure headers" >
+
+
+
+
+

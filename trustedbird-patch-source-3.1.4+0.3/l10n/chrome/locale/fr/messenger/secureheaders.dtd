@@ -1,0 +1,10 @@
+<!ENTITY secureHeaders.name "Entêtes Sécurisés">
+<!ENTITY secureHeaders.field "Entêtes Sécurisés :">
+<!ENTITY secureHeadersView.label "Voir Les Entêtes Sécurisés">
+<!ENTITY secureHeadersList.label "Listes Des Entêtes Sécurisés">
+<!ENTITY headername.label "Entête">
+<!ENTITY headervalue.label "Valeur signée">
+<!ENTITY headerstatus.label "Statut">
+<!ENTITY headerencrypted.label "Chiffré">
+<!ENTITY headermimevalue.label "Valeur affichée">
+<!ENTITY headercanonisation.label "Canonicalisation">
