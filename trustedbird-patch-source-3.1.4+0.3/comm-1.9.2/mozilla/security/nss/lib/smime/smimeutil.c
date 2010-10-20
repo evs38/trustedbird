@@ -930,7 +930,7 @@ NSS_SMIMEUtil_CreateSecureHeader(PLArenaPool *poolp, SECItem *dest, SecHeaderFie
 	if (secureHeader[secureHeaderItem]->id.canonAlgorithm.data == NULL) goto loser;
 	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[0] = 0;
 	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[1] = 0;
-	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[2] = 0;//(unsigned char) (canonAlgo>>8 & 0xFF);
+	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[2] = 0; /*(unsigned char) (canonAlgo>>8 & 0xFF); */
 	secureHeader[secureHeaderItem]->id.canonAlgorithm.data[3] = (unsigned char) (canonAlgo & 0xFF);
 	secureHeader[secureHeaderItem]->id.canonAlgorithm.len = 4;
 

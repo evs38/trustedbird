@@ -122,8 +122,8 @@ NSS_CMSSignerInfo_AddSMIMECaps;
 NSS_CMSSignerInfo_AddSMIMEEncKeyPrefs;
 NSS_CMSSignerInfo_AddSigningTime;
 ;+# Add Function for the Secure headers EADS
-NSS_CMSSignerInfo_AddSecureHeader
-NSS_CMSSignerInfo_GetSecureHeader
+NSS_CMSSignerInfo_AddSecureHeader;
+NSS_CMSSignerInfo_GetSecureHeader;
 ;+# End signed headers 
 NSS_CMSSignerInfo_Create;
 NSS_CMSSignerInfo_Destroy;
