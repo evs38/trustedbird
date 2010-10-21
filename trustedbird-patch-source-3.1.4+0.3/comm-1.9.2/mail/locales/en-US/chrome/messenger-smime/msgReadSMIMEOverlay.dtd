@@ -1,0 +1,6 @@
+<!--LOCALIZATION NOTE msgReadSMIMEOverlay.dtd UI for s/mime hooks in message reading -->
+
+<!ENTITY menu_securityStatus.label "Message Security Info">
+<!ENTITY menu_securityStatus.accesskey "I">
+<!ENTITY securityLabelSecurityClassificationColumn.label "Security Classification">
+<!ENTITY securityLabelSecurityClassificationColumn.tooltip "Click to sort by Security Classification">

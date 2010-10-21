@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ximf:instance name="Whirlpool" version="1.0" ximfVersion="2.0" xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eads.org/ximf/ ximf.xsd">
+	<ximf:dictionary id="OneDico">
+		<ximf:locale lang="fr">
+			<ximf:ilk entity="ilk-exempted-address">Adresses exemptées</ximf:ilk>
+			<ximf:ilk entity="ilk-address">Addresses</ximf:ilk>
+			<ximf:ilk entity="ilk-urgence-box">Information</ximf:ilk>
+			<ximf:ilk entity="ilk-general-panel">Général</ximf:ilk>
+			<ximf:ilk entity="ilk-internal">INTERNE</ximf:ilk>
+			<ximf:ilk entity="ilk-public">PUBLIC</ximf:ilk>
+			<ximf:ilk entity="ilk-security-panel">Securité</ximf:ilk>
+			<ximf:ilk entity="ilk-originator-reference">Réferences d'origine</ximf:ilk>	
+			<ximf:ilk entity="ilk-reply-before">Répondre avant</ximf:ilk>
+			<ximf:ilk entity="ilk-classification-panel">Classification</ximf:ilk>
+			<ximf:ilk entity="ilk-classification">Classification de sécurité</ximf:ilk>
+			<ximf:ilk entity="ilk-privacy-mark">Marque privée</ximf:ilk>			
+			<ximf:ilk entity="ilk-general">Général</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential">CONFIDENTIEL</ximf:ilk>			
+			<ximf:ilk entity="ilk-highly-confidential">Très confidentiel</ximf:ilk>
+			<ximf:ilk entity="ilk-minimum">Minimum</ximf:ilk>
+			<ximf:ilk entity="ilk-medium">Moyen</ximf:ilk>
+			<ximf:ilk entity="ilk-maximum">Maximum</ximf:ilk>
+			<ximf:ilk entity="ilk-critical">Critique</ximf:ilk>			
+		</ximf:locale>
+		<ximf:locale lang="en-US">
+			<ximf:ilk entity="ilk-exempted-address">Exempted adresses</ximf:ilk>
+			<ximf:ilk entity="ilk-address">Address</ximf:ilk>
+			<ximf:ilk entity="ilk-urgence-box">Information</ximf:ilk>
+			<ximf:ilk entity="ilk-general-panel">General</ximf:ilk>
+			<ximf:ilk entity="ilk-internal">INTERAL</ximf:ilk>
+			<ximf:ilk entity="ilk-public">PUBLIC</ximf:ilk>
+			<ximf:ilk entity="ilk-security-panel">Security</ximf:ilk>
+			<ximf:ilk entity="ilk-reply-before">Reply before</ximf:ilk>
+			<ximf:ilk entity="ilk-originator-reference">Origin references</ximf:ilk>
+			<ximf:ilk entity="ilk-classification-panel">Classification</ximf:ilk>
+			<ximf:ilk entity="ilk-classification">Security classification</ximf:ilk>
+			<ximf:ilk entity="ilk-privacy-mark">Privacy mark</ximf:ilk>
+			<ximf:ilk entity="ilk-general">General</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential">CONFIDENTIAL</ximf:ilk>			
+			<ximf:ilk entity="ilk-highly-confidential">Highly Confidential</ximf:ilk>
+			<ximf:ilk entity="ilk-minimum">Minimum</ximf:ilk>
+			<ximf:ilk entity="ilk-medium">Medium</ximf:ilk>
+			<ximf:ilk entity="ilk-maximum">Maximum</ximf:ilk>
+			<ximf:ilk entity="ilk-critical">Critical</ximf:ilk>			
+		</ximf:locale>
+	</ximf:dictionary>
+</ximf:instance>
