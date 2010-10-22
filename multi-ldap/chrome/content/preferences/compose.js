@@ -91,6 +91,35 @@ gComposePane.initMultiLDAPGui = function() {
     button.setAttribute("accesskey", multiLDAPStringBundle.GetStringFromName("editDirectories.accesskey"));
     hbox.appendChild(button);
 
+    var hbox3 = document.createElement("hbox");
+    hbox3.setAttribute("align", "center");
+    hbox3.setAttribute("flex", "1");
+    hbox.appendChild(hbox3);
+
+    var spacer = document.createElement("spacer");
+    spacer.setAttribute("flex", "1");
+    hbox3.appendChild(spacer);
+
+    var label3 = document.createElement("label");
+    label3.setAttribute("value", "Default directory:");
+    label3.setAttribute("tooltiptext", multiLDAPStringBundle.GetStringFromName("defaultDirectoryTooltip"));
+    hbox3.appendChild(label3);
+
+    var menulist = document.createElement("menulist");
+    menulist.setAttribute("id", "defaultDirectoryList");
+    menulist.setAttribute("preference", "ldap_2.autoComplete.directoryServer");
+    menulist.setAttribute("value", document.getElementById("ldap_2.autoComplete.directoryServer").value);
+    menulist.setAttribute("tooltiptext", multiLDAPStringBundle.GetStringFromName("defaultDirectoryTooltip"));
+
+    var menupopup = document.createElement("menupopup");
+    menupopup.setAttribute("id", "defaultDirectoryListPopup");
+    menupopup.setAttribute("class", "addrbooksPopup");
+    menupopup.setAttribute("none", multiLDAPStringBundle.GetStringFromName("noneDefaultDirectory"));
+    menupopup.setAttribute("remoteonly", "true");
+    menupopup.setAttribute("value", "dirPrefId");
+    menulist.appendChild(menupopup);
+    hbox3.appendChild(menulist);
+
     var hbox2 = document.createElement("hbox");
     hbox2.setAttribute("align", "center");
     vbox.appendChild(hbox2);
@@ -140,6 +169,8 @@ gComposePane.enableAutocomplete = function() {
                     elements[i].removeAttribute("disabled");
             }
 
+            document.getElementById("defaultDirectoryList").removeAttribute("disabled");
+
             document.getElementById("editButton").removeAttribute("disabled");
 
             document.getElementById("autocompleteMinStringLength").removeAttribute("disabled");
@@ -151,6 +182,8 @@ gComposePane.enableAutocomplete = function() {
                 for (var i = 0; i < elements.length; i++)
                     elements[i].setAttribute("disabled", true);
             }
+
+            document.getElementById("defaultDirectoryList").setAttribute("disabled", true);
 
             document.getElementById("editButton").setAttribute("disabled", true);
 
