@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ximf:instance name="Caterpillar" version="1.0" ximfVersion="2.0" xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eads.org/ximf/ ximf.xsd">
+<ximf:ihm xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ximf:panel id="pane_security" ilk="ilk-classification-panel">
+		<ximf:groupbox ilk="ilk-security-box">
+			<ximf:headerRef>header-classification</ximf:headerRef>
+		</ximf:groupbox>
+	</ximf:panel>	
+	<ximf:panel id="pane_adanced" ilk="ilk-advanced-panel">
+		<ximf:groupbox ilk="ilk-precedence-panel">
+			<ximf:headerRef>header-primary-precedence</ximf:headerRef>
+			<ximf:headerRef>header-copy-precedence</ximf:headerRef>
+			<ximf:headerRef>header-akw</ximf:headerRef>
+		</ximf:groupbox>		
+	</ximf:panel>
+	<ximf:treeRcv>
+		<ximf:headerRef>header-classification</ximf:headerRef>
+	</ximf:treeRcv>
+</ximf:ihm>
+</ximf:instance>

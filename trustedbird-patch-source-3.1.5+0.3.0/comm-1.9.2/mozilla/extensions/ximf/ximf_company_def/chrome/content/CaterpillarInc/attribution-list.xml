@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ximf xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ximf:base name="Attribution_List">
+		<ximf:header>
+			<ximf:title>Attribution</ximf:title>
+			<ximf:description>Attribution keys</ximf:description>
+			<ximf:column>key</ximf:column>
+			<ximf:column>description</ximf:column>
+		</ximf:header>
+		<ximf:tree>
+			<ximf:description>
+				<ximf:data>HUMAN RESOURCE</ximf:data>
+				<ximf:data>Message for human resource only</ximf:data>
+			</ximf:description>
+			<ximf:description>
+				<ximf:data>SOFTWARE RESOURCE</ximf:data>
+				<ximf:data>Message for software resource only</ximf:data>
+			</ximf:description>			
+			<ximf:description>
+				<ximf:data>BUSINESS RESOURCE</ximf:data>
+				<ximf:data>Message for businnes resource only</ximf:data>
+			</ximf:description>					
+			<ximf:description>
+				<ximf:data>MARKET RESOURCE</ximf:data>
+				<ximf:data>Message for market resource only</ximf:data>
+			</ximf:description>
+			<ximf:description>
+				<ximf:data>ALL PUBLIC</ximf:data>
+				<ximf:data>Message for public</ximf:data>
+			</ximf:description>
+			<ximf:description>
+				<ximf:data>CONTRIBUTORS ONLY</ximf:data>
+				<ximf:data>Message for contributors only</ximf:data>
+			</ximf:description>									
+		</ximf:tree>
+	</ximf:base>
+</ximf>

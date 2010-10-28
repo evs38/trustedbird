@@ -1,0 +1,33 @@
+﻿<?xml version="1.0"?>
+<!--
+
+-->
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest"
+               em:id="trustedbird3.1_l10n_fr@trustedbird.org"
+               em:name="Trustedbird 3.1 French Language Pack"
+               em:version="3.1.1122.1+0.3.0"
+               em:type="8"
+               em:creator="L'equipe FrenchMozilla">
+	
+	    <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
+	    <em:contributor>Frédéric Chateaux</em:contributor><em:contributor>Cédric Corazza</em:contributor><em:contributor>Philippe Dessante</em:contributor><em:contributor>Benoît Leseul</em:contributor>
+	    <em:contributor>Trustedbird/Milimail project</em:contributor>
+	
+	    <em:updateURL>http://packages.trustedbird.org/updates/trustedbird3.1-l10n-fr/update.rdf</em:updateURL>
+	    <em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCm/Yrjs3JQ/FRl0xfaioHcTPGM4bxR6VsKlq55p9tPBbCwq+kId3GVhYfvySfhOWWxvd7tXI6ic+fFOmpD6l7gI9hPFjxRy993o43QCc/EkfwhmjpdWMfqn6dA71RQPat+uepgSwja58GjtviSANlmvlFpnj1R5ADqHhdv5IF/DwIDAQAB</em:updateKey>
+	
+    <em:targetApplication>
+      <Description>
+      <!-- Thunderbird (only with Trustedbird) -->
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>3.1.0</em:minVersion>
+        <em:maxVersion>3.1.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+	
+    <em:description>French Language Pack for Trustedbird.</em:description>
+  </Description>
+</RDF>
