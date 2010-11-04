@@ -21,8 +21,8 @@
       <rdf:Description>
         <!-- Thunderbird (only with Trustedbird) -->
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>3.1.5+0.2.0</em:minVersion>
-        <em:maxVersion>3.1.5+0.2.*</em:maxVersion>
+        <em:minVersion>3.1.6+0.2.0</em:minVersion>
+        <em:maxVersion>3.1.6+0.2.*</em:maxVersion>
       </rdf:Description>
     </em:targetApplication>
 

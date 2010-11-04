@@ -47,12 +47,13 @@ Read-write (with SSH)
 
 
 === Building ===
+
 ~$ cd trustedbird/packager
 ~/trustedbird/packager$ cd trustedbird/packager
 
 
 Download Thunderbird source file:
-~/trustedbird/packager$ wget ftp://ftp.mozilla.org/pub/thunderbird/releases/2.0.0.24/source/thunderbird-2.0.0.24-source.tar.bz2
+~/trustedbird/packager$ wget ftp://ftp.mozilla.org/pub/thunderbird/releases/3.1.6/source/thunderbird-3.1.6.source.tar.bz2
 
 
 Build and package Trustedbird and all add-ons:
@@ -60,7 +61,8 @@ Build and package Trustedbird and all add-ons:
 
 
 OR: build and package only Trustedbird email client:
-~/trustedbird/packager$ ant trustedbird
+~/trustedbird/packager$ ant -Dversion=3.1 trustedbird    (for Thunderbird 3.1)
+~/trustedbird/packager$ ant -Dversion=2 trustedbird      (for Thunderbird 2)
 
 
 OR: build and package only add-ons:

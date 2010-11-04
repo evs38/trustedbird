@@ -1,31 +1,35 @@
+trustedbird (3.1.6+0.2.0)
+  * Upgrade to Thunderbird 3.1.6
+-- Nov 4 2010
+
 trustedbird (3.1.5+0.2.0)
   * Upgrade to Thunderbird 3.1.5
--- 20 Oct 2010
+-- Oct 20 2010
 
 trustedbird (3.1.4+0.2.0)
   * Add S/MIME security labels (RFC 2634)
--- 20 Sep 2010
+-- Sep 20 2010
 
 trustedbird (3.1.4+0.1.0)
   * Upgrade to Thunderbird 3.1.4
--- 17 Sep 2010
+-- Sep 17 2010
 
 trustedbird (3.1.3+0.1.0)
   * Upgrade to Thunderbird 3.1.3
--- 10 Sep 2010
+-- Sep 10 2010
 
 trustedbird (3.1.2+0.1.0)
   * Add S/MIME signed receipts (RFC 2634)
--- 30 Aug 2010
+-- Aug 30 2010
 
 trustedbird (3.1.2+0.0.1)
   * Upgrade to Thunderbird 3.1.2
--- 17 Aug 2010
+-- Aug 17 2010
 
 trustedbird (3.1.1+0.0.1)
   * Upgrade to Thunderbird 3.1.1
--- 29 Jul 2010
+-- Jul 29 2010
 
 trustedbird (3.1.0+0.0.1)
   * Thunderbird 3.1 rebranding
--- 12 Jul 2010
+-- Jul 12 2010
