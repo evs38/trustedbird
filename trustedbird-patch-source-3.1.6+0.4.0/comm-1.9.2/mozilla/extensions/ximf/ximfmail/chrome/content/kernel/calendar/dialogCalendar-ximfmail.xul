@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Copyright (c) 2008-2009 EADS DEFENCE AND SECURITY - All rights reserved.
+   - ximfmail is under the triple license  MPL 1.1/GPL 2.0/LGPL 2.1.
+   - 
+   -
+   - Redistribution and use, in source and binary forms, with or without modification, 
+   - are permitted provided that the following conditons are met :
+   -
+   - 1. Redistributions of source code must retain the above copyright notice, 
+   - 2. MPL 1.1/GPL 2.0/LGPL 2.1. license agreements must be attached 
+   -    in the redistribution of the source code.
+   - 3. Neither the names of the copyright holders nor the names of any contributors 
+   -    may be used to endorse or promote products derived from this software without specific 
+   -    prior written permission from EADS Defence and Security.
+   - 
+   - Alternatively, the contents of this file may be used under the terms of
+   - either of the GNU General Public License Version 2 or later (the "GPL"),
+   - or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the GPL or the LGPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   - 
+   - REMINDER  :
+   - THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+   - ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+   - WARRANTIES OF MERCHANTABILITY AND FITNESS FOR  A PARTICULAR PURPOSE ARE DISCLAIMED. 
+   - IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+   - INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+   - (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+   - LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+   - WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
+   - IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -  
+   - EADS Defence and Security - 1 Boulevard Jean Moulin -  
+   - ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://ximfmail/content/calendar/calendar.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/datepicker.dtd">
+
+<window id="datetimepicker_dialog" 
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
+  	
+	<script type="application/javascript"	src="chrome://ximfmail/content/calendar/dialogCalendar-ximfmail.js" />
+		
+	
+	<vbox id="oe-date-picker-overlay-box" >			
+		<hbox id="ximf-date-picker-head-controls-box">
+				<box>	
+					<label id="ximf-date-picker-title" />
+				</box>	
+				<box flex="1"/>
+				<box>	
+					<image id="ximf-date-picker-cancel-control-box" onclick="clickCancel()"/>
+				</box>
+		</hbox>
+		<hbox id="oe-date-picker-year-controls-box"  >
+			<box flex="1">
+				<image id="oe-date-picker-year-previous-jump-button" onclick="previousYearCommand(10)"/>   
+				<image id="oe-date-picker-year-previous-button" onclick="previousYearCommand(1)"/>							
+			</box>
+			<label id="oe-date-picker-year-title-text" value="" />		
+			<box flex="1" id="oe-date-picker-year-next-button-box" >
+				<image id="oe-date-picker-year-next-button" onclick="nextYearCommand(1)"/>
+				<image id="oe-date-picker-year-next-jump-button" onclick="nextYearCommand(10)"/>
+			</box>  
+		</hbox>		
+		<grid id="oe-date-picker-year-grid" flex="1">
+				<columns>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+				</columns>
+				<rows >
+					<row flex="1">
+						<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-1-box" onclick="clickMonth(this, 1)" >
+							<spacer flex="1" />
+							<box ><label  class="oe-date-picker-year-month-name-class"  value="&month.1.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-2-box"  onclick="clickMonth(this, 2)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.2.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+							<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-3-box"  onclick="clickMonth(this, 3)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.3.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-4-box"  onclick="clickMonth(this, 4)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.4.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+					</row> 
+					<row flex="1">
+						<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-5-box"  onclick="clickMonth(this, 5)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.5.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class"  id="oe-date-picker-year-month-6-box" onclick="clickMonth(this, 6)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.6.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class"  id="oe-date-picker-year-month-7-box" onclick="clickMonth(this, 7)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.7.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class"  id="oe-date-picker-year-month-8-box" onclick="clickMonth(this, 8)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.8.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+					</row>  
+					<row flex="1"  >
+						<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-9-box"  onclick="clickMonth(this, 9)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.9.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class"  id="oe-date-picker-year-month-10-box" onclick="clickMonth(this, 10)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.10.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-11-box"  onclick="clickMonth(this, 11)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.11.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+						<vbox class="oe-date-picker-year-month-box-class" id="oe-date-picker-year-month-12-box" onclick="clickMonth(this, 12)" >
+							<spacer flex="1" />
+							<box><label  class="oe-date-picker-year-month-name-class"  value="&month.12.MMM;" /></box> 
+							<spacer flex="1" />
+						</vbox>  
+					</row>  
+				</rows>
+			</grid>
+			<box id="oe-date-picker-month-grid-box" flex="1">
+				<grid id="oe-date-picker-month-grid" flex="1">
+					<columns>
+						<column flex="1"/>
+						<column flex="1"/>
+						<column flex="1"/>
+						<column flex="1"/>
+						<column flex="1"/>
+						<column flex="1"/>
+						<column flex="1"/>
+						<column flex="1"/>
+					</columns>
+					<rows>
+						<row id="oe-date-picker-month-days-header-box">
+							<vbox class="oe-date-picker-month-days-header-class-red" id="oe-date-picker-month-day-1-header-box">
+								<label class="oe-date-picker-month-days-header-class" value="&day.1.DDD;" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-days-box-header-class" id="oe-date-picker-month-day-2-header-box">
+								<label class="oe-date-picker-month-days-header-class" value="&day.2.DDD;" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-days-box-header-class" id="oe-date-picker-month-day-3-header-box">
+								<label class="oe-date-picker-month-days-header-class" value="&day.3.DDD;" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-days-box-header-class" id="oe-date-picker-month-day-4-header-box">
+								<label class="oe-date-picker-month-days-header-class" value="&day.4.DDD;" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-days-box-header-class" id="oe-date-picker-month-day-5-header-box">
+								<label class="oe-date-picker-month-days-header-class" value="&day.5.DDD;" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-days-box-header-class" id="oe-date-picker-month-day-6-header-box">
+								<label class="oe-date-picker-month-days-header-class" value="&day.6.DDD;" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-days-box-header-class" id="oe-date-picker-month-day-7-header-box">
+								<label class="oe-date-picker-month-days-header-class" value="&day.7.DDD;" />
+							</vbox>    
+						</row>
+						<row>
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-1-box" onclick="clickDay(this,1)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-1" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-2-box" onclick="clickDay(this,2)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-2" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-3-box" onclick="clickDay(this,3)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-3" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-4-box" onclick="clickDay(this,4)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-4" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-5-box" onclick="clickDay(this,5)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-5" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-6-box" onclick="clickDay(this,6)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-6" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-7-box" onclick="clickDay(this,7)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-7" value="" />
+							</vbox>    
+						</row>
+						<row>
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-8-box" onclick="clickDay(this,8)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-8" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-9-box" onclick="clickDay(this,9)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-9" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-10-box" onclick="clickDay(this,10)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-10" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-11-box" onclick="clickDay(this,11)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-11" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-12-box" onclick="clickDay(this,12)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-12" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-13-box"  onclick="clickDay(this,13)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-13" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-14-box" onclick="clickDay(this,14)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-14" value="" />
+							</vbox>    
+						</row>
+						<row>
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-15-box" onclick="clickDay(this,15)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-15" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-16-box" onclick="clickDay(this,16)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-16" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-17-box" onclick="clickDay(this,17)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-17" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-18-box" onclick="clickDay(this,18)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-18" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-19-box" onclick="clickDay(this,19)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-19" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-20-box" onclick="clickDay(this,20)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-20" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-21-box" onclick="clickDay(this,21)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-21" value="" />
+							</vbox>    
+						</row>						
+						<row>
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-22-box" onclick="clickDay(this,22)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-22" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-23-box" onclick="clickDay(this,23)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-23" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-24-box" onclick="clickDay(this,24)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-24" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"   id="oe-date-picker-month-day-25-box" onclick="clickDay(this,25)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-25" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-26-box" onclick="clickDay(this,26)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-26" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-27-box" onclick="clickDay(this,27)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-27" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-28-box" onclick="clickDay(this,28)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-28" value="" />
+							</vbox>    
+						</row>					
+						<row>
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-29-box" onclick="clickDay(this,29)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-29" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class" id="oe-date-picker-month-day-30-box" onclick="clickDay(this,30)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-30" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-31-box" onclick="clickDay(this,31)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-31" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-32-box" onclick="clickDay(this,32)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-32" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-33-box" onclick="clickDay(this,33)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-33" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-34-box" onclick="clickDay(this,34)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-34" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-35-box" onclick="clickDay(this,35)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-35" value="" />
+							</vbox>    
+						</row>						 
+						<row>
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-36-box" onclick="clickDay(this,36)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-36" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-37-box" onclick="clickDay(this,37)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-37" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-38-box" onclick="clickDay(this,38)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-38" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-39-box" onclick="clickDay(this,39)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-39" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"   id="oe-date-picker-month-day-40-box" onclick="clickDay(this,40)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-40" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"   id="oe-date-picker-month-day-41-box" onclick="clickDay(this,41)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-41" value="" />
+							</vbox>    
+							<vbox class="oe-date-picker-month-day-box-class"  id="oe-date-picker-month-day-42-box" onclick="clickDay(this,42)">
+								<label  class="oe-date-picker-month-day-number-class" id="oe-date-picker-month-day-text-42" value="" />
+							</vbox>    
+						</row>						
+					</rows>
+				</grid>
+			</box>
+			<separator />
+			<hbox><label value="&hour.label;"/></hbox>
+			<grid flex="1" id="ximfmail-date-picker-hour-grid">
+				<columns>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+					<column class="oe-date-picker-year-column-class" flex="1"/>
+				</columns>
+				<rows>
+					<row flex="1" id="ximfmail-date-picker-hour-12-header-box">
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-0" onclick="clickHour(this,0)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-0" value=" 00 " />
+						</vbox> 
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-1" onclick="clickHour(this,1)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-1" value=" 01 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-2" onclick="clickHour(this,2)">
+							<label  class="oe-date-picker-month-day-number-class"  id="ximfmail-date-picker-hour-text-2" value=" 02 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-3" onclick="clickHour(this,3)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-3" value=" 03 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-4" onclick="clickHour(this,4)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-4" value=" 04 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-5" onclick="clickHour(this,5)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-5" value=" 05 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-6" onclick="clickHour(this,6)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-6" value=" 06 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-7" onclick="clickHour(this,7)">
+								<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-7" value=" 07 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-8" onclick="clickHour(this,8)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-8" value=" 08 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-9" onclick="clickHour(this,9)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-9" value=" 09 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-10" onclick="clickHour(this,10)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-10" value=" 10 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-11" onclick="clickHour(this,11)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-11" value=" 11 " />
+						</vbox>										
+					</row>
+					<row flex="1" id="ximfmail-date-picker-hour-24-header-box">										
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-12" onclick="clickHour(this,12)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-12" value=" 12 " />
+						</vbox> 
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-13" onclick="clickHour(this,13)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-13" value=" 13 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-14" onclick="clickHour(this,14)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-14" value=" 14 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-15" onclick="clickHour(this,15)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-15" value=" 15 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-16" onclick="clickHour(this,16)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-16" value=" 16 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-17" onclick="clickHour(this,17)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-17" value=" 17 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-18" onclick="clickHour(this,18)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-18" value=" 18 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-19" onclick="clickHour(this,19)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-19" value=" 19 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-20" onclick="clickHour(this,20)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-20" value=" 20 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-21" onclick="clickHour(this,21)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-21" value=" 21 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-22" onclick="clickHour(this,22)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-22" value=" 22 " />
+						</vbox>
+						<vbox class="oe-date-picker-year-month-box-class" id="ximfmail-date-picker-hour-box-23" onclick="clickHour(this,23)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-hour-text-23" value=" 23 " />
+						</vbox>										
+					</row>
+				</rows>
+			</grid>							
+			<hbox><label value="&min.label;"/></hbox>
+			<grid flex="1" id="ximfmail-date-picker-min-grid">
+				<columns>
+					<column flex="1"/>
+					<column flex="1"/>
+					<column flex="1"/>
+					<column flex="1"/>
+					<column flex="1"/>
+					<column flex="1"/>									
+				</columns>
+				<rows>
+					<row id="ximfmail-date-picker-min-line1-header-box">
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-0" onclick="clickMin(this,0)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-min-text-0" value=":00" />
+						</vbox> 
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-5" onclick="clickMin(this,5)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-min-text-5" value=":05" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-10" onclick="clickMin(this,10)">
+							<label  class="oe-date-picker-month-day-number-class"  id="ximfmail-date-picker-min-text-10" value=":10" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-15" onclick="clickMin(this,15)">
+							<label  class="oe-date-picker-month-day-number-class"  id="ximfmail-date-picker-min-text-15" value=":15" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-20" onclick="clickMin(this,20)">
+							<label  class="oe-date-picker-month-day-number-class"  id="ximfmail-date-picker-min-text-20" value=":20" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-25" onclick="clickMin(this,25)">
+							<label  class="oe-date-picker-month-day-number-class"  id="ximfmail-date-picker-min-text-25" value=":25" />
+						</vbox>																			
+					</row>
+					<row id="ximfmail-date-picker-min-line2-header-box">
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-30" onclick="clickMin(this,30)">
+							<label  class="oe-date-picker-month-day-number-class"  id="ximfmail-date-picker-min-text-30" value=":30" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-35" onclick="clickMin(this,35)">
+							<label  class="oe-date-picker-month-day-number-class"  id="ximfmail-date-picker-min-text-35" value=":35" />
+						</vbox>  
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-40" onclick="clickMin(this,40)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-min-text-40" value=":40" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-45" onclick="clickMin(this,45)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-min-text-45" value=":45" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-50" onclick="clickMin(this,50)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-min-text-50" value=":50" />
+						</vbox>
+						<vbox class="oe-date-picker-month-day-box-class" id="ximfmail-date-picker-min-box-55" onclick="clickMin(this,55)">
+							<label  class="oe-date-picker-month-day-number-class" id="ximfmail-date-picker-min-text-55" value=":55" />
+						</vbox>																				
+					</row>
+				</rows>
+			</grid>										
+			<hbox id="ximf-date-picker-end-controls-box">
+				<box>		
+					<image id="oe-date-picker-currenttime-text" onclick="adjustCurrentDate()" />
+				</box>					
+				<box flex="1" />
+				<box>	
+					<image id="ximf-date-picker-ok-control-box" onclick="clickOk()"/>
+				</box>
+			</hbox>
+	</vbox>	   	
+</window>
