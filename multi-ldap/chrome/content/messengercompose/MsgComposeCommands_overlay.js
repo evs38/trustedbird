@@ -47,7 +47,9 @@ var bActiveDump;
 var multildap_OriginalComposeLoad = ComposeLoad;
 ComposeLoad = function() {
     // Enable display of source address book in autocomplete popup
-    trustedBird_prefService_setIntPref("mail.autoComplete.commentColumn", 1);
+    var commentColumn = trustedBird_prefService_getIntPref("mail.autoComplete.commentColumn", -1);
+    if (commentColumn == -1)
+        trustedBird_prefService_setIntPref("mail.autoComplete.commentColumn", 1);
 
     // Call built-in ComposeLoad function
     multildap_OriginalComposeLoad();

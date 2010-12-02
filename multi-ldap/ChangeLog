@@ -1,3 +1,7 @@
+multi-ldap (1.1.6)
+  * Don't enforce mail.autoComplete.commentColumn pref
+-- Dec 2 2010
+
 multi-ldap (1.1.5)
   * Add a default directory widget for add-ons not compatible with Multi-LDAP (e.g. Lightning)
 -- Oct 22 2010
