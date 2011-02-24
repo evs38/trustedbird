@@ -46,24 +46,16 @@ var gComposeMsgByMenuitem=false;
 var gXimfThreadTree = null;
 
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
 var gXBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
-
-gJSLoader.loadSubScript("chrome://ximfmail/content/jquery.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/controler-ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/messageWindow-ov-ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/threadTree-ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
 
 var gChromeXslMsgCompose = "chrome://theme_ximfmail/content/messengerCompose-ximfmail.xsl";
 var gChromeXslTreeRcv = "chrome://theme_ximfmail/content/threadTree-ximfmail.xsl";
+
 
 /*
  * init ximfmail on main panel
  */
 $(document).ready(function(){
-	
 	// init ximfmail operations
 	CreateXimfmailCatalog(); 
     gXimfThreadTree = new XimfThreadTree();
@@ -75,7 +67,12 @@ $(document).ready(function(){
 	// event manager
 	$("#folderTree").select(OnSelectfolderPane);
 	//optional-for technical informations $("#threadTree").select(OnSelectMsg);
-	$("#threadTree").dblclick(OnOpenMsg);
+	//opening message event
+	$("#threadTree").dblclick(OnOpenMsg);	
+	$("#cmd_openMessage").bind("command",OnOpenMsg);
+	$("#key_openMessage").bind("command",OnOpenMsg);
+	$("#threadTree").keypress(OnOpenMsgWithKey);	
+	//
 	$("#threadTree").click(UpdateThreadPane);
 	$("#button-newmsg").mousedown(OnSelectfolderPane); // load instances	  
 	$("#button-newmsg").bind('command', OnComposeDefaultMsg); // use default instance 
@@ -87,7 +84,10 @@ $(document).ready(function(){
 	$("#button-forward").bind('command', OnComposeDefaultMsg);	
 	$("#threadTree").bind('select', OnSelectMsg);
 	
+	// Security Labels compatibility (RFC2634)
+	try{CreateSecurityLabelXml()}catch(e){}
 });
+
 
 /*
  * save state of custom columns
@@ -98,13 +98,24 @@ function UpdateThreadPane(){
 	}
 }
 
+ 
+
 /*
  * 
  */
+function OnOpenMsgWithKey(evt){ if(evt.keyCode == 13){OnOpenMsg();}}
 function OnOpenMsg(){
 	if(!gCurrentIdentity) return false;	
 	if (IsXimfailActivated(gCurrentIdentity)){		
 		pref.setBoolPref("mailnews.headers.showXimfmail",true);	
+		// flag on new open message requested
+		try{			
+			if(!pref.getBoolPref(PREF_MSGWINDOW_REFRESH)){
+				pref.setBoolPref(PREF_MSGWINDOW_REFRESH,true);				
+			}else{
+				pref.setBoolPref(PREF_MSGWINDOW_REFRESH,false);				
+			}
+		}catch(e){pref.setBoolPref(PREF_MSGWINDOW_REFRESH,true);}
 	}else{
 		pref.setBoolPref("mailnews.headers.showXimfmail",false);			
 	}
@@ -115,9 +126,12 @@ function OnOpenMsg(){
  * 
  */
 function OnSelectMsg(){
-	try{			
-		if(OnOpenMsg()){
-			ExpandedXimfHeaders();			
+	try{
+		if(!gCurrentIdentity) return false;	
+		if (IsXimfailActivated(gCurrentIdentity)){		
+			pref.setBoolPref("mailnews.headers.showXimfmail",true);							
+		}else{
+			pref.setBoolPref("mailnews.headers.showXimfmail",false);			
 		}
 	}catch(error){
 		gConsole.logStringMessage("ximfmail error - on select message : " + error);
@@ -148,7 +162,7 @@ function OnSelectfolderPane(){
 			gConsole.logStringMessage("[ximfmail - OnSelectfolderPane ] gCurrentIdentity invalid");
 			return;
 		}		
-		
+				
 		// custom-panel update
 		var title = GetXimfmailPref(gCurrentIdentity.key, "ximfmail_theme_name");						
 		$("#title-custom").attr("value",title);			
@@ -157,9 +171,6 @@ function OnSelectfolderPane(){
 		var refRdf = GetXimfmailPref(gCurrentIdentity.key,"ximfmail_theme_ref");	
 		
 		ChangeRefAttrRdfElement("menupopup-newmsg", refRdf);
-		ChangeRefAttrRdfElement("menupopup-replymsg", refRdf);
-		ChangeRefAttrRdfElement("menupopup-replyallmsg", refRdf);
-		ChangeRefAttrRdfElement("menupopup-forwardmsg", refRdf);			
 						
 		// mailpanel instance : to display received/send messages
 		var mailInstance = GetXimfmailPref(gCurrentIdentity.key, "ximfmail_instance_mail_panel_ref");
@@ -171,27 +182,21 @@ function OnSelectfolderPane(){
 		if (IsXimfailActivated(gCurrentIdentity)){				
 			pref.setBoolPref("mailnews.headers.showXimfmail",true);
 			$("#menupopup-newmsg").attr("datasources","chrome://theme_ximfmail/content/ximfCatalog.rdf");
-			$("#menupopup-replymsg").attr("datasources","chrome://theme_ximfmail/content/ximfCatalog.rdf");
-			$("#menupopup-replyallmsg").attr("datasources","chrome://theme_ximfmail/content/ximfCatalog.rdf");
-			$("#menupopup-forwardmsg").attr("datasources","chrome://theme_ximfmail/content/ximfCatalog.rdf");
-			$("#ximfmail-custom-panel").attr("hidden","false");
+				$("#ximfmail-custom-panel").attr("hidden","false");				
 		}else{
 			pref.setBoolPref("mailnews.headers.showXimfmail",false);
 			$("#menupopup-newmsg").attr("datasources","");
-			$("#menupopup-replymsg").attr("datasources","");
-			$("#menupopup-replyallmsg").attr("datasources","");
-			$("#menupopup-forwardmsg").attr("datasources","");
 			$("#ximfmail-custom-panel").attr("hidden","true");		
 		}
 		
 		// load custom tree
 		if( gPreviousIdentity != gCurrentIdentity){	
 			gPreviousIdentity = gCurrentIdentity;
-			if(gXimfThreadTree){			
+			if(gXimfThreadTree){		
 				gXimfThreadTree.createThreadTree();
 				gXimfThreadTree.addCustomColumnHandler();
 			}
-		}
+		}		
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - OnSelectfolderPane ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
 

@@ -66,27 +66,94 @@ function XimfThreadTree(){
 		}
 		return false;
 	}
-	function LoadIlkColumnsValues(currentInstance){
-		var domComposer = null;
-		domComposer = CreateDOMWithXimfInstance(currentInstance,gChromeXslMsgCompose);
-		$(document).ready(function(){
-			var base = document.createElement("box");
-			$(base).attr("id", "xxxxx");
-			$(base).attr("hidden", "true");
-			$("#mailContentWrapper").append(base);
-			$(base).append(domComposer);
-			for(var i=0;i<_ximfHdrArrayByID.length;++i){
-					var idColumn = _ximfHdrArrayByID[i];
-					var eLabel = $("label[ximfheader='"+ idColumn +"']");				
-					var eBox = $("textbox[refheader='"+eLabel[0].getAttribute("id")+"']");				
-					var eItems = $("popup[id='"+eBox[0].getAttribute("popup")+"'] menuitem");
-					for(var j=0; j<eItems.length; ++j){						
-						$("treecol[id='"+idColumn+"']").attr(eItems[j].getAttribute("ximfvalue"),eItems[j].getAttribute("label"));
+	
+	/*
+	 * Get ilk values from instance
+	 */
+	function LoadIlkColumnsValues2(currentInstance){
+		try{
+			var ilkArray = [];
+		// get xml schema for instance
+		if(!gXimfCatalog){			
+			gXimfCatalog = new XimfCatalog();
+		}
+  	 	var dir = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+  		var completePath = getFilePathInProfile("extensions/"+gXimfCatalog.getSchemaInstance(currentInstance));
+		dir.initWithPath( completePath );			
+		if(!dir.exists()){	
+			gConsole.logStringMessage("[Ximfmail - createThreadTree - LoadIlkColumnsValues2] Error loading schema file : " + completePath);
+			return;
+		}	
+		var objXML = GetXmlDocument(completePath);
+		var headers = objXML.getElementsByTagName("ximf:header");
+		
+		// get xml dictionary parser
+		var urlDictionary = getFilePathInProfile("extensions/"+gXimfCatalog.getDictionaryInstance(currentInstance));
+		dir.initWithPath( urlDictionary );			
+		if(!dir.exists()){			
+			gConsole.logStringMessage("[Ximfmail - LoadIlkColumnsValues2] Error loading dictionary file : " + completePath);
+			return;
+		}		
+		var dicoXML = GetXmlDocument(urlDictionary);
+		var dicoElements = dicoXML.getElementsByTagName("ximf:locale");
+		
+		// get local lang				
+		var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+		var refLang = prefs.getCharPref("general.useragent.locale");
+		if(!refLang) refLang = "fr-FR";			
+		var ilkEntities = null;
+		for(var idxLang=0 ; idxLang < dicoElements.length ; ++idxLang){		
+			if(dicoElements[idxLang].getAttribute("lang") == refLang){
+				ilkEntities = dicoElements[idxLang].getElementsByTagName("ximf:ilk");
+				break;
+			}
+		}
+		
+		// parse XML and get labels
+		for(var i=0 ; i < _ximfHdrArrayByID.length ; ++i){
+			var currentTreeColId = _ximfHdrArrayByID[i];
+			for(var idxH = 0 ; idxH < headers.length; ++idxH){				
+				var attrHeaderList = headers[idxH].attributes;				
+				var headerName = headers[idxH].getAttribute("headerName");
+				
+				if(headerName.toLowerCase() == currentTreeColId.toLowerCase()){										
+					var stringListElt = headers[idxH].getElementsByTagName("ximf:string");
+					var treeElement = document.getElementById(currentTreeColId);
+					
+					var reg=new RegExp(' ', "gi");
+					for(var j=0 ; j< stringListElt.length ; j++){
+						try{						
+							// get values from instance headers
+							var sContent = stringListElt[j].getAttribute("content");						
+							var sIlk = stringListElt[j].getAttribute("ilk")
+							
+							// get ilk entity from instance dictionay
+							if(ilkEntities){
+								for(var idxIlk = 0 ; idxIlk < ilkEntities.length ; ++idxIlk){
+									if(ilkEntities[idxIlk].getAttribute("entity") == sIlk){
+										sIlk = ilkEntities[idxIlk].textContent;
+										//gConsole.logStringMessage("[Ximfmail - LoadIlkColumnsValues2] sIlk : " + sIlk);				
+										break;
+									}
+								}
+							}
+							// set values to tree column						
+							var ilkid = "ximfkey_"+sContent;
+							ilkid = ilkid.replace(reg,"_");
+							//gConsole.logStringMessage("[Ximfmail - LoadIlkColumnsValues2] ]"+ilkid +":"+sIlk+"[");				
+							treeElement.setAttribute(ilkid,sIlk);			
+						}catch(e){}			
 					}
-			}			
-			$(base).remove();
-		});	
-	};
+					break;
+				}
+			}
+		}
+
+		}catch(e){
+			gConsole.logStringMessage("[ximfmail - LoadIlkColumnsValues ] " + e +"\nline : " + e.lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
+		}
+		return ilkArray;
+	}
 	
 	//
 	function addCustomPreferences(preference, lower){
@@ -103,24 +170,21 @@ function XimfThreadTree(){
 			} catch(ex) {}
 
 			// add only new headers
-   			for (var i = 0; i < _ximfHdrArrayByID.length; i++) {     		
-        		if (!isDataInArray(_ximfHdrArrayByID[i].toLowerCase(),prefList)){
+   			for (var i = 0; i < _ximfHdrArrayByID.length; i++) {   
+   				if (!isDataInArray(_ximfHdrArrayByID[i].toLowerCase(),prefList)){
         			if (xListHdr != "") {
 	        			xListHdr += " ";
     	    		}        	   	
         	   		xListHdr += _ximfHdrArrayByID[i].toLowerCase();
         	   	}
-			}
-			
-  			
+			}  			
   			prefBranch.setCharPref(preference, xListHdr);
 		};
 	//Column handler template definition	
 	function XimfCustomColumnHandler(property) {
 		// Properties
 		this.property = property;
-		this.isString = true;
-		
+		this.isString = true;		
 	
 		// Functions
 		this.getSortStringForRow = function (hdr){ return (this.isString) ? hdr.getStringProperty(this.property) : ""; };
@@ -132,9 +196,13 @@ function XimfThreadTree(){
 		this.getIlkValue = function(value){
 			var newValue = value;
 			listTreecol = $("treecol[ximfheadtree='1']");
+			var reg=new RegExp(' ', "gi");
 			for(var i=0; i<listTreecol.length; ++i){
 				if(listTreecol[i].getAttribute("id").toLowerCase()== this.property){
-					newValue = listTreecol[i].getAttribute(value);
+					// set values to tree column
+					var ilkid = "ximfkey_"+value;
+					ilkid = ilkid.replace(reg,"_");						
+					newValue = listTreecol[i].getAttribute(ilkid);
 					if (newValue == ""){ 
 						newValue = value;
 					}
@@ -152,6 +220,7 @@ function XimfThreadTree(){
 			return this.getIlkValue(value);;
 		};		
 	};
+	
 	function updateColumnToHide(){
 		try{
 			if(_ximfHdrArrayByID.length <= 0 ) return;
@@ -168,6 +237,7 @@ function XimfThreadTree(){
 			gConsole.logStringMessage("[ximfmail - createThreadTree ] " + e +"\nline : " + Error().lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
 		}			
 	};	
+	
 	// public:
 	if(typeof XimfThreadTree.initialized == "undefined"){
 		//load tree cells with ximf headers
@@ -179,22 +249,23 @@ function XimfThreadTree(){
 					$("splitter[ximfheadtree='1']").remove();
 					$("treecol[ximfheadtree='1']").remove();
 					_ximfHdrArrayByID.splice(0,_ximfHdrArrayByID.length);
-		
-					// new instance -> new ximf columns
+						// new instance -> new ximf columns
 					if(gCurrentIdentity.getBoolAttribute(XIMF_PREF_IDENTITY_USE_XIMFMAIL)){
 						$("#threadCols").append(CreateDOMWithXimfInstance(currentInstance,gChromeXslTreeRcv));
 										
 						// save list of ximf columns
 						var listID = $("#threadCols treecol[ximfheadtree='1']");
+										
 						if(!listID) return;
 						for(var idx=0; idx<listID.length; ++idx){
-							_ximfHdrArrayByID.push(listID[idx].id);							
+							_ximfHdrArrayByID.push(listID[idx].id);												
 						}
 						updateColumnToHide();
-						LoadIlkColumnsValues(currentInstance);
+						//LoadIlkColumnsValues(currentInstance);
+						LoadIlkColumnsValues2(currentInstance);		
+										
 						// use by Thunderbird to check for x-headers
-						addCustomPreferences('mailnews.customDBHeaders', true);
-						
+						addCustomPreferences('mailnews.customDBHeaders', true);						
 					}
 				}	
 			}catch(e){

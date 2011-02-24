@@ -45,9 +45,7 @@
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:ximf="http://eads.org/ximf/">
-	<xsl:output method="xml" encoding="UTF-8" indent="yes" version="1.0" />
-	
-	<!-- MAIN FUNCTION  -->
+	<xsl:output method="xml" encoding="UTF-8" indent="yes" version="1.0" />	
 	<xsl:template match="/">		
 		<xsl:for-each select="/ximf:instance/ximf:rule/ximf:securityLabel">		
 			<securityLabel id="{generate-id(.)}">											

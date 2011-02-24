@@ -40,112 +40,41 @@
  * ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
  * ***** END LICENSE BLOCK ***** */
 
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
-var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-gJSLoader.loadSubScript("chrome://ximfmail/content/jquery.js");
-
-
   
 /*
  window.arguments = [];
-		args[0] label de l'entête
-		args[1] entête brut XIMF
-		args[2] liste des valeurs labelisees
-		args[3] liste des valeurs XIMF		
-		args[4] separateur label
-		args[5] separateur XIMF
+		args[0] header label
+		args[1] header XIMF
+		args[2] list of label values
+		args[3] list of XIMF values		
+		args[4] label separator
+		args[5] XIMF separator
 */
-
-$(document).ready(function(){
+function OnDisplayInformations(){
 	var gArgs = window.arguments;
 	var xSeparator = null;
-	var NB_CHARACTERS = 45;
-	
+	var NB_CHARACTERS = 45;	
 		
 	if(gArgs[0].length > 0){
 		var title = gArgs[0][0];		
 		var xHdr  = gArgs[0][1];
 		var val   = gArgs[0][2];
-		var xval  = gArgs[0][3];
-		
+		var xval  = gArgs[0][3];		
 	}
 	
 	if(gArgs[0].length  == 5){
 		var xSeparator = gArgs[0][4];
-	}	
+	}
 		
-	
-	//$("#ximfmail-dialog-hdrInfo").attr("title",title.substring(0,title.lastIndexOf(":")));
-	//$("#dlgheader_hdrInfo").attr("title",title.substring(0,title.lastIndexOf(":")));
-	//$("#dlgheader_hdrInfo").attr("title",xHdr);
-	$("#hdrInfoTreeCol1").attr("label",title.substring(0,title.lastIndexOf(":")));
-	$("#hdrInfoTreeCol2").attr("label",xHdr);	
-	
 	//add complete header to description
-	$("#ilkheaderName").attr("value",title.substring(0,title.lastIndexOf(":")));
-	$("#ximfheaderName").attr("value",xHdr);
-	if(!xSeparator){
-		$("#box-ilkheaderValue").attr("hidden",false);
-		$("#box-ilkheaderMultivalue").attr("hidden",true);
-		var cval = val;
-		var temp = "";
-		for(var i=0; i< val.length%NB_CHARACTERS; ++i){
-			var temp =  temp + cval.slice(0,NB_CHARACTERS)+"\n";
-			cval= cval.slice(NB_CHARACTERS, cval.length);		
-		}	
-		txt = document.createTextNode(temp);	
-		$("#ilkheaderValue").append(txt);	
-	}else{
-		$("#box-ilkheaderValue").attr("hidden",true);
-		$("#box-ilkheaderMultivalue").attr("hidden",false);
-		var reg=new RegExp("["+xSeparator+"]+", "g");	
-		var tabVal=val.split(reg);		
-		// append item to listbox
-		for (var i=0; i<tabVal.length; i++) {
-			var item = document.createElement("listitem");
-			$(item).attr("label",tabVal[i]);
-			$(item).attr("value",tabVal[i]);
-			$("#ilkheaderMultivalue").append(item);
-		}
+	document.getElementById("ximfheaderName").value = title.substring(0,title.lastIndexOf(":"));
+	if(!xSeparator){		
+		document.getElementById("ximfheaderValue").value = val;
+	}else{		
+		var reg=new RegExp("["+xSeparator+"]+", "g");
+		document.getElementById("ximfheaderValue").value = val.replace(reg,"\n");
 	}
-	
-	//	
-	if(xval != val){		
-		cval = xval;
-		temp = "";
-		for(var i=0; i<cval.length%NB_CHARACTERS; ++i){
-			var temp =  temp + cval.slice(0,NB_CHARACTERS)+"\n";
-			cval= cval.slice(NB_CHARACTERS, cval.length);		
-		}	
-		txt = document.createTextNode(temp);
-		$("#box-ximfheaderValue").attr("hidden",false);
-		$("#ximfheaderValue").append(txt);
-	}
-	
-	/*
-	// lsearch for separators in list
-	var reg=new RegExp("[,;]+", "g");	
-	var tabVal=val.split(reg);
-	var tabXval=xval.split(reg);	
-	
-	// append rows to tree
-	$("#hdrInfoTreechildren").empty();	
-	for (var i=0; i<tabVal.length; i++) {
-    	var item = document.createElement("treeitem");
-		var row = document.createElement("treerow");
-		var cell1 = document.createElement("treecell");
-		var cell2 = document.createElement("treecell");
-		
-		$(cell1).attr("label",tabVal[i]);
-		$(cell2).attr("label",tabXval[i]);
-		$(item).append(row);
-			
-		$(row).append(cell1);
-		$(row).append(cell2);
-	
-		$("#hdrInfoTreechildren").append(item);			
-	}*/
-}); 
+}
 
 function doOK()
 {     

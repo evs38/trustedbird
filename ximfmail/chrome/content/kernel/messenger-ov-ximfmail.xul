@@ -41,11 +41,19 @@
    - ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximf.dtd">
-
+<?xml-stylesheet href="chrome://ximfmail/skin" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximfmail.dtd">
 <overlay id="ximfMessengerOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<script type="application/x-javascript"	src="chrome://ximfmail/content/messenger-ov-ximfmail.js" />
 	
+	<script type="application/javascript"	src="chrome://ximfmail/content/jquery.js" />	
+	<script type="application/javascript"	src="chrome://ximfmail/content/constant-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/controler-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/messageAnalyser-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/messageWindow-ov-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/threadTree-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/messenger-ov-ximfmail.js" />
+
 	<!-- pane of messages received -->
 	<tree id="threadTree">
 		<treecols id="threadCols">	
@@ -54,12 +62,12 @@
 	
 	<!-- messages box -->
 	<box id="messagesBox" >
-		<hbox id="ximfmail-custom-panel" insertafter="threadpane-splitter">
-			<separator flex="1"/>
+		<hbox id="ximfmail-custom-panel" class="ximfmailFocusBar" insertafter="threadpane-splitter" collapsed="true">
 			<label id="title-custom"/>
 			<separator flex="1"/>
 		</hbox>
 	</box>
+	
 	<!-- toolbar button Compose New Message  -->
 	<toolbarbutton id="button-newmsg" type="menu-button" >
 		<menupopup id="menupopup-newmsg"
@@ -81,136 +89,51 @@
 						<triple subject="?elt"
 								predicate="http://www.ximfmail.com/RDF#pathDictionary" 
 								object="?pathDictionary" />
+						<triple subject="?elt"
+								predicate="http://www.ximfmail.com/RDF#instanceLabel"
+								object="?label" />	
 					</conditions>
 					<action>	
 						<menuitem  uri="?elt" 
 							value="?elt"
-							label="?name" 
-							
+							label="?label"											
 							pathSchema="?pathSchema"
 							pathDictionary="?pathDictionary"
 							pathIhm="?pathIhm"						
 							observes="isXimfailActivated"							
-							oncommand="OnCommandComposeMsgXimfmail(event);"
-							/>
-					</action>
-				</rule>
-			</template>
-		</menupopup>
-	</toolbarbutton>
-	
-	<!-- toolbar button Reply Message  -->
-	<toolbarbutton id="button-reply" type="menu-button" >
-		<menupopup id="menupopup-replymsg"
-			datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
-			ref="" >
-			<template>
-				<rule>
-					<conditions>
-						<content uri="?list" />
-						<member container="?list" child="?elt" />					
-						<triple subject="?elt"
-							predicate="http://www.ximfmail.com/RDF#instance" object="?name" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathSchema" 
-								object="?pathSchema" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathIhm" 
-								object="?pathIhm" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathDictionary" 
-								object="?pathDictionary" />
-					</conditions>
-					<action>	
-						<menuitem  uri="?elt" 
-							value="?elt"
-							label="?name" 
-							
-							pathSchema="?pathSchema"
-							pathDictionary="?pathDictionary"
-							pathIhm="?pathIhm"						
-							observes="isXimfailActivated"							
-							oncommand="OnCommandComposeMsgXimfmail(event);"
-							/>
-					</action>
-				</rule>
-			</template>
-		</menupopup>
-	</toolbarbutton>
-	<!-- toolbar button Reply-All Message  -->
-	<toolbarbutton id="button-replyall" type="menu-button">
-		<menupopup id="menupopup-replyallmsg"
-			datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
-			ref="" >
-			<template>
-				<rule>
-					<conditions>
-						<content uri="?list" />
-						<member container="?list" child="?elt" />						
-						<triple subject="?elt"
-							predicate="http://www.ximfmail.com/RDF#instance" object="?name" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathSchema" 
-								object="?pathSchema" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathIhm" 
-								object="?pathIhm" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathDictionary" 
-								object="?pathDictionary" />
-					</conditions>
-					<action>	
-						<menuitem  uri="?elt" 
-							value="?elt"
-							label="?name" 
-							
-							pathSchema="?pathSchema"
-							pathDictionary="?pathDictionary"
-							pathIhm="?pathIhm"						
-							observes="isXimfailActivated"							
-							oncommand="OnCommandComposeMsgXimfmail(event);"
-							/>
-					</action>
-				</rule>
-			</template>
-		</menupopup>
-	</toolbarbutton>
-	<!-- toolbar button Forward Message  -->
-	<toolbarbutton id="button-forward" type="menu-button" >
-		<menupopup id="menupopup-forwardmsg"
-			datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
-			ref="" >
-			<template>
-				<rule>
-					<conditions>
-						<content uri="?list" />
-						<member container="?list" child="?elt" />					
-						<triple subject="?elt"
-							predicate="http://www.ximfmail.com/RDF#instance" object="?name" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathSchema" 
-								object="?pathSchema" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathIhm" 
-								object="?pathIhm" />
-						<triple subject="?elt"
-								predicate="http://www.ximfmail.com/RDF#pathDictionary" 
-								object="?pathDictionary" />
-					</conditions>
-					<action>	
-						<menuitem  uri="?elt" 
-							value="?elt"
-							label="?name" 
-							
-							pathSchema="?pathSchema"
-							pathDictionary="?pathDictionary"
-							pathIhm="?pathIhm"						
-							observes="isXimfailActivated"							
-							oncommand="OnCommandComposeMsgXimfmail(event);"
-							/>
+							oncommand="OnCommandComposeMsgXimfmail(event);"/>
 					</action>
 				</rule>
 			</template>
 		</menupopup>
 	</toolbarbutton>	
+	
+	<!-- Display Ximf headers in single message -->
+	<vbox id="singlemessage">
+  	 	<vbox id="ximfmailMailPanel" insertafter="msgHeaderView" collapsed="true">
+  	 		
+			<hbox id="ximfmailMailPanelFocusBar" class="ximfmailFocusBar" flex="1" align="center">
+				<button class="ximfmailButton" id="ximfmailComposeMessageMaximize" tooltiptext="&ximfmail.compose.focus;" accesskey="+" hidden="true" />
+				<button class="ximfmailButton" id="ximfmailComposeMessageMinimize" tooltiptext="&ximfmail.compose.unfocus;" accesskey="-" />
+				<label id="ximfmailMailPanelTitle" value="&ximfmail.compose.headerTab;"/>
+				<image id="ximfmailComposeMessageLogo"/>				
+				<spacer flex="1" />
+			</hbox>			
+			<hbox id="ximfMailTable" >								
+				<tabbox id="ximfmailMailHeadersTablist" flex="1"/>
+			</hbox>	
+		</vbox>
+	</vbox>
+	<!-- Display Ximf pictures in message -->	
+	<rows id="expandedHeaderRows">
+		<row id="ximfHeadBox" insertbefore="expandedfromRow" collapsed="true">
+			<label  value=""/>
+			<hbox>
+  				<image id="ximfSecurityClassificationLabelImg"/>
+  				<spacer  flex="1"/> 
+  				<image id="ximfCategoryClassificationLabelImg"/>
+  				<spacer  flex="1"/> 
+  			</hbox>  			
+		</row>
+	</rows>
 </overlay>

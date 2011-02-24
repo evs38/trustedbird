@@ -74,11 +74,17 @@ function GetXimfmailPref(idIdentity,key){
 /*
  * set value of ximfmail user preference
  */
-function SetXimfmailPref(idIdentity,key,value){		
-	var prefSvc = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-	var ximfmailPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("mail.identity." + idIdentity + ".");
-	ximfmailPrefBranch.setCharPref(key,value);
-	prefSvc.savePrefFile(null);
+function SetXimfmailPref(idIdentity,key,value){	
+	try{
+		gConsole.logStringMessage("[ximfmail - SetXimfmailPref] key "+key+" : "+value);
+		
+		var prefSvc = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+		var ximfmailPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("mail.identity." + idIdentity + ".");
+		ximfmailPrefBranch.setCharPref(key,value);
+		prefSvc.savePrefFile(null);
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - SetXimfmailPref] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);
+	}
 }
 
 function ResetXimfmailPref(idIdentity,key){		
@@ -96,7 +102,13 @@ function ResetXimfmailPref(idIdentity,key){
  * refValue : value of ref attribute
  */
 function ChangeRefAttrRdfElement(idElement,refValue){
-	$("#"+idElement).attr("ref",refValue);
+	//$("#"+idElement).attr("ref",refValue);
+	
+	var list = document.getElementById(idElement);		
+	list.database.AddDataSource(gXimfCatalog.getDSCatalog());	
+	list.setAttribute("ref",refValue);
+	list.builder.rebuild();
+	
 }
 
 /*

@@ -52,8 +52,14 @@
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:html="http://www.w3.org/1999/xhtml">				
 	
-	<script type="application/x-javascript"	src="chrome://ximfmail/content/messengerCompose-ov-ximfmail.js" />
-	<script type="application/x-javascript" src="chrome://messenger/content/messengercompose/addressingWidgetOverlay.js"/>
+	<script type="application/javascript"	src="chrome://ximfmail/content/jquery.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/messengerCompose-ov-ximfmail.js" />	
+	<script type="application/javascript"	src="chrome://ximfmail/content/constant-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/ximfmail.js" />	
+	<script type="application/javascript"	src="chrome://ximfmail/content/ximfDataSource.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/messengerComposeHeaders-ximfmail.js" />	
+	<script type="application/javascript"	src="chrome://ximfmail/content/ximfSpecial.js" />	
+	<script type="application/javascript" src="chrome://messenger/content/messengercompose/addressingWidgetOverlay.js"/>
 	
 	<broadcasterset>
   		<broadcaster id="isShowingXimfail" hidden="false"/>
@@ -62,18 +68,18 @@
 	
 	<!-- Configuration XIMF Intraced -->	
 	<toolbox id="headers-box">
-		<vbox id="ximfmailComposeMessagePanel" insertbefore="FormatToolbar"  observes="isUsingXimfail">
-			<hbox id="ximfmailComposeMessageFocusBar" flex="1" align="center">
-				<button class="ximfmailButton" id="ximfmailComposeMessageMaximize" tooltiptext="&ximfmail.compose.focus;" accesskey="+" hidden="true" />
-				<button class="ximfmailButton" id="ximfmailComposeMessageMinimize" tooltiptext="&ximfmail.compose.unfocus;" accesskey="-" />
-				<spacer flex="1" />
-				<image id="ximfmailComposeMessageLogo"/>
-				<label id="ximfmailComposeMessageTitle" value="&ximfmail.compose.headerTab;" />									
-				<spacer flex="1" />
-				<!-- <image id="ximfmailComposeMessageState" class="ximfmailUnacceptState"/>  -->				
-			</hbox>					
-			<!-- <hbox flex="1">  -->											
-			<tabbox id="ximfmailComposeMessageHeadersTablist" observes="isShowingXimfail" handleCtrlTab="true"/>									
-		</vbox>					
+		<toolbar insertbefore="FormatToolbar">
+			<vbox id="ximfmailComposeMessagePanel" observes="isUsingXimfail" flex="1">
+				<hbox id="ximfmailComposeMessageFocusBar" class="ximfmailFocusBar" flex="1" align="center">
+					<button class="ximfmailButton" id="ximfmailComposeMessageMaximize" tooltiptext="&ximfmail.compose.focus;" accesskey="+" hidden="true" />
+					<button class="ximfmailButton" id="ximfmailComposeMessageMinimize" tooltiptext="&ximfmail.compose.unfocus;" accesskey="-" />
+					<image id="ximfmailComposeMessageLogo"/>
+					<label id="ximfmailComposeMessageTitle" value="&ximfmail.compose.headerTab;" />									
+					<spacer flex="1" />
+					<!-- <image id="ximfmailComposeMessageState" class="ximfmailUnacceptState"/>  -->				
+				</hbox>								
+				<tabbox id="ximfmailComposeMessageHeadersTablist" observes="isShowingXimfail" handleCtrlTab="true" eventnode="parent"/>									
+			</vbox>
+		</toolbar>						
 	</toolbox>	
 </overlay>	

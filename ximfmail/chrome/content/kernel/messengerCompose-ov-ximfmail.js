@@ -39,61 +39,55 @@
  * EADS Defence and Security - 1 Boulevard Jean Moulin -  
  * ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
  * ***** END LICENSE BLOCK ***** */
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
+
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-var gPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
-
-gJSLoader.loadSubScript("chrome://ximfmail/content/jquery.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/messengerComposeHeaders-ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
-
-
-//
+var gPrefBranch = null;
 var gCurrentInstance = "";
-var gTimer=null;
+
+
+/* Init ximfmail document */ 
+window.addEventListener("compose-window-init", XimfmailComposeInit, true);
+//window.addEventListener("compose-window-reopen", XimfmailReOpen, true); function XimfmailReOpen(){alert("compose-window-reopen")}
 
 /*
- * Init ximfmail document 
+ * (Re)open message composer with XIMF instance
  */
-$(document).ready(function(){
-		
+function XimfmailComposeInit(){
 	// ximfmail not requested
+	if(!gPrefBranch) gPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
 	if(!gPrefBranch.getBoolPref("mailnews.headers.showXimfmail")){ 
 		$("#isUsingXimfail").attr("hidden","true");
-		$("#ximfmailComposeMessageHeadersTablist").empty();
-		return;
+		$("#ximfmailComposeMessageHeadersTablist").empty();	
+		try{
+			//remove ximf events ...
+			HideSendMessageElements(true);
+			$("#addressingWidget").unbind("command",SpecialXimfRule_CheckAddress);			
+			ReloadSecurityAccess();
+		}catch(e){}
+	}else{
+		CreateXimfmailCatalog();	
+		$("#isUsingXimfail").attr("hidden","false");
+		
+		// observer on sending message
+		var ximfmailObserverSvc = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+		ximfmailObserverSvc.addObserver(ximfmailOnSend, "mail:composeOnSend", false);	
+		
+		// I can't catch event on completely initialized compose message, so loop on gCurrentIdentity loaded
+		setTimeout("XimfmailStartup()", 50);
 	}	
-	$("#isUsingXimfail").attr("hidden","false");
-	
-	// ximfmailObserverSvc.addObserver(ximfmailOnReady, "obs_documentCreated", false);
-	// $(document).bind("compose-gMsgCompose-init",TestLoadStartup);
-	
-	// i cant't catch event on completely initialized compose message, so loop on gCurrentIdentity loaded
-	gTimer=setInterval("XimfmailStartup()", 20);
-	
-	// observer on current document
-	$(document).bind("compose-window-reopen",XimfmailReopen);
-
-	// observer on sending message
-	var ximfmailObserverSvc = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-	ximfmailObserverSvc.addObserver(ximfmailOnSend, "mail:composeOnSend", false);	
-	
-	MsgComposeCloseWindow=MsgComposeCloseWindow_XIMF;
-	
-});
-
-
-// Function rewrite MsgComposeCloseWindow function from MsgComposeCommands.js
-// used to rewrite completly message on new message
-function MsgComposeCloseWindow_XIMF(recycleIt){
-  if (gMsgCompose)
-    gMsgCompose.CloseWindow(false);
 }
 
+
+var gMaxTimeoutXimfmail=0;
 function XimfmailStartup(){
-	if(!gCurrentIdentity) return;
-	clearInterval(gTimer);
-	gTimer=null;
+	if(!gCurrentIdentity){ 
+		if(gMaxTimeoutXimfmail<20){
+			setTimeout("XimfmailStartup()", 20);
+			++gMaxTimeoutXimfmail;
+		}	
+		return;
+	}
+	
 	var currentInstance = null;
 	var current_definition = null;
 	//is Template or Draft message
@@ -106,6 +100,8 @@ function XimfmailStartup(){
 		var typeMsg = -1;
 		if(args){
 			typeMsg = args.type;
+		}else{			
+			if(gMsgCompose) typeMsg = gMsgCompose.type;			
 		}
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - XimfmailStartup ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
@@ -114,40 +110,41 @@ function XimfmailStartup(){
 	try{	
 		switch(typeMsg){			
 			case nsIMsgCompType.Draft:
-			case nsIMsgCompType.Template:				
+			case nsIMsgCompType.Template:
+			case nsIMsgCompType.Reply:
+        	case nsIMsgCompType.ReplyAll:
+        	case nsIMsgCompType.ReplyToSender:	
+        	case nsIMsgCompType.ForwardInline:		
+        	case nsIMsgCompType.ForwardAsAttachment: 	
 				//alert("typeMsg = " + args.type + "\nUri of message : " + args.originalMsgURI);
 				gJSLoader.loadSubScript("chrome://ximfmail/content/messageAnalyser-ximfmail.js");
 				var msgAnalyser = new XimfMessageAnalyser();
 				
-				// search for template XIMF				
-				msgAnalyser.setOriginalURI(args.originalMsgURI); 
+				// search for template XIMF	
+				if( args){			
+					msgAnalyser.setOriginalURI(args.originalMsgURI); 
+				}else{
+					if(gMsgCompose) msgAnalyser.setOriginalURI(gMsgCompose.originalMsgURI); 	
+				}
 				msgAnalyser.createXimfHdrArray();			 	
+				
+				// get instance of message	
 				var uriXimfInstance = msgAnalyser.hasXimfHeaders(current_definition);
 				if(uriXimfInstance){				
 					currentInstance = uriXimfInstance;
-				}	
+				}								
 				LoadXimfmailPanel(currentInstance);
-				ComputeWithForm(msgAnalyser);
+				ComputeWithForm(msgAnalyser);				
 				break;
-			default :
-				//alert("unknown type : " + typeMsg)
-				LoadXimfmailPanel(currentInstance);			
+			default :				
+				LoadXimfmailPanel(currentInstance);							
 				break;
 		}
 	}catch(e){
-		gConsole.logStringMessage("[ximfmail - XimfmailStartup ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+		gConsole.logStringMessage("[ximfmail - XimfmailStartup ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 	}	
 	//gConsole.logStringMessage("DBG [ximfmail - messengerCompose - XimfmailStartup ] \n XIMF instance : "+ currentInstance + "\n XIMF definition : " + current_definition);
 }
-
-function XimfmailReopen(){		
-	try{
-		//reset old ihm
-		$("#ximfmailComposeMessageHeadersTablist").empty();
-	}catch(e){}
-	gTimer=setInterval("XimfmailStartup()", 20);
-}
-
 
 /*
  * 
@@ -156,15 +153,17 @@ function LoadXimfmailPanel(currentInstance){
 	try{
 		//reset old ihm
 		$("#ximfmailComposeMessageHeadersTablist").empty();
+		ReloadSecurityAccess(); // reload security user functions
 	}catch(e){}
-
 	gConsole.logStringMessage("DBG [ximfmail - messengerCompose - LoadXimfmailPanel ] \n XIMF instance : "+ currentInstance);
-		
 	if(currentInstance){
 		InsertXimfmailComposer(currentInstance);
 		gCurrentInstance = currentInstance;
-	}	
-	
+		// ximfmail composer is initialized, event-it 		
+		var event = document.createEvent('Events');
+      	event.initEvent('compose-ximfmail-init', false, true);
+      	document.getElementById("msgcomposeWindow").dispatchEvent(event);
+	}		
 }
 
 
@@ -173,32 +172,76 @@ function LoadXimfmailPanel(currentInstance){
  */
 var ximfmailOnSend = {	
 	observe: function(subject, topic, data) {		
-		if(!gCurrentIdentity) return;
-				
-		var msgCompFields = gMsgCompose.compFields;		
-		var charSet = null;
-		charSet = msgCompFields.characterSet;
-		if(!charSet){
-			charSet == msgCompFields.defaultCharacterSet;
-		}
-		// insert extended headers in sending message
-		var headersToSend = ReadMimeHeadersSelection(XIMF_SEPARATOR_HEADER, XIMF_ENDLINE, charSet);
-		if(msgCompFields && headersToSend){
-			//msgCompFields.otherRandomHeaders += headersToSend;
-			msgCompFields.otherRandomHeaders += headersToSend;			
-		}
-		
-		// apply xsmtp rules instances
-		if(gCurrentIdentity.getBoolAttribute("ximfmail_xsmtp_compatibility_on")){				
-			gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n ICI LA COMPATIBILITE XSMTP EST TRAITEE");
-			var xsmtpHeadersToSend = ReadXsmptHeadersTranslation(XIMF_SEPARATOR_HEADER, XIMF_ENDLINE,charSet);
-			if(msgCompFields && xsmtpHeadersToSend){
-				//msgCompFields.otherRandomHeaders += xsmtpHeadersToSend;
-				msgCompFields.otherRandomHeaders += xsmtpHeadersToSend;
+		if(!gCurrentIdentity) return;							
+		try{
+			var msgCompFields = gMsgCompose.compFields;		
+			var charSet = null;
+			charSet = msgCompFields.characterSet;
+			if(!charSet){
+				charSet == msgCompFields.defaultCharacterSet;
 			}
-		}
-		
-		// append Security labels
-		AppendESSSecuityLabel();	
+			
+			var currCompfieldsotherHeaders = msgCompFields.otherRandomHeaders;
+		    var addCompfieldsotherHeaders = "";
+			//alert("currCompfieldsotherHeaders = " + currCompfieldsotherHeaders)
+			// insert extended headers in sending message
+			var headersToSend = ReadMimeHeadersSelection( XIMF_ENDLINE, charSet);
+			if(msgCompFields && headersToSend){			
+				//msgCompFields.otherRandomHeaders += headersToSend;		
+				addCompfieldsotherHeaders += headersToSend;
+			}
+			
+			// apply xsmtp rules instances
+			if(gCurrentIdentity.getBoolAttribute("ximfmail_xsmtp_compatibility_on")){				
+				var xsmtpHeadersToSend = ReadXsmptHeadersTranslation(XIMF_SEPARATOR_HEADER, XIMF_ENDLINE,charSet);
+				if(msgCompFields && xsmtpHeadersToSend){
+					//msgCompFields.otherRandomHeaders += xsmtpHeadersToSend;
+					addCompfieldsotherHeaders += xsmtpHeadersToSend;
+					gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n compatibility xsmtp process");
+				}
+			}
+			
+			// add ximf headers 1 time - copy last XIMF entries
+			if(currCompfieldsotherHeaders.length <= 0 ){
+				msgCompFields.otherRandomHeaders = addCompfieldsotherHeaders;
+			}else{
+				var regCRLF = new RegExp(XIMF_ENDLINE, "g");			
+				var arrayAddCompfieldsotherHeaders = addCompfieldsotherHeaders.split(regCRLF);
+				var arrayCurrCompfieldsotherHeaders = currCompfieldsotherHeaders.split(regCRLF);
+				for(i=0 ; i<arrayAddCompfieldsotherHeaders.length ; ++i){
+					var tmpAdd = arrayAddCompfieldsotherHeaders[i].slice(0,arrayAddCompfieldsotherHeaders[i].indexOf(":",0));
+					if(tmpAdd !=""){
+						for(j=0 ; j<arrayCurrCompfieldsotherHeaders.length ; ++j){
+							var tmpCurr = arrayCurrCompfieldsotherHeaders[j].slice(0,arrayCurrCompfieldsotherHeaders[j].indexOf(":",0));
+							if(tmpCurr != ""){
+								if(tmpCurr == tmpAdd){										
+									arrayCurrCompfieldsotherHeaders[j] = arrayAddCompfieldsotherHeaders[i];
+									arrayAddCompfieldsotherHeaders[i] = "";
+									break;
+								}
+							}
+						}
+					}
+				}
+				
+				//update new selection
+				var arrayAddCompfieldsotherHeaders2 = new Array();
+				for(i=0 ; i<arrayAddCompfieldsotherHeaders.length ; ++i){;
+					if(arrayAddCompfieldsotherHeaders[i]!= ""){
+						arrayAddCompfieldsotherHeaders2.push(arrayAddCompfieldsotherHeaders[i]);
+					}
+				}				
+				// insert header				
+				msgCompFields.otherRandomHeaders = arrayCurrCompfieldsotherHeaders.join(XIMF_ENDLINE);
+				if(arrayAddCompfieldsotherHeaders2.length>0){
+					msgCompFields.otherRandomHeaders += arrayAddCompfieldsotherHeaders2.join(XIMF_ENDLINE);
+				}
+			}
+			
+			// append Security labels
+			AppendESSSecuityLabel();	
+		}catch(e){
+		gConsole.logStringMessage("[ximfmail - XimfmailStartup ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+	}	
   	}
 };

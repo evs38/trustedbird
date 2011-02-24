@@ -40,15 +40,31 @@
  * ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
  * ***** END LICENSE BLOCK ***** */
 
-gJSLoader.loadSubScript("chrome://ximfmail/content/ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/ximfDataSource.js"); 
-
 var gChromeXslMsgCompose = "chrome://theme_ximfmail/content/messengerCompose-ximfmail.xsl";
 var gChromeXslSecureHeaders = "chrome://theme_ximfmail/content/secureHeaders-ximfmail.xsl";
 var gChromeXslSecurityLabel = "chrome://theme_ximfmail/content/securityLabel-ximfmail.xsl";
 var gChomeXulXimfTreeDialog = "chrome://ximfmail/content/dialogTree-ximfmail.xul"; 
 var gChomeXulXimfCalendarDialog = "chrome://ximfmail/content/calendar/dialogCalendar-ximfmail.xul";
 var gChomeXulXimfEditorDialog = "chrome://ximfmail/content/editor/dialogEditor-ximfmail.xul";
+
+//
+function onclosepanel(){
+	try{
+		//alert('onclosepanel ' + evt.currentTarget.id)
+	//var a = document.getElementById("search");
+	var lisitem = $("#search-panel checkbox");
+	var resString = "";	
+	for(i=0;i<lisitem.length;++i){
+		if(lisitem[i].hasAttribute("checked"))
+		resString += $(lisitem[i]).attr("label")+ " | ";
+	}
+	var b = document.getElementById("txtpanel");
+	b.value = resString;
+	}catch(e){
+		alert("e = " + e)
+	}	
+}
+
 
 var gXimfHdrs = null;		
 //			
@@ -59,14 +75,16 @@ function XimfmailInstanceHeaders(){
 	var _xsmtpHdrArray = [];	
 	var _eSSSecurityLabelHdrArray = [];
 	var _ximfAssociatedHdrArray = [];
+	var _ximfSpecialRulesArray = []; //FT 3504
 	
 	//public:
 	if(typeof XimfmailInstanceHeaders.initialized == "undefined"){	
 		//
 		XimfmailInstanceHeaders.prototype.init = function(ximfInstanceResource){
 			_instance = ximfInstanceResource;			
-			_xsmtpHdrArray = CreateRulesArray(_instance,"compatibility");
-			_ximfAssociatedHdrArray = CreateRulesArray(_instance, "association");			
+			_xsmtpHdrArray = CreateRulesArray(_instance,"ximf:compatibility");
+			_ximfAssociatedHdrArray = CreateRulesArray(_instance, "ximf:association");				
+			_ximfSpecialRulesArray = CreateRulesArray(_instance, "ximf:special"); //FT 3504		
 		};	
 		//	
 		XimfmailInstanceHeaders.prototype.getXimfInstanceResource = function(){	
@@ -88,6 +106,10 @@ function XimfmailInstanceHeaders(){
 		XimfmailInstanceHeaders.prototype.getESSSecurityLabelHdrArray = function(){	
 			return _eSSSecurityLabelHdrArray; 
 		};
+		//FT 3504
+		XimfmailInstanceHeaders.prototype.getSpecialRulesArray = function(){	
+			return _ximfSpecialRulesArray; 
+		};
 		//		
 		XimfmailInstanceHeaders.prototype.loadXimfSecurityRules = function(){
 			var isSigned = false;
@@ -95,7 +117,7 @@ function XimfmailInstanceHeaders(){
 			try{
 				// create XMLFile at temp directory with rules datas
 				var secureHdrArray  = [];
-				secureHdrArray = CreateRulesArray(_instance,"secureHeaders");				
+				secureHdrArray = CreateRulesArray(_instance,"ximf:secureHeaders");				
 				if(secureHdrArray.length > 0){
 					var signHeaders = CreateDOMWithXimfInstance(_instance,gChromeXslSecureHeaders);						
 					if(signHeaders){
@@ -116,15 +138,11 @@ function XimfmailInstanceHeaders(){
 						$("#idItemSecureHeaders_1").attr("checked","true");					
 						$("#idItemSecureHeaders_2").attr("checked","true");					
 						$("#idItemSecureHeaders_1").attr("disabled","true");
-						$("#idItemSecureHeaders_2").attr("disabled","true");
-						
+						$("#idItemSecureHeaders_2").attr("disabled","true");										
 						if(!isSigned){
-							signMessage(); // from file msgCompSMIMIEOverlay.js
+							toggleSignMessage();// signMessage(); // from file msgCompSMIMIEOverlay.js
 							isSigned = true
-						}
-													
-						//$("#menu_securitySign1").attr("checked","true");					
-						//$("#menu_securitySign2").attr("checked","true");					
+						}				
 						$("#menu_securitySign1").attr("disabled","true");
 						$("#menu_securitySign2").attr("disabled","true");	
 						
@@ -139,7 +157,7 @@ function XimfmailInstanceHeaders(){
 			// Security Labels			
 			try{
 				// create XMLFile at temp directory with rules datas
-				_eSSSecurityLabelHdrArray = CreateRulesArray(_instance,"securityLabel");
+				_eSSSecurityLabelHdrArray = CreateRulesArray(_instance,"ximf:securityLabel");
 				if(_eSSSecurityLabelHdrArray.length > 0){					
 					$("#menu_securityLabelDialog1").attr("checked","true");					
 					$("#menu_securityLabelDialog2").attr("checked","true");					
@@ -147,8 +165,8 @@ function XimfmailInstanceHeaders(){
 					$("#menu_securityLabelDialog2").attr("disabled","true");
 					
 					if(!isSigned){
-						signMessage(); // from file msgCompSMIMIEOverlay.js
-						isSigned = true
+						toggleSignMessage(); // from file msgCompSMIMIEOverlay.js
+						isSigned = true;
 					}
 					if(gSMFields){
 						gSMFields.securityClassification = -1;
@@ -179,16 +197,19 @@ function XimfDataSource(){
 function InsertXimfmailComposer(currentInstance){
 	try{
 		if(gXimfHdrs){gXimfHdrs = null;}
+	
 		gXimfHdrs = new XimfmailInstanceHeaders();
 		gXimfHdrs.init(currentInstance);
 		gXimfHdrs.loadXimfSecurityRules();
 		
-		// ihm init
+		// ihm init		
 		ResetXimfhdrsDom();
 		InsertXimfhdrsDom(gXimfHdrs.getXimfInstanceResource(), gChromeXslMsgCompose);
 		
-		// controler init
-		LoadXimfhdrsEventObserver();				
+		// controler init		
+		LoadXimfhdrsEventObserver();	
+		ExecuteMuseHdrsDefaultValuesRule();		
+		InitSpecialXimfRules();
 		CheckXimfhdrsSelection();
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - InsertXimfmailComposer ] " + e +"\nline : " + e.lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
@@ -212,34 +233,40 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 			$("#isUsingXimfail").attr("hidden","false");
 							
 			if(gXimfCatalog){
-				$("#ximfmailComposeMessageTitle").attr("value",gXimfCatalog.getNameInstance(ximfInstanceResource));
+				$("#ximfmailComposeMessageTitle").attr("value",gXimfCatalog.getLabelInstance(ximfInstanceResource));
 			}else{
 				$("#ximfmailComposeMessageTitle").attr("value","XIMFMAIL");
 				$("#ximfmailComposeMessageTitle").attr("tooltiptext",ximfInstanceResource);
 			}				
 			
 			try{
-				// Add XSLT result in MessengerCompose window
-				// $("#"+_idDomTabList).empty( );//$("#ximfmailComposeMessageHeaders").empty( );				
+				// Add XSLT result in MessengerCompose window			
 				$("#ximfmailComposeMessageHeadersTablist").append(CreateDOMWithXimfInstance(ximfInstanceResource, urlXslTemplate));
 			}catch(e){
 				// TODO : alert user of xslt problem
 				("#isUsingXimfail").attr("hidden","false");
-			}
+			}	
 			
-			/*
-			var xChild = $("#ximfmailComposeMessageHeadersTablist > *");
-			if(xChild.length <= 0){			
-				// delete ximfmail panels
-				$("#ximfmailComposeMessagePanel").empty();
-				$("#ximfmailComposeMessagePanel").remove();			
-			}else{
-				$("#isUsingXimfail").attr("hidden","false");
+			// custom panels where maxitem=1 and contains composed elements
+			var arrPanel = $("panel[ximfmaxitem='1']");
+			for(i=0;i<arrPanel.length;++i){				
+				// checkboxes are used
+				var chkboxes = $("panel[id='"+arrPanel[i].id+"'] checkbox");				
+				if(chkboxes.length>=1){					
+					var mnuitems = $("panel[id='"+arrPanel[i].id+"'] menuitem");
+					for(j=0;j<mnuitems.length;++j){
+						var chkbx = document.createElement("checkbox");
+						$(chkbx).attr("id",$(mnuitems[j]).attr("id"));
+						$(chkbx).attr("label",$(mnuitems[j]).attr("label"));
+						$(chkbx).attr("ximfvalue",$(mnuitems[j]).attr("ximfvalue"));
+						$(chkbx).attr("ximftextbox",$(mnuitems[j]).attr("ximftextbox"));
+						if(mnuitems[j].hasAttribute("ximftecvalue"))$(chkbx).attr("ximftecvalue",$(mnuitems[j]).attr("ximftecvalue"));
+						$(mnuitems[j].parentNode).append(chkbx);
+						$(mnuitems[j]).remove();		
+					}
+				}
+				
 			}
-			*/
-			
-			// bug color checkbox menuitem
-			$("checkbox[class='ximCheckbox']").attr("style","color:black;");
 			
 			// custom input boxes
 			try{								
@@ -278,7 +305,7 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 */
 function CustomXimfhdrsInputBox(){	
 	var listEditorClass = $("popup > textbox[class='ximfInputbox']");
-	for(var i = 0 ; i<listEditorClass.length ; ++i){
+	for(var i = 0 ; i<listEditorClass.length ; ++i){	
 		try{
 			var idTxtBox = listEditorClass[i].getAttribute("ximfreftextbox");
 			var inputbox = $("textbox[id='"+idTxtBox+"'][class]");
@@ -457,26 +484,74 @@ function HideSendMessageElements(isToSend){
 	
 	// push datas to new dialog window 
 	try{				
-						
-		// get informations of datas to load 					
-		var args = [];
-		args.push(refBox); // args[0] : id de la textbox à enrichir
-		args.push(rdfdataSource);
-		args.push(refRdfdataSource);
-		
-		// push current selection
-		var eltTxtBox = document.getElementById(refBox);				
-		args.push(eltTxtBox.getAttribute(_XIMF_ATT_XVALUE)); 
-		args.push(eltTxtBox.getAttribute(_XIMF_ATT_SEPARATOR));
-		args.push(eltTxtBox.getAttribute(_XIMF_ATT_MAX_ITEMS));	
-		
-		//push headr dialogbox
+		// get informations of datas to load 
+		var eltTxtBox = document.getElementById(refBox);
+		var separator = eltTxtBox.getAttribute(_XIMF_ATT_SEPARATOR)	
+		//args.push(eltTxtBox.getAttribute(_XIMF_ATT_XVALUE)); 
 		var header = document.getElementById(eltTxtBox.getAttribute("refheader"));
-		var title = header.getAttribute("value");							
-		args.push(title);
+						
+		// set informations of datas to load
+		var args = new XimfmailTreedialogArgs();			
+		args.dataSource = rdfdataSource;
+		args.refdataSource = refRdfdataSource;
+		args.title = header.getAttribute("value");
+		args.maxItemsSelected = eltTxtBox.getAttribute(_XIMF_ATT_MAX_ITEMS);
+		
+		// push current selection		
+		if(eltTxtBox.value){
+			try{
+				var currentValue = eltTxtBox.value;
+				if(args.maxItemsSelected > 1 && separator !="" ){
+					var reg = new RegExp("["+separator+"]+", "g");			
+					var arrayItems = currentValue.split(reg);
+					for(var i=0 ; i<arrayItems.length;++i){
+						if(arrayItems[i] != "")	args.currentKeys.push(arrayItems[i]);					 
+					}
+				}else{
+					//				
+					args.currentKeys.push(currentValue);
+					if($(eltTxtBox).attr("tooltiptext")){
+						args.currentLabels.push($(eltTxtBox).attr("tooltiptext"));
+					}
+				}
+			}catch(ex){
+					gConsole.logStringMessage("[ximfmuse - OpenTreeDialogBox_Svc ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
+			}
+		}	
 		
 		// open dialog		
 		window.openDialog(gChomeXulXimfTreeDialog,"showmore", "chrome,resizable,centerscreen,modal",args);
+		
+		if(args.retIsCancel){
+			gConsole.logStringMessage("[ximfmuse - OpenTreeDialogBox_Svc ] selection has been canceled !");		
+			return;			
+		}
+		
+		// get for user selection
+		if(args.retKeys.length > 1){			
+			var value = "";
+			for(var i=0 ; i < args.retKeys.length ; ++i){
+				if(value == ""){
+				  value = args.retKeys[i];
+				}else{
+					value = value + separator + args.retKeys[i];
+				}
+			}
+			// set new list values
+			eltTxtBox.value = value;
+			$(eltTxtBox).attr("ximfvalue",value); 	
+			$(eltTxtBox).attr("tooltiptext","");		
+		}else{
+			if(args.retKeys[0]){
+				eltTxtBox.value = args.retKeys[0];
+				$(eltTxtBox).attr("ximfvalue",args.retKeys[0]); // used for mandatories headers control rules
+				$(eltTxtBox).attr("tooltiptext",args.retLabels[0]);			
+			}else{
+				eltTxtBox.value = "";
+				$(eltTxtBox).attr("ximfvalue",""); 
+				$(eltTxtBox).attr("tooltiptext","");	
+			}
+		}
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - addExternDatas ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);		
 	}		
@@ -491,7 +566,7 @@ function OpenCalendarDialog(button){
 		var args = [];					
 		var idBox = button.getAttribute("refBox");
 		var ebox = document.getElementById(idBox);
-		args.push(idBox); // args[0] : id de la textbox à enrichir
+		args.push(idBox); // args[0] : id de la textbox a enrichir
 		args.push(ebox.getAttribute("value")); // displayed date
 		args.push($("label[id='"+ebox.getAttribute("refheader")+"']").attr("value"));
 
@@ -512,12 +587,14 @@ function OpenEditorDialog(button){
 		args.push(idBox);
 		
 		var ebox = document.getElementById(idBox);
-		args.push(ebox.value);		
-		args.push(ebox.getAttribute("ximfseparator"));		
-		args.push(ebox.getAttribute("ximfmaxitems"));
-		args.push(ebox.getAttribute("ximfminitems"));				
-		args.push($("label[id='"+ebox.getAttribute("refheader")+"']").attr("value"));				
-		window.openDialog(gChomeXulXimfEditorDialog,"showmore", "chrome,resizable,centerscreen,modal",args);
+		if(ebox){
+			args.push(ebox.value);		
+			args.push(ebox.getAttribute("ximfseparator"));		
+			args.push(ebox.getAttribute("ximfmaxitems"));
+			args.push(ebox.getAttribute("ximfminitems"));				
+			args.push($("label[id='"+ebox.getAttribute("refheader")+"']").attr("value"));
+			window.openDialog(gChomeXulXimfEditorDialog,"showmore", "chrome,resizable,centerscreen,modal",args);
+		}
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - openEditorDialogBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);		
 	}
@@ -531,11 +608,13 @@ function OpenInfoDialog(idBox){
 	var args = [];
 	var txtBox = document.getElementById(idBox);
 	var hLabel = document.getElementById(txtBox.getAttribute("refheader"));
-	args.push(hLabel.getAttribute("value")); // args[0] : id de la textbox à enrichir
-	args.push(hLabel.getAttribute("ximfheader")); // args[1] : ref du catalogue à charger
+	args.push(hLabel.getAttribute("value")); // args[0] : id de la textbox a enrichir
+	args.push(hLabel.getAttribute("ximfheader")); // args[1] : ref du catalogue a charger
 	args.push(txtBox.value); // args[2] : titre de la dialogbox
 	args.push(txtBox.getAttribute("ximfvalue")); // args[3] : description de la dialogbox		
-	
+	if(txtBox.hasAttribute("ximfseparator")){
+		args.push(txtBox.getAttribute("ximfseparator"));
+	}
 	// open dialog		
 	window.openDialog("chrome://ximfmail/content/dialogHdrInfo-ximfmail.xul","showmore", "chrome,resizable,centerscreen,modal",args);
 }
@@ -545,46 +624,143 @@ function OpenInfoDialog(idBox){
 /*
  * EVENT MANAGER OF XIMFMAIL ELEMENTS
  */	
-function LoadXimfhdrsEventObserver(){
-	
+function LoadXimfhdrsEventObserver(){	
 	// animation on ximfmail panel
 	$("#ximfmailComposeMessageMaximize").bind("command",OnClickXimfhdrsBar);
 	$("#ximfmailComposeMessageMinimize").bind("command",OnClickXimfhdrsBar);
 	$("#ximfmailComposeMessageFocusBar").dblclick(OnClickXimfhdrsBar);
 	
-	// command events on ximfmail elements			
-	$("menuitem[class='ximfItem']").bind("command",OnSelectXimfhdrsItem);
+	// command events on ximfmail elements				
 	$("button[class='ximfButton']").bind("command",OnSelectButtonPopup);	
-	$("menuitem[class='ximfOkSet']").bind("command",OnSelectCheckPopup); 
-	$("checkbox[class='ximCheckbox']").click(OnSelectCheckPopup);
-	$("textbox[class='ximfInputbox']").keyup(OnKeypressInputBox);	
+	$("menuitem[class='ximfOkSet']").bind("command",OnSelectCheckPopup); 	
 	$("textbox[class='XimfTextboxDisplay']").mouseover(OnHoverTextbox);
 	$("menuitem[class='ximfContext']").bind("command",OnSelectContextBox);	
-	$("button[class*='ximfEraser']").bind("command",OnClickEraser);
+	$("button[class*='ximfEraser']").bind("command",OnClickEraser);	
 	$("button[class*='ximfTreeDialog']").bind("command",OnClickTreeDialogButton);
-	$("button[class*='ximfDatepicker']").bind("command",OnClickDatepicker);
-	$("textbox[class='ximfEditor']").click(OnXimfhdrsEditor);
+	$("button[class*='ximfDatepicker']").bind("command",OnClickDatepicker);	
+	$("textbox[class='ximfEditor']").click(OnXimfhdrsEditor);		
 	$("button[class*='ximfEditor']").bind("command",OnClickEditorButton);
-			
-	//TEST KEYBORAD MANAGER 	
-	/*		
-		$("#ximfmailComposeMessageHeadersTablist tab").click(OnClikTab);
-		var popup = document.getElementById("ximfmailComposeMessageTitle");
-		popup.enableKeyboardNavigator(true);
-		$("textbox[class='XimfTextboxDisplay']").click(onKeyPressItem);
-		$("menuitem[class='ximfItem']").keypress(onKeyPressItem);			
-		$("#ximfmailComposeMessageTitle").keyup(onClickXimfmailBar);
-		$("#ximfmailComposeMessageTitle").bind('command',onClickXimfmailBar);	
-	*/		 
+	
+	// get complete information of ximf hdr
+	$("button[class*='ximfDetail']").bind("command",function(evt){
+		OpenInfoDialog($(evt.currentTarget).attr("refLabel"));	
+	});
+	
+	// open panel under ximfmail textbox 
+	$("button[class*='ximfPopup']").bind("command",function(evt){
+		var panel = document.getElementById($(evt.currentTarget).attr("refpanel"));	
+		$("#"+panel.id+" richlistitem").removeAttr("selected");	
+		$("#"+panel.id+" richlistitem").removeAttr("current");
+		panel.openPopup(evt.currentTarget.parentNode, "after_start", 0, 0, false, false);
+	});
+		
+	// menuitem selected for 1 entry header		
+ 	$("menuitem[class*='ximfItem']").bind("command",function(evt){ 
+ 		ComputeXimfhdrsMenuItem(evt.currentTarget);		
+		var box = document.getElementById($(evt.currentTarget).attr("ximftextbox"));		
+		document.getElementById($(box).attr("refpanel")).hidePopup();
+	});	
+	
+	// keyboard event on panel	
+	$("panel").bind("keyup",function(evt){		
+		if(evt.keyCode == 13){			
+			var panel = evt.currentTarget;			
+			var richlistitem = $("#" + evt.currentTarget.id + " richlistitem");
+			for(i=0;i<richlistitem.length;++i){
+				if(richlistitem[i].selected){
+					var nodes = richlistitem[i].childNodes;
+					for(j=0;j<nodes.length;++j){
+						if(nodes[j].localName=="menuitem"){
+							ComputeXimfhdrsMenuItem(nodes[j]);
+							var box = document.getElementById($(nodes[j]).attr("ximftextbox"));
+							XimfailComposeCanClose();
+							document.getElementById($(box).attr("refpanel")).hidePopup();
+							return;
+						}
+					}					
+				}
+			}
+			document.getElementById(evt.currentTarget.id).hidePopup();
+		}		
+	});
+	
+	// checkbox panel is selected
+	$("panel checkbox").bind("command",function(evt){
+		 ComputePanelOfCheckboxSelection(evt.currentTarget.id)});
+
+	// check richlistitem where ximfchild=true (ximf computestring)
+	$("panel").bind("popuphiding",function(evt){
+		var CompstringItem = $("#" + evt.currentTarget.id + " richlistitem[ximfchild='true']");
+		for(i=0; i<CompstringItem.length; ++i){
+			var chk1 = CompstringItem[i].firstElementChild;
+			if(chk1.localName == "checkbox"){
+				if(chk1.checked){				
+					if(!IsAcceptableXimfCompstring(chk1.id)){
+						 chk1.checked = false;
+						 chk1.removeAttribute("ximfchild");
+						 ComputePanelOfCheckboxSelection(chk1.id);
+					}				
+				}
+			}
+		}
+		
+	});
+	
+	// panel can accept more than 1 entry for header
+	$("panel").bind("popuphidden",function(evt){
+		if(parseInt($(evt.currentTarget).attr("ximfmaxitem")) > 1 ){
+			// if panel has XIMF multiset implementation, don't compute it
+			var multisetPanel = $("#" + evt.currentTarget.id + " button[class='ximfButton']");
+			if(multisetPanel.length <=0){
+				ComputeXimfhdrsMultivaluePanel(evt.currentTarget.id);
+			}
+		}else{
+			var nbChk = $("#" + evt.currentTarget.id + " checkbox");
+			if(nbChk.length > 0 )ComputeXimfhdrsMultivaluePanel(evt.currentTarget.id);		
+		}
+		XimfailComposeCanClose();
+	});	 
+	
+	// panel - first entry must be selected before selecting composed item
+	$("panel").bind("popupshown",function(evt){
+		if(parseInt($(evt.currentTarget).attr("ximfmaxitem")) <= 1 ) return;
+		var richitems = $("#" + evt.currentTarget.id + " richlistbox" ).children("richlistitem");			
+		for(i=0 ; i<richitems.length; ++i){
+			var chk1 = richitems[i].firstElementChild;
+			if(chk1.localName == "checkbox"){
+				if(!chk1.checked){
+					var eltsChild = richitems[i].getElementsByTagName("checkbox");					
+					for(j=0 ; j < eltsChild.length; ++j){
+						$(eltsChild[j]).attr("disabled","true");
+					}
+					$(chk1).attr("disabled","false");//.removeAttr("disabled");				
+				}
+			}
+		}
+	});	
+	
+	// remove css style from mouse item selections
+	$("#ximfmailComposeMessageHeadersTablist richlistitem").mouseout(function(evt){
+		if(evt.currentTarget.hasAttribute("selected"))
+			$(evt.currentTarget).removeAttr("selected");
+	});
+
+	// get document tab control, set focus to ximfmail tabbox
+	$(document).bind("keypress",function(evt){
+		if(evt.keyCode == 9 && evt.target.id=="msgSubject"){ // 9: tabuklation keycode
+			if(document.getElementById("ximfmailComposeMessageMinimize").hasAttribute("hidden")){
+				$("#ximfmailComposeMessageMaximize").focus();
+			}else{
+				$("#ximfmailComposeMessageMinimize").focus();
+			}
+		}
+	}); 
 }; 
- 
+
 function OnClickXimfhdrsBar(evt){
 	ToogleXimfhdrsPanel();				
 };
 
-function OnSelectXimfhdrsItem(evt){
-	ComputeXimfhdrsMenuItem(evt.currentTarget);
-};
 
 function OnSelectButtonPopup(evt){
 	ComputeXimfhdrsButtonPopup(evt.currentTarget);	
@@ -594,9 +770,6 @@ function OnSelectCheckPopup(evt){
 	ComputeXimfhdrsCheckPopup(evt.currentTarget);	
 };
 
-function OnKeypressInputBox(evt){
-	ComputeXimfhdrsInputbox(evt.target);		
-};
 
 function OnClickEraser(evt){			
 	EraseAndComputeXimfhdrsTextbox(document.getElementById(evt.currentTarget.id).getAttribute("refValue"), false);
@@ -605,30 +778,32 @@ function OnClickEraser(evt){
 		
 function OnClickTreeDialogButton(evt){			
 	OpenTreeDialog(evt.currentTarget);
+	XimfailComposeCanClose();
 };	
 
 function OnClickDatepicker(evt){	
 	OpenCalendarDialog(evt.currentTarget);
+	XimfailComposeCanClose();
 };	
 
 function OnClickEditorButton(evt){
 	OpenEditorDialog(evt.currentTarget);
+	CheckXimfhdrsSelection();
+	XimfailComposeCanClose();
 };	
 
-function OnXimfhdrsEditor(evt){
+function OnXimfhdrsEditor(evt){	
 	var id = evt.currentTarget.id;	
 	var bx = document.getElementById(id);
 	bx.focus();			
 };
 
+
 function OnHoverTextbox(evt){
 	try{
 		elt = evt.currentTarget;
-		tooltext = elt.value;
-			
-		if(tooltext != ""){
-			//var reg = new RegExp(";", "g");
-	 		//tooltext = tooltext.replace(reg,String.fromCharCode(13));//"\n"
+		tooltext = elt.value;			
+		if(tooltext != ""){			
 			elt.setAttribute("tooltiptext",tooltext);
 		}else{
 			elt.removeAttribute("tooltiptext");
@@ -645,16 +820,12 @@ function OnSelectContextBox(evt){
 	try{		
 		idBox = evt.currentTarget.getAttribute("idbox"); 
 	 	var eltTextbox = document.getElementById(idBox);
-	 	switch(parseInt(evt.currentTarget.getAttribute("idx"))){		 		
+	 	switch(parseInt(evt.currentTarget.getAttribute("idx"))){ 	 			 		
 	 		case 1:
-	 			// erase last selected value
-	 			_EraseAndComputeXimfhdrsTextbox(eltTextbox.id, false);
-	 			break;		 		
-	 		case 2:
 	 			// erase all selected values
 	 			EraseAndComputeXimfhdrsTextbox(eltTextbox.id, true);
 	 			break;
-	 		case 3:
+	 		case 2:
 	 			// display datas of current XIMF header		 			
 	 			if(eltTextbox.value != ""){
 	 				OpenInfoDialog(idBox);
@@ -667,31 +838,15 @@ function OnSelectContextBox(evt){
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - OnSelectXimfmailContextBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 	}
-}
-
-function onKeyPressItem(evt){
-	//alert("KEYPRESS")
-	try{
-		var elt = evt.currentTarget;
-		elt.getAttribute("popup");			
-		var popup = document.getElementById(elt.getAttribute("popup"));
-		popup.enableKeyboardNavigator(true);
-		var checkarray = $(popup + " checkbox");
-		for(i = 0; i<checkarray.length ; ++i){
-			checkarray[i].enableKeyboardNavigator(true);
-		}
-	}catch(e){}
-	//showPopup( , x, y, popupType, anchor, align )
-			
 }		
-		
 // END EVENT FUNCTIONS
+
+
 
 
 /*
  * COMPUTE XIMFMAIL ELEMENTS AND UPDATE DOM
  */
-
 function CheckXimfhdrsSelection(){		
 	try{		
 		var isRuleOk=true;
@@ -699,14 +854,190 @@ function CheckXimfhdrsSelection(){
 		if(!ExecuteXimfHdrsAssociationRule()){isRuleOk=false; }		
 		if(!ExecuteXimfHdrsMandatoryRule()){isRuleOk=false; }	
 		AppendESSSecuityLabel();					
-		HideSendMessageElements(isRuleOk); 
+		HideSendMessageElements(isRuleOk); 		
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - IsReadyToSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
 	}
 }
 
 /*
- * Update Ximf header selected in menu popup
+ * Update Ximf header selected from multi choice panel
+ */
+function ComputeXimfhdrsMultivaluePanel(idPanel){
+	try{
+		var panel = document.getElementById(idPanel);
+		var ximfSeparator = $(panel).attr("ximfseparator");
+		var ximfTecSeparator = $(panel).attr("ximftecseparator");
+		var selectionObject = new Object;
+		selectionObject.value = "";
+		selectionObject.ximfvalue = "";
+		selectionObject.ximftecvalue = ""; 
+		var listRichBox = panel.getElementsByTagName("richlistbox");
+		var childnodes = listRichBox[0].childNodes;
+		
+		//
+		for(var i = 0 ; i < childnodes.length ; i++){			
+			if(childnodes[i].localName == "richlistitem"){
+				var selectionItem = GetXimfSelectionOfRichlistitem(childnodes[i],ximfSeparator,ximfTecSeparator);
+				if(selectionItem){				
+					if(selectionItem.value != ""){
+						if(selectionObject.value == ""){
+							selectionObject.value = selectionItem.value;
+							selectionObject.ximfvalue = selectionItem.ximfvalue;
+							if(selectionItem.ximftecvalue != "") selectionObject.ximftecvalue =  selectionItem.ximftecvalue;
+						}else{
+							selectionObject.value += ximfSeparator + selectionItem.value;
+							selectionObject.ximfvalue += ximfSeparator + selectionItem.ximfvalue;
+							if(selectionItem.ximftecvalue != "") selectionObject.ximftecvalue += ximfTecSeparator + selectionItem.ximftecvalue;
+						}
+							
+					}
+				}
+			}
+		}
+		
+		// save selection to ximfhdr textbox
+		var hdrTextbox = document.getElementById($(panel).attr("ximfreftextbox"));
+		hdrTextbox.value = selectionObject.value;
+		$(hdrTextbox).attr("ximfvalue",selectionObject.ximfvalue);	
+		$(hdrTextbox).attr("ximfseparator",ximfSeparator);
+		if(selectionObject.ximftecvalue != ""){
+			 $(hdrTextbox).attr("ximftecvalue",selectionObject.ximftecvalue);
+			 $(hdrTextbox).attr("ximftecseparator",ximfTecSeparator);
+		}			
+		
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - ComputeXimfhdrsMultivaluePanel ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);		
+	}	
+}
+
+
+/*
+ * Get XIMF informations of composed element
+ */
+function GetXimfSelectionOfRichlistitem(richItem,cSeparator,cTecSeparator){
+	var selectionObject = new Object;
+	selectionObject.value = "";
+	selectionObject.ximfvalue = "";
+	selectionObject.ximftecvalue = "";
+	selectionObject.separator = "";
+	selectionObject.tecseparator = "";
+	try{
+		var childnodes = richItem.childNodes;
+		
+		// single element to decode
+		if(childnodes.length == 1){
+			return GetXimfValuesOfRichlistItem(childnodes[0]);
+		}		
+		
+		// multi element to decode
+		if(!GetXimfValuesOfRichlistItem(childnodes[0])) return selectionObject;
+		// create array of user informations
+		var arrItems = new Array();		
+		for(var i=0 ; i < childnodes.length ; i++){
+			if(childnodes[i].localName == "vbox"){
+				var childnodes2 = childnodes[i].childNodes;					
+				for(var j=0 ; j < childnodes2.length ; j++){
+					var item = GetXimfValuesOfRichlistItem(childnodes2[j].firstChild);
+					if(item){
+						arrItems.push(item);
+					}		
+				}
+			}
+			var item = GetXimfValuesOfRichlistItem(childnodes[i]);
+			if(item){
+				arrItems.push(item);
+			}				
+		}
+				
+		// format Ximf informations		
+		if(arrItems.length > 1){
+			for(var i = arrItems.length-1 ; i >= 0 ; --i){
+				var cConcatId = arrItems[i].concatid;
+				// get element with id cConcatId
+				// concat linked values and create formated information
+				if(arrItems[i].concatid != arrItems[i].id){
+					for(var j = 0 ; j < arrItems.length ; ++j){
+						if(arrItems[j].id == cConcatId){
+							if(selectionObject.value == ""){						
+							selectionObject.value = arrItems[j].value + arrItems[j].separator + arrItems[i].value;
+							selectionObject.ximfvalue = arrItems[j].ximfvalue + arrItems[j].separator + arrItems[i].ximfvalue;							
+							if(arrItems[j].ximftecvalue != "")
+								selectionObject.ximftecvalue = arrItems[j].ximftecvalue + arrItems[j].tecseparator + arrItems[i].ximftecvalue;
+							}else{
+								selectionObject.value += cSeparator + arrItems[j].value + arrItems[j].separator + arrItems[i].value;
+								selectionObject.ximfvalue += cSeparator + arrItems[j].ximfvalue + arrItems[j].separator + arrItems[i].ximfvalue;							
+								if(arrItems[j].ximftecvalue != "")
+									selectionObject.ximftecvalue += cTecSeparator + arrItems[j].ximftecvalue + arrItems[j].tecseparator + arrItems[i].ximftecvalue;
+							}
+							arrItems.splice(i,1); // erase array element
+							break; 
+						}
+					}
+				}
+			}
+		}else{
+			// case 1 item is used in item selection
+			if(arrItems[0].value != ""){
+				selectionObject.value += arrItems[0].value;
+				selectionObject.ximfvalue += arrItems[0].ximfvalue;							
+				if(arrItems[0].ximftecvalue != "")
+					selectionObject.ximftecvalue += arrItems[0].ximftecvalue;
+			}			
+		}			
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - GetXimfSelectionOfRichlistitem ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
+	}
+	return selectionObject;	
+}
+
+/*
+ * get iformations of element selected by user 
+ */
+function GetXimfValuesOfRichlistItem(richItem){
+	var oItem = new Object;
+	oItem.id = "";
+	oItem.concatid = "";
+	oItem.value = "";
+	oItem.ximfvalue = "";
+	oItem.ximftecvalue = "";
+	oItem.separator = "";
+	oItem.tecseparator = "";
+	
+	try{		
+		switch(richItem.localName){
+			case "checkbox" :
+				if(richItem.hasAttribute("checked")){ 
+					oItem.value = richItem.getAttribute("label");
+					oItem.ximfvalue = richItem.getAttribute("ximfvalue");
+					if(richItem.hasAttribute("ximftecvalue")) oItem.ximftecvalue = richItem.getAttribute("ximftecvalue");
+					if(richItem.hasAttribute("ximfseparator")) oItem.separator = richItem.getAttribute("ximfseparator");
+					if(richItem.hasAttribute("ximftecseparator")) oItem.tecseparator = richItem.getAttribute("ximftecseparator");
+					if(richItem.hasAttribute("id")) oItem.id = richItem.getAttribute("id");
+					if(richItem.hasAttribute("ximfconcatid")) oItem.concatid = richItem.getAttribute("ximfconcatid");						
+				}				
+				break;
+			case "textbox" :
+				if(richItem.value != ""){ 
+					oItem.value = richItem.value;
+					oItem.ximfvalue = richItem.value;						
+					if(richItem.hasAttribute("ximfseparator")) oItem.separator = richItem.getAttribute("ximfseparator");						
+					if(richItem.hasAttribute("id")) oItem.id = richItem.getAttribute("id");
+					if(richItem.hasAttribute("ximfconcatid")) oItem.concatid = richItem.getAttribute("ximfconcatid");
+				}				
+				break;
+		}
+		
+		if(oItem.value == "") oItem = null;
+					
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - GetXimfSelectionOfRichlistitem ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+	}
+	return oItem;	
+}
+
+/*
+ * Update Ximf header selected from single choice panel
  */
 function ComputeXimfhdrsMenuItem(menuitem){
 	try{
@@ -782,10 +1113,11 @@ function ComputeXimfhdrsMenuItem(menuitem){
 		//erase old linkPopup case and new selection
 		if(sOldximfvalue!=""){
 			if(sOldximfvalue != menuitem.getAttribute(_XIMF_ATT_XVALUE)){		
-				var sOldlinkpopup = $("popup[id='"+ eltTextbox.getAttribute("popup")+"'] menuitem[ximfvalue='"+sOldximfvalue+"']").attr(_XIMF_ATT_LINK_POPUP_BOX);
-				EraseAndComputeXimfhdrsTextbox($("popup[id='"+ sOldlinkpopup +"']").attr(_XIMF_ATT_REF_BOX),true);
+				var sOldlinkpopup = $("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] menuitem[ximfvalue='"+sOldximfvalue+"']").attr(_XIMF_ATT_LINK_POPUP_BOX);
+				EraseAndComputeXimfhdrsTextbox($("panel[id='"+ sOldlinkpopup +"']").attr(_XIMF_ATT_REF_BOX));
 				// delete popup link in textbox
-				$("textbox[id='" + $("popup[id='"+ sOldlinkpopup +"']").attr(_XIMF_ATT_REF_BOX) + "']").attr("popup","");
+				$("textbox[id='" + $("panel[id='"+ sOldlinkpopup +"']").attr(_XIMF_ATT_REF_BOX) + "']").removeAttr("refpanel");
+				$("textbox[id='" + $("panel[id='"+ sOldlinkpopup +"']")+ " button").removeAttr("refpanel");
 			}				
 		}					
 					
@@ -793,7 +1125,8 @@ function ComputeXimfhdrsMenuItem(menuitem){
 		if(menuitem.hasAttribute(_XIMF_ATT_LINK_POPUP_BOX)){		
 			var popupset = document.getElementById(menuitem.getAttribute(_XIMF_ATT_LINK_POPUP_BOX));
 			var txtbox = document.getElementById(popupset.getAttribute(_XIMF_ATT_REF_BOX));
-			txtbox.setAttribute("popup",menuitem.getAttribute(_XIMF_ATT_LINK_POPUP_BOX));		
+			txtbox.setAttribute("refpanel",menuitem.getAttribute(_XIMF_ATT_LINK_POPUP_BOX));
+			$("textbox[id='" + txtbox.getAttribute("id") + "'] button").attr("refpanel",menuitem.getAttribute(_XIMF_ATT_LINK_POPUP_BOX));		
 		}	
 					
 		// valid document state
@@ -1012,17 +1345,18 @@ function ComputeXimfhdrsCheckPopup(xulElement){
 								if(concatvalue == ""){			
 									concatvalue =  cElt.getAttribute("label") + sConcatSeparator;
 									ximfconcatvalue =  cElt.getAttribute(_XIMF_ATT_XVALUE) + sConcatSeparator ;
-									ximfconcattechnicalvalue =  cElt.getAttribute(_XIMF_ATT_TEC_VALUE) + sConcatTecSeparator;
+									ximfconcattechnicalvalue =  cElt.getAttribute(_XIMF_ATT_TEC_VALUE);
 								}else{
 									concatvalue = concatvalue + cElt.getAttribute("label") + sConcatSeparator;
 									ximfconcatvalue = ximfconcatvalue + cElt.getAttribute(_XIMF_ATT_XVALUE) + sConcatSeparator;
-									ximfconcattechnicalvalue = ximfconcattechnicalvalue + cElt.getAttribute(_XIMF_ATT_TEC_VALUE) + sConcatTecSeparator;
+									ximfconcattechnicalvalue = ximfconcattechnicalvalue + sConcatTecSeparator + cElt.getAttribute(_XIMF_ATT_TEC_VALUE) ;
 								}
 							}
 						}
 					}
 				}
-							
+						
+				// save edit entry			
 				var sInValues = arrayTextbox[idx].value;
 				var reg=new RegExp("[\n]+", "g");
 				var arrayValues = sInValues.split(reg);
@@ -1032,7 +1366,7 @@ function ComputeXimfhdrsCheckPopup(xulElement){
 					if(arrayValues[i] != ""){
 						if(valuelist == ""){					
 							valuelist = concatvalue + arrayValues[i];
-							valueXimflist = ximfconcatvalue + arrayValues[i];
+							valueXimflist = ximfconcatvalue + arrayValues[i];							
 						}else{
 							valuelist = valuelist + sContentSeparator + concatvalue +  arrayValues[i];
 							valueXimflist = valueXimflist + sContentSeparator + ximfconcatvalue +  arrayValues[i];
@@ -1040,14 +1374,22 @@ function ComputeXimfhdrsCheckPopup(xulElement){
 					}					
 				}		
 				
-				//			
+				//	add new edit entry		
 				if(valuelist!=""){
 					if(sValues != ""){
 						sValues = sValues + sContentSeparator + valuelist;		
-						sXimfValues = sXimfValues + sContentSeparator + valueXimflist ;
+						sXimfValues = sXimfValues + sContentSeparator + valueXimflist ;						
 					}else{
 						sValues = valuelist;		
 						sXimfValues = valueXimflist;
+					}
+					// technical values
+					if(ximfconcattechnicalvalue!=""){
+						if(sXimfTechnicalValues!=""){
+							sXimfTechnicalValues =  sXimfTechnicalValues + sContenTecSeparator + ximfconcattechnicalvalue ;
+						}else{
+							sXimfTechnicalValues = 	ximfconcattechnicalvalue;
+						}
 					}
 				}
 			} 				 
@@ -1064,51 +1406,152 @@ function ComputeXimfhdrsCheckPopup(xulElement){
  			}
 };
 
+
 /*
- * 
+ * Check elements of panel and update accessibility of elements
  */
-function ComputeXimfhdrsInputbox(inputPopup){
-	//Add selection and associated values for header from input textbox 
+function ComputePanelOfCheckboxSelection(idCheckbox){
 	try{
+		// get informations of panel			
+		var pnl = document.getElementById(idCheckbox);
+		while(pnl.localName != "panel"){
+			pnl = pnl.parentNode;
+		} 
 		
-		var parentElt = inputPopup.parentNode;
-		if(parentElt.nodeName=="popup"){				
-			ComputeXimfhdrsCheckPopup(inputPopup);
-			return;
-		}
-		
-		// search for input boxes in set or multiset containers 
-		var nextElt = parentElt;
-		while(nextElt){
-			if(nextElt.localName == "popup"){
-				// filter list 
-				var multisetCheckbox = $("popup[id='"+nextElt.id+"'] checkbox");
-				var multisetButton = $("popup[id='"+nextElt.id+"'] button");
-				
-				// case multiset								
-				if(multisetCheckbox.length > 0 || multisetButton.length > 0){							
-					ComputeXimfhdrsCheckPopup(inputPopup);
-					return;	
+		// check for selected item number
+		var nbItems = $(pnl).attr("ximfmaxitem");			
+		var richitems = $("#" + pnl.id + " richlistbox" ).children("richlistitem");			
+		var nbchkedboxes = 0;			
+		for(i=0 ; i<richitems.length; ++i){
+			var chk1 = richitems[i].firstElementChild;						
+			if(chk1.localName == "checkbox"){					
+				if(chk1.checked){
+					var eltsChild = richitems[i].getElementsByTagName("checkbox");
+					var cptChk = 0;
+					for(j=0 ; j < eltsChild.length; ++j){
+						if(eltsChild[j].hasAttribute("checked")) cptChk++;
+					}
+					nbchkedboxes = nbchkedboxes + cptChk;
+					if(cptChk > 1)	nbchkedboxes = nbchkedboxes - 1;
+					
+					// Compstring flag, if true, child value must be filled
+					var ximfChild = false; 
+					if(richitems[i].hasAttribute("ximfchild"))
+						if(richitems[i].getAttribute("ximfchild")=="true")	
+							$(chk1).attr("ximfchild","true");	
+				}else{
+					$(chk1).removeAttr("ximfchild");
 				}
-			
-				// default : case set						
-				var currentvalue = inputPopup.value;
-				EraseAndComputeXimfhdrsTextbox(nextElt.getAttribute("ximfreftextbox"), false)
-				inputPopup.value = currentvalue;				 
-				ComputeXimfhdrsCheckPopup(inputPopup);
-				return;					
+			}
+		}
+	
+		var chkboxes = $("#" + pnl.id + " checkbox" );
+		// enable/disable items that can be selected
+		if(nbchkedboxes < nbItems){
+			// other items can be selected				
+			$(chkboxes).attr("disabled","false");//.removeAttr("disabled");	
+			for(i=0 ; i<richitems.length; ++i){
+				var chk1 = richitems[i].firstElementChild;
+				if(chk1.localName == "checkbox"){
+					if(!chk1.checked){
+						
+						var eltsChild = richitems[i].getElementsByTagName("checkbox");					
+						for(j=0 ; j < eltsChild.length; ++j){
+							$(eltsChild[j]).removeAttr("checked");
+							$(eltsChild[j]).attr("disabled","true");								
+						}
+						$(chk1).attr("disabled","false");//.removeAttr("disabled");							
+					}
+				}
+			}
+		}else{
+			// max selection is selected, disable others items 
+			for(i=0 ; i<richitems.length; ++i){
+				var chk1 = richitems[i].firstElementChild;
+				if(chk1.localName == "checkbox"){
+					var eltsChild = richitems[i].getElementsByTagName("checkbox");					
+					if(!chk1.checked){	
+						$(chk1).removeAttr("ximfchild");						
+						for(j=0 ; j < eltsChild.length; ++j){		
+							$(eltsChild[j]).removeAttr("checked");						
+							$(eltsChild[j]).attr("disabled","true");													
+						}
+					}else{
+						// disable composed items
+						if(eltsChild.length > 1){
+							var intCpt = 0;								
+							for(j=0 ; j < eltsChild.length; ++j){									
+								if(eltsChild[j].hasAttribute("checked")) intCpt++;
+							}
+							switch(intCpt){
+								case 1:
+									for(j=0 ; j < eltsChild.length; ++j){
+										$(eltsChild[j]).attr("disabled","false");//.removeAttr("disabled");
+									}
+									chk1.checked = true;
+									break;
+								case 2:
+									for(j=0 ; j < eltsChild.length; ++j){
+										if(!eltsChild[j].hasAttribute("checked"))									
+											$(eltsChild[j]).attr("disabled","true");
+									}
+									break;
+							}								
+						}
+					}
+				}					
 			}				
-			nextElt = nextElt.parentNode;
-		}				
-	}catch(err){}
-			
+		}
+		XimfailComposeCanClose();	
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - ComputePanelOfCheckboxSelection ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
+	}		
+}
+
+
+/*
+ * Check item group - more than 1 element must be selected
+ */
+function IsAcceptableXimfCompstring(idCompstring){
+	try{	
+		var isAcceptableCompstring = false;
+		// 
+		var siblingElement = document.getElementById(idCompstring).nextElementSibling;
+		if(siblingElement){
+			if(siblingElement.localName == "textbox"){						
+				if(siblingElement.value !="") isAcceptableCompstring = true;				
+			}else{
+				// search for textboxes
+				var childTxtboxList = siblingElement.getElementsByTagName("textbox");
+				for(i=0 ; i<childTxtboxList.length ; ++i){
+					if(childTxtboxList[i].value !=""){
+						isAcceptableCompstring = true;
+						break;
+					}
+				}
+				
+				if(!isAcceptableCompstring){
+				// search for checkboxes
+				var childCheckBoxList = siblingElement.getElementsByTagName("checkbox");
+					for(i=0 ; i<childCheckBoxList.length ; ++i){
+						if(childCheckBoxList[i].checked){
+							isAcceptableCompstring = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - IsAcceptableXimfCompstring ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
+	} 
+	return isAcceptableCompstring;
 }
 
 /*
- * 
+ * Delete all values of ximfmail element
  */
- function EraseAndComputeXimfhdrsTextbox(idTextBox, completeErase){
-	//Delete all or last value of ximfmail element
+ function EraseAndComputeXimfhdrsTextbox(idTextBox){	
 	try{
 		var eltTextbox = document.getElementById(idTextBox);
 				
@@ -1118,94 +1561,32 @@ function ComputeXimfhdrsInputbox(inputPopup){
 			eltTextbox.gPopup.value = null;
 			return;
 		}
-	
-		// ximf textbox case 			
-		var sValue = eltTextbox.value;
-		var sXimfvalue = eltTextbox.getAttribute(_XIMF_ATT_XVALUE);
-		var sXimfTecvalue = null;
+		
+		eltTextbox.value = "";
+		eltTextbox.setAttribute(_XIMF_ATT_XVALUE,"");			
 		if(eltTextbox.hasAttribute(_XIMF_ATT_TEC_VALUE)){
-			sXimfTecvalue = eltTextbox.getAttribute(_XIMF_ATT_TEC_VALUE);
+			eltTextbox.setAttribute(_XIMF_ATT_TEC_VALUE,"");
 		}
-			
-		// get separator item
-		var eltPopup = $("popup[id='"+ eltTextbox.getAttribute("popup")+"']");
-		var separator = _XIMF_DEFAULT_SEPARATOR;
-		
-		if($("popup[id='"+ eltTextbox.getAttribute("popup")+"']").attr(_XIMF_ATT_SEPARATOR))
-			separator = $("popup[id='"+ eltTextbox.getAttribute("popup")+"']").attr(_XIMF_ATT_SEPARATOR);
-		
-		var xseparator = _XIMF_DEFAULT_SEPARATOR;
-		if($("popup[id='"+ eltTextbox.getAttribute("popup")+"']").attr(_XIMF_ATT_TEC_SEPARATOR))
-			xseparator = $("popup[id='"+ eltTextbox.getAttribute("popup")+"']").attr(_XIMF_ATT_TEC_SEPARATOR);
-		
-		var arrXimfBox = $("popup[id='"+ eltTextbox.getAttribute("popup")+"'] textbox[class='ximfInputbox']");
-		
-		if(completeErase){
-		
-			// delete all values ximf boxes values 
-			eltTextbox.value = "";
-			eltTextbox.setAttribute(_XIMF_ATT_XVALUE,"");			
-			if(eltTextbox.hasAttribute(_XIMF_ATT_TEC_VALUE)){
-				eltTextbox.setAttribute(_XIMF_ATT_TEC_VALUE,"");
-			}
 				
-			// uncheck all ximCheckbox checkboxes
-			$("popup[id='"+ eltTextbox.getAttribute("popup")+"'] checkbox[class='ximCheckbox']").attr("checked","false");				
-			
-			// delete all  ximf inbox values
-			for(var i=0;i<arrXimfBox.length;++i){
-				arrXimfBox[i].value="";
-				arrXimfBox[i].setAttribute(_XIMF_ATT_XVALUE,"");
+		// raz panel selections
+		$("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] checkbox").removeAttr("checked");
+		$("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] checkbox").removeAttr("disabled");
+		var listTxtbox = $("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] textbox");
+		for(i=0;i<listTxtbox.length;++i)listTxtbox[i].value="";
 				
-				
+		// delete repanel of linked values		
+		menu_link = $("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] menuitem[linkpopupbox]");
+		if(menu_link.length > 0){
+			for(i=0 ; i<menu_link.length ; ++i)	{	
+				try{
+					var popupset = document.getElementById($(menu_link[i]).attr("linkpopupbox"));
+					var txtbox = document.getElementById(popupset.getAttribute(_XIMF_ATT_REF_BOX));
+					EraseAndComputeXimfhdrsTextbox(popupset.getAttribute(_XIMF_ATT_REF_BOX));
+					txtbox.setAttribute("refpanel","");
+					$("textbox[id='"+popupset.getAttribute(_XIMF_ATT_REF_BOX)+"'] button").attr("refpanel","");
+				}catch(e){}
 			}
-			//$("popup[id='"+ eltTextbox.getAttribute("popup")+"'] textbox[class='ximfInputbox']").attr(_XIMF_ATT_XVALUE,"");	 			
-		}else{
-			var lastxvalue =  sXimfvalue.substring(sXimfvalue.lastIndexOf(separator)+1, sXimfvalue.length);
-			var lastvalue =  sValue.substring(sValue.lastIndexOf(separator)+1, sValue.length);
-			/*var lastxtecvalue = null;
-			if(sXimfTecvalue != ""){
-				lastxtecvalue = sXimfTecvalue.substring(sXimfTecvalue.lastIndexOf(xseparator)+1, sXimfTecvalue.length);
-			}*/
-			
-			// delete checkbox value		
-			$("popup[id='"+ eltTextbox.getAttribute("popup")+"'] checkbox[ximfvalue='"+ lastxvalue+ "']").attr("checked","false");
-		
-			// uncheck last value
-			eltTextbox.value=sValue.substring(0,sValue.lastIndexOf(separator));
-			eltTextbox.setAttribute(_XIMF_ATT_XVALUE, sXimfvalue.substring(0,sXimfvalue.lastIndexOf(separator)));
-			if(eltTextbox.hasAttribute(_XIMF_ATT_TEC_VALUE)){
-				eltTextbox.setAttribute(_XIMF_ATT_TEC_VALUE, sXimfTecvalue.substring(0,sXimfTecvalue.lastIndexOf(xseparator)));
-			
-			}
-			
-			// delete last ximf inbox value
-			for(var i=0;i<arrXimfBox.length;++i){
-				var sListBox = arrXimfBox[i].value;				
-				var reg1=new RegExp("[\n]","g");
-				var tabListBox = sListBox.split(reg1);
-				var key="";
-				for(var j=tabListBox.length-1;j>=0;--j)
-					if(tabListBox[j]!=""){
-						key = tabListBox[j];
-						break;
-					}			
-				var reg=new RegExp("["+ key +"]","g");
-				if (lastvalue.match(reg)) {					
-					arrXimfBox[i].value=sListBox.substring(0,sListBox.lastIndexOf(key));
-					arrXimfBox[i].setAttribute(_XIMF_ATT_XVALUE, arrXimfBox[i].getAttribute(_XIMF_ATT_XVALUE).substring(0,sXimfvalue.lastIndexOf(xseparator)));
-				}				
-			}
-		}
-		
-		// delete popups of linked values
-		linkpopup = $("popup[id='"+ eltTextbox.getAttribute("popup")+"'] menuitem[ximfvalue='"+sXimfvalue.substring(sXimfvalue.lastIndexOf(xseparator)+1,sXimfvalue.length)+"']").attr(_XIMF_ATT_LINK_POPUP_BOX);
-		if(linkpopup){		
-			var popupset = document.getElementById(linkpopup);
-			var txtbox = document.getElementById(popupset.getAttribute(_XIMF_ATT_REF_BOX));
-			EraseAndComputeXimfhdrsTextbox(popupset.getAttribute(_XIMF_ATT_REF_BOX),true);
-			txtbox.setAttribute("popup","");		
-		}
+		}		
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - eraseXimfmailTextbox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 	}
@@ -1249,7 +1630,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 					$(display_box).attr("tooltiptext",ximfValue);
 
 					// menuitem value (ilk, linkpopup...)
-					var menu_item = $("popup[id='"+$(display_box).attr("popup")+"'] menuitem");
+					var menu_item = $("panel[id='"+$(display_box).attr("refpanel")+"'] menuitem");
 					if(menu_item.length > 0){					
 						for(var idx_menu_item = 0 ; idx_menu_item < menu_item.length ; ++idx_menu_item){
 							try{
@@ -1261,16 +1642,15 @@ function ComputeWithForm(ximfMessageAnalyser){
 									//linkpopup manager									
 									var linkpopup = menu_item[idx_menu_item].getAttribute("linkpopupbox");
 									if(linkpopup){											
-										var targetpopup = $("popup[id='"+linkpopup+"']");
-										$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']").attr("popup",linkpopup);
+										var targetpopup = $("panel[id='"+linkpopup+"']");
+										$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']").attr("refpanel",linkpopup);
+										$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"'] button[class*='ximfPopup']").attr("refpanel",linkpopup);
 									}
 									
 									//insert values in textbox																					
 									$(display_box).attr("ximfvalue",current_ximfvalue);
 									$(display_box).attr("tooltiptext",menu_item[idx_menu_item].getAttribute("label"));
 									display_box.inputField.value = menu_item[idx_menu_item].getAttribute("label");
-									//display_box[0].setAttribute("value",menu_item[idx_menu_item].getAttribute("label"));
-									
 									//technical value is associated
 									try{									
 										var xtcval = menu_item[idx_menu_item].getAttribute("ximftecvalue");
@@ -1287,14 +1667,14 @@ function ComputeWithForm(ximfMessageAnalyser){
 				
 					
 					// checkbox value (ilk, linkpopup...)					
-					var check_item = $("popup[id='"+$(display_box).attr("popup")+"'] checkbox");
+					var check_item = $("panel[id='"+$(display_box).attr("refpanel")+"'] checkbox");
 					if(check_item.length > 0){						
 						var newximfvalue = "";
 						var newtooltiptex = "";
 						var newlabel = "";
 						var newximftecvalue = "";
-						var xSeparator = $("popup[id='"+$(display_box).attr("popup")+"']").attr("ximfseparator");
-						var xTecSeparator = $("popup[id='"+$(display_box).attr("popup")+"']").attr("ximftecseparator");	
+						var xSeparator = $("panel[id='"+$(display_box).attr("refpanel")+"']").attr("ximfseparator");
+						var xTecSeparator = $("panel[id='"+$(display_box).attr("refpanel")+"']").attr("ximftecseparator");	
 						var arrayValue = []
 						
 						if(xSeparator){						
@@ -1317,8 +1697,8 @@ function ComputeWithForm(ximfMessageAnalyser){
 										//linkpopup manager									
 										var linkpopup = check_item[idx_check_item].getAttribute("linkpopupbox");
 										if(linkpopup){											
-											var targetpopup = $("popup[id='"+linkpopup+"']");
-											$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']").attr("popup",linkpopup);
+											var targetpopup = $("panel[id='"+linkpopup+"']");
+											$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']").attr("refpanel",linkpopup);
 										}
 										
 										// save values
@@ -1376,11 +1756,12 @@ function ComputeWithForm(ximfMessageAnalyser){
 						if(newtooltiptex!="") $(display_box).attr("tooltiptext",newtooltiptex);
 						if(newlabel!="") display_box.inputField.value = newlabel;	
 						if(newximftecvalue!="") $(display_box).attr("ximftecvalue",newximftecvalue);
-						
+						if(xTecSeparator!="") $(display_box).attr("ximftecseparator",xTecSeparator);
+						if(xSeparator!="") $(display_box).attr("ximfseparator",xSeparator);
 					}
 					
 					// button value (ilk, linkpopup...)					
-					var button_item = $("popup[id='"+$(display_box).attr("popup")+"'] button");		
+					var button_item = $("panel[id='"+$(display_box).attr("refpanel")+"'] button");		
 					if(button_item.length > 0){			
 						for(var idx_button_item = 0 ; idx_button_item < button_item.length ; ++idx_button_item){
 							try{
@@ -1393,15 +1774,14 @@ function ComputeWithForm(ximfMessageAnalyser){
 										//linkpopup manager									
 										var linkpopup = button_item[idx_button_item].getAttribute("linkpopupbox");
 										if(linkpopup){											
-											var targetpopup = $("popup[id='"+linkpopup+"']");
-											$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']").attr("popup",linkpopup);
+											var targetpopup = $("panel[id='"+linkpopup+"']");
+											$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']").attr("refpanel",linkpopup);
 										}
 										
 										//insert values in textbox																					
 										$(display_box).attr("ximfvalue",current_ximfvalue);
 										$(display_box).attr("tooltiptext",button_item[idx_button_item].getAttribute("label"));
 										display_box.inputField.value = button_item[idx_button_item].getAttribute("label");
-										//display_box[0].setAttribute("value",menu_item[idx_menu_item].getAttribute("label"));
 										
 										//technical value is associated
 										try{									
@@ -1433,7 +1813,6 @@ function ComputeWithForm(ximfMessageAnalyser){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
 						var ximfValue = ximfMessageAnalyser.getHeaderValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
 						if(ximfValue){								
-							//$("textbox[id='"+oriTxtboxId+"']").attr("value",ximfValue);
 							xheader_dom[idx_xheader_dom].setAttribute("value",ximfValue);
 						}								
 					}	
@@ -1446,7 +1825,6 @@ function ComputeWithForm(ximfMessageAnalyser){
 			xheader_dom = $("ximfaddress");  	
 			for(var idx_xheader_dom=0; idx_xheader_dom<xheader_dom.length; ++idx_xheader_dom){
 				try{
-					//var oriTxtbox = $("textbox[id='"+xheader_dom[idx_xheader_dom].getAttribute("ximfreftextbox")+"']").attr("refheader");
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute(_XIMF_ATT_REF_HEADER);								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
@@ -1465,7 +1843,6 @@ function ComputeWithForm(ximfMessageAnalyser){
 			xheader_dom = $("textbox[class='ximfDatetime']");  	
 			for(var idx_xheader_dom=0; idx_xheader_dom<xheader_dom.length; ++idx_xheader_dom){
 				try{
-					//var oriTxtbox = $("textbox[id='"+xheader_dom[idx_xheader_dom].getAttribute("ximfreftextbox")+"']").attr("refheader");
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute(_XIMF_ATT_REF_HEADER);								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
@@ -1524,14 +1901,16 @@ function ExecuteXimfHdrsMandatoryRule(){
 				cTab[0].setAttribute("ismandatory","true");						
 				isRuleOk = false;				
 			}else{
-				mandatoriesHdrs[i].setAttribute("style","color:black;");	
+				mandatoriesHdrs[i].setAttribute("style","color:inherit;");	
 			}
 		}
 	}
 	return isRuleOk;
 }
 	
-
+/*
+ * XIMF RULES AND DOM
+ */
 function ExecuteXimfHdrsAssociationRule(){
 	var isRuleOk=true;
 	var isAlertDisplayed=false;
@@ -1548,7 +1927,7 @@ function ExecuteXimfHdrsAssociationRule(){
 	}catch(err){sAlertLabel = "Datas will be deleted!"}	
 	
 	var reg=new RegExp("[&]+", "g");
-	for(var i=0; i<associateArray.length; ++i){
+	for(var i=0; i<associateArray.length; ++i){		
 		var headerRef = $("label[ximfheader='"+associateArray[i]._headerRef+"']").attr("id");
 		var valueRef = $("textbox[refheader='"+headerRef+"']").attr("ximfvalue");
 		
@@ -1559,10 +1938,10 @@ function ExecuteXimfHdrsAssociationRule(){
 		var tabAssociateValueName =associateArray[i]._valueName.split(reg);
 		
 		var idTextbox = $("textbox[refheader='"+headerName+"']").attr("id");
-		var tabItems =  $("popup[ximfreftextbox='"+idTextbox+"'] menuitem");// list of menuitems
+		var tabItems =  $("panel[ximfreftextbox='"+idTextbox+"'] menuitem");// list of menuitems
 								
 		if(valueRef !=""){								
-			for(var j=0; j<tabAssociateValueRef.length; ++j){					
+			for(var j=0; j<tabAssociateValueRef.length; ++j){	
 				if(valueRef == tabAssociateValueRef[j]){						
 					if(tabAssociateValueName[j].lastIndexOf(valueName) == -1 ){
 						
@@ -1572,34 +1951,98 @@ function ExecuteXimfHdrsAssociationRule(){
 							isAlertDisplayed = true;	
 						}							
 						
-						EraseAndComputeXimfhdrsTextbox($("textbox[refheader='"+headerName+"']").attr("id"), true);							
+						EraseAndComputeXimfhdrsTextbox($("textbox[refheader='"+headerName+"']").attr("id"));							
 					}
 					for(var idx_tabItems=0; idx_tabItems<tabItems.length; ++idx_tabItems){
 						if(tabAssociateValueName[j].lastIndexOf(tabItems[idx_tabItems].getAttribute("ximfvalue")) == -1){
 							tabItems[idx_tabItems].setAttribute("disabled","true");
+							tabItems[idx_tabItems].parentNode.setAttribute("ximfenable","false"); // css style
 						}else{
 							tabItems[idx_tabItems].removeAttribute("disabled");	
+							tabItems[idx_tabItems].parentNode.setAttribute("ximfenable","true"); // css style
 						}							
 					}
-						
 				}
 			}
 		}else{
 			for(var idx_tabItems=0; idx_tabItems<tabItems.length; ++idx_tabItems){
 				tabItems[idx_tabItems].setAttribute("disabled","true");
+				tabItems[idx_tabItems].parentNode.setAttribute("ximfenable","false"); // css style
+					
 				if(valueName != "" && !isAlertDisplayed){
 					// ask for delete datas
 					alert(sAlertLabel);	
 					isAlertDisplayed = true;
 				}
-				EraseAndComputeXimfhdrsTextbox($("textbox[refheader='"+headerName+"']").attr("id"), true);
+				EraseAndComputeXimfhdrsTextbox($("textbox[refheader='"+headerName+"']").attr("id"));
 				
 			}							
 		}
 	}
 	return isRuleOk;	
 }
+
+/*
+ * XIMF RULES AND DOM : manage default values
+ */
+function ExecuteMuseHdrsDefaultValuesRule(){
 	
+	try{		
+		// get default value in ximfHdr
+		var textboxXimfHdrs = $("textbox[class='XimfTextboxDisplay']");		
+		for(var i=0; i<textboxXimfHdrs.length; ++i){
+			try{
+				var refDefaultItemMuseHdr = $("panel[id='" + $(textboxXimfHdrs[i]).attr("refpanel") + "']").attr("ximfdefault");			
+				if(refDefaultItemMuseHdr && $(textboxXimfHdrs[i]).attr("ximfvalue") == "" ){
+					var item = $("#"+refDefaultItemMuseHdr);
+					if(item.length > 0){
+						$(textboxXimfHdrs[i]).attr("ximfvalue",$(item[0]).attr("ximfvalue"));
+						textboxXimfHdrs[i].value = $(item[0]).attr("label");					
+						var techvalue=$(item[0]).attr("ximftecvalue");
+						if(techvalue){							
+							$(textboxXimfHdrs[i]).attr("ximftecvalue",techvalue);
+						}
+					}else{
+						$(textboxXimfHdrs[i]).attr("ximfvalue",refDefaultItemMuseHdr);
+						textboxXimfHdrs[i].value = refDefaultItemMuseHdr;
+					}
+				}
+			}catch(err){}
+		}			
+	}catch(err){
+		gConsole.logStringMessage("[ximfmail - ExecuteMuseHdrsDefaultValuesRule ] \n " + err + "\nfile : " + Error().fileName+"\nline : "+err.lineNumber);
+	}	
+	
+	
+}
+
+/*
+ * Init non generic rules
+ * FT 3504
+ */
+function InitSpecialXimfRules(){	
+	try{
+		// load special rules
+		var specialRulesArray = gXimfHdrs.getSpecialRulesArray();
+		for(var i=0 ; i < specialRulesArray.length ; ++i){
+			// search for ximf value					
+			var nameHeader = specialRulesArray[i]._headerName;	
+			var refHeader = specialRulesArray[i]._headerRef;
+			var targetName = specialRulesArray[i]._targetName;
+			
+			switch(targetName){
+				case XIMF_RULE_TARGET_NAME_MANDATORY_HEADERS:
+					gConsole.logStringMessage("[ximfmail - InitSpecialXimfRules ] load special rule " + targetName);
+					SpecialMandatoryHeaders(nameHeader,refHeader);
+					break;
+				default: break;
+			}
+			//alert("refHeader = " + refHeader + "\nnameHeader = " + nameHeader+"\ntargetName = " + targetName);
+		}		
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - InitSpecialXimfRules ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);
+	}
+}
 
 /*
  * 
@@ -1607,6 +2050,7 @@ function ExecuteXimfHdrsAssociationRule(){
 function AppendESSSecuityLabel (){
 	var essArray = gXimfHdrs.getESSSecurityLabelHdrArray();
 	if(!essArray) return;
+	if(essArray.length <= 0) return;
 	
 	if(!gSMFields) return;
 	try{
@@ -1657,8 +2101,7 @@ function AppendESSSecuityLabel (){
 						break;
 					}						
 				}
-			}
-			
+			}			
 			
 			//search valueName if refValue defined
 			if(refValue){
@@ -1728,8 +2171,7 @@ function AppendESSSecuityLabel (){
 					break;
 				case "SecurityCategory": 							
 					// Security Categories 		
-					// format to load : oid|type|value name e.g. 0.0.0|1|value|0.0.0.1|2|value
-														
+					// format to load : oid|type|value name e.g. 0.0.0|1|value|0.0.0.1|2|value														
 					var categories = "";
 					var regtec = new RegExp("["+sXimfTecSeparator+"]+", "g");
 					var reg = new RegExp("["+sXimfSeparator+"]+", "g");
@@ -1746,10 +2188,11 @@ function AppendESSSecuityLabel (){
 											categories += "|";
 										}
 										//ximftecvalue = "oid,value"
-										var regOidValueSep = new RegExp("[,]", "g");
+										var regOidValueSep = ","; // FT INT_FT4041 - var regOidValueSep = new RegExp("(,)","g");
 										var tmp = tab_XimfValue[idx_tab_XimfValue];
-										var oid = tmp.slice(0,tmp.indexOf(regOidValueSep)-1);
-										var value = tmp.slice(tmp.indexOf(regOidValueSep),tmp.length);
+										var oid = tmp.slice(0,tmp.indexOf(regOidValueSep,0));
+										var value = tmp.slice(tmp.indexOf(regOidValueSep,0)+1,tmp.length);
+										//alert("tmp=" + tmp + "\ntmp.indexOf(regOidValueSep) = "  + tmp.indexOf(regOidValueSep)+"\n>>oid = "+oid+"\nvalue = " + value)
 										
 										if(value){													
 											var type = null;												
@@ -1768,11 +2211,9 @@ function AppendESSSecuityLabel (){
 												item.setAttribute("type",type);
 												item.setAttribute("value",value);
 												item.setAttribute("label",tab_XimfLabel[idx_tab_XimfValue]);														
-												$(elt).append(item);
-												
-											}
-											
-											categories += oid + "|" + type + "|" + value  ;	
+												$(elt).append(item);												
+											}											
+											categories += oid + "|" + type + "|" + value;	
 										}
 									}
 								}catch(e){
@@ -1781,7 +2222,8 @@ function AppendESSSecuityLabel (){
 							}
 						}
 					}							
-					gConsole.logStringMessage("SecurityCategories =  " + categories);
+					if(categories != "")
+						gConsole.logStringMessage("SecurityCategories =  " + categories);
 					gSMFields.securityCategories = categories;																
 					break;
 				default:
@@ -1793,8 +2235,9 @@ function AppendESSSecuityLabel (){
 		}
 		
 		try{
+			/*
 			// create file es XIMFMAIL_SECURITY_LABEL_XML_FILE							
-			if(essLabels){
+			if(essLabels){			
 					// create securityLabel directory
 				  	var essfile = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile); // get profile folder
 					var serializer = new XMLSerializer();
@@ -1808,6 +2251,7 @@ function AppendESSSecuityLabel (){
 					serializer.serializeToStream(essLabels, foStream, "");   // rememeber, doc is the DOM tree
 					foStream.close();
 			}
+			* */
 		}catch(e){}
 		
 		
@@ -1817,64 +2261,96 @@ function AppendESSSecuityLabel (){
 			if (!gSMFields.signMessage) signMessage();
 		}catch(e){}		
 }
+
+/*
+ * Check for changes to document and allow saving before closing 
+ */	
+function XimfailComposeCanClose(){
+	try{
+		if(gContentChanged == true) return;
+		var charSet = null;
+		if(gMsgCompose){
+			charSet = gMsgCompose.compFields.characterSet;
+			if(!charSet) charSet == msgCompFields.defaultCharacterSet;
+		}
+		var ximfmailMimeSelection = ReadMimeHeadersSelection( XIMF_ENDLINE, charSet);
+		if(ximfmailMimeSelection.length > 0) gContentChanged = true; // used xith ComposeCanClose()	
+	} catch (e) {
+		gConsole.logStringMessage("[ximfmail - XimfailComposeCanClose ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);
+	}
+}	
 	
 /*
  * READ XIMFMAIL DOM SELECTION 
  */		
-function ReadMimeHeadersSelection(headerValueSeparator, headersSeparator, charSet){
+function ReadMimeHeadersSelection( headersSeparator, charSet){
 	var sCompleteList="";
-	
-	// insert XIMF-Version - B4521
-	var ximfVersion = DEFAULT_XIMF_VERSION;
-	if(gXimfCatalog){
-		ximfVersion = gXimfCatalog.getVersionInstance(gXimfHdrs.getXimfInstanceResource());
-	}
-	sCompleteList += EncodeMimeXimfheader(XIMF_VERSION_HEADER + headerValueSeparator + ximfVersion, charSet) + headersSeparator;
 	
 	// insert XIMF-NAME - name of instance
 	var ximfName = DEFAULT_XIMF_NAME;
 	if(gXimfCatalog){
 		ximfName = gXimfCatalog.getNameInstance(gXimfHdrs.getXimfInstanceResource());
-	}
-	sCompleteList += EncodeMimeXimfheader(XIMF_NAME_HEADER + headerValueSeparator + ximfName, charSet) + headersSeparator;
+	}	
+	try{
+		// FT INT_FT3970
+		if(ximfName.toLowerCase() == SMTP_INSTANCE){ 
+			gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] Send non XIMF message - instance  " + ximfName);
+			return sCompleteList;
+		}
+	}catch(e){}	
+	sCompleteList += EncodeMimeXimfheader(XIMF_NAME_HEADER, ximfName, charSet) + headersSeparator;
 
+	// insert XIMF-Version - B4521
+	var ximfVersion = DEFAULT_XIMF_VERSION;
+	if(gXimfCatalog){
+		ximfVersion = gXimfCatalog.getVersionInstance(gXimfHdrs.getXimfInstanceResource());
+	}
+	sCompleteList += EncodeMimeXimfheader(XIMF_VERSION_HEADER, ximfVersion, charSet) + headersSeparator;
+	
+	
 	// send hidden headers elements
-	var arrayValues = $("label[class='ximfHiddenHeader']");						
-	for(var idx=0; idx<=arrayValues.length; idx++){
-		try {	
-			if(arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE)){					
-				sCompleteList += EncodeMimeXimfheader($(arrayValues[idx]).attr("ximfheader") + headerValueSeparator + $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;											
-			}
-		} catch (e) {
-			gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
-		}	
+	var arrayValues = $("label[class='ximfHiddenHeader']");
+	if(arrayValues){						
+		for(var idx=0; idx<=arrayValues.length; idx++){
+			try {	
+				if(arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE)){					
+					sCompleteList += EncodeMimeXimfheader($(arrayValues[idx]).attr("ximfheader"), $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;											
+				}
+			} catch (e) {
+				gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+			}	
+		}
 	}
 					
 	// send textbox elements
-	arrayValues = $("textbox[class='XimfTextboxDisplay']");						
-	for(var idx=0; idx<=arrayValues.length; idx++){
-		try {	
-			if($(arrayValues[idx]).attr(_XIMF_ATT_XVALUE)){
-				sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader") + headerValueSeparator + $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;
-				if($(arrayValues[idx]).attr(_XIMF_ATT_TEC_VALUE)){						
-					sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximftecheader") + headerValueSeparator + $(arrayValues[idx]).attr(_XIMF_ATT_TEC_VALUE), charSet) + headersSeparator;
-				}					
-			}
-		} catch (e) {
-			gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
-		}	
+	arrayValues = $("textbox[class='XimfTextboxDisplay']");
+	if(arrayValues){						
+		for(var idx=0; idx<=arrayValues.length; idx++){
+			try {	
+				if($(arrayValues[idx]).attr(_XIMF_ATT_XVALUE)){
+					sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;
+					if($(arrayValues[idx]).attr(_XIMF_ATT_TEC_VALUE)){						
+						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximftecheader"), $(arrayValues[idx]).attr(_XIMF_ATT_TEC_VALUE), charSet) + headersSeparator;
+					}					
+				}
+			} catch (e) {
+				gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+			}	
+		}
 	}
 
 	// send editor elements				
 	try{									
 		arrayValues = $("textbox[class='ximfEditor']");
-		for( idx=0; idx<=arrayValues.length; idx++){					
-			if(arrayValues[idx].value){
-				try{
-					sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader") + headerValueSeparator + arrayValues[idx].value, charSet) + headersSeparator;							
-				} catch (e) {
-					gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
-				}									
+		if(arrayValues){
+			for( idx=0; idx<=arrayValues.length; idx++){					
+				if(arrayValues[idx].value){
+					try{
+						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].value, charSet) + headersSeparator;							
+					} catch (e) {
+						gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+					}									
+				}
 			}
 		}
 	}catch(e){
@@ -1884,30 +2360,34 @@ function ReadMimeHeadersSelection(headerValueSeparator, headersSeparator, charSe
 	// send datetime elements
 	try{
 		//arrayValues = $("#ximfmailComposeMessagePanel " + _XIMF_ELT_DATEPICKER);						
-		arrayValues = $("textbox[class='ximfDatetime']");				
-		for( idx=0; idx<=arrayValues.length; idx++){					
-			if(arrayValues[idx].value){						
-				try{
-					sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader") + headerValueSeparator + arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE), charSet) + headersSeparator;							
-				} catch (e) {
-					//alert(e)
-					gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
-				}									
+		arrayValues = $("textbox[class='ximfDatetime']");	
+		if(arrayValues){			
+			for( idx=0; idx<=arrayValues.length; idx++){					
+				if(arrayValues[idx].value){						
+					try{
+						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE), charSet) + headersSeparator;							
+					} catch (e) {
+						//alert(e)
+						gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+					}									
+				}
 			}
 		}
 	}catch(e){}
 	
 	// send ximfaddress elements
 	try{
-		arrayValues = $("#ximfmailComposeMessagePanel ximfaddress");						
-		for( idx=0; idx<=arrayValues.length; idx++){				
-			if(arrayValues[idx].listaddress != ""){
-				try{
-					sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader") + headerValueSeparator + arrayValues[idx].listaddress, charSet) + headersSeparator;
-					
-				} catch (e) {
-					gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
-				}									
+		arrayValues = $("#ximfmailComposeMessagePanel ximfaddress");
+		if(arrayValues){						
+			for( idx=0; idx<=arrayValues.length; idx++){				
+				if(arrayValues[idx].listaddress != ""){
+					try{
+						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].listaddress, charSet) + headersSeparator;
+						
+					} catch (e) {
+						gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+					}									
+				}
 			}
 		}
 	}catch(e){}
@@ -1925,7 +2405,7 @@ function ReadXsmptHeadersTranslation(headerValueSeparator, headersSeparator,char
 	try{			
 		for(var i=0 ; i < xsmtpArray.length ; ++i){
 			if(!xsmtpArray[i]._headerRef){
-				sCompleteList += EncodeMimeXimfheader(xsmtpArray[i]._headerName + headerValueSeparator + xsmtpArray[i]._valueName, charSet) + headersSeparator;
+				sCompleteList += EncodeMimeXimfheader(xsmtpArray[i]._headerName, xsmtpArray[i]._valueName, charSet) + headersSeparator;
 			}
 		}			
 	} catch (e) {
@@ -1966,7 +2446,7 @@ function ReadXsmptHeadersTranslation(headerValueSeparator, headersSeparator,char
 						}
 			
 						// append line to headers
-						sCompleteList += EncodeMimeXimfheader(xsmtpArray[j]._headerName + headerValueSeparator + xvalue, charSet) + headersSeparator;							
+						sCompleteList += EncodeMimeXimfheader(xsmtpArray[j]._headerName, xvalue, charSet) + headersSeparator;							
 					}
 				}			
 			} catch (e) {
@@ -1975,4 +2455,24 @@ function ReadXsmptHeadersTranslation(headerValueSeparator, headersSeparator,char
 		} //if	
 	}
 	return sCompleteList;
+}
+
+/*
+ * Security rules are only valid for XIMFMAIL Instances
+ */
+function ReloadSecurityAccess(){
+	// access secure headers
+	gCurrentIdentity.setBoolAttribute("secureheaders.checked",false);
+	$("#idItemSecureHeaders_1").removeAttr("checked");					
+	$("#idItemSecureHeaders_2").removeAttr("checked");					
+	$("#idItemSecureHeaders_1").removeAttr("disabled");
+	$("#idItemSecureHeaders_2").removeAttr("disabled");										
+	$("#menu_securitySign1").removeAttr("disabled");
+	$("#menu_securitySign2").removeAttr("disabled");
+	
+	// access security label
+	$("#menu_securityLabelDialog1").removeAttr("checked");					
+	$("#menu_securityLabelDialog2").removeAttr("checked");					
+	$("#menu_securityLabelDialog1").removeAttr("disabled");
+	$("#menu_securityLabelDialog2").removeAttr("disabled");	
 }

@@ -54,29 +54,30 @@ gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
  * new theme selection : load instances of theme
  */
 function onCommandTheme(){	
-	var themeRef = $("#listTheme").attr("value");
+	var themeRef = $("#listTheme").attr("value");	
 	ChangeRefAttrRdfElement("instanceCompose", themeRef);
-	InitRDFMenuList("instanceComposeList");
-	ChangeRefAttrRdfElement("instanceAnswer", themeRef);
-	InitRDFMenuList("instanceAnswerList");
-	ChangeRefAttrRdfElement("instanceForward", themeRef);
-	InitRDFMenuList("instanceForwardList");
+	InitRDFMenuList("instanceComposeList");	
 	ChangeRefAttrRdfElement("instanceTreeThread", themeRef);
 	InitRDFMenuList("instanceTreeThreadList");
 	ChangeRefAttrRdfElement("instanceMailPanel", themeRef);
 	InitRDFMenuList("instanceMailPanelList");
 };
 
+
 /*
  * load pref ximfmail settings
  */  
 function onInit(aPageId, aServerId){
+	//get XIMF instances of profile for account
+	CreateXimfmailCatalog();
+	var listInstances = document.getElementById("listThemPopup");		
+	listInstances.database.AddDataSource(gXimfCatalog.getDSCatalog());	
+	listInstances.builder.rebuild();
+	
 	//alert("Informations compte : \r\n\n" + aPageId + "\r\n"+ aServerId + "\r\n" + gXimfIdentity + "\r\n" + gXimfAccount.incomingServer.key);
 	UpdateRDFListWithPref(gXimfmailIdentity.key,"ximfmail_theme_ref","listTheme");
 	onCommandTheme();
 	UpdateRDFListWithPref(gXimfmailIdentity.key,"ximfmail_instance_compose_ref","instanceComposeList");
-	UpdateRDFListWithPref(gXimfmailIdentity.key,"ximfmail_instance_forward_ref","instanceForwardList");
-	UpdateRDFListWithPref(gXimfmailIdentity.key,"ximfmail_instance_answer_ref","instanceAnswerList");
 	UpdateRDFListWithPref(gXimfmailIdentity.key,XIMF_PREF_IDENTITY_TREETHREAD_REF,"instanceTreeThreadList");
 	UpdateRDFListWithPref(gXimfmailIdentity.key,XIMF_PREF_IDENTITY_MAIL_PANEL_REF,"instanceMailPanelList");
 	
@@ -127,14 +128,13 @@ function onSave(){
 	// save ximfmail selection to preferences
 	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_theme_ref", $("#listTheme").attr("value"));
 	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_theme_name", $("#listTheme").attr("label"));
-	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_instance_compose_ref", $("#instanceComposeList").attr("value"));
-	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_instance_forward_ref", $("#instanceForwardList").attr("value"));
-	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_instance_answer_ref", $("#instanceAnswerList").attr("value"));
+	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_instance_compose_ref", $("#instanceComposeList").attr("value"));	
 	gXimfmailIdentity.setCharAttribute(XIMF_PREF_IDENTITY_TREETHREAD_REF,$("#instanceTreeThreadList").attr("value"));
 	gXimfmailIdentity.setCharAttribute(XIMF_PREF_IDENTITY_MAIL_PANEL_REF,$("#instanceMailPanelList").attr("value"));
 		
-	if($("#checkListTheme").attr("checked") == "true"){		
+	if($("#checkListTheme").attr("checked") == "true"){	
 		gXimfmailIdentity.setBoolAttribute(XIMF_PREF_IDENTITY_USE_XIMFMAIL,true);
+		try{CreateSecurityLabelXml()}catch(e){}
 	}else{		
 		gXimfmailIdentity.setBoolAttribute(XIMF_PREF_IDENTITY_USE_XIMFMAIL,false);
 	}
@@ -144,17 +144,4 @@ function onSave(){
 	}else{
 		gXimfmailIdentity.setBoolAttribute("ximfmail_xsmtp_compatibility_on",false);
 	} 
-	/*
-	if($("#secureHeadersRuleBox").attr("checked") == "true"){
-		gXimfmailIdentity.setBoolAttribute("ximfmail_secure_header_on",true);
-	}else{
-		gXimfmailIdentity.setBoolAttribute("ximfmail_secure_header_on",false);
-	}
-	
-	if($("#signMsgAlwaysRuleBox").attr("checked") == "true"){
-		gXimfmailIdentity.setBoolAttribute("ximfmail_sign_message_always_on",true);
-	}else{
-		gXimfmailIdentity.setBoolAttribute("ximfmail_sign_message_always_on",false);
-	}
-	*/
 }

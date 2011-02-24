@@ -84,7 +84,7 @@ function CreateRdfDatasSource(xmlDataPath){
 		}
 		
 		// is valid xml document?
-		var baseTag = domProfile.getElementsByTagName("base");			
+		var baseTag = domProfile.getElementsByTagName("ximf:base");			
 		if(baseTag.length <= 0) return;		
 		
 		// init RDF XPCOM Services	
@@ -106,15 +106,15 @@ function CreateRdfDatasSource(xmlDataPath){
 				gConsole.logStringMessage("[ximfmail - XimfTreeData.registerXimfmailProfileNode ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
 		}			
 		
-		var treeTag = baseTag[0].getElementsByTagName("tree");		
-		var instanceTag = treeTag[0].getElementsByTagName("description");
+		var treeTag = baseTag[0].getElementsByTagName("ximf:tree");		
+		var instanceTag = treeTag[0].getElementsByTagName("ximf:description");
 		for(var i = 0; i < instanceTag.length; ++i){
 			// append resource element to sequence
 			var newURI = datasUri + "/data" + i;			
 			//_rdfContainer.AppendElement(_rdfService.GetResource(newURI));
 			RDFC_data.AppendElement(_rdfService.GetResource(newURI));
 				
-			var instanceTagData = instanceTag[i].getElementsByTagName("data");
+			var instanceTagData = instanceTag[i].getElementsByTagName("ximf:data");
 			for(var j = 0; j < instanceTagData.length; ++j){
 				// append description element
 				_dsCatalog.Assert(_rdfService.GetResource(newURI),

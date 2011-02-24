@@ -47,7 +47,7 @@
 <window id="datetimepicker_dialog" 
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
   	
-	<script type="application/x-javascript"	src="chrome://ximfmail/content/calendar/dialogCalendar-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/calendar/dialogCalendar-ximfmail.js" />
 		
 	
 	<vbox id="oe-date-picker-overlay-box" >			

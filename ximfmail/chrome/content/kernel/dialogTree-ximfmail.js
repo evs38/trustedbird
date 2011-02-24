@@ -42,17 +42,12 @@
 
 var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-gJSLoader.loadSubScript("chrome://ximfmail/content/jquery.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
-
   
-var gDlgTreeXimf_maxItem = null;
+
 var gDlgTreeXimf_maxItem_alert = "";
 var gDlgTreeXimf_current_selection = null;
 var gDlgTreeXimf_current_separator = null;
-var gRdfTempo = null;
-var gTitleDlg = null;
+var gTitleDlg = "";
 
 function XimfDataSource(){
 	this._id; // xml file name path
@@ -60,22 +55,17 @@ function XimfDataSource(){
 	this._refDataSource;				
 }
 
-/*
- window.arguments = [];
-		args[0] id de la textbox à enrichir
-		args[1] reference du catalogue à charger
-		args[2] titre de la dialogbox
-		args[3] description de la dialogbox		
-		args[4] titre de la colonne 0 de la dialogbox
-		args[5] titre de la colonne 1 de la dialogbox
-*/
 
-var gBoxOpener = null;
 
-$(document).ready(function(){		
+
+
+var gArgsOpener = null;
+
+$(document).ready(function(){
 	var gArgs = window.arguments;
 	if(gArgs[0].length <= 0) return;
 
+	// load event manager
  	$("#ximfmail_dTreeAdd").bind("command",OnPushAddSelection);
  	$("#iTreechildDialog").dblclick(OnPushAddSelection);
  	$("#ximfmail_dTreeDel").bind("command",OnPushDelSelection);
@@ -83,40 +73,53 @@ $(document).ready(function(){
 
 	// load background datas
 	try{
-		gBoxOpener = gArgs[0][0];	
-		gDataSource = gArgs[0][1];	
-		gRefDataSource = gArgs[0][2];	
-		gDlgTreeXimf_current_selection = gArgs[0][3];
-		gDlgTreeXimf_current_separator =  gArgs[0][4];
-		gDlgTreeXimf_maxItem = gArgs[0][5];
-		gTitleDlg = gArgs[0][6];
+		gArgsOpener = gArgs[0];	// gArgs[0] is an XimfmailTreedialogArgs object - XimfmailTreedialogArgs class description at ximfmail.js file
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - ready ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+		return;
 	}
 	
-	if(parseInt(gDlgTreeXimf_maxItem) > 1){
-		gDlgTreeXimf_maxItem_alert = gDlgTreeXimf_maxItem + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");
+	// create alert message 	
+	if(parseInt(gArgsOpener.maxItemsSelected) > 1){
+		gDlgTreeXimf_maxItem_alert = gArgsOpener.maxItemsSelected + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");
 	}else{
-		if(parseInt(gDlgTreeXimf_maxItem) == 1){
-			gDlgTreeXimf_maxItem_alert = gDlgTreeXimf_maxItem + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows.one");
+		if(parseInt(gArgsOpener.maxItemsSelected) == 1){
+			gDlgTreeXimf_maxItem_alert = gArgsOpener.maxItemsSelected + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows.one");
 		}
 	}
+	
+	try{
+		//set main title	
+		var sTitle = gArgsOpener.title;		
+		if(sTitle.indexOf(":") != -1){
+			sTitle = sTitle.substring(0,sTitle.lastIndexOf(":"));
+		}		
+		$("#treeDialogHeader").attr("title",sTitle);
+		$("#treeDialogHeader").attr("description",gDlgTreeXimf_maxItem_alert);
 		
-	gRdfTempo = setInterval("LoadXmlDatas()", 50);	
-}); 
+		//set title columns
+		$("#iCol0").attr("label",gArgsOpener.titleColKey);
+		$("#iCol1").attr("label",gArgsOpener.titleColLabel);
+		
+	}catch(e){
+			gConsole.logStringMessage("[ximfmail - AddCurrentSelection ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);
+	}
+	
+	setTimeout("LoadXmlDatas()", 50);	
+});
 
-var gDataSource = null;
-var gRefDataSource = null;
+/*
+ *  attach RDF Source to local tree
+ */
 function LoadXmlDatas(){
-	try{		
-		clearInterval(gRdfTempo);
-		gRdfTempo=null;		
-		//alert("LoadXmlDatas2 with "+ gRefDataSource)
-		AddCurrentSelection();
-		var tree = document.getElementById("iTreechildDialog");
-		tree.database.AddDataSource(gDataSource);	
-		tree.setAttribute("ref",gRefDataSource);			
+	try{			
+		//
+		var tree = document.getElementById("iTreechildDialog");		
+		tree.database.AddDataSource(gArgsOpener.dataSource);		
+		tree.setAttribute("ref",gArgsOpener.refdataSource);	
 		tree.builder.rebuild();
+		//
+		AddCurrentSelection();
 	}catch(e){	
 		gConsole.logStringMessage("[ximfmail - LoadXmlDatas ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
 	}	
@@ -124,27 +127,25 @@ function LoadXmlDatas(){
 
 function AddCurrentSelection(){
 	// load current selected values
-	if(gDlgTreeXimf_current_selection){
-		var reg = null;	
+	if(gArgsOpener.currentKeys.length > 0){
+		/*var reg = null;	
 		if(gDlgTreeXimf_current_separator){
 			reg=new RegExp("["+gDlgTreeXimf_current_separator+"]+", "g");		
 		}else{
 			reg=new RegExp("[;,]+", "g");
-		}	
-		var arrayItems = gDlgTreeXimf_current_selection.split(reg);		
-		var list = document.getElementById("ximfmail_selection");
-		for (var i=0; i<arrayItems.length; i++) {
-			if(arrayItems[i]!=""){
-				list.appendItem(arrayItems[i]);
-			} 	
 		}
-	}
-	try{
-		$("#treeDialogHeader").attr("title",gTitleDlg.substring(0,gTitleDlg.lastIndexOf(":")));
-		$("#treeDialogHeader").attr("description",gDlgTreeXimf_maxItem_alert);
-	}catch(e){
-			gConsole.logStringMessage("[ximfmail - AddCurrentSelection ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);
-	}
+		var arrayItems = gDlgTreeXimf_current_selection.split(reg);	
+		*/
+		var list = document.getElementById("ximfmail_selection");
+		for (var i=0; i<gArgsOpener.currentKeys.length; i++) {
+			if(gArgsOpener.currentLabels[i]!=""){
+				var item = list.appendItem(gArgsOpener.currentKeys[i]);
+				if(gArgsOpener.currentKeys[i]!=""){
+					item.setAttribute("tooltiptext",gArgsOpener.currentLabels[i]);
+				}
+			} 			 
+		}
+	}	
 }
 
 function OnPushAddSelection(){
@@ -159,9 +160,9 @@ function OnPushAddSelection(){
 		for (var t=0; t<numRanges; t++){
 	  		tree.view.selection.getRangeAt(t,start,end);
 	  			for (var v=start.value; v<=end.value; v++){  
-	  				if(gDlgTreeXimf_maxItem){  					
+	  				if(gArgsOpener.maxItemsSelected){  					
 	  					var nbItems = $("#ximfmail_selection listitem");  					
-	  					if(nbItems.length >= gDlgTreeXimf_maxItem){
+	  					if(nbItems.length >= gArgsOpener.maxItemsSelected){
 	  						alert(gDlgTreeXimf_maxItem_alert);	  						
 	  						return;
 	  					}
@@ -188,32 +189,28 @@ function OnPushRazSelection(){
 	}
 }
 
-function doOK()
-{
-  //var selection = getTreeSelection();
-  var selection = getCurrentSelection();
-  window.opener.document.getElementById(gBoxOpener).value = selection; 
-  window.opener.document.getElementById(gBoxOpener).setAttribute(_XIMF_ATT_XVALUE, selection);   
-  return true;
-}
 
-function getCurrentSelection(){
-	var list = $("#ximfmail_selection listitem");
-	var separator = ","
-	var current_selection = "";
-	if(gDlgTreeXimf_current_separator){
-		separator = gDlgTreeXimf_current_separator;
-	}
+
+function doOK(){
+	// get current selection	
+  	var list = $("#ximfmail_selection listitem");	
 	for(var idx_list = 0; idx_list < list.length;++idx_list){
 		var currentItem = list[idx_list].getAttribute("label");
-		if( currentItem != ""){
-			if(current_selection != ""){
-				current_selection += separator;
-			}
-			current_selection += currentItem;
-		}
-	}
-	return current_selection;
+		var currentTooltip = list[idx_list].getAttribute("tooltiptext");
+		if(currentItem != ""){
+			gArgsOpener.retKeys.push(currentItem);				
+  			gArgsOpener.retLabels.push(currentTooltip);
+  		}
+	}	     
+  	return true;
+}
+
+/*
+ * 
+ */
+function doCancel()
+{
+	gArgsOpener.retIsCancel=true; 
 }
 
 function getTreeSelection(){
@@ -234,11 +231,7 @@ function getTreeSelection(){
 	return list;
 }
 
-function doCancel()
-{
-  //alert("Vous avez appuyé sur Annuler !");
-  return true;
-}
+
 
 
 ///BEGIN TEST
@@ -267,7 +260,7 @@ function OnSelectTreeData(evt){
     } catch (error) {
         idMatch = col.value;
     }
-    //alert(row.value + " : " + idMatch);
+   //alert(row.value + " : " + idMatch);
    //return {row: row.value, col: idMatch};	
 }
 
@@ -286,5 +279,5 @@ function OnClickTreeData(evt){
         idMatch = col.value;
     }
     //alert(row.value + " : " + idMatch);
-   //return {row: row.value, col: idMatch};	
+    //return {row: row.value, col: idMatch};	
 }

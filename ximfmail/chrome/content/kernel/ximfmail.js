@@ -45,9 +45,6 @@
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
 
-var gRelativeXimfCatalogPath = "extensions/{A627B834-BD9F-4b3f-9AF5-347B5A570402}/chrome/content/theme/ximfCatalogBck.rdf";
-var CHROME_XIMFMAIL_CATALOG = "chrome://theme_ximfmail/content/ximfCatalog.rdf";
-
 
 try{
 	gJSLoader.loadSubScript("chrome://ximfmail/content/ximfCatalog.js");
@@ -84,10 +81,9 @@ function CreateXimfmailCatalog(){
 }
 
 /* 
- * get path profile
+ * get path of user profile
  */
- function getFilePathInProfile(aRelativePath) {
-    // on récupère un objet nsIFile qui represente le repertoire du profil de l'utilisateur
+ function getFilePathInProfile(aRelativePath) {    
     var file = Components.classes["@mozilla.org/file/directory_service;1"]
                       .getService(Components.interfaces.nsIProperties)
                       .get("ProfD", Components.interfaces.nsIFile);
@@ -160,7 +156,7 @@ function GetXmlDocument(sPath){
 /*
  *  
  */
-function xHeader(headerRef,headerName,valueRef,valueName){
+function xHeader(headerRef,headerName,valueRef,valueName,targetName){
 	if(headerRef)
 		this._headerRef=headerRef;
 	if(headerName)
@@ -169,6 +165,9 @@ function xHeader(headerRef,headerName,valueRef,valueName){
 		this._valueRef = valueRef;
 	if(valueName)
 		this._valueName = valueName;
+	//FT3504
+	if(targetName)
+		this._targetName = targetName;
 	
 }
 
@@ -179,27 +178,28 @@ function xHeader(headerRef,headerName,valueRef,valueName){
  */
 function CreateRulesArray(instancePath,ruleType){
 	
+	
+	var tabHeaders = new Array; // tabHeaders[headerRef][headerName][valueRef][valueName] : headers X to add with values X
+							    // tabHeaders['0'][headerName]['0'][valueName] : headers to add necessarily
+							    // tabHeaders[headerRef][headerName][valueRef]['0'] : headersto add with XIMF values
 	try{
-		var tabHeaders = new Array; // tabHeaders[headerRef][headerName][valueRef][valueName] : headers X à ajouter avec valeurs X
-								    // tabHeaders['0'][headerName]['0'][valueName] : headers à ajouter obligatoirement
-								    // tabHeaders[headerRef][headerName][valueRef]['0'] : headers X à ajouter avec valeurs XIMF
-
 		// get xml rules
 		var dir = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
   		
 		var urlRules = getFilePathInProfile("extensions/"+gXimfCatalog.getRulesInstance(instancePath));
 		dir.initWithPath( urlRules );			
 		if(!dir.exists()){			
-			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstance] Error loading dictionary file : " + urlRules);
+			gConsole.logStringMessage("[Ximfmail - CreateRulesArray] Error loading dictionary file : " + urlRules);
 			return;
 		}		
 		var xmlDoc = GetXmlDocument(urlRules);		
 		//oki var instanceTag = xmlDoc.getElementsByTagName("rules");
 		var compatibleTag = xmlDoc.getElementsByTagName(ruleType);
 		var sValue="";
-		if(compatibleTag.length>0){
-			var childNodes = compatibleTag[0].childNodes;
-			
+		//FT3504
+		for(var idx=0; idx <compatibleTag.length; ++idx ){
+			var childNodes = compatibleTag[idx].childNodes;
+			var targetName = compatibleTag[idx].getAttribute("targetName");
 			for(var j=0; j <childNodes.length; ++j ){
 					var hname = ""; 
 					var href = ""; 
@@ -223,17 +223,18 @@ function CreateRulesArray(instancePath,ruleType){
 						}						
 						
 						// load values to array					
-						tabHeaders.push(new xHeader(href, hname, vref, vname));		
+						tabHeaders.push(new xHeader(href, hname, vref, vname,targetName));		
 									
 					}				
 				}
-	
-			return tabHeaders;				
-		}		
+			}					
+				
 		//log array values		
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - CreateRulesArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);				
 	}	
+	
+	return tabHeaders;		
 }
 
 
@@ -266,10 +267,10 @@ function CreateDOMWithXimfInstanceRef(instancePath, xslUrl){
 	
   		dir.initWithPath( completePath );			
 		if(!dir.exists()){	
-			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstance] Error loading schema file : " + completePath);
+			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstanceRef] Error loading schema file : " + completePath);
 			return;
 		}else{
-			//gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstance] loading schema file : " + completePath);
+			//gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstanceRef] loading schema file : " + completePath);
 		}		
 		var objXML = GetXmlDocument(completePath);
 	
@@ -278,7 +279,7 @@ function CreateDOMWithXimfInstanceRef(instancePath, xslUrl){
 
 		dir.initWithPath( urlDictionary );			
 		if(!dir.exists()){			
-			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstance] Error loading dictionary file : " + completePath);
+			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstanceRef] Error loading dictionary file : " + completePath);
 			return;
 		}
 		
@@ -287,16 +288,16 @@ function CreateDOMWithXimfInstanceRef(instancePath, xslUrl){
 
 		dir.initWithPath( urlIhm );			
 		if(!dir.exists()){			
-			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstance] Error loading ihm file : " + completePath);
+			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstanceRef] Error loading ihm file : " + completePath);
 			return;
 		}
 		
 		// insert dictionary node, ihm node to instance node of xml schema
 		var objDicoXML = GetXmlDocument(urlDictionary);
-		var oDicoNode = objDicoXML.getElementsByTagName("dictionary");
+		var oDicoNode = objDicoXML.getElementsByTagName("ximf:dictionary");
 		var objIhmXML = GetXmlDocument(urlIhm);
-		var oIhmNode = objIhmXML.getElementsByTagName("ihm");
-		var oSchemaNode = objXML.getElementsByTagName("instance");
+		var oIhmNode = objIhmXML.getElementsByTagName("ximf:ihm");
+		var oSchemaNode = objXML.getElementsByTagName("ximf:instance");
 		oSchemaNode[0].appendChild( oDicoNode[0] );
 		oSchemaNode[0].appendChild( oIhmNode[0] );		
 			
@@ -310,7 +311,8 @@ function CreateDOMWithXimfInstanceRef(instancePath, xslUrl){
 }
 
 function CreateDOMWithXimfInstance(instancePath, xslUrl){
-	try{		
+	try{	
+		//gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstance] instancepath = " + instancePath +"\n xslurl = " + xslUrl );
 		var xml = CreateXMLObjectWithXimfmailInstance(instancePath);		
 		return ApplyXimfmailXslt(xslUrl,xml);
 	}catch(e){
@@ -328,7 +330,7 @@ function CreateXMLObjectWithXimfmailInstance(instancePath){
 		
 	  	dir.initWithPath( completePath );			
 		if(!dir.exists()){	
-			gConsole.logStringMessage("[Ximfmail - CreateDOMWithXimfInstance] Error loading schema file : " + completePath);
+			gConsole.logStringMessage("[Ximfmail - CreateXMLObjectWithXimfmailInstance] Error loading schema file : " + completePath);
 			return null;
 		}
 
@@ -339,7 +341,7 @@ function CreateXMLObjectWithXimfmailInstance(instancePath){
 		dir.initWithPath( urlDictionary );			
 		if(dir.exists()){			
 			var objDicoXML = GetXmlDocument(urlDictionary);
-			var oDicoNode = objDicoXML.getElementsByTagName("dictionary");
+			var oDicoNode = objDicoXML.getElementsByTagName("ximf:dictionary");
 		}
 			
 		// get xml ihm
@@ -348,7 +350,7 @@ function CreateXMLObjectWithXimfmailInstance(instancePath){
 		dir.initWithPath( urlIhm );			
 		if(dir.exists()){			
 			var objIhmXML = GetXmlDocument(urlIhm);		
-			var oIhmNode = objIhmXML.getElementsByTagName("ihm");
+			var oIhmNode = objIhmXML.getElementsByTagName("ximf:ihm");
 		}
 		
 		// get xml rules
@@ -357,11 +359,11 @@ function CreateXMLObjectWithXimfmailInstance(instancePath){
 		dir.initWithPath( urlRules );			
 		if(dir.exists()){			
 			var objRulesXML = GetXmlDocument(urlRules);
-			var oRulesNode = objRulesXML.getElementsByTagName("rule");
+			var oRulesNode = objRulesXML.getElementsByTagName("ximf:rule");
 		}
 			
 		// insert dictionary node, ihm node to instance node of xml schema		
-		var oSchemaNode = objXML.getElementsByTagName("instance");
+		var oSchemaNode = objXML.getElementsByTagName("ximf:instance");
 		if(oDicoNode.length > 0){
 			oSchemaNode[0].appendChild( oDicoNode[0] );
 		}
@@ -526,77 +528,41 @@ function String_trim(s) {
   return c;
 }
 
-
-
-
 /*
  * BUG 4689 - using folding with header 
  * realize mime format convert special character to encoded-word ASCII format (RFC 2047)
  * rule based on RFC222 : Internet Message Format
  */
-var IMF_HEADER_LINE_MAX_LENGTH=77; // 78 is max len but it must insert ' ' caracter in folding line
-var IMF_HEADER_LINE_FOLDING_SEPARATOR="\r\n ";
-function EncodeMimeXimfheader(sHeader, charSet){
+function EncodeMimeXimfheader(sHeader, sValue, charSet){
 	try{
-		//mime converter
-		var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
-		try{
-		  var newMimeHdr = null;
-		  newMimeHdr = mimeEncoder.encodeMimePartIIStr(sHeader, false, charSet , 0, IMF_HEADER_LINE_MAX_LENGTH);
-		  sFolding = newMimeHdr;
-		  //alert(sHeader);
+		var tmpValue = "";
+		var sValueFolding = "";	
+		//IMF_HEADER_LINE_MAX_LENGTH=Components.interfaces.nsIMimeConverter.MIME_ENCODED_WORD_SIZE;
+	
+	  	try{
+			// realize mime format convert special character to encoded-word ASCII format (RFC 2047)
+			var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);		
+			sValueFolding = mimeEncoder.encodeMimePartIIStr_UTF8(sValue, false, charSet , sHeader.length + 2, Components.interfaces.nsIMimeConverter.MIME_ENCODED_WORD_SIZE);
 		}catch (ex){
-			sFolding = sHeader;
-		}
-		 
-		/* 
-		// encodeMimePartIIStr function apply folding rules
-		if(sHeader.length <= IMF_HEADER_LINE_MAX_LENGTH) {			
-		    //alert(newHdr)			
-			return sHeader;
-		}
-		
-		var sFolding = "";
-		var sEndHeader = sHeader;
-		
-		// fold header line in multi-line header	
-		for(var i = IMF_HEADER_LINE_MAX_LENGTH; i <= sHeader.length ; i+=IMF_HEADER_LINE_MAX_LENGTH){			 
-			sFolding += sEndHeader.slice(0,IMF_HEADER_LINE_MAX_LENGTH);;			
-			sEndHeader = sEndHeader.slice(IMF_HEADER_LINE_MAX_LENGTH,sEndHeader.length);
-			if(sEndHeader.length > 0){
-				sFolding += IMF_HEADER_LINE_FOLDING_SEPARATOR;
-			}					
-		}
-		
-		// copy end of the header
-		if(sEndHeader.length > 0){					
-			sFolding += sEndHeader;	
-		}	
-		* */	
-	}catch(e){		
-		return sHeader;
-	}	
-	return sFolding;
+			sValueFolding = sValue;
+		}				
+	}catch(e){
+		sValueFolding = sValue;
+	}				
+	return sHeader + ": " + sValueFolding;
 }
 
 /*
  * Convert mime header value to string value 
  */
 function DecodeMimeXimfheader(sHeaderValue){
-	 var newHdrValue = null;
-	 var charsetDefault =  "LATIN_CHARSET";
-	try{
+	var newHdrValue = null;
+	var charsetDefault =  "LATIN_CHARSET";
+	try{		
 		// convert MIME format (encoded-word ASCII) to String
-		var unicodeConverter = Components.classes["@mozilla.org/network/mime-hdrparam;1"].createInstance(Components.interfaces.nsIMIMEHeaderParam);		   
-		//var mimeDecoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
-		//var UnicodeConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-	
-		if(gLastMailCharset){
-			charsetDefault = gLastMailCharset;
-		}
-		
-		//newHdrValue = mimeDecoder.decodeMimeHeader(xhdr._hdrValue, "", false, false);	
-	  	newHdrValue = _from_utf8(unicodeConverter.decodeRFC2047Header(sHeaderValue, charsetDefault, false, false));
+		if(gLastMailCharset) charsetDefault = gLastMailCharset;		
+		var mimeXimfConverter = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
+		newHdrValue = mimeXimfConverter.decodeMimeHeader(sHeaderValue,charsetDefault,false,true);
 	}catch(ex){
 		newHdrValue = sHeaderValue;
 	}
@@ -604,36 +570,65 @@ function DecodeMimeXimfheader(sHeaderValue){
 }
 
 /*
- * 
+ * Datas class of dialogTree window
+ window.arguments = [];
+		args[0] id textbox to update
+		args[1] reference of catalogue to load
+		args[2] title of dialogbox
+		args[3] description of dialogbox		
+		args[4] title of column 0 of dialogbox
+		args[5] title of column 1 of dialogbox
+*/
+function XimfmailTreedialogArgs(){
+	this.idTargetTextbox = ""; // id textbox to update
+	this.title = ""; // ttitle of dialogbox
+	this.description = ""; // description of dialogbox	
+	this.dataSource = ""; // datasource 
+	this.titleColKey = "";
+	this.titleColLabel = "";
+	this.refdataSource = ""; // reference of catalogue to load
+	this.currentKeys = []; //
+	this.currentLabels = []; //
+	this.maxItemsSelected = 1;	
+	this.retKeys=[];
+	this.retLabels=[];
+	this.retIsCancel=false;
+}
+
+
+/**
+ * Transform all instances of Ximfmail catalog in xml files
+ * Thoses files will be used to display Security Labels (RFC 2634)
  */
-function _from_utf8(s) {
-  var c, d = "", flag = 0, tmp;
-  for (var i = 0; i < s.length; i++) {
-    c = s.charCodeAt(i);
-    if (flag == 0) {
-      if ((c & 0xe0) == 0xe0) {
-        flag = 2;
-        tmp = (c & 0x0f) << 12;
-      } else if ((c & 0xc0) == 0xc0) {
-        flag = 1;
-        tmp = (c & 0x1f) << 6;
-      } else if ((c & 0x80) == 0) {
-        d += s.charAt(i);
-      } else {
-        flag = 0;
-      }
-    } else if (flag == 1) {
-      flag = 0;
-      d += String.fromCharCode(tmp | (c & 0x3f));
-    } else if (flag == 2) {
-      flag = 3;
-      tmp |= (c & 0x3f) << 6;
-    } else if (flag == 3) {
-      flag = 0;
-      d += String.fromCharCode(tmp | (c & 0x3f));
-    } else {
-      flag = 0;
-    }
-  }
-  return d;
+function CreateSecurityLabelXml(){	
+	try{		
+		if(!gXimfCatalog){return;}		
+		
+		var listRef = "";
+		var arrayIstances = gXimfCatalog.getInstanceList();
+		var xsltUrl = "chrome://theme_ximfmail/content/instance2SecurityLabel-ximfmail.xsl";			
+		for(i=0 ; i< arrayIstances.length ; ++i){
+			try{
+				var cInstance = arrayIstances[i];
+				listRef += cInstance + " \n";		
+				var resXsl = CreateDOMWithXimfInstance(arrayIstances[i] , xsltUrl);
+				if(resXsl){
+					var newFileName = gXimfCatalog.getNameInstance(arrayIstances[i])+".xml";
+					var file = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile); // get profile folder
+					var serializer = new XMLSerializer();
+					var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
+					file.append("securityLabel");
+					try{file.create(file.DIRECTORY_TYPE,0);}catch(err){}		
+					file.append(newFileName);
+					foStream.init(file, 0x02 | 0x08 | 0x20, 0664, 0);   // write, create, truncate
+					serializer.serializeToStream(resXsl, foStream, "");   // rememeber, doc is the DOM tree
+					foStream.close();
+				}
+			}catch(e){
+				gConsole.logStringMessage("[ximfmail - CreateSecurityLabelXml ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);
+			}		
+		}	
+	}catch(e){
+			gConsole.logStringMessage("[ximfmail - CreateSecurityLabelXml ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);
+	}	
 }

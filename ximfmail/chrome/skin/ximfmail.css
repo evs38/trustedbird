@@ -8,6 +8,49 @@ ximfaddress{
 -moz-binding: url("chrome://ximfmail/content/ximfaddress/ximfaddress.xml#ximfaddress");
 }
 
+
+
+/* Ximfmail Panel custom*/ 
+#ximfmailComposeMessagePanel richlistbox{
+	-moz-appearance: none;
+	 background-color: inherit;
+	 border: none;
+}
+
+#ximfmailComposeMessagePanel richlistitem textbox{
+	-moz-appearance: none;
+	background-color: #ffffff;
+	color: #000000;
+	border: none;
+}
+
+richlistitem[ximfenable="true"]:hover,
+richlistitem[ximfenable="true"][selected="true"]{	 
+	background-color: #0a246a;
+}
+
+
+checkbox[ximfchild='true'] *
+{	
+	color:#b20000;	
+}
+
+richlistitem[ximfenable="true"]:hover checkbox[disabled='false'],
+richlistitem[ximfenable="true"]:hover menuitem,
+richlistitem[ximfenable="true"]:hover button,
+richlistitem[ximfenable="true"][selected="true"] checkbox[disabled='false'],
+richlistitem[ximfenable="true"][selected="true"] menuitem,	
+richlistitem[ximfenable="true"][selected="true"] button{
+	color: #ffffff;
+}
+
+richlistitem[ximfenable="false"][selected="true"],
+richlistitem[ximfenable="false"][selected="true"] *
+{
+	background-color:inherit;	 		 
+	color: inherit;
+}
+
 #ximfmailComposeMessagePanel,
 #ximfmailMailPanel{
 	max-height:120px;	
@@ -15,9 +58,7 @@ ximfaddress{
 	background-image  : url("chrome://ximfmail/content/resource/bottom_bg.jpg"); 
 }
 
-#ximfmailComposeMessageFocusBar,
-#ximfmailMailPanelFocusBar,
-#ximfmail-custom-panel{
+.ximfmailFocusBar{
 	min-height:20px; 
 	max-height:20px; 
 	color: white;
@@ -49,7 +90,7 @@ ximfaddress{
 
 .ximfInputbox{
 	min-width : 250px; 
-	background-color:#5cacea; 
+	background-color:#ffffff; /*#5cacea;*/ 
 }
 
 #ximfmailComposeMessageMaximize{
@@ -175,24 +216,21 @@ image.ximfmailAcceptState{
 	list-style-image : url("chrome://ximfmail/content/resource/detail_text_over.png");	
 }
 
-#box-ilkheaderValue,
-#box-ximfheaderValue{
-	min-width:300px;
-	max-width:300px;
+#ximfmail-dialog-hdrInfo{
+	min-width:500px;	
+	max-width:500px;	
 }
 
-#ilkheaderName{
+#ximfheaderName{
 	font-variant:small-caps;
 	font-weight:bold;
 }
 
-#ximfheaderName,
 #ximfheaderValue{
-	color:#b20000;
+	color:#b20000;	
 }
 
-#ximfmail-dialog-hdrInfo tree{
-	min-width:300px;
-	min-height:100px;
-	max-width:300px;	
+#signedHdrIcon[signed="ximfalert"]{
+	list-style-image : url("chrome://ximfmail/content/resource/hdr_sign_alert.png");	
+	visibility: visible;
 }

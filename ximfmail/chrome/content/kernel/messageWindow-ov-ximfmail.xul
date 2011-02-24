@@ -45,45 +45,32 @@
 <!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximfmail.dtd">
 
 <overlay id="ximfMessengerOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<script type="application/x-javascript"	src="chrome://ximfmail/content/messageWindow-ov-ximfmail.js" />
-
-	<vbox id="expandedHeaders">		
-  		<hbox id="ximfHeadBox"  flex="1">
-  			<spacer  flex="1"/>
-  			<image id="ximfSecurityClassificationLabelImg" />
-  			<spacer  flex="1"/> 
-  			<image id="ximfCategoryClassificationLabelImg" />
-  			<spacer  flex="10"/>
-  			<groupbox id="ximfGroupBox" hidden="true" flex="1" style="overflow: auto; max-height: 55px;">
-  			<hbox>
-  				<vbox>
-					<grid flex="1" >
-						<columns>
-							<column id="col1Grid1"  />
-							<column id="col2Grid1" />
-						</columns>
-						<rows id="rowsHeadersGrid1"/>
-	  				</grid>
-	  			</vbox>
-	  	 		<separator/>
-	  	 		<vbox>  		
-	  				<grid flex="1" >
-						<columns>
-							<column id="col1Grid2"  />
-							<column id="col2Grid2" />
-						</columns>
-						<rows id="rowsHeadersGrid2"/>
-	  				</grid>
-	  			</vbox>
-	  		</hbox>
-	  		</groupbox>  		
-		</hbox>		
-		<separator flex="1"/>
-	</vbox>	
 	
+	<script type="application/javascript"	src="chrome://ximfmail/content/jquery.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/controler-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/constant-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/messageAnalyser-ximfmail.js" />
+	<script type="application/javascript"	src="chrome://ximfmail/content/messageWindow-ov-ximfmail.js" />
+
+	<!-- Display Ximf pictures in message of new window-->
+	<!-- Display Ximf pictures in message -->	
+	<rows id="expandedHeaderRows">
+		<row id="ximfHeadBox" insertbefore="expandedfromRow" collapsed="true">
+			<label  value=""/>
+			<hbox>
+  				<image id="ximfSecurityClassificationLabelImg"/>
+  				<spacer  flex="1"/> 
+  				<image id="ximfCategoryClassificationLabelImg"/>
+  				<spacer  flex="1"/> 
+  			</hbox>  			
+		</row>
+	</rows>
+	
+	<!-- Display Ximf headers in message of new window -->
 	<vbox id="messagepanebox">	  		
-  	 	<vbox id="ximfmailMailPanel" insertafter="msgHeaderView" hidden="true">
-			<hbox id="ximfmailMailPanelFocusBar" flex="1" align="center">			
+  	 	<vbox id="ximfmailMailPanel" insertafter="msgHeaderView" collapsed="true">
+			<hbox id="ximfmailMailPanelFocusBar" class="ximfmailFocusBar" flex="1" align="center">			
 				<button class="ximfmailButton" id="ximfmailComposeMessageMaximize" tooltiptext="&ximfmail.compose.focus;" accesskey="+" hidden="true" />
 				<button class="ximfmailButton" id="ximfmailComposeMessageMinimize" tooltiptext="&ximfmail.compose.unfocus;" accesskey="-" />
 				<label id="ximfmailMailPanelTitle" value="&ximfmail.compose.headerTab;"/>
@@ -94,5 +81,5 @@
 				<tabbox id="ximfmailMailHeadersTablist" flex="1"/>
 			</hbox>	
 		</vbox>
-	</vbox>	
-</overlay>	
+	</vbox>
+</overlay>

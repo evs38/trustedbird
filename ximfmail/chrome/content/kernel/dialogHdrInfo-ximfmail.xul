@@ -43,42 +43,18 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximfmail.dtd">
 <?xml-stylesheet href="chrome://ximfmail/skin" type="text/css"?>
-
 <dialog id="ximfmail-dialog-hdrInfo" title="&dlgheader.hdrInfo.descr;"  
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"	 
 	buttons="accept"	 
 	buttonlabelaccept="OK"
-   	ondialogaccept="return doOK();"> 	
-	
-	<script type="application/x-javascript"	src="chrome://ximfmail/content/dialogHdrInfo-ximfmail.js" />	
-	<vbox>
-		<!-- <dialogheader id="dlgheader_hdrInfo"/> -->	
-		<spacer flex="1"/>		
-		<label id="ilkheaderName"/>
+   	ondialogaccept="return doOK();"
+   	onload="OnDisplayInformations();"> 		
+	<script type="application/javascript"	src="chrome://ximfmail/content/dialogHdrInfo-ximfmail.js" />	
+	<vbox flex="1">				
 		<label id="ximfheaderName"/>  
-		<vbox id="box-ilkheaderValue">		
-			<spacer flex="1"/>	
-			<description id="ilkheaderValue" flex="1"/>		
-		</vbox>
-		<vbox id="box-ilkheaderMultivalue" hidden="true">	
-			<spacer flex="1"/>		
-			<listbox id="ilkheaderMultivalue" rows="5" readonly="true"/>			
-		</vbox>					
-		<vbox id="box-ximfheaderValue" hidden="true">	
-			<spacer flex="1"/>		
-			<description id="ximfheaderValue"/>			
-		</vbox>		
-		
-		<!-- 
-		<tree flex="1" hidden="true">
-			<treecols>
-	    		<treecol id="hdrInfoTreeCol1" primary="true" flex="2"/>
-	    		<splitter class="tree-splitter"/>    		
-	    		<treecol id="hdrInfoTreeCol2" flex="1"/>
-	    		<splitter class="tree-splitter"/>
-	 		</treecols>
-		   <treechildren id="hdrInfoTreechildren"/>
-		</tree>	
-		 -->
+		<vbox id="box-ilkheaderValue" flex="1">	
+			<spacer flex="1"/>			
+			<textbox id="ximfheaderValue" rows="5" readonly="true" multiline="true" flex="1"/>			
+		</vbox>							
 	</vbox>
 </dialog>	

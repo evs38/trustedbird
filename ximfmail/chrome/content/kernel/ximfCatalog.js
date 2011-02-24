@@ -41,11 +41,7 @@
  * ***** END LICENSE BLOCK ***** */
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
-
 gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
-
-
-
 	
 /*
  * 
@@ -54,32 +50,39 @@ function XimfCatalog(){
 	// private:
 	var _rdfService = null;
 	var _dsCatalog = null;
-	var _urlCatalog = CHROME_XIMFMAIL_CATALOG;
+	var _urlCatalog = null
 	var _instanceCounter = 0; // instance counter for index RDF file
-	
-	function init(){
-		_rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
-		_dsCatalog = _rdfService.GetDataSource(CHROME_XIMFMAIL_CATALOG);				 
-		return true;
-	}
 	
 	// public:
 	if(typeof XimfCatalog.initialized == "undefined"){
+		// init datasources
+		try{						
+			// init RDF XPCOM Services	
+			_rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);		
+			_dsCatalog = Components.classes["@mozilla.org/rdf/datasource;1?name=in-memory-datasource"].createInstance(Components.interfaces.nsIRDFDataSource);
+			_rdfCUtils = Components.classes["@mozilla.org/rdf/container-utils;1"].getService(Components.interfaces.nsIRDFContainerUtils);
+		}catch(e){
+			gConsole.logStringMessage("[ximfmail - XimfCatalog construct ] \n " + e + "\nfile : " + e.fileName+"\nline : "+ e.lineNumber);		
+		}
+		
+		/*
+		 * get datasource object
+		 */
+		XimfCatalog.prototype.getDSCatalog = function(){			
+			return _dsCatalog;
+		};
+		
 		/*
 		 * read infomations from catalog
 		 */
 		XimfCatalog.prototype.getTarget = function(instance,predicate){
 			try{
-				init();
 				var resource = _rdfService.GetResource(instance);
 				var targets = _dsCatalog.ArcLabelsOut(resource);
 				while (targets.hasMoreElements()){	
 					var newpredicate = targets.getNext();
 					if (newpredicate instanceof Components.interfaces.nsIRDFResource){
-    					var target = _dsCatalog.GetTarget(resource, newpredicate, true);
-					    /*if (target instanceof Components.interfaces.nsIRDFResource){
-      						alert("Resource is: " + target.Value);
-    					}else*/
+    					var target = _dsCatalog.GetTarget(resource, newpredicate, true);					    
     					if (target instanceof Components.interfaces.nsIRDFLiteral){
       						//alert(newpredicate.Value + " : \n\r" + target.Value);
       						if(newpredicate.Value == predicate)
@@ -87,11 +90,9 @@ function XimfCatalog(){
     					}
   					}
 				}
-			}catch(e){
-//			alert("[XimfCatalog]error instance loading...." + e);
-			gConsole.logStringMessage("[ximfmail - XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
-						
-		}
+			}catch(e){	
+				gConsole.logStringMessage("[ximfmail - XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+			}
 		};
 		/*
 		 * create catalog with profile xml informations
@@ -99,32 +100,35 @@ function XimfCatalog(){
 		XimfCatalog.prototype.registerXimfmailProfileNode = function(domProfile){
 			try{
 				// default title of smtp message
+				var smtpXimfVersion = DEFAULT_XIMF_VERSION;
+				var smtpVersion = "1.0";
+				var smtpInstance = "smtp";
+				var smtpInstanceLabel = "";
 				try{
 					if(gPrefBranch){		
 						var val = gPrefBranch.getCharPref("ximfmail.smtp_msg.name");
-						if(val){ SMTP_INSTANCE = val; }						
+						if(val){ smtpInstance = val; }						
 					}
 				}catch(e){}
 				
-				// create Seq container
-				init();
+				// create Seq container				
 				var RDFCUtils = Components.classes["@mozilla.org/rdf/container-utils;1"].createInstance(Components.interfaces.nsIRDFContainerUtils);
-				var RDFC = Components.classes["@mozilla.org/rdf/container;1"].createInstance(Components.interfaces.nsIRDFContainer);
-				
-				var seqNode = _rdfService.GetResource("http://www.ximfmail.com/catalog");
-				//alert("_urlCatalog"+_urlCatalog+"-_dsCatalog:"+_dsCatalog.toString()+"-seqNode:"+seqNode);
-				RDFCUtils.MakeSeq(_dsCatalog, seqNode);
-				RDFC.Init(_dsCatalog, seqNode); 
-
-				// add datas from xml profile to RDF file
-		
+								
+				// create RDF resources
+				var seqNode = _rdfService.GetResource("http://www.ximfmail.com/catalog");								
+				var RDFC = null;	
+				try{			
+					RDFC = _rdfCUtils.MakeSeq(_dsCatalog, seqNode);					
+				}catch(e){
+						gConsole.logStringMessage("[ximfmail - XimfCatalog.registerXimfmailProfileNode ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+				}
+						
+				// add datas from xml profile to RDF file		
 				// Create theme List
-				var themeTag = domProfile.getElementsByTagName("theme");
+				var themeTag = domProfile.getElementsByTagName("theme");				
 				var theme = "";				
-				if(themeTag.length > 0){
-					//alert(themeTag[0].getAttribute("name"))
-					theme = themeTag[0].getAttribute("name");
-					theme = theme.toLowerCase();					
+				if(themeTag.length > 0){					
+					theme = themeTag[0].getAttribute("name");								
 					var newURI = "http://www.ximfmail.com/catalog/" + theme;			
 					RDFC.AppendElement(_rdfService.GetResource(newURI));
 					_dsCatalog.Assert(_rdfService.GetResource(newURI),
@@ -142,33 +146,24 @@ function XimfCatalog(){
 				RDFCUtils.MakeSeq(_dsCatalog, seqNode);
 				RDFC.Init(_dsCatalog, seqNode);
 				var instanceTag = themeTag[0].getElementsByTagName("instance");
-				var sValue="";	
-				
-				// create smtp entry, to not use extended headers
-				for(var i = 0; i < instanceTag.length; i++){
-					var idValue = instanceTag[i].getAttribute("id");
-					if(idValue == "smtp"){
-						SMTP_INSTANCE = instanceTag[i].getAttribute("name");
-						SMTP_VERSION = instanceTag[i].getAttribute("version");
-					}
-				}
-				
-				var sURI = "http://www.ximfmail.com/catalog/instance_"+theme +"/" +  _instanceCounter;			
-				RDFC.AppendElement(_rdfService.GetResource(sURI));
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#ximfVersion"), _rdfService.GetLiteral(SMTP_VERSION), true);
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#instance"),_rdfService.GetLiteral(SMTP_INSTANCE), true);
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#version"), _rdfService.GetLiteral(SMTP_VERSION), true);
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathSchema"),_rdfService.GetLiteral(SMTP_INSTANCE), true);
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathIhm"),_rdfService.GetLiteral(SMTP_INSTANCE), true);
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathRules"),_rdfService.GetLiteral(SMTP_INSTANCE), true);
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathDictionary"),_rdfService.GetLiteral(SMTP_INSTANCE), true);
-				_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#theme"),_rdfService.GetLiteral(SMTP_INSTANCE), true);	
-					
+				//alert(instanceTag.length + " instances in profile xml " + theme)
+				var sValue="";									
+				var bHasSmtpInstance=false;	
 				// create definitions entries				
 				for(var i = 0; i < instanceTag.length; i++){
 					try{
 						// default instance message, continue
-						if(instanceTag[i].getAttribute("id") == "smtp"){ continue; }
+						if(instanceTag[i].getAttribute("id") == "smtp"){	
+							bHasSmtpInstance = true;				 
+							smtpInstance = instanceTag[i].getAttribute("name");
+							smtpVersion = instanceTag[i].getAttribute("version");		
+							smtpXimfVersion = instanceTag[i].getAttribute("ximfVersion");	
+							try{
+								smtpInstanceLabel = instanceTag[i].getAttribute("label");
+							}catch(ex){}
+							if(!smtpInstanceLabel) smtpInstanceLabel = smtpInstance;
+							continue; 
+						}
 					}catch(e){}
 					//alert("instance : " + schemaTag[0].getAttribute("name") +" && "+ schemaTag[0].textContent);
 					// append resource element to sequence
@@ -183,7 +178,17 @@ function XimfCatalog(){
 					// 	append name of instance
 					_dsCatalog.Assert(_rdfService.GetResource(newURI),
 					_rdfService.GetResource("http://www.ximfmail.com/RDF#instance"),
-					_rdfService.GetLiteral(instanceTag[i].getAttribute("name").toLowerCase()), true);
+					_rdfService.GetLiteral(instanceTag[i].getAttribute("name")), true);					
+					
+					// 	append label of instance
+					try{
+						var instLabel = instanceTag[i].getAttribute("label");
+						if(!instLabel) instLabel = instanceTag[i].getAttribute("name");
+						//gConsole.logStringMessage("instLabel" + instLabel);
+						_dsCatalog.Assert(_rdfService.GetResource(newURI),
+						_rdfService.GetResource("http://www.ximfmail.com/RDF#instanceLabel"),
+						_rdfService.GetLiteral(instLabel), true);
+					}catch(ex){}
 					
 					// append version of instance
 					_dsCatalog.Assert(_rdfService.GetResource(newURI),
@@ -259,20 +264,40 @@ function XimfCatalog(){
 					_rdfService.GetResource("http://www.ximfmail.com/RDF#theme"),
 					_rdfService.GetLiteral(theme), true);									
 				}
-				_instanceCounter = _instanceCounter + instanceTag.length + 1;
-					
-				
+				// insert smtp entry
+				if(bHasSmtpInstance){
+					var sURI = "http://www.ximfmail.com/catalog/instance_"+theme +"/" +  _instanceCounter;			
+					RDFC.AppendElement(_rdfService.GetResource(sURI));
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#ximfVersion"), _rdfService.GetLiteral(smtpXimfVersion), true);
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#instance"),_rdfService.GetLiteral(smtpInstance), true);
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#version"), _rdfService.GetLiteral(smtpVersion), true);
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathSchema"),_rdfService.GetLiteral(smtpInstance), true);
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathIhm"),_rdfService.GetLiteral(smtpInstance), true);
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathRules"),_rdfService.GetLiteral(smtpInstance), true);
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#pathDictionary"),_rdfService.GetLiteral(smtpInstance), true);
+					_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#theme"),_rdfService.GetLiteral(smtpInstance), true);	
+					// 	append label of instance
+						try{
+							_dsCatalog.Assert(_rdfService.GetResource(sURI),_rdfService.GetResource("http://www.ximfmail.com/RDF#instanceLabel"),_rdfService.GetLiteral(smtpInstanceLabel), true);
+						}catch(ex){}				
+					// counter instances
+					_instanceCounter = _instanceCounter + instanceTag.length + 1;
+				}
 				// save datas to file DBG
-				_dsCatalog.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
-				var rdfXimfCatalogPath = getFilePathInProfile(gRelativeXimfCatalogPath);	
-				_dsCatalog.FlushTo("file:///" + rdfXimfCatalogPath);	
-				
+				//_dsCatalog.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
+				//var rdfXimfCatalogPath = getFilePathInProfile("extensions/{A627B834-BD9F-4b3f-9AF5-347B5A570402}/chrome/content/theme/ximfCatalogBck.rdf");	
+				//_dsCatalog.FlushTo("file:///" + rdfXimfCatalogPath);	
+				gConsole.logStringMessage("[ximfmail - XimfCatalog.registerXimfmailProfileNode ] - " + RDFC.GetCount() + " XIMF instances have been saved");
 			}catch(e){	
-				gConsole.logStringMessage("[ximfmail - XimfCatalog.registerXimfmailProfileNode ] \n " + e + "\nfile : " + e.fileName+"\nline : "+e.lineNumber);		
+				gConsole.logStringMessage("[ximfmail - XimfCatalog.registerXimfmailProfileNode ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 			}		
 		};
 		XimfCatalog.prototype.getNameInstance = function(instance){
 			return this.getTarget(instance,"http://www.ximfmail.com/RDF#instance");
+		};
+		
+		XimfCatalog.prototype.getLabelInstance = function(instance){
+			return this.getTarget(instance,"http://www.ximfmail.com/RDF#instanceLabel");
 		};
 		
 		XimfCatalog.prototype.getVersionInstance = function(instance){
@@ -306,8 +331,7 @@ function XimfCatalog(){
 		
 		XimfCatalog.prototype.getInstanceUri = function(ximfDefUri,ximfName,ximfVersion){
 			try{
-				/// get container of instance resources of current definition	
-				init();		
+				/// get container of instance resources of current definition							
 				var RDFCUtils = Components.classes["@mozilla.org/rdf/container-utils;1"].createInstance(Components.interfaces.nsIRDFContainerUtils);
 				
 				var rs_seqInstance = _rdfService.GetResource(ximfDefUri);				
@@ -322,13 +346,17 @@ function XimfCatalog(){
 						var thisName = this.getNameInstance(instance_resource);
 						var thisVersion = this.getVersionInstance(instance_resource);		
 						//alert("<"+thisName+"><"+thisVersion+">\n<"+ximfName+"><"+ximfVersion+">")
-						thisName = String_trim(thisName).toLowerCase();
-						if(thisName == String_trim(ximfName).toLowerCase()){
-							if(thisVersion == ximfVersion){
-								//alert("instance path found >>"+instance_resource);
+						if(thisName && thisVersion){
+							thisName = String_trim(thisName).toLowerCase();
+							if(thisName == String_trim(ximfName).toLowerCase()){
+								/*
+								if(thisVersion == ximfVersion){
+									//alert("instance path found >>"+instance_resource);
+									return instance_resource;
+								}*/
 								return instance_resource;
-							}
-						}		
+							}		
+						}
 					}					  
 							  /*
 							  DEBUG loop : list of predicats
@@ -342,37 +370,95 @@ function XimfCatalog(){
 								      alert("Literal is: " + newpredicate.Value);
 								 }
 							}*/
-				}			
+				}
+				
+				// search for instance in others definitions of catalog				
+				var completeCatalog = _rdfService.GetResource("http://www.ximfmail.com/catalog");
+				var containerDefinitions = RDFCUtils.MakeSeq(_dsCatalog, completeCatalog);
+				var children = containerDefinitions.GetElements();					
+				while (children.hasMoreElements()){
+					try{
+						// search uri instance with ximfVersion and ximfName	
+						var child = children.getNext();
+						if (child instanceof Components.interfaces.nsIRDFResource){	
+							var def_resource = child.ValueUTF8;
+							// get uri of definition container							
+							var seqUriInstance = this.getTarget(def_resource,"http://www.ximfmail.com/RDF#refSeq");							
+							if(seqUriInstance != ximfDefUri){								
+								var rs_seqInstance2 = _rdfService.GetResource(seqUriInstance);				
+								var containerInstances2 = RDFCUtils.MakeSeq(_dsCatalog, rs_seqInstance2);
+								var children2 = containerInstances2.GetElements();		
+								//alert("inspect uri in :\n" + def_resource+"\nref:\n"+ximfDefUri+"\n elments count = " + containerInstances2.GetCount())						
+								while (children2.hasMoreElements()){
+									// search uri instance with ximfVersion and ximfName	
+									var child2 = children2.getNext();
+									if (child2 instanceof Components.interfaces.nsIRDFResource){	
+										var instance_resource2 = child2.ValueUTF8;									
+										var thisName2 = this.getNameInstance(instance_resource2);										
+										if(thisName2){
+											thisName2 = String_trim(thisName2).toLowerCase();
+											if(thisName2 == String_trim(ximfName).toLowerCase()){	
+												//alert("instance_resource matched = "+instance_resource2);						
+												return instance_resource2;
+											}		
+										}
+									}
+								}	
+							}
+						}	
+					}catch(e){
+						gConsole.logStringMessage("[ximfmail - XimfCatalog - getInstanceUri] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+					}					  
+				}					
 			}catch(e){
 				gConsole.logStringMessage("[ximfmail - XimfCatalog - getInstanceUri] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
-				
 			}
 			return null;
 		}
 		
 		// array of instances of one definition
-		XimfCatalog.prototype.getInstanceList = function(definition){
-			try{/*
-				init();
-				var resource = _rdfService.GetResource(definition);
-				var targets = _dsCatalog.ArcLabelsOut(resource);
-				while (targets.hasMoreElements()){	
-					var newpredicate = targets.getNext();
-					if (newpredicate instanceof Components.interfaces.nsIRDFResource){
-    					var target = _dsCatalog.GetTarget(resource, newpredicate, true);					  
-    					if (target instanceof Components.interfaces.nsIRDFLiteral){
-      						//alert(newpredicate.Value + " : \n\r" + target.Value);
-      						if(newpredicate.Value == predicate)
-      							return target.Value;
-    					}
-  					}
-				}*/
+		XimfCatalog.prototype.getInstanceList = function(){
+			var arrayInstancesUri = [];
+			try{				
+				// search for instance in others definitions of catalog
+				var RDFCUtils = Components.classes["@mozilla.org/rdf/container-utils;1"].createInstance(Components.interfaces.nsIRDFContainerUtils);
+				var completeCatalog = _rdfService.GetResource("http://www.ximfmail.com/catalog");
+				var containerDefinitions = RDFCUtils.MakeSeq(_dsCatalog, completeCatalog);
+				var children = containerDefinitions.GetElements();					
+				while (children.hasMoreElements()){
+					try{
+						// search uri instance with ximfVersion and ximfName	
+						var child = children.getNext();
+						if (child instanceof Components.interfaces.nsIRDFResource){	
+							var def_resource = child.ValueUTF8;
+							// get uri of definition container							
+							var seqUriInstance = this.getTarget(def_resource,"http://www.ximfmail.com/RDF#refSeq");	
+							//arrayInstancesUri.push(seqUriInstance);
+													
+							var rs_seqInstance2 = _rdfService.GetResource(seqUriInstance);				
+							var containerInstances2 = RDFCUtils.MakeSeq(_dsCatalog, rs_seqInstance2);
+							var children2 = containerInstances2.GetElements();		
+							//alert("inspect uri in :\n" + def_resource+"\nref:\n"+ximfDefUri+"\n elments count = " + containerInstances2.GetCount())						
+							while (children2.hasMoreElements()){
+								// search uri instance with ximfVersion and ximfName	
+								var child2 = children2.getNext();
+								if (child2 instanceof Components.interfaces.nsIRDFResource){
+									var instance_resource2 = child2.ValueUTF8;				
+									arrayInstancesUri.push(instance_resource2);								
+								}								
+							}
+							
+						}	
+					}catch(e){
+						gConsole.logStringMessage("[ximfmail - XimfCatalog - getInstanceUri] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+					}					  
+				}
 			}catch(e){
-//			alert("[XimfCatalog]error instance loading...." + e);
-			gConsole.logStringMessage("[ximfmail - XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
-						
-		}
-			return "";
+//				alert("[XimfCatalog]error instance loading...." + e);
+				gConsole.logStringMessage("[ximfmail - XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+			}
+			
+			return arrayInstancesUri;
 		};
 		
 		XimfCatalog.initialized = true;

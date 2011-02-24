@@ -48,8 +48,8 @@
 	class="color-dialog" onload="parent.onPanelLoaded('am-ximfmail.xul');"
 	orient="vertical">
 
-	<script type="application/x-javascript"
-		src="chrome://ximfmail/content/am-ximfmail.js" />
+	<script type="application/javascript" src="chrome://ximfmail/content/ximfmail.js" />
+	<script type="application/javascript" src="chrome://ximfmail/content/am-ximfmail.js" />
 	
 	<broadcasterset>
   		<broadcaster id="isUsingXimfail" disabled="true"/>
@@ -61,50 +61,48 @@
 	<vbox id="am-ximfmailBox">
 		<separator />
 		<hbox>
-			<vbox>
-				<checkbox id="checkListTheme" label="&ximfmail.am.themeChoice;" />
-				<menulist id="listTheme" observes="isUsingXimfail">
-					<menupopup
-						datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
-						ref="http://www.ximfmail.com/catalog"
-						>
-						<template>
-							<rule>
-								<conditions>
-									<content uri="?list" />
-									<member container="?list"
-										child="?elt" />
-									<triple subject="?elt"
-										predicate="http://www.ximfmail.com/RDF#refSeq"
-										object="?refSeq" />
-									<triple subject="?elt"
-										predicate="http://www.ximfmail.com/RDF#name" object="?name" />
-								</conditions>
-								<action>
-									<menuitem uri="?elt" value="?refSeq"
-										label="?name" />
-								</action>
-							</rule>
-						</template>
-					</menupopup>
-				</menulist>
-			</vbox>
+			<checkbox id="checkListTheme" label="&ximfmail.am.themeChoice;" />
+			<menulist id="listTheme" observes="isUsingXimfail" flex="1">
+				<menupopup
+					datasources="rdf:null"					
+					ref="http://www.ximfmail.com/catalog"
+					id="listThemPopup">
+					<template>
+						<rule>
+							<conditions>
+								<content uri="?list" />
+								<member container="?list"
+									child="?elt" />
+								<triple subject="?elt"
+									predicate="http://www.ximfmail.com/RDF#refSeq"
+									object="?refSeq" />
+								<triple subject="?elt"
+									predicate="http://www.ximfmail.com/RDF#name" object="?name" />
+							</conditions>
+							<action>
+								<menuitem uri="?elt" value="?refSeq"
+									label="?name" />
+							</action>
+						</rule>
+					</template>
+				</menupopup>
+			</menulist>			
 		</hbox>
-		<groupbox>
+		<groupbox flex="1">
 			<caption>
-				<label value="&ximfmail.am.instanceGroup.composition;" />
+				<label value="&ximfmail.am.instanceGroup.message;" />
 			</caption>
-			<grid>
+			<grid flex="1">
 				<columns>
 					<column id="col1" />
-					<column id="col2" />
+					<column id="col2" flex="1"/>
 				</columns>
 				<rows>
 					<row>
 						<label value="&ximfmail.am.instanceComposeChoice;" />
-						<menulist id="instanceComposeList" observes="isUsingXimfail">
+						<menulist id="instanceComposeList" observes="isUsingXimfail" flex="1">
 							<menupopup id="instanceCompose"
-								datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf" ref="">
+								datasources="rdf:null" ref="">
 								<template id="tplInstanceMenu">
 									<rule>
 										<conditions>
@@ -116,71 +114,35 @@
 												object="?ximfVersion" />
 											<triple subject="?elt"
 												predicate="http://www.ximfmail.com/RDF#instance"
-												object="?name" />											
+												object="?name" />	
+											<triple subject="?elt"
+												predicate="http://www.ximfmail.com/RDF#instanceLabel"
+												object="?label" />												
 										</conditions>
 										<action>
-											<menuitem uri="?elt" value="?elt" label="?name"/>												
+											<menuitem uri="?elt" value="?elt" label="?label"/>												
 										</action>
 									</rule>
 								</template>
 							</menupopup>
 						</menulist>
-					</row>
-					<row  hidden="true">
-						<label
-							value="&ximfmail.am.instanceAnswerChoice;" />
-						<menulist id="instanceAnswerList" observes="isUsingXimfail">
-							<menupopup id="instanceAnswer"
-								datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
-								ref=""
-								template="tplInstanceMenu" />
-						</menulist>
-					</row>
-					<row  hidden="true">
-						<label
-							value="&ximfmail.am.instanceTransferChoice;" />
-						<menulist id="instanceForwardList" observes="isUsingXimfail">
-							<menupopup 
-								id="instanceForward"
-								datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
-								ref=""
-								template="tplInstanceMenu" />
-						</menulist>
-					</row>
-				</rows>
-			</grid>
-			<checkbox id="xsmtpComptibilityBox" label="&ximfmail.am.xsmtpCompatibilityCheck;" observes="isUsingXimfail" />
-			<!-- 
-			<checkbox id="secureHeadersRuleBox" label="&ximfmail.am.secureHeadersRuleCheck;" observes="isUsingXimfail" />
-			<checkbox id="signMsgAlwaysRuleBox" label="&ximfmail.am.signMsgAlwaysRuleCheck;" observes="isUsingXimfail" />
-			 -->			
-		</groupbox>		
-		<groupbox>
-			<caption>
-				<label value="&ximfmail.am.instanceGroup.reception;" />
-			</caption>
-			<grid>
-				<columns>
-					<column id="col01" />
-					<column id="col02" />
-				</columns>
-				<rows>
+					</row>			
 					<row>
 						<label 	value="&ximfmail.am.instanceTreeThreadChoice;" />
-						<menulist id="instanceTreeThreadList" observes="isUsingXimfail">
+						<menulist id="instanceTreeThreadList" observes="isUsingXimfail" flex="1">
 							<menupopup 
 								id="instanceTreeThread"
-								datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
+								datasources="rdf:null"
 								ref=""
 								template="tplInstanceMenu" />
 						</menulist>
 					</row>
 					<row>
 						<label 	value="&ximfmail.am.instanceMailPanelChoice;" />
-						<menulist id="instanceMailPanelList" observes="isUsingXimfail">
+						<menulist id="instanceMailPanelList" observes="isUsingXimfail" flex="1">
 							<menupopup 
 								id="instanceMailPanel"
-								datasources="chrome://theme_ximfmail/content/ximfCatalog.rdf"
+								datasources="rdf:null"
 								ref=""
 								template="tplInstanceMenu" />
 						</menulist>
@@ -190,6 +152,11 @@
 			<!-- 
 			<checkbox id="ximfAdvancedReceivedMsg" label="afficher les entetes" observes="isUsingXimfail" />
 			 -->
+			<checkbox id="xsmtpComptibilityBox" label="&ximfmail.am.xsmtpCompatibilityCheck;" observes="isUsingXimfail" />
+			<!-- 
+			<checkbox id="secureHeadersRuleBox" label="&ximfmail.am.secureHeadersRuleCheck;" observes="isUsingXimfail" />
+			<checkbox id="signMsgAlwaysRuleBox" label="&ximfmail.am.signMsgAlwaysRuleCheck;" observes="isUsingXimfail" />
+			 -->	 
 		</groupbox>
 		
 	</vbox>

@@ -51,6 +51,7 @@ var XIMF_PREF_IDENTITY_MAIL_PANEL_REF = "ximfmail_instance_mail_panel_ref";
 var PREF_DEFAULT_CHARSET = "mailnews.view_default_charset";
 var PREF_MAILNEWS_DEFAULT_CHARSET = "view_default_charset";
 var PREF_MAILNEWS = "mailnews";
+var PREF_MSGWINDOW_REFRESH = "ximfmail.msgwindow.hdr";
 
 /*
  * Schema xml elements, attributes...
@@ -75,7 +76,7 @@ var XIMF_HEADER_INSTANCE_NAME = "x-instance-name";
 
 
 //
-var DEFAULT_XIMF_VERSION = "2.0";
+var DEFAULT_XIMF_VERSION = "1.0";
 var DEFAULT_XIMF_NAME = "XIMF_BASIC";
 var XIMF_VERSION_HEADER = "X-XIMF-Version";
 var XIMF_NAME_HEADER = "X-XIMF-NAME";

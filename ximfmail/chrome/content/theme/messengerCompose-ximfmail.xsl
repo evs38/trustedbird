@@ -187,7 +187,7 @@
 	</xsl:template>
 	
 	<!-- ****************************************************** -->
-	<!-- template to append headers ximf xithout ihm definition -->
+	<!-- template to append headers ximf without ihm definition -->
 	<xsl:template name="AddHeadersHidden">
 		<vbox hidden="true">		
 			<xsl:for-each select="/ximf:instance/ximf:header">
@@ -331,11 +331,17 @@
             						</xsl:call-template>
 								</xsl:otherwise>
 							</xsl:choose>
-            			</xsl:if> 
-
-						<!-- Create Popupset set/multiset -->
-						<xsl:if test="name()='ximf:set' or name()='ximf:multiset'">
-							<popup id="{$_idPopupSet}" ximfreftextbox="{$_idBox}" position="after_start" ignorekeys="true" >
+            			</xsl:if>
+					
+						<!-- Create panel element set/multiset -->
+						<xsl:if test="name()='ximf:set' or name()='ximf:multiset'">							
+							<panel id="{$_idPopupSet}" ximfreftextbox="{$_idBox}" ximfmaxitem="1">								
+								<xsl:if test="@maxItem">
+									<xsl:attribute name="ximfmaxitem"><xsl:value-of select="@maxItem" /></xsl:attribute>
+								</xsl:if>								
+								<xsl:if test="@ximfdefault">
+	        						<xsl:attribute name="ximfdefault"><xsl:value-of select="@ximfdefault" /></xsl:attribute>
+	        					</xsl:if>								
 								<xsl:call-template name="GetFacetsAttribute">
 									<xsl:with-param name="_refNode" select="." />
 								</xsl:call-template>
@@ -343,15 +349,19 @@
 		            					<xsl:with-param name="_refNode" select="." />
             							<xsl:with-param name="_refHeader" select="$_headerId" />
             							<xsl:with-param name="_refBox" select="$_idBox" />            							            							            					
-		        					</xsl:call-template>									            			           			
-            					<xsl:call-template name="ManageSetAndMultiset">
-            						<xsl:with-param name="_refNode" select="." />
-            						<xsl:with-param name="_refHeader" select="$_headerId" />
-            						<xsl:with-param name="_refBox" select="$_idBox" />
-            						<xsl:with-param name="_refPopupBox" select="$_idPopupSet" />
-            						<xsl:with-param name="_positionPopup" select="'after_start'" />
-            					</xsl:call-template>
-            				</popup>
+		        					</xsl:call-template>
+		        				<arrowscrollbox orient="vertical" style="max-height:400px;">	
+		        				<richlistbox>										            			           			
+	            					<xsl:call-template name="AddSetAndMultisetPanel">
+	            						<xsl:with-param name="_refNode" select="." />
+	            						<xsl:with-param name="_refHeader" select="$_headerId" />
+	            						<xsl:with-param name="_refBox" select="$_idBox" />
+	            						<xsl:with-param name="_refPopupBox" select="$_idPopupSet" />
+	            						<xsl:with-param name="_positionPopup" select="'after_start'" />
+	            					</xsl:call-template>
+            					</richlistbox>
+            					</arrowscrollbox>
+            				</panel>
 						</xsl:if>
 						
             			<!-- Create Popupset compstring -->
@@ -402,7 +412,7 @@
 				<textbox flex="1" id="{$_refBox}" refheader="{$_refHeader}" class="ximfDatetime" context="{$idContextBox}" readonly="false">
 					<button class="ximfmailButtonTxt ximfDatepicker" refBox="{$_refBox}"/>					
 				</textbox>								
-				<xsl:call-template name="AppendEraser">
+				<xsl:call-template name="AppendToolButtons">
 					<xsl:with-param name="refBox" select="$_refBox"/>							
 				</xsl:call-template>		
 			</xsl:when>
@@ -410,17 +420,17 @@
 				<ximfaddress id="{$_refBox}" refheader="{$_refHeader}" />				
 			</xsl:when>
 			<xsl:otherwise>
-				<textbox flex="1" id="{$_refBox}" refheader="{$_refHeader}" class="XimfTextboxDisplay" context="{$idContextBox}" popup="{$_refPopupBox}"  readonly="false">
+				<textbox flex="1" id="{$_refBox}" refheader="{$_refHeader}" class="XimfTextboxDisplay" context="{$idContextBox}" refpanel="{$_refPopupBox}"  readonly="false">
 					<xsl:if test="string-length($_refNode/@maxItem) > 0">
 						<xsl:attribute name="ximfmaxitems"><xsl:value-of select="$_refNode/@maxItem"/></xsl:attribute>
 					</xsl:if>
 					<xsl:if test="string-length($_refNode/@separator) > 0">
 						<xsl:attribute name="ximfseparator"><xsl:value-of select="$_refNode/@separator"/></xsl:attribute>
 					</xsl:if>	
-					<button class="ximfmailButtonTxt ximfPopup" tooltiptext="click to open menu"/>		
+					<button class="ximfmailButtonTxt ximfPopup" refpanel="{$_refPopupBox}"/>		
 				</textbox>
 				<!-- Eraser image -->
-				<xsl:call-template name="AppendEraser">
+				<xsl:call-template name="AppendToolButtons">
 					<xsl:with-param name="refBox" select="$_refBox"/>							
 				</xsl:call-template>
 			</xsl:otherwise>
@@ -486,7 +496,7 @@
 	
 	<!-- ******************************** -->	
 	<!-- Manage set and multiset elements -->
-	<xsl:template name="ManageSetAndMultiset">
+	<xsl:template name="AddSetAndMultisetPanel">
 		<xsl:param name="_refNode"/>
         <xsl:param name="_refHeader"/>
         <xsl:param name="_refBox"/>
@@ -504,7 +514,7 @@
 					 <xsl:choose>
 						<xsl:when test="count(//*[@id=$_refHead])>0">		
 							<xsl:for-each select="//*[@id=$_refHead]">
-								<xsl:call-template name="ManageSetAndMultiset">
+								<xsl:call-template name="AddSetAndMultisetPanel">
 		            				<xsl:with-param name="_refNode" select="." />
             						<xsl:with-param name="_refHeader" select="$_refHeader" />
             						<xsl:with-param name="_refBox" select="$_refBox" />
@@ -643,7 +653,7 @@
 		<xsl:param name="_refConcat"/>
 		<xsl:param name="_nbRows" select="1"/>					
 	
-		<textbox ximfreftextbox="{$_refBox}" class="ximfInputbox" rows="1">			
+		<textbox ximfreftextbox="{$_refBox}" class="ximfInputbox" rows="1" flex="1">			
 			<xsl:if test="number(@maxItem) > 1"> <!-- input box is in tree of menu -->
 				<xsl:attribute name="rows">4</xsl:attribute>
 	       		<xsl:attribute name="ximfmaxitems"><xsl:value-of select="@maxItem" /></xsl:attribute>
@@ -678,94 +688,88 @@
 					<xsl:with-param name="_refNode" select="$_refNode"/>								
 			</xsl:call-template>
 		</xsl:variable>
-        <xsl:variable name="_newConcat" select="concat($_refConcat,'+',$_id)"/>
-	
-		<xsl:element name="menu">
-			<xsl:attribute name="id"><xsl:value-of select="$_id"/></xsl:attribute>    
-			<xsl:attribute name="ximfconcatid"><xsl:value-of select="$_newConcat"/></xsl:attribute>
-			<xsl:attribute name="label">
-				<xsl:call-template	name="getInternational">
-		    		<xsl:with-param	name="ilk" select="@ilk" />            					
-		    	</xsl:call-template>
-		    </xsl:attribute>		        			 
-		    <xsl:attribute name="ximfvalue"><xsl:value-of select="@content"/></xsl:attribute>
-		    <xsl:if test="@technicalContent">
-		    		<xsl:attribute name="ximftecvalue"><xsl:value-of select="@technicalContent" /></xsl:attribute>
-		    </xsl:if>		    
-			<xsl:call-template name="GetFacetsAttribute">
-				<xsl:with-param name="_refNode" select="." />
-			</xsl:call-template>
-			<xsl:if test="@contentPositionEnd">
-				<xsl:attribute name="ximfcompositionend"><xsl:value-of select="@contentPositionEnd" /></xsl:attribute>
-			</xsl:if>			
-			<xsl:element name="menupopup">
-				<xsl:attribute name="id">
-					<xsl:call-template name="GetUNID">									
-						<xsl:with-param name="_refNode" select="."/>								
-					</xsl:call-template>
-				</xsl:attribute>		
-				<xsl:attribute name="position" select="'end_before'"/>
-				<xsl:call-template name="GetXimfProperties">
-		        	<xsl:with-param name="_refNode" select="." />
-            		<xsl:with-param name="_refHeader" select="$_refHeader" />
-            		<xsl:with-param name="_refBox" select="$_refBox" />            							            							            					
-		        </xsl:call-template>	
-										
-			<xsl:for-each select="*">
-				<xsl:choose>
-					<xsl:when test="name()='ximf:compstring'" >
-						<xsl:if test="position()=1">						
-								<xsl:call-template name="CreateMenu">									
-									<xsl:with-param name="_refNode" select="."/>
-									<xsl:with-param name="_refHeader" select="$_refHeader"/>
-									<xsl:with-param name="_refBox" select="$_refBox" />
-									<xsl:with-param name="_refConcat" select="$_newConcat"/>
-								</xsl:call-template>		
-								<xsl:for-each select="./following-sibling::*">
+		<xsl:variable name="_newConcat" select="$_id"/>
+        <!-- <xsl:variable name="_newConcat" select="concat($_refConcat,'+',$_id)"/>  -->
+		<richlistitem align="start" ximfenable="true">
+			<xsl:if test=".[@ximfchild]">
+		       	<xsl:attribute name="ximfchild"><xsl:value-of select="@ximfchild" /></xsl:attribute>
+		   </xsl:if>		
+			<xsl:element name="checkbox">
+				<xsl:attribute name="id"><xsl:value-of select="$_id"/></xsl:attribute>    
+				<xsl:attribute name="disabled">false</xsl:attribute>
+				<xsl:attribute name="ximfconcatid"><xsl:value-of select="$_newConcat"/></xsl:attribute>
+				<xsl:attribute name="label">
+					<xsl:call-template	name="getInternational">
+			    		<xsl:with-param	name="ilk" select="@ilk" />            					
+			    	</xsl:call-template>
+			    </xsl:attribute>		        			 
+			    <xsl:attribute name="ximfvalue"><xsl:value-of select="@content"/></xsl:attribute>
+			    <xsl:if test="@technicalContent">
+			    		<xsl:attribute name="ximftecvalue"><xsl:value-of select="@technicalContent" /></xsl:attribute>
+			    </xsl:if>		    
+				<xsl:call-template name="GetFacetsAttribute">
+					<xsl:with-param name="_refNode" select="." />
+				</xsl:call-template>
+				<xsl:if test="@contentPositionEnd">
+					<xsl:attribute name="ximfcompositionend"><xsl:value-of select="@contentPositionEnd" /></xsl:attribute>
+				</xsl:if>
+			</xsl:element>				
+				<xsl:for-each select="*">
+					<xsl:choose>
+						<xsl:when test="name()='ximf:compstring'" >
+							<xsl:if test="position()=1">						
 									<xsl:call-template name="CreateMenu">									
 										<xsl:with-param name="_refNode" select="."/>
 										<xsl:with-param name="_refHeader" select="$_refHeader"/>
 										<xsl:with-param name="_refBox" select="$_refBox" />
-										<xsl:with-param name="_refConcat" select="$_newConcat"/>								
-									</xsl:call-template>									
-								</xsl:for-each>												
-							<!--  </xsl:element> --> 
-						</xsl:if>
-					</xsl:when>
-					<xsl:when test="name()='ximf:set' or name()='ximf:multiset'">
-								<xsl:call-template name="ManageSetAndMultiset">
-	            				<xsl:with-param name="_refNode" select="." />
-	            				<xsl:with-param name="_refHeader" select="$_refHeader" />
-	            				<xsl:with-param name="_refBox" select="$_refBox" />
-	            				<xsl:with-param name="_refPopupBox" select="$_refPopupBox" />
-	            				<xsl:with-param name="_positionPopup" select="'end_before'" />
-	            				<xsl:with-param name="_refConcat" select="$_newConcat"/> 
-	            			</xsl:call-template>	            			
+										<xsl:with-param name="_refConcat" select="$_newConcat"/>
+									</xsl:call-template>		
+									<xsl:for-each select="./following-sibling::*">
+										<xsl:call-template name="CreateMenu">									
+											<xsl:with-param name="_refNode" select="."/>
+											<xsl:with-param name="_refHeader" select="$_refHeader"/>
+											<xsl:with-param name="_refBox" select="$_refBox" />
+											<xsl:with-param name="_refConcat" select="$_newConcat"/>								
+										</xsl:call-template>									
+									</xsl:for-each>												
+								<!--  </xsl:element> --> 
+							</xsl:if>
 						</xsl:when>
-						<xsl:when test="name()='ximf:string'">
-							<xsl:choose>
-								<xsl:when test="@editable='true'">
-									<xsl:call-template name="CreateInputBox">								
-										<xsl:with-param name="_refPopupBox" select="$_refPopupBox"/>
-										<xsl:with-param name="_refBox" select="$_refBox"/>
-										<xsl:with-param name="_refHeader" select="$_refHeader" />
-										<xsl:with-param name="_refConcat" select="$_newConcat"/> 
-									</xsl:call-template>							
-         						</xsl:when>
-         						<xsl:otherwise>
-									<xsl:call-template name="CreateMenuitem">							
-            							<xsl:with-param name="_refString" select="$_refNode" />  
-            							<xsl:with-param name="_refHeader" select="$_refHeader" />
-            							<xsl:with-param name="_refBox" select="$_refBox" />            				    
-            							<xsl:with-param name="_refConcat" select="$_newConcat"/>      										            					
-        							</xsl:call-template>
-								</xsl:otherwise>        							
-        					</xsl:choose>	
-						</xsl:when>				
-					</xsl:choose>													
-				</xsl:for-each>
-			</xsl:element>
-		</xsl:element>   
+						<xsl:when test="name()='ximf:set' or name()='ximf:multiset'">
+							<vbox>
+								<xsl:call-template name="AddSetAndMultisetPanel">
+		            				<xsl:with-param name="_refNode" select="." />
+		            				<xsl:with-param name="_refHeader" select="$_refHeader" />
+		            				<xsl:with-param name="_refBox" select="$_refBox" />
+		            				<xsl:with-param name="_refPopupBox" select="$_refPopupBox" />
+		            				<xsl:with-param name="_positionPopup" select="'end_before'" />
+		            				<xsl:with-param name="_refConcat" select="$_newConcat"/> 
+		            			</xsl:call-template>
+		            		</vbox>	            		         			
+						</xsl:when>
+							<xsl:when test="name()='ximf:string'">
+								<xsl:choose>
+									<xsl:when test="@editable='true'">
+										<xsl:call-template name="CreateInputBox">								
+											<xsl:with-param name="_refPopupBox" select="$_refPopupBox"/>
+											<xsl:with-param name="_refBox" select="$_refBox"/>
+											<xsl:with-param name="_refHeader" select="$_refHeader" />
+											<xsl:with-param name="_refConcat" select="$_newConcat"/> 
+										</xsl:call-template>							
+	         						</xsl:when>
+	         						<xsl:otherwise>
+										<xsl:call-template name="CreateMenuitem">							
+	            							<xsl:with-param name="_refString" select="$_refNode" />  
+	            							<xsl:with-param name="_refHeader" select="$_refHeader" />
+	            							<xsl:with-param name="_refBox" select="$_refBox" />            				    
+	            							<xsl:with-param name="_refConcat" select="$_newConcat"/>      										            					
+	        							</xsl:call-template>
+									</xsl:otherwise>        							
+	        					</xsl:choose>	
+							</xsl:when>				
+						</xsl:choose>													
+					</xsl:for-each>			   
+		</richlistitem>
 	</xsl:template>
 	
 	<!-- *********************** -->
@@ -792,28 +796,30 @@
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
-			<xsl:element name="menuitem">
-				<xsl:attribute name="class">ximfItem</xsl:attribute>
-				<xsl:attribute name="id"><xsl:value-of select="$_idmenuitem" /></xsl:attribute>													
-				<xsl:attribute name="label">
-	   				<xsl:call-template	name="getInternational">
-	            			<xsl:with-param	name="ilk" select="@ilk" />            					
-	        		</xsl:call-template> 
-	        	</xsl:attribute>
-	        	<xsl:attribute name="ximfvalue"><xsl:value-of select="@content" /></xsl:attribute>
-	        	<xsl:attribute name="ximftextbox"><xsl:value-of select="$_refBox" /></xsl:attribute>
-	        	<xsl:if test=".[@technicalContent]">
-	        		<xsl:attribute name="ximftecvalue"><xsl:value-of select="@technicalContent" /></xsl:attribute>
-	        	</xsl:if>	        	
-	        	<xsl:if test="string-length($_refConcat) > 0"> <!-- menuitem is in tree of menu -->
-	        		<xsl:attribute name="ximfconcatid"><xsl:value-of select="$_refConcat" /></xsl:attribute>        	
-	        	</xsl:if>
-	        	<!-- manage link values -->
-	        	<xsl:if test="./ximf:linkedValue">
-	        		<xsl:attribute name="linkpopupbox"><xsl:value-of select="./ximf:linkedValue/@ref"/></xsl:attribute>
-	        	</xsl:if>	          	
-			</xsl:element>
-			</xsl:otherwise>
+					<richlistitem ximfenable="true">
+						<xsl:element name="menuitem">
+							<xsl:attribute name="class">ximfItem</xsl:attribute>
+							<xsl:attribute name="id"><xsl:value-of select="$_idmenuitem" /></xsl:attribute>													
+							<xsl:attribute name="label">
+				   				<xsl:call-template	name="getInternational">
+				            			<xsl:with-param	name="ilk" select="@ilk" />            					
+				        		</xsl:call-template> 
+				        	</xsl:attribute>
+				        	<xsl:attribute name="ximfvalue"><xsl:value-of select="@content" /></xsl:attribute>
+				        	<xsl:attribute name="ximftextbox"><xsl:value-of select="$_refBox" /></xsl:attribute>
+				        	<xsl:if test=".[@technicalContent]">
+				        		<xsl:attribute name="ximftecvalue"><xsl:value-of select="@technicalContent" /></xsl:attribute>
+				        	</xsl:if>	        	
+				        	<xsl:if test="string-length($_refConcat) > 0"> <!-- menuitem is in tree of menu -->
+				        		<xsl:attribute name="ximfconcatid"><xsl:value-of select="$_refConcat" /></xsl:attribute>        	
+				        	</xsl:if>
+				        	<!-- manage link values -->
+				        	<xsl:if test="./ximf:linkedValue">
+				        		<xsl:attribute name="linkpopupbox"><xsl:value-of select="./ximf:linkedValue/@ref"/></xsl:attribute>
+				        	</xsl:if>	          	
+						</xsl:element>
+					</richlistitem>
+				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:for-each>
 	</xsl:template>
@@ -826,32 +832,35 @@
 		<xsl:param name="_refBox"/>
 		<xsl:param name="_setType"/>	
 		<xsl:param name="_refConcat"/>	
-		<xsl:for-each select="$_refString">					
-			<xsl:element name="checkbox">
-				<xsl:attribute name="class">ximCheckbox</xsl:attribute>
-				<xsl:attribute name="id">
-					<xsl:call-template name="GetUNID">
-						<xsl:with-param name="_refNode" select="."/>
-					</xsl:call-template>
-				</xsl:attribute>
-				<xsl:attribute name="label">
-	   				<xsl:call-template	name="getInternational">
-	            		<xsl:with-param	name="ilk" select="@ilk" />            					
-	        		</xsl:call-template> 
-	        	</xsl:attribute>
-	        	
-	        	<xsl:attribute name="ximfvalue"><xsl:value-of select="@content" /></xsl:attribute>
-	        	<xsl:if test=".[@technicalContent]">
-	        		<xsl:attribute name="ximftecvalue"><xsl:value-of select="@technicalContent" /></xsl:attribute>
-	        	</xsl:if>	        	
-	        	<xsl:if test="string-length($_refConcat) > 0"> <!-- menuitem is in tree of menu -->
-	        		<xsl:attribute name="ximfconcatid"><xsl:value-of select="$_refConcat" /></xsl:attribute>        	
-	        	</xsl:if>
-	        	<!-- manage link values -->
-	        	<xsl:if test="./ximf:linkedValue">
-	        		<xsl:attribute name="linkpopupbox"><xsl:value-of select="./ximf:linkedValue/@ref"/></xsl:attribute>
-	        	</xsl:if>
-			</xsl:element>
+		<xsl:for-each select="$_refString">	
+			<richlistitem ximfenable="true">				
+				<xsl:element name="checkbox">
+					<xsl:attribute name="class">ximCheckbox</xsl:attribute>
+					<xsl:attribute name="disabled">false</xsl:attribute>
+					<xsl:attribute name="id">
+						<xsl:call-template name="GetUNID">
+							<xsl:with-param name="_refNode" select="."/>
+						</xsl:call-template>
+					</xsl:attribute>
+					<xsl:attribute name="label">
+		   				<xsl:call-template	name="getInternational">
+		            		<xsl:with-param	name="ilk" select="@ilk" />            					
+		        		</xsl:call-template> 
+		        	</xsl:attribute>
+		        	
+		        	<xsl:attribute name="ximfvalue"><xsl:value-of select="@content" /></xsl:attribute>
+		        	<xsl:if test=".[@technicalContent]">
+		        		<xsl:attribute name="ximftecvalue"><xsl:value-of select="@technicalContent" /></xsl:attribute>
+		        	</xsl:if>	        	
+		        	<xsl:if test="string-length($_refConcat) > 0"> <!-- menuitem is in tree of menu -->
+		        		<xsl:attribute name="ximfconcatid"><xsl:value-of select="$_refConcat" /></xsl:attribute>        	
+		        	</xsl:if>
+		        	<!-- manage link values -->
+		        	<xsl:if test="./ximf:linkedValue">
+		        		<xsl:attribute name="linkpopupbox"><xsl:value-of select="./ximf:linkedValue/@ref"/></xsl:attribute>
+		        	</xsl:if>
+				</xsl:element>
+			</richlistitem>
 		</xsl:for-each>
 	</xsl:template>
 	
@@ -897,18 +906,20 @@
 	<xsl:template name="CreateContext">
 		<xsl:param name="refBox"/>
 		<xsl:param name="idContext"/>
-		<popup id="{$idContext}">
-			<menuitem class="ximfContext" idx="1" idbox="{$refBox}" label="ximfmail.composer.context.erase" />
-			<menuitem class="ximfContext" idx="2" idbox="{$refBox}" label="ximfmail.composer.context.eraseall"/>								
-			<menuseparator/>
-			<menuitem class="ximfContext" idx="3" idbox="{$refBox}" label="ximfmail.composer.context.details" />						
+		<popup id="{$idContext}">			
+			<menuitem class="ximfContext" idx="1" idbox="{$refBox}" label="ximfmail.composer.context.eraseall"/>
+			<menuitem class="ximfContext" idx="2" idbox="{$refBox}" label="ximfmail.composer.context.details" />						
   		</popup>  		
   	</xsl:template>
   	
   	<!-- ********************** -->
 	<!-- insert image of eraser -->
-	<xsl:template name="AppendEraser">
-		<xsl:param name="refBox"/>		
+	<xsl:template name="AppendToolButtons">
+		<xsl:param name="refBox"/>
+		<button 
+			class="ximfmailButton ximfDetail" 
+			id="{concat($refBox,$gIdSeparator,'ximfdetail')}" 
+			refLabel="{$refBox}"/>		
 		<button 
 			class="ximfmailButton ximfEraser" 
 			id="{concat($refBox,$gIdSeparator,'ximferaser')}" 

@@ -77,18 +77,21 @@ function XimfMessageAnalyser(){
 		 		var ScriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
 		 		var ScriptInputStream = ScriptInput.QueryInterface(Components.interfaces.nsIScriptableInputStream);
 		 		ScriptInputStream.init(consumer);
+		
 		 		try{
 		   			msgSvc.streamMessage(_mailUri, MsgStream, msgWindow, null, false, null);
-		 		}catch (e){		   		
-					gConsole.logStringMessage("[ximfmail - MessageAnalyser - createXimfHdrArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
-				}		 			
-				
-				// extract headers datas of selected message
-		 		//ScriptInputStream.available();
+		 		}catch (e){
+		 			// can't read heafer message (bad uri...)		   		
+					gConsole.logStringMessage("[ximfmail - MessageAnalyser - createXimfHdrArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+					return;	
+				}	 			
+						
+				if(!ScriptInputStream)	return;
+				// extract headers datas of selected message		 	
 		 		var content = "";		 		 		
-				var nbBytes = ScriptInputStream .available();				
+				var nbBytes = ScriptInputStream.available();
 				var tmpBuf = ScriptInputStream.read(nbBytes);
-				
+
 				// RFC 2822 :  The body is simply a sequence of characters that
 		   		// follows the header and is separated from the header by an empty line
 		   		// (i.e., a line with nothing preceding the CRLF). 		
@@ -98,6 +101,7 @@ function XimfMessageAnalyser(){
 				}else{
 					content = tmpBuf;
 				}	
+	
 				//alert(content);
 				tmpBuf = null;
 				ScriptInputStream.close();
@@ -105,11 +109,12 @@ function XimfMessageAnalyser(){
 				//msgSvc
 				var separator = new RegExp("[\r\n]+","g"); // end line
 				var tab = content.split(separator);
-			
+		
 				// filter on IMF headers - append data to array
 				if(_xHdrArray.length > 0)
 					_xHdrArray.splice(0,_xHdrArray.length);
 		 		var reg_folding = new RegExp("(  )","g");
+		 		var reg_folding2 = new RegExp("(\t)","g");
 		 		var idxTab=0;
 				for(idxTab=0; idxTab<tab.length; ++idxTab){
 					var header_line = tab[idxTab];		
@@ -119,9 +124,10 @@ function XimfMessageAnalyser(){
 							while( idxTab < tab.length ){
 								var next_line = tab[idxTab+1];
 								if(next_line){
-									if(next_line[0] == " "){																		
+									if(next_line[0] == " " || next_line[0] == "\t"){																		
 										header_line += next_line; //next_line.toLowerCase();
 										header_line = header_line.replace(reg_folding," ");
+										header_line = header_line.replace(reg_folding2,"");
 										++idxTab;
 									}else{ break; }
 								}else{ break; }
@@ -169,9 +175,14 @@ function XimfMessageAnalyser(){
 				}
 				return value;
 			}
-			
 			/*
-			 * search for associated XIMF INSTANCE of theme
+			 * 
+			 */
+			XimfMessageAnalyser.prototype.getCompleteArray = function(){
+				return _xHdrArray;
+			}
+			/*
+			 * search for associated XIMF INSTANCE of account definition
 			 */
 			XimfMessageAnalyser.prototype.hasXimfHeaders = function(currentDefinition){			
 				var uriInstanceXimf = null;
@@ -182,10 +193,36 @@ function XimfMessageAnalyser(){
 				sname = this.getHeaderValue(XIMF_NAME_HEADER);				
 				gConsole.logStringMessage("DBG [ximfmail - MessageAnalyser - hasXimfHeaders ] \ndefinition uri = "+ currentDefinition +"\nXIMF version = "+ sversion+"\nXIMF name = "+sname );
 				
-				if(gXimfCatalog){					
-					uriInstanceXimf = gXimfCatalog.getInstanceUri(currentDefinition,sname,sversion);					
-				}				
+				//if(gXimfCatalog && sname &&	sversion)				
+				if(gXimfCatalog && sname)				
+					uriInstanceXimf = gXimfCatalog.getInstanceUri(currentDefinition,sname,sversion);							
+							
 				return uriInstanceXimf;
+			}
+			
+			/*
+			 * add or replace Ximfheader in _xHdrArray
+			 */
+			XimfMessageAnalyser.prototype.setHeaderValue = function(headerName, headerValue){	
+				try{					
+					var isNewHeader = true;
+					for(var idx_xHdrArray = 0 ; idx_xHdrArray < _xHdrArray.length ; ++idx_xHdrArray){
+						var tmpHead = _xHdrArray[idx_xHdrArray]._hdrName;						
+						if(tmpHead.toLowerCase() == headerName.toLowerCase()){
+							_xHdrArray[idx_xHdrArray]._hdrValue = headerValue;
+							isNewHeader = false;
+							break;
+						}
+					}
+					if(isNewHeader){
+						var xhdr = new xHdr();
+						xhdr._hdrName = headerName;
+						xhdr._hdrValue = headerValue;
+						_xHdrArray.push(xhdr);
+					}
+				}catch(e){
+					gConsole.logStringMessage("[ximfmail - MessageAnalyser - setHeaderValue ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+				}				
 			}
 		
 		// MessageAnalyser
