@@ -7,6 +7,12 @@
 <!ENTITY status.securityLabel "Security Label:">
 <!ENTITY status.encrypted "Encrypted:">
 <!ENTITY status.certificates "Certificates:">
+
+<!ENTITY status.signedReceiptRequest "Signed Receipt Request:">
+<!ENTITY status.securityLabel "Security Label:">
+<!ENTITY status.tripleWrapped "Triple Wrapped:">
+
+
 <!ENTITY view.label "View">
 <!ENTITY view.accesskey "V">
 <!ENTITY tree.recipient "Recipient">

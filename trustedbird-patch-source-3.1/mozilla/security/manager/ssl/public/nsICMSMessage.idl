@@ -19,7 +19,9 @@
  * Portions created by the Initial Developer are Copyright (C) 2001
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Drinan <ddrinan@netscape.com>
+ * Contributor(s): 
+ *   David Drinan <ddrinan@netscape.com>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -45,6 +47,7 @@
 
 interface nsIX509Cert;
 interface nsIArray;
+interface nsIMutableArray;
 
 /**
  * nsICMSMessage
@@ -102,5 +105,7 @@ interface nsICMSMessage : nsISupports
   void verifySignature();
   void verifyDetachedSignature(in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
   void CreateEncrypted(in nsIArray aRecipientCerts);
-  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
+  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen, in nsIArray secureHeaders, in long canonAlgo);
+  void getSecureHeader(out nsIMutableArray secureHeaders, out PRInt32 canonAlgo);
 };
+

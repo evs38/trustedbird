@@ -23,6 +23,7 @@
  *   ddrinan@netscape.com
  *   Scott MacGregor <mscott@netscape.com>
  *   Magnus Melin <mkmelin+mozilla@iki.fi>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -333,7 +334,12 @@ function setEncryptionUI()
 function showMessageComposeSecurityStatus()
 {
   Recipients2CompFields(gMsgCompose.compFields);
-
+  
+  var secureHeaderCheck="false";
+  if( (document.getElementById("idItemSecureHeaders_1") != null) && (document.getElementById("idItemSecureHeaders_1").hasAttribute("checked")) ){
+     secureHeaderCheck=document.getElementById("idItemSecureHeaders_1").getAttribute("checked");
+  }
+  
   window.openDialog(
     "chrome://messenger-smime/content/msgCompSecurityInfo.xul",
     "",
@@ -346,6 +352,7 @@ function showMessageComposeSecurityStatus()
         gCurrentIdentity.getUnicharAttribute("signing_cert_name") != "",
       isEncryptionCertAvailable :
         gCurrentIdentity.getUnicharAttribute("encryption_cert_name") != "",
+      isSecureHeaderAvailable : secureHeaderCheck,
       currentIdentity : gCurrentIdentity
     }
   );

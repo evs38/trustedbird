@@ -20,6 +20,7 @@
 ;+# the Initial Developer. All Rights Reserved.
 ;+#
 ;+# Contributor(s):
+;+#   Copyright (c) 2010 CASSIDIAN - All rights reserved
 ;+#
 ;+# Alternatively, the contents of this file may be used under the terms of
 ;+# either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -120,6 +121,10 @@ NSS_CMSSignedData_VerifySignerInfo;
 NSS_CMSSignerInfo_AddSMIMECaps;
 NSS_CMSSignerInfo_AddSMIMEEncKeyPrefs;
 NSS_CMSSignerInfo_AddSigningTime;
+;+# Add Function for the Secure headers EADS
+NSS_CMSSignerInfo_AddSecureHeader;
+NSS_CMSSignerInfo_GetSecureHeader;
+;+# End signed headers 
 NSS_CMSSignerInfo_Create;
 NSS_CMSSignerInfo_Destroy;
 NSS_CMSSignerInfo_GetCertList;

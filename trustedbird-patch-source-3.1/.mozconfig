@@ -13,3 +13,4 @@ ac_add_options --disable-tests
 ac_add_options --disable-crashreporter
 ac_add_options --disable-debug
 ac_add_options --disable-shared
+ac_add_options --with-windows-version=502

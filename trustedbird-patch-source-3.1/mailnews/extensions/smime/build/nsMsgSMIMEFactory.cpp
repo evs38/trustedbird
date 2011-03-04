@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Scott MacGregor <mscott@netscape.com>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -59,6 +60,7 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMEComposeFields)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsSMimeJSHelper)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEncryptedSMIMEURIsService)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMEReceiptGenerator)
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsMsgSMIMESecureHeader)
 
 ////////////////////////////////////////////////////////////
 //
@@ -85,7 +87,12 @@ static const nsModuleComponentInfo components[] =
   { "SMIME Receipt Generator",
     NS_SMIMERECEIPT_GENERATOR_CID,
     NS_SMIMERECEIPT_GENERATOR_CONTRACTID,
-    nsMsgSMIMEReceiptGeneratorConstructor }
+    nsMsgSMIMEReceiptGeneratorConstructor },
+  { "SMIME Secure Header",
+    NS_SMIMESECUREHEADER_CID,
+    NS_SMIMESECUREHEADER_CONTRACTID,
+    nsMsgSMIMESecureHeaderConstructor,
+  }
 };
 
   

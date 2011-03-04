@@ -19,7 +19,9 @@
  * Portions created by the Initial Developer are Copyright (C) 2002
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): Kai Engert <kaie@netscape.com>
+ * Contributor(s):
+ *   Kai Engert <kaie@netscape.com>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -47,6 +49,7 @@ var gEncryptionCert = null;
 
 var gSignatureStatus = -1;
 var gEncryptionStatus = -1;
+
 var gSecurityPolicyIdentifier = null;
 var gSecurityClassification = -1;
 var gPrivacyMark = null;
@@ -54,6 +57,8 @@ var gSecurityCategories = null;
 
 var gSecurityLabelConf = null;
 
+var gSecureHeaders = "";
+var gSecureHeadersState = -1;
 var params = null;
 
 function setText(id, value) {
@@ -83,15 +88,18 @@ function onLoad()
   gSignatureStatus = params.GetInt(1);
   gEncryptionStatus = params.GetInt(2);
   gSecurityClassification = params.GetInt(3);
+  gSecureHeadersState = params.GetInt(4);
 
   gSecurityPolicyIdentifier = params.GetString(0);
   gPrivacyMark = params.GetString(1);
   gSecurityCategories = params.GetString(2);
-
+  gSecureHeaders = params.GetString(12);
+  
   if (!gSecurityLabelConf)
     gSecurityLabelConf = new securityLabelConf();
 
   var bundle = document.getElementById("bundle_smime_read_info");
+  var bundle_secure_headers = document.getElementById("bundle_smime_secure_headers");
 
   if (bundle) {
     var sigInfoLabel = null;
@@ -255,6 +263,26 @@ function onLoad()
     }
   }
 
+	
+  if(gSecureHeaders !="" &&
+   gSignatureStatus != -1 && 
+   gSignatureStatus != nsICMSMessageErrors.VERIFY_NOT_SIGNED){
+    document.getElementById("secureHeaderBox").collapsed = false;
+    label = document.getElementById("secureHeadersLabel");
+    label.collapsed = false;
+    label.value = bundle_secure_headers.getString("secureInfo.secureheaders.label");
+
+    var secureStatelabel = document.getElementById("secureHeadersStateLabel");
+    secureStatelabel.hidden = false;
+    if(gSecureHeadersState>0)
+    {
+      secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.valid.label");
+    }
+    else{
+      secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.invalid.label");
+    }
+  }
+  
   if (gSecurityPolicyIdentifier != "") {
     document.getElementById("securityLabelBox").collapsed = false;
     document.getElementById("securityLabelSecurityPolicyIdentifierValue").value = gSecurityLabelConf.getSecurityPolicyIdentifierName(gSecurityPolicyIdentifier);
@@ -306,4 +334,12 @@ function viewEncryptionCert()
 function doHelpButton()
 {
   openHelp('received_security');
+}
+
+function viewSecureHeaders(){
+  if(gSecureHeaders!="")
+  {
+    window.openDialog('chrome://messenger-smime/content/msgReadSecureHeadersView.xul',
+                    '', 'chrome,resizable=1,modal=1,dialog=1', gSecureHeaders );
+  }
 }

@@ -21,6 +21,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -51,6 +52,8 @@
 #include "nsString.h"
 #include "nsIOutputStream.h"
 
+#include "nsIMsgSMIMESecureHeader.h"
+
 class nsIMsgCompFields;
 
 class nsMsgSMIMEComposeFields : public nsIMsgSMIMECompFields
@@ -75,12 +78,31 @@ private:
   PRUint32 mSMIMEReceiptOriginatorContentTypeLen;
   PRUint8 *mSMIMEReceiptMsgSigDigest;
   PRUint32 mSMIMEReceiptMsgSigDigestLen;
+  nsCOMPtr<nsIMutableArray> m_secureHeaders;
+  PRInt32 mCanonAlgorithme;
   nsString mSecurityPolicyIdentifier;
   PRInt32 mSecurityClassification;
   nsString mPrivacyMark;
   nsString mSecurityCategories;
 };
 
+class nsMsgSMIMESecureHeader : public nsIMsgSMIMESecureHeader
+{
+
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIMSGSMIMESECUREHEADER
+
+  nsMsgSMIMESecureHeader();
+  virtual ~nsMsgSMIMESecureHeader();
+
+private:
+  nsString mHeaderName;
+  nsString mHeaderValue;
+  PRInt32 mHeaderStatus;
+  PRInt32 mHeaderEncrypted;
+
+};
 typedef enum {
   mime_crypto_none,				/* normal unencapsulated MIME message */
   mime_crypto_clear_signed,		/* multipart/signed encapsulation */
@@ -127,7 +149,10 @@ private:
                                     PRUint32 *aSMIMEReceiptOriginatorContentTypeLen,
                                     PRUint8 **aSMIMEReceiptMsgSigDigest,
                                     PRUint32 *aSMIMEReceiptMsgSigDigestLen);
+
   nsresult ExtractSecurityLabelState(nsIMsgCompFields *aComposeFields, PRBool *aHasSecuritylabel, nsAString& aSecurityPolicyIdentifier, PRInt32 *aSecurityClassification, nsAString& aPrivacyMark, nsAString& aSecurityCategories);
+
+  nsresult ReadHeadersToSecure(nsIMsgIdentity * aIdentity,nsIMsgCompFields * aComposeFields);
 
   mimeDeliveryCryptoState mCryptoState;
   nsCOMPtr<nsIOutputStream> mStream;
@@ -168,6 +193,8 @@ private:
   PRUint32 mSMIMEReceiptOriginatorContentTypeLen;
   PRUint8 *mSMIMEReceiptMsgSigDigest;
   PRUint32 mSMIMEReceiptMsgSigDigestLen;
+  nsCOMPtr<nsIMutableArray> mSecureHeaders;
+  PRInt32 mCanonAlgorithme;
 
   PRBool mHasSecuritylabel;
   nsString mSecurityPolicyIdentifier;

@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Scott MacGregor <mscott@netscape.com>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -79,5 +80,12 @@
 { /* f988ef90-28ec-4f4b-aa2e-a49d067556f1 */     \
  0xf988ef90, 0x28ec, 0x4f4b,                     \
  {0xaa, 0x2e, 0xa4, 0x9d, 0x06, 0x75, 0x56, 0xf1 }}
+
+#define NS_SMIMESECUREHEADER_CID  \
+{ /* A1BBE613-DA57-4766-84F0-343DAAFF6EB2 */      \
+  0xa1bbe613, 0xda57, 0x4766, { 0x84, 0xf0, 0x34, 0x3d, 0xaa, 0xff, 0x6e, 0xb2 } }
+
+#define NS_SMIMESECUREHEADER_CONTRACTID \
+  "@mozilla.org/messenger-smime/smime-secure-header;1"
 
 #endif // nsMsgSMIMECID_h__

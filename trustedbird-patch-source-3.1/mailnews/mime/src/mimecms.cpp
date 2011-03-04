@@ -21,6 +21,7 @@
  *
  * Contributor(s): 
  *   Kai Engert <kengert@redhat.com>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -50,6 +51,7 @@
 #include "nsIMsgMailNewsUrl.h"
 #include "nsIMimeMiscStatus.h"
 #include "nsIMsgSMIMEHeaderSink.h"
+#include "nsIMutableArray.h"
 #include "nsCOMPtr.h"
 #include "nsAutoPtr.h"
 #include "nsIX509Cert.h"
@@ -58,6 +60,9 @@
 #include "nsServiceManagerUtils.h"
 #include "nsComponentManagerUtils.h"
 #include "nsXPCOMCIDInternal.h"
+
+/* secure header */
+#include "nsIArray.h"
 
 #define MIME_SUPERCLASS mimeEncryptedClass
 MimeDefClass(MimeEncryptedCMS, MimeEncryptedCMSClass,
@@ -414,7 +419,18 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
         PR_Free(originatorContentType);
       if (msgSigDigest)
         PR_Free(msgSigDigest);
+        
+      // Handle Signed Headers
+      nsCOMPtr<nsIMutableArray> secureHeaders;
+      PRInt32 canonAlgo;
+      msg->GetSecureHeader(getter_AddRefs(secureHeaders),&canonAlgo);
+      proxySink->SecureHeadersStatus(secureHeaders,canonAlgo);
     }
+	else
+	{
+      nsCOMPtr<nsIMutableArray> secureHeaders;
+	  proxySink->SecureHeadersStatus(secureHeaders,0);
+	}
 
     if (signature_status == nsICMSMessageErrors::SUCCESS)
     {
@@ -436,6 +452,11 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
                                        NS_ConvertUTF8toUTF16(privacyMark),
                                        NS_ConvertUTF8toUTF16(securityCategories));
     }
+  }
+  else
+  {
+    nsCOMPtr<nsIMutableArray> secureHeaders;
+	proxySink->SecureHeadersStatus(secureHeaders,0);
   }
 
   return NS_OK;

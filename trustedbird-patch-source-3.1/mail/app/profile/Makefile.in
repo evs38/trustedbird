@@ -20,6 +20,7 @@
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
+# EADS Defence and Security Systems Copyright 2008 – All Rights Reserved
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -48,6 +49,7 @@ FILES := \
 	mimeTypes.rdf \
 	localstore.rdf \
 	securityLabelPolicy-sample.xml \
+	secureHeadersDefault.xml \
 	$(NULL)
 
 libs:: $(FILES)

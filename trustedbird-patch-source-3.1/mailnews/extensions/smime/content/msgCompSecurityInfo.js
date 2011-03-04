@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -50,6 +51,9 @@ var gISMimeJSHelper = Components.interfaces.nsISMimeJSHelper;
 var gIX509Cert = Components.interfaces.nsIX509Cert;
 const nsICertificateDialogs = Components.interfaces.nsICertificateDialogs;
 const nsCertificateDialogs = "@mozilla.org/nsCertificateDialogs;1"
+const PREF_SECURE_HEADERS_FOLDER_DATAS="secureheaders.folderdata";
+const SECURE_HEADER_PROPERTIES_URL = "chrome://messenger/locale/secureheaders.properties";
+var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 
 function getStatusExplanation(value)
 {
@@ -259,6 +263,21 @@ function onLoad()
 
     gListBox.appendChild(listitem);
   }
+
+  //Secure Headers
+  var gSecureBundle = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+  var secureBundle = gSecureBundle.createBundle(SECURE_HEADER_PROPERTIES_URL);
+  var sLabel;
+  if(params.isSecureHeaderAvailable == "true"){
+    // get international label for new line
+    sLabel = secureBundle.GetStringFromName("yes.label");
+    document.getElementById("headerSecured").setAttribute("value",sLabel);
+    ReadSecureHeaders(params);
+  }
+  else{
+    sLabel = secureBundle.GetStringFromName("no.label");
+    document.getElementById("headerSecured").setAttribute("value",sLabel);
+  }
 }
 
 function onSelectionChange(event)
@@ -303,3 +322,161 @@ function createCell(label)
   return cell;
 }
 
+function ReadSecureHeaders(params){
+
+
+  // get international label for new line
+  var gSecureBundle = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+  var secureBundle = gSecureBundle.createBundle(SECURE_HEADER_PROPERTIES_URL);
+
+  var arrayHeaderSecure=ReadXmlHeadersToSecure(params);
+  if(arrayHeaderSecure && params.isSecureHeaderAvailable)
+  {
+    document.getElementById("secureheaderbox").collapsed = false;
+    var treechild = document.getElementById("secHeader_treechild_id");
+    for(var i=0;i<arrayHeaderSecure.length;++i)
+    {
+      var label;
+      //read the current header property
+      var headerName = arrayHeaderSecure[i]._name;
+      var headerStatus = arrayHeaderSecure[i]._status;
+      var headerEncrypted = arrayHeaderSecure[i]._encrypted;
+
+      //create each element for the tree
+      var treeitem=document.createElement("treeitem");
+      var treerow=document.createElement("treerow");
+      var namecell=document.createElement("treecell");
+      var statuscell=document.createElement("treecell");
+      var encryptedcell=document.createElement("treecell");
+      
+      //set the header name
+      namecell.setAttribute("label",headerName);
+      
+      //set the header status
+      switch(headerStatus)
+      {
+      case "-1":
+        label=secureBundle.GetStringFromName("notdefine.label");
+        break;
+      case "0" :
+        label=secureBundle.GetStringFromName("headerstatus.duplicated.label");
+        break;
+      case "1" :
+        label=secureBundle.GetStringFromName("headerstatus.deleted.label");
+        break;
+      case "2":
+        label=secureBundle.GetStringFromName("headerstatus.modified.label");
+        break;
+      default:
+        label="ERROR";
+        break;
+      }
+      statuscell.setAttribute("label",label);
+      
+      //set the header encrypted
+      switch(headerEncrypted)
+      {
+      case "-1":
+        label=secureBundle.GetStringFromName("notdefine.label");
+        break;
+      case "0" :
+        label=secureBundle.GetStringFromName("no.label");
+        break;
+      case "1" :
+        label=secureBundle.GetStringFromName("yes.label");
+        break;
+      default:
+        label="ERROR";
+        break;
+      }
+      encryptedcell.setAttribute("label",label);
+      
+      //append all element in the tree
+      treerow.appendChild(namecell);
+      treerow.appendChild(statuscell);
+      treerow.appendChild(encryptedcell);
+      treeitem.appendChild(treerow);
+      treechild.appendChild(treeitem);
+    }
+  }
+
+}
+
+/*
+ * 
+ */
+var DEFAULT_SECUREHEADERS_XML_DIR = "secureHeaders"
+var DEFAULT_SECUREHEADERS_XML_FILE = "secureHeadersDefault.xml"
+function ReadXmlHeadersToSecure(params){
+  try{
+    // get xml file path
+    if(!params.currentIdentity){ 
+      gConsole.logStringMessage("[msgCompSecurityInfo.js - ReadXmlHeadersToSecure ] no xml files define \n ");
+      return;
+    }
+
+    var pref_data = params.currentIdentity.getCharAttribute(PREF_SECURE_HEADERS_FOLDER_DATAS);
+    var file = null;
+
+    if(!pref_data){
+      file = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile); // get profile folder
+      file.append(DEFAULT_SECUREHEADERS_XML_DIR);
+      file.append(DEFAULT_SECUREHEADERS_XML_FILE);
+    }else{
+      file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+      file.initWithPath( pref_data );	
+    }
+
+    if(!file.exists()){
+      gConsole.logStringMessage("[msgCompSecurityInfo.js - ReadXmlHeadersToSecure] Error loading schema file : " + pref_data);
+      return;
+    }
+
+    //	Get Xml Document parser
+    var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+    stream.init(file, -1, -1, Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
+    var parser = Components.classes["@mozilla.org/xmlextras/domparser;1"].createInstance(Components.interfaces.nsIDOMParser);
+    var xmlDoc = parser.parseFromStream(stream, null, file.fileSize, "text/xml");
+
+    // get datas from file
+    var tabSecureHeaders = new Array; // tabHeaders[headerName][status][encrypted]
+    var compatibleTag = xmlDoc.getElementsByTagName("ximf:headers");
+    var sValue="";
+    if(compatibleTag.length>0){
+      var childNodes = compatibleTag[0].childNodes;
+      for(var j=0; j <childNodes.length; ++j ){
+      var header_name = ""; 
+      var header_status = "-1"; 
+      var header_encrypted = "-1";
+      if(childNodes[j].localName == "header"){
+        header_name = childNodes[j].getAttribute("name");
+        if(childNodes[j].hasAttribute("status"))
+        {
+          header_status = childNodes[j].getAttribute("status");
+        }
+        if(childNodes[j].hasAttribute("encrypted"))
+          header_encrypted = parseInt(childNodes[j].getAttribute("encrypted"));
+          // load values to array
+          tabSecureHeaders.push(new xSecureHeader(header_name, header_status,header_encrypted));
+        }
+      }
+      return tabSecureHeaders;
+    }else{
+    gConsole.logStringMessage("[msgCompSecurityInfo.js - ReadXmlHeadersToSecure] no headers tag in file " + pref_data);
+    }
+  } catch (e) {
+    gConsole.logStringMessage("[msgCompSecurityInfo.js - ReadXmlHeadersToSecure ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+  }
+}
+
+/*
+* 
+*/
+function xSecureHeader(name,status,encrypted){
+  if(name)
+    this._name = name;
+  if(status)
+    this._status = status;
+  if(encrypted)
+    this._encrypted = encrypted;
+}

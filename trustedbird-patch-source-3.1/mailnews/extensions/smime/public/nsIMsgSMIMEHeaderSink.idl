@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Scott MacGregor         <mscott@netscape.com>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -45,6 +46,7 @@
 #include "nsISupports.idl"
 
 interface nsIX509Cert;
+interface nsIMutableArray; 
 
 [scriptable, uuid(90c0dc42-ec4f-4ec8-9358-c3ff54a19e07)]
 interface nsIMsgSMIMEHeaderSink : nsISupports 
@@ -69,6 +71,9 @@ interface nsIMsgSMIMEHeaderSink : nsISupports
                           in PRUint32 aOriginatorContentTypeLen,
                           [const,array,size_is(aMsgSigDigestLen)] in PRUint8 aMsgSigDigest,
                           in PRUint32 aMsgSigDigestLen);
+
+  void secureHeadersStatus(in nsIMutableArray aSecureHeaders, in PRInt32 canonAlgo);
+
   void securityLabelStatus(in AString aSecurityPolicyIdentifier,
                            in PRInt32 aSecurityClassification,
                            in AString aPrivacyMark,

@@ -19,7 +19,9 @@
    - Portions created by the Initial Developer are Copyright (C) 2002
    - the Initial Developer. All Rights Reserved.
    -
-   - Contributor(s): Kai Engert <kaie@netscape.com>
+   - Contributor(s):
+   -   Kai Engert <kaie@netscape.com>
+   -   Copyright (c) 2010 CASSIDIAN - All rights reserved
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,7 +40,12 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://messenger/skin/smime/msgReadSecurityInfo.css" type="text/css"?> 
 
-<!DOCTYPE dialog SYSTEM "chrome://messenger-smime/locale/msgReadSecurityInfo.dtd">
+<!DOCTYPE dialog [
+    <!ENTITY % msgReadSecurityInfoDTD SYSTEM "chrome://messenger-smime/locale/msgReadSecurityInfo.dtd">
+    %msgReadSecurityInfoDTD;
+    <!ENTITY % secureheadersDTD SYSTEM "chrome://messenger/locale/secureheaders.dtd">
+    %secureheadersDTD;
+]>
 
 <dialog id="msgReadSecurityInfo" title="&status.label;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
@@ -50,6 +57,7 @@
   <script type="application/javascript" src="chrome://messenger-smime/content/msgSecurityLabel.js"/>
 
   <stringbundle id="bundle_smime_read_info" src="chrome://messenger-smime/locale/msgSecurityInfo.properties"/> 
+  <stringbundle id="bundle_smime_secure_headers" src="chrome://messenger/locale/secureheaders.properties"/>
 
   <vbox flex="1">
     <label id="signatureLabel"/>
@@ -126,6 +134,15 @@
         </rows>
       </grid>
     </vbox>
-
+    
+    <vbox id="secureHeaderBox" collapsed="true">
+      <separator/>
+      <label id="secureHeadersLabel" style="font-weight: bold;"/>
+      <hbox>
+        <button id="secureHeadersView" label="&secureHeadersView.label;"
+                oncommand="viewSecureHeaders()"/>
+        <label id="secureHeadersStateLabel" hidden="true"/>
+      </hbox>
+    </vbox>
   </vbox>
 </dialog>

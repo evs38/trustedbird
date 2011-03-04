@@ -137,6 +137,7 @@
 @BINPATH@/defaults/profile/prefs.js
 @BINPATH@/defaults/profile/mimeTypes.rdf
 @BINPATH@/defaults/profile/securityLabelPolicy-sample.xml
+@BINPATH@/defaults/profile/secureHeadersDefault.xml
 
 @BINPATH@/isp/*
 
@@ -224,6 +225,8 @@
 
 @BINPATH@/components/smime-service.js
 @BINPATH@/components/msgsmime.xpt
+
+@BINPATH@/components/am-service-secureheaders.js
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Chrome Files

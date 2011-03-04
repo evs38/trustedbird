@@ -20,6 +20,9 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
+ *   Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,6 +47,8 @@ var gSecurityClassification = -1;
 var gPrivacyMark = null;
 var gSecurityCategories = null;
 var gSecurityLabelConf = null;
+var gSecureHeaders = "";
+var gSecureHeadersState=-1;
 
 addEventListener("load", smimeReadOnLoad, false);
 
@@ -110,10 +115,12 @@ function showMessageReadSecurityInfo()
   params.SetInt(1, gSignatureStatus);
   params.SetInt(2, gEncryptionStatus);
   params.SetInt(3, gSecurityClassification);
+  params.SetInt(4,gSecureHeadersState);
 
   params.SetString(0, gSecurityPolicyIdentifier);
   params.SetString(1, gPrivacyMark);
   params.SetString(2, gSecurityCategories);
+  params.SetString(12,gSecureHeaders);
 
   window.openDialog("chrome://messenger-smime/content/msgReadSecurityInfo.xul",
                     "", "chrome,resizable=1,modal=1,dialog=1", pkiParams);

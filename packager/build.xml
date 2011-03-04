@@ -110,7 +110,7 @@ $ ant -Damo=1 package-addons
   <!-- Target: extract-thunderbird -->
   <target name="extract-thunderbird" description="Extract Thunderbird source package" depends="clean-trustedbird">
     <available file="${local.source.file.name}" property="thunderbird.source.file.available" />
-    <fail message="File ${local.source.file.name} not found! Download it from ftp://ftp.mozilla.org/pub/thunderbird/releases/" unless="thunderbird.source.file.available" />
+    <fail message="File ${local.source.file.name} not found! Download it from http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/" unless="thunderbird.source.file.available" />
 
     <!-- Verify checksum -->
     <checksum file="${local.source.file.name}" algorithm="sha1" property="${local.source.file.sha1sum}" verifyproperty="local.source.file.checksum.result" />

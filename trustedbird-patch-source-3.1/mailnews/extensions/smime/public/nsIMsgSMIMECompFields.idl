@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Scott MacGregor         <mscott@netscape.com>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -45,6 +46,9 @@
 
 [ptr] native PRUint8Ptr(PRUint8);
 
+interface nsIMsgSMIMESecureHeader;
+interface nsIMutableArray;
+
 [scriptable, uuid(c94625bc-2047-4590-8e75-4f4ce039ec2c)]
 interface nsIMsgSMIMECompFields : nsISupports 
 {
@@ -65,4 +69,10 @@ interface nsIMsgSMIMECompFields : nsISupports
   attribute PRInt32 securityClassification;
   attribute AString privacyMark;
   attribute AString securityCategories;
+  
+  attribute PRInt32 canonAlgorithme;
+  void addSecureHeader(in nsIMsgSMIMESecureHeader secureHeader);
+  void clearSecureHeaders();
+  void getSecureHeadersList(out nsIMutableArray secureHeadersList);
+
 };

@@ -24,6 +24,7 @@
  *   David Drinan <ddrinan@netscape.com>
  *   Stephane Saux <ssaux@netscape.com>
  *   ESS Signed Receipts: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -52,6 +53,7 @@
 #include "nsMsgMimeCID.h"
 #include "nsMsgCompCID.h"
 #include "nspr.h"
+#include "nsArrayUtils.h"
 
 // XXX These strings should go in properties file XXX //
 #define MIME_MULTIPART_SIGNED_BLURB "This is a cryptographically signed message in MIME format."
@@ -168,6 +170,69 @@ char
 
 // end of copied code which needs fixed....
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Implementation of nsMsgSMIMESecureHeader
+/////////////////////////////////////////////////////////////////////////////////////////
+NS_IMPL_ISUPPORTS1(nsMsgSMIMESecureHeader, nsIMsgSMIMESecureHeader)
+
+nsMsgSMIMESecureHeader::nsMsgSMIMESecureHeader():mHeaderStatus(-1),mHeaderEncrypted(-1)
+{
+
+}
+
+nsMsgSMIMESecureHeader::~nsMsgSMIMESecureHeader()
+{
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderName( const nsAString & value)
+{
+	mHeaderName = value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderName( nsAString & _retval)
+{
+	_retval=mHeaderName;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderValue( const nsAString & value)
+{
+	mHeaderValue = value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderValue( nsAString & _retval)
+{
+	_retval=mHeaderValue;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderStatus( PRInt32 value )
+{
+	mHeaderStatus=value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderStatus(PRInt32 * _retval)
+{
+	*_retval=mHeaderStatus;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::SetHeaderEncrypted( PRInt32 value )
+{
+	mHeaderEncrypted=value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMESecureHeader::GetHeaderEncrypted(PRInt32 * _retval)
+{
+	*_retval = mHeaderEncrypted;
+	return NS_OK;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of nsMsgSMIMEComposeFields
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -182,8 +247,11 @@ mSMIMEReceiptSignedContentIdentifierLen(0),
 mSMIMEReceiptOriginatorSignatureValueLen(0),
 mSMIMEReceiptOriginatorContentTypeLen(0),
 mSMIMEReceiptMsgSigDigestLen(0),
+mCanonAlgorithme(0),
 mSecurityClassification(-1)
 {
+	nsresult rv;
+	m_secureHeaders = do_CreateInstance(NS_ARRAY_CONTRACTID, &rv);
 }
 
 nsMsgSMIMEComposeFields::~nsMsgSMIMEComposeFields()
@@ -310,6 +378,46 @@ NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSMIMEReceiptOriginatorContentTypeLen(P
   return NS_OK;
 }
 
+//Secure Headers
+NS_IMETHODIMP nsMsgSMIMEComposeFields::AddSecureHeader(nsIMsgSMIMESecureHeader * secureHeader)
+{
+	nsresult rv = NS_OK;
+
+	if (!secureHeader)
+		return NS_ERROR_FAILURE;
+	rv=m_secureHeaders->AppendElement(secureHeader,PR_FALSE);
+	return rv;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetSecureHeadersList(nsIMutableArray ** _SecureHeaders)
+{
+	*_SecureHeaders=m_secureHeaders;
+	NS_ADDREF(*_SecureHeaders);
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::ClearSecureHeaders()
+{
+	if(m_secureHeaders)
+	{
+		m_secureHeaders->Clear();
+	}
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::SetCanonAlgorithme(PRInt32 value)
+{
+	mCanonAlgorithme=value;
+	return NS_OK;
+}
+
+NS_IMETHODIMP nsMsgSMIMEComposeFields::GetCanonAlgorithme(PRInt32 * retval)
+{
+	*retval = mCanonAlgorithme;
+	return NS_OK;
+}
+//
+
 NS_IMETHODIMP nsMsgSMIMEComposeFields::SetSMIMEReceiptMsgSigDigest(PRUint8 *value)
 {
   mSMIMEReceiptMsgSigDigest = value;
@@ -396,6 +504,7 @@ nsMsgComposeSecure::nsMsgComposeSecure()
   mCryptoEncoderData = 0;
   mBuffer = 0;
   mBufferedBytes = 0;
+  mCanonAlgorithme=0;
   mHasSecuritylabel = PR_FALSE;
   mSecurityClassification = -1;
 }
@@ -693,8 +802,7 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsIOutputStream * aSt
   PRBool signMessage = PR_FALSE;
   ExtractEncryptionState(aIdentity, aCompFields, &signMessage, &encryptMessages);
 
-  if (!signMessage && !encryptMessages)
-    return NS_ERROR_FAILURE;
+  if (!signMessage && !encryptMessages) return NS_ERROR_FAILURE;
 
   // Extract SMIME receipt request and receipt state
   mSMIMEReceiptRequest = PR_FALSE;
@@ -710,6 +818,9 @@ NS_IMETHODIMP nsMsgComposeSecure::BeginCryptoEncapsulation(nsIOutputStream * aSt
                            &mSMIMEReceiptOriginatorContentTypeLen,
                            &mSMIMEReceiptMsgSigDigest,
                            &mSMIMEReceiptMsgSigDigestLen);
+
+  //Extract Headers to secure
+  ReadHeadersToSecure(aIdentity,aCompFields);
 
   if (mSMIMEReceiptRequest) {
     signMessage = PR_TRUE;
@@ -1022,7 +1133,13 @@ nsresult nsMsgComposeSecure::MimeFinishMultipartSigned (PRBool aOuter, nsIMsgSen
   PR_ASSERT (mSelfSigningCert);
   PR_SetError(0,0);
 
-  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, (unsigned char*)hashString.get(), hashString.Length());
+  rv = cinfo->CreateSigned(mSelfSigningCert,
+                       mSelfEncryptionCert,
+                       (unsigned char*)hashString.get(),
+                       hashString.Length(),
+                       mSecureHeaders, 
+                       mCanonAlgorithme);
+  
   if (NS_FAILED(rv)) {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;
@@ -1143,7 +1260,7 @@ nsresult nsMsgComposeSecure::MimeFinishSignedReceipt(nsIMsgSendReport *sendRepor
   PR_ASSERT (mSelfSigningCert);
   PR_SetError(0, 0);
 
-  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, NULL, 0);
+  rv = cinfo->CreateSigned(mSelfSigningCert, mSelfEncryptionCert, NULL, 0,NULL,0);
   if (NS_FAILED(rv))  {
     SetError(sendReport, NS_LITERAL_STRING("ErrorCanNotSign").get());
     goto FAIL;
@@ -1451,6 +1568,301 @@ NS_IMETHODIMP nsMsgComposeSecure::MimeCryptoWriteBlock (const char *buf, PRInt32
   }
  FAIL:
   return status;
+}
+
+
+/*
+ * unfold string sequence : CRLF sequences followed by WSP will be interpreted without the CRLF
+ */
+nsAutoString& removeJumpSymb(nsAutoString& s)
+{
+	s.ReplaceSubstring(NS_LITERAL_STRING("\n\r "), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\r\n "), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\r "), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\n "), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\n\r\t"), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\r\n\t"), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\r\t"), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("\n\t"), NS_LITERAL_STRING(" "));
+
+	return s;
+}
+
+/*
+ * Convert all sequences of one ore more WSP characters to a single SP character
+ */
+nsAutoString& onlyOneWhiteSpace(nsAutoString& s){
+	s.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+	s.ReplaceSubstring(NS_LITERAL_STRING("  "), NS_LITERAL_STRING(" "));
+	
+	return s;
+}
+
+
+nsAutoString& canonilizeHeaderValue(nsAutoString &hdrval)
+{
+	removeJumpSymb(hdrval);
+	onlyOneWhiteSpace(hdrval);
+	hdrval.CompressWhitespace(PR_TRUE,PR_TRUE);
+	return hdrval;
+}
+
+nsAutoString& canonilizeHeaderName(nsAutoString &hdrname)
+{
+	nsCAutoString utf8str =  NS_ConvertUTF16toUTF8(hdrname);
+	ToLowerCase(utf8str);
+	hdrname = NS_ConvertUTF8toUTF16(utf8str);
+	onlyOneWhiteSpace(hdrname);
+	hdrname.CompressWhitespace(PR_TRUE,PR_TRUE);
+	return hdrname;
+}
+
+void strsplit(const char separator, nsAString& strToSplit, nsStringArray & result)
+{
+    PRInt32 start = 0;
+    PRInt32 end = 0;
+    PRInt32 len = 0;
+
+    while (end != -1) {
+      end = strToSplit.FindChar(separator,start);
+      if (end == -1) {
+        len = strToSplit.Length() - start;
+      } else {
+        len = end - start;
+      }
+      // grab the name of the current header pref
+     const nsAString& str_tmp = Substring(strToSplit, start, end);
+
+      start = end + 1;
+	  result.AppendString(str_tmp);
+    }
+	
+}
+
+/* 
+ Parse extended headers
+ */
+void parseHeaderValue(const nsAString & str, const nsAString& headerName, nsAString & headerVal)
+{
+	nsVoidArray tab_header;
+	nsAutoString ligne_header;
+	nsAutoString tmpstr(str);
+	nsAString::const_iterator cur_pos_str,cur_pos_CRLF,start,end;
+
+	tmpstr.BeginReading(start);
+	tmpstr.EndReading(end);
+	
+	cur_pos_str=start;
+	cur_pos_CRLF=end;
+	NS_NAMED_LITERAL_STRING(valuePrefix, "\r\n");
+	
+	while(FindInReadable(valuePrefix, start, end))
+	{
+		cur_pos_CRLF = end;
+		if(*cur_pos_CRLF == PRUnichar(' '))
+		{
+			ligne_header.Append(Substring(cur_pos_CRLF.start(),cur_pos_CRLF.get()));
+			tmpstr.Replace(0,end.get()-end.start(),NS_LITERAL_STRING(""));
+		}
+		else
+		{
+			ligne_header.Append(Substring(cur_pos_CRLF.start(),cur_pos_CRLF.get()));
+			nsAutoString _hdrName;
+			nsAutoString _hdrValue;
+			
+			_hdrName.Assign(Substring(ligne_header,0,ligne_header.FindChar(':',0)));
+			_hdrValue.Assign(Substring(ligne_header,ligne_header.FindChar(':',0)+2,ligne_header.Length()-ligne_header.FindChar(':',0)+1));
+			if(_hdrName.Equals(headerName)){
+				headerVal.Assign(_hdrValue);
+				break;
+			}	
+			ligne_header.Assign(NS_LITERAL_STRING(""));
+			tmpstr.Replace(0,end.get()-end.start(),NS_LITERAL_STRING(""));
+		}
+		
+		tmpstr.BeginReading(start);
+		tmpstr.EndReading(end);
+	}
+}
+
+/* 
+ Returns mime encoded value
+ */
+void GetMimeEncodedValue(nsAString& headerName, nsAString& charset, PRBool bstructured, nsAString & value, nsAString & result){
+	nsresult rv;
+	char * tmp;
+	tmp=NULL;
+	nsCOMPtr<nsIMimeConverter> mimeconverter = do_GetService(NS_MIME_CONVERTER_CONTRACTID, &rv);
+	
+	mimeconverter->EncodeMimePartIIStr_UTF8(NS_ConvertUTF16toUTF8(value),	
+		bstructured,
+		NS_ConvertUTF16toUTF8(charset).get(),
+		(PRInt32)headerName.Length()+2,		 // header len + 2 characters semi-colon and space ": " 
+		nsIMimeConverter::MIME_ENCODED_WORD_SIZE,
+		&tmp);
+	if(tmp!=NULL)
+	{
+		result.Assign(NS_ConvertUTF8toUTF16(tmp));
+	}
+	else{
+		result.Assign(value);
+	}
+}
+
+/* 
+ Returns value of header as mime encoded format
+ */
+void GetValueHeader(nsAString& headerName,nsIMsgCompFields * aComposeFields, nsAString & result)
+{
+	nsresult rv;
+	nsAutoString otherHeaders;
+	nsAutoString to;
+    nsAutoString from;
+	nsAutoString subject;
+	nsAutoString cc;
+	nsAutoString bcc;
+	nsAutoString body;
+	nsAutoString messageId;
+	nsAutoString priority;
+	nsAutoString replyTo;
+	nsAutoString charset;
+
+	aComposeFields->GetTo(to);
+	aComposeFields->GetFrom(from);
+	aComposeFields->GetSubject(subject);
+	aComposeFields->GetCc(cc);
+	aComposeFields->GetBcc(bcc);
+	aComposeFields->GetBody(body);
+	aComposeFields->GetOtherRandomHeaders(otherHeaders);
+	aComposeFields->GetReplyTo(replyTo);
+	char * tmp;
+	aComposeFields->GetMessageId(&tmp);
+	messageId=NS_ConvertASCIItoUTF16(tmp);
+	aComposeFields->GetPriority(&tmp);
+	priority=NS_ConvertASCIItoUTF16(tmp);
+	aComposeFields->GetCharacterSet(&tmp);
+	charset=NS_ConvertASCIItoUTF16(tmp);
+	if(charset.IsEmpty()){
+		aComposeFields->GetDefaultCharacterSet(&tmp);
+		charset=NS_ConvertASCIItoUTF16(tmp);
+	}
+
+	//replace the tabulation by a space for each header
+	//which can be multiline to simplify the treatment
+	to.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+	cc.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+	bcc.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
+	
+	if(headerName.LowerCaseEqualsLiteral("from")){
+		if(!from.IsEmpty()){
+			GetMimeEncodedValue(headerName, charset, PR_TRUE, from, result);
+			return;
+			}
+	}
+	else if(headerName.LowerCaseEqualsLiteral("to")){
+		if(!to.IsEmpty()){
+			GetMimeEncodedValue(headerName, charset, PR_TRUE, to, result);
+			return;
+		}
+	}
+	else if(headerName.LowerCaseEqualsLiteral("body")){
+		if(!body.IsEmpty()){
+			GetMimeEncodedValue(headerName, charset, PR_FALSE, body, result);
+			return;
+		}
+	}
+	else if(headerName.LowerCaseEqualsLiteral("subject")){
+		if(!subject.IsEmpty()){
+			GetMimeEncodedValue(headerName, charset, PR_FALSE, subject, result);
+			return;
+		}
+	}
+	else if(headerName.LowerCaseEqualsLiteral("cc")){
+		if(!cc.IsEmpty()){
+			GetMimeEncodedValue(headerName, charset, PR_TRUE, cc, result);
+			return;
+		}
+	}
+	else if(headerName.LowerCaseEqualsLiteral("bcc")){
+		if(!bcc.IsEmpty()){
+			GetMimeEncodedValue(headerName, charset, PR_TRUE, bcc, result);
+			return;
+		}
+	}
+	else if(headerName.LowerCaseEqualsLiteral("message-id")){
+		if(!messageId.IsEmpty())
+			result.Assign(messageId);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("priority")){
+		if(!priority.IsEmpty())
+			result.Assign(priority);
+	}
+	else if(headerName.LowerCaseEqualsLiteral("reply-to")){
+		if(!replyTo.IsEmpty()){
+			GetMimeEncodedValue(headerName, charset, PR_TRUE, replyTo, result);
+			return;
+		}
+	}
+	else{
+		parseHeaderValue(otherHeaders,headerName,result);
+	}
+
+}
+
+/* 
+ Returns array of secure headers 
+ */
+nsresult nsMsgComposeSecure::ReadHeadersToSecure(nsIMsgIdentity * aIdentity,nsIMsgCompFields * aComposeFields){
+
+  //Extract Signed Headers list
+   nsCOMPtr<nsISupports> securityInfo;
+  if (aComposeFields)
+  {
+    aComposeFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+
+    if (securityInfo) // if we were given security comp fields, use them.....
+    {
+      nsCOMPtr<nsIMsgSMIMECompFields> smimeCompFields = do_QueryInterface(securityInfo);
+      if (smimeCompFields)
+      {
+		nsCOMPtr<nsIMutableArray> tmpHeaders;
+        smimeCompFields->GetSecureHeadersList(getter_AddRefs(tmpHeaders));
+		smimeCompFields->GetCanonAlgorithme(&mCanonAlgorithme);
+		if(tmpHeaders)
+		{
+			nsresult rv;
+			mSecureHeaders = do_CreateInstance(NS_ARRAY_CONTRACTID, &rv);
+			PRUint32 nbHeaders;
+			tmpHeaders->GetLength(&nbHeaders);
+			
+			for(int i=0;i<nbHeaders;++i)
+			{
+				nsCOMPtr<nsIMsgSMIMESecureHeader> _secureHeader= do_QueryElementAt(tmpHeaders,i);
+				if(_secureHeader)
+				{
+					nsAutoString _headerName;
+					nsAutoString _headerValue;
+					PRInt32 _headerStatus;
+					_secureHeader->GetHeaderName(_headerName);
+					GetValueHeader(_headerName,aComposeFields,_headerValue);
+					if(!_headerValue.IsEmpty()){
+
+						 if(mCanonAlgorithme){
+							canonilizeHeaderName(_headerName);
+							canonilizeHeaderValue(_headerValue);
+						}
+						_secureHeader->SetHeaderName(_headerName);
+						_secureHeader->SetHeaderValue(_headerValue);
+						mSecureHeaders->AppendElement(_secureHeader,PR_FALSE);
+					}
+				}
+			}
+		}
+	  }
+    }
+  }
+
+	return NS_OK;
 }
 
 /* Returns a string consisting of a Content-Type header, and a boundary

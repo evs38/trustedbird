@@ -22,6 +22,7 @@
  *   Dr Vipul Gupta <vipul.gupta@sun.com>, Sun Microsystems Laboratories
  *   ESS Signed Receipts/Security Labels: Eric Ballet Baz / BT Global Services / Etat francais - Ministere de la Defense
  *   ESS Signed Receipts/Security Labels: Raphael Fairise / BT Global Services / Etat francais - Ministere de la Defense
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -847,7 +848,7 @@ loser:
 
 /* 
  * NSS_CMSSignerInfo_AddMSSMIMEEncKeyPrefs - add a SMIMEEncryptionKeyPreferences attribute to the
- * authenticated (i.e. signed) attributes of "signerinfo", using the OID preferred by Microsoft.
+ * authenticated (i.e. signed) attributes of "signerinfo", using the OID prefered by Microsoft.
  *
  * This is expected to be included in outgoing signed messages for email (S/MIME),
  * if compatibility with Microsoft mail clients is wanted.
@@ -909,6 +910,53 @@ NSS_CMSSignerInfo_AddCounterSignature(NSSCMSSignerInfo *signerinfo,
 {
     /* XXXX TBD XXXX */
     return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_AddSecureHeader - add Secure Headers attribute to the
+ * authenticated (i.e. signed) attributes of "signerinfo".
+ */
+SECStatus
+NSS_CMSSignerInfo_AddSecureHeader(NSSCMSSignerInfo *signerinfo, SecHeaderField * arrayHeaderField, const int nbHeaders, PRInt32 canonAlgo)
+{
+    NSSCMSAttribute *attr;
+    SECItem *secureHeaders = NULL;
+    void *mark;
+    PLArenaPool *poolp;
+
+    poolp = signerinfo->cmsg->poolp;
+    mark = PORT_ArenaMark(poolp);
+
+    secureHeaders = SECITEM_AllocItem(poolp, NULL, 0);
+    if (secureHeaders == NULL)
+      goto loser;
+
+    /* create new secureHeaders attribute */
+    if (NSS_SMIMEUtil_CreateSecureHeader(poolp, secureHeaders, arrayHeaderField, nbHeaders, canonAlgo) != SECSuccess)
+      goto loser;
+
+    if ((attr = NSS_CMSAttribute_Create(poolp, SEC_OID_SMIME_SECURE_HEADERS, secureHeaders, PR_TRUE)) == NULL)
+      goto loser;
+
+    if (NSS_CMSSignerInfo_AddAuthAttr(signerinfo, attr) != SECSuccess)
+      goto loser;
+
+    PORT_ArenaUnmark (poolp, mark);
+
+    return SECSuccess;
+
+loser:
+    PORT_ArenaRelease (poolp, mark);
+    return SECFailure;
+}
+
+/*
+ * NSS_CMSSignerInfo_GetSecureHeader - get S/MIME SecureHeaders attr value
+ */
+SECStatus
+NSS_CMSSignerInfo_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader *secHeaders)
+{
+    return NSS_SMIMEUtil_GetSecureHeader(signerinfo, secHeaders);
 }
 
 /*

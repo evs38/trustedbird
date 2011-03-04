@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -203,6 +204,18 @@ NSS_SMIMEUtil_GetReceipt(PLArenaPool *aPoolp,
                          PRUint32 *aOriginatorSignatureValueLen,
                          PRUint8 **aOriginatorContentType,
                          PRUint32 *aOriginatorContentTypeLen);
+
+/*
+ *
+ *
+ * NSS_SMIMEUtil_CreateSecureHeaders - create S/MIME Secure Headers attr value
+ *
+*/
+extern SECStatus
+NSS_SMIMEUtil_CreateSecureHeader(PLArenaPool *poolp, SECItem *dest, SecHeaderField * arrayHeaderField, const unsigned int nbHeaders, PRInt32 canonAlgo);
+
+extern SECStatus
+NSS_SMIMEUtil_GetSecureHeader(NSSCMSSignerInfo *signerinfo, NSSCMSSecureHeader * secuHeaders);
 
 /*
  * NSS_SMIMEUtil_CreateSecurityLabel - create S/MIME SecurityLabel attr value

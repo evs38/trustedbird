@@ -183,3 +183,7 @@
   locale/@AB_CD@/mozldap/ldap.properties                                (%chrome/mozldap/ldap.properties)
 % locale communicator @AB_CD@ %locale/@AB_CD@/communicator/
   locale/@AB_CD@/communicator/utilityOverlay.dtd                        (%chrome/communicator/utilityOverlay.dtd)
+  locale/@AB_CD@/messenger/am-secureheaders.properties                  (%chrome/messenger/am-secureheaders.properties)
+  locale/@AB_CD@/messenger/am-secureheaders.dtd                         (%chrome/messenger/am-secureheaders.dtd)
+  locale/@AB_CD@/messenger/secureheaders.dtd                            (%chrome/messenger/secureheaders.dtd)  
+  locale/@AB_CD@/messenger/secureheaders.properties                     (%chrome/messenger/secureheaders.properties)

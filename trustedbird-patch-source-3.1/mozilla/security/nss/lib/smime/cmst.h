@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -269,6 +270,55 @@ typedef enum {
     NSSCMSCM_CertChain = 2,
     NSSCMSCM_CertChainWithRoot = 3
 } NSSCMSCertChainMode;
+
+
+
+/*
+ * SECURE HEADERS  : Datas structures
+ * */
+
+typedef struct NSSCMSSecHeaderFieldElementStr NSSCMSSecHeaderFieldElement;
+
+typedef struct NSSCMSSecureHeaderElementStr NSSCMSSecureHeaderElement;
+
+typedef struct NSSCMSSecureHeaderStr NSSCMSSecureHeader;
+
+typedef struct SecHeaderFieldStr SecHeaderField;
+
+typedef enum {
+	NSSCMSSecureHeaderElement_canonAlgorithm = 0,
+	NSSCMSSecureHeaderElement_secHeaderField = 1
+} NSSCMSSecureHeaderElementSelector;
+
+struct NSSCMSSecHeaderFieldElementStr{
+	SECItem HeaderFieldName;
+	SECItem HeaderFieldValue;
+	SECItem HeaderFieldStatus;
+	/*SECItem HeaderFieldEncrypted;*/
+};
+
+struct NSSCMSSecureHeaderElementStr{
+	NSSCMSSecureHeaderElementSelector selector;
+	union {
+		SECItem canonAlgorithm;
+		NSSCMSSecHeaderFieldElement** secHeaderFields;
+	} id;
+};
+
+struct NSSCMSSecureHeaderStr {
+	NSSCMSSecureHeaderElement** element;
+};
+
+
+struct SecHeaderFieldStr{
+	char * headerName;
+	char * headerValue;
+	PRInt32 headerStatus;
+	/*PRInt32 headerEncrypted;*/
+};
+/*
+ *END SECURE HEADERS : Datas structures
+ * */
 
 /* ESS Signed Receipt Request */
 struct NSSCMSReceiptRequestGeneralNamesStr {
