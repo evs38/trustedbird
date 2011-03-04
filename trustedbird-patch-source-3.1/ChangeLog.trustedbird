@@ -1,12 +1,17 @@
+trustedbird (3.1.8+0.4.3)
+  * Upgrade to Thunderbird 3.1.8
+-- Mar 03 2011
+
 trustedbird (3.1.7+0.4.3)
   * Upgrade to Thunderbird 3.1.7
   * Add SASL external (IMAPS - LDAPS)
   * Add Secured Headers (based on RFC 5652)
--- 23 Feb 2011
+-- Feb 23 2011
 
 trustedbird (3.1.7+0.2.0)
   * Upgrade to Thunderbird 3.1.7
 -- Dec 13 2010
+
 trustedbird (3.1.6+0.4.0)
   * Upgrade to Thunderbird 3.1.6
   * Add LDAPS  

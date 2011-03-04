@@ -88,6 +88,7 @@
 #include "nsICacheEntryDescriptor.h"
 #include "nsICacheSession.h"
 #include "nsIPrompt.h"
+#include "nsIDocShell.h"
 #include "nsIDocShellLoadInfo.h"
 #include "nsIDOMWindowInternal.h"
 #include "nsIMessengerWindowService.h"
@@ -780,9 +781,20 @@ nsresult nsImapProtocol::SetupWithUrl(nsIURI * aURL, nsISupports* aConsumer)
         GetTopmostMsgWindow(getter_AddRefs(msgWindow));
       if (msgWindow)
       {
+        nsCOMPtr<nsIDocShell> docShell;
+        msgWindow->GetRootDocShell(getter_AddRefs(docShell));
+        nsCOMPtr<nsIInterfaceRequestor> ir(do_QueryInterface(docShell));
         nsCOMPtr<nsIInterfaceRequestor> interfaceRequestor;
         msgWindow->GetNotificationCallbacks(getter_AddRefs(interfaceRequestor));
+        nsCOMPtr<nsIInterfaceRequestor> aggregrateIR;
+        NS_NewInterfaceRequestorAggregation(interfaceRequestor, ir, getter_AddRefs(aggregrateIR));
+        m_mockChannel->SetNotificationCallbacks(aggregrateIR);
+		
+        /*TCN: see bug 568929 on Thunderbird
+		nsCOMPtr<nsIInterfaceRequestor> interfaceRequestor;
+        msgWindow->GetNotificationCallbacks(getter_AddRefs(interfaceRequestor));
         m_mockChannel->SetNotificationCallbacks(interfaceRequestor);
+		*/
       }
     }
 
@@ -3603,7 +3615,7 @@ nsImapProtocol::PostLineDownLoadEvent(const char *line, PRUint32 uidOfMessage)
 {
   if (!GetServerStateParser().GetDownloadingHeaders())
   {
-    PRBool echoLineToMessageSink = PR_TRUE;
+    PRBool echoLineToMessageSink = PR_FALSE;
     // if we have a channel listener, then just spool the message
     // directly to the listener
     if (m_channelListener)
@@ -3618,9 +3630,10 @@ nsImapProtocol::PostLineDownLoadEvent(const char *line, PRUint32 uidOfMessage)
           m_channelListener->OnDataAvailable(request, m_channelContext, m_channelInputStream, 0, count);
         }
       }
-      if (m_runningUrl)
-        m_runningUrl->GetStoreResultsOffline(&echoLineToMessageSink);
     }
+    if (m_runningUrl)
+      m_runningUrl->GetStoreResultsOffline(&echoLineToMessageSink);
+
     if (m_imapMessageSink && line && echoLineToMessageSink && !GetPseudoInterrupted())
       m_imapMessageSink->ParseAdoptedMsgLine(line, uidOfMessage,
                                              GetServerStateParser().SizeOfMostRecentMessage(),
@@ -4061,10 +4074,25 @@ void nsImapProtocol::ProcessMailboxUpdate(PRBool handlePossibleUndo)
   // wait for a list of bodies to fetch.
   if (!DeathSignalReceived() && GetServerStateParser().LastCommandSuccessful())
   {
-      WaitForPotentialListOfBodysToFetch(&msgIdList, msgCount);
-      if ( msgCount && !DeathSignalReceived() && GetServerStateParser().LastCommandSuccessful())
+	
+	/* TCN see bug 572974 on Thunderbird
+    WaitForPotentialListOfBodysToFetch(&msgIdList, msgCount);
+    if ( msgCount && !DeathSignalReceived() && GetServerStateParser().LastCommandSuccessful())
     {
       FolderMsgDump(msgIdList, msgCount, kEveryThingRFC822Peek);
+    }*/
+
+	
+    WaitForPotentialListOfBodysToFetch(&msgIdList, msgCount);
+    if ( msgCount && !DeathSignalReceived() && GetServerStateParser().LastCommandSuccessful())
+    {
+      // Tell the url that it should store the msg fetch results offline,
+      // while we're dumping the messages, and then restore the setting.
+      PRBool wasStoringOffline;
+      m_runningUrl->GetStoreResultsOffline(&wasStoringOffline);
+      m_runningUrl->SetStoreResultsOffline(PR_TRUE);
+      FolderMsgDump(msgIdList, msgCount, kEveryThingRFC822Peek);
+      m_runningUrl->SetStoreResultsOffline(wasStoringOffline);
     }
   }
   if (DeathSignalReceived())
@@ -8893,9 +8921,9 @@ nsImapMockChannel::OnCacheEntryAvailable(nsICacheEntryDescriptor *entry, nsCache
     else
     {
       rv = ReadFromMemCache(entry);
-      NotifyStartEndReadFromCache(PR_TRUE);
       if (NS_SUCCEEDED(rv))
       {
+        NotifyStartEndReadFromCache(PR_TRUE);
         if (access & nsICache::ACCESS_WRITE)
           entry->MarkValid();
         return NS_OK; // kick out if reading from the cache succeeded...
