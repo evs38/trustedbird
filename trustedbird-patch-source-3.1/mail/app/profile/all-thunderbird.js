@@ -99,10 +99,10 @@ pref("app.update.url", "");
 
 // URL user can browse to manually if for some reason all update installation
 // attempts fail.  TODO: Change this URL
-pref("app.update.url.manual", "http://www.mozillamessaging.com/%LOCALE%/%APP%/");
+pref("app.update.url.manual", "https://adullact.net/plugins/mediawiki/wiki/milimail/index.php/Trustedbird_Project");
 // A default value for the "More information about this update" link
 // supplied in the "An update is available" page of the update wizard. 
-pref("app.update.url.details", "http://www.mozillamessaging.com/%LOCALE%/%APP%/releases/");
+pref("app.update.url.details", "https://adullact.net/plugins/mediawiki/wiki/milimail/index.php/Trustedbird_Project");
 // User-settable override to app.update.url for testing purposes.
 //pref("app.update.url.override", "");
 
@@ -125,10 +125,10 @@ pref("app.update.idletime", 60);
 pref("app.update.showInstalledUI", false);
 
 // Release notes URL
-pref("app.releaseNotesURL", "http://live.mozillamessaging.com/%APP%/releasenotes?locale=%LOCALE%&version=%VERSION%&os=%OS%&buildid=%APPBUILDID%");
+pref("app.releaseNotesURL", "https://adullact.net/plugins/mediawiki/wiki/milimail/index.php/Trustedbird_Project");
 
 // Base URL for web-based support pages.
-pref("app.support.baseURL", "http://support.live.mozillamessaging.com/%LOCALE%/%APP%/%APPBUILDID%/");
+pref("app.support.baseURL", "https://adullact.net/plugins/mediawiki/wiki/milimail/index.php/Trustedbird_Project");
 
 // Blocklist preferences
 pref("extensions.blocklist.enabled", true);
@@ -156,9 +156,9 @@ pref("extensions.update.url", "https://versioncheck.addons.mozilla.org/update/Ve
 pref("extensions.update.interval", 86400);  // Check for updates to Extensions and 
                                             // Themes every day
 // Non-symmetric (not shared by extensions) extension-specific [update] preferences
-pref("extensions.getMoreExtensionsURL", "https://%LOCALE%.add-ons.mozilla.com/%LOCALE%/%APP%/%VERSION%/extensions/");
-pref("extensions.getMoreThemesURL", "https://%LOCALE%.add-ons.mozilla.com/%LOCALE%/%APP%/%VERSION%/themes/");
-pref("extensions.getMorePluginsURL", "https://%LOCALE%.add-ons.mozilla.com/%LOCALE%/%APP%/%VERSION%/plugins/");
+pref("extensions.getMoreExtensionsURL", "https://%LOCALE%.add-ons.mozilla.com/%LOCALE%/thunderbird/%VERSION%/extensions/");
+pref("extensions.getMoreThemesURL", "https://%LOCALE%.add-ons.mozilla.com/%LOCALE%/thunderbird/%VERSION%/themes/");
+pref("extensions.getMorePluginsURL", "https://%LOCALE%.add-ons.mozilla.com/%LOCALE%/thunderbird/%VERSION%/plugins/");
 pref("extensions.dss.enabled", false);          // Dynamic Skin Switching                                               
 pref("extensions.dss.switchPending", false);    // Non-dynamic switch pending after next
 
@@ -169,10 +169,10 @@ pref("extensions.{972ce4c6-7e08-4474-a285-3208198ce6fd}.description", "chrome://
 pref("extensions.getAddons.showPane", true);
 pref("extensions.getAddons.browseAddons", "https://addons.mozilla.org/%LOCALE%/%APP%");
 pref("extensions.getAddons.maxResults", 5);
-pref("extensions.getAddons.recommended.browseURL", "https://addons.mozilla.org/%LOCALE%/%APP%/recommended");
-pref("extensions.getAddons.recommended.url", "https://services.addons.mozilla.org/%LOCALE%/%APP%/api/%API_VERSION%/list/featured/all/10/%OS%/%VERSION%");
-pref("extensions.getAddons.search.browseURL", "https://addons.mozilla.org/%LOCALE%/%APP%/search?q=%TERMS%");
-pref("extensions.getAddons.search.url", "https://services.addons.mozilla.org/%LOCALE%/%APP%/api/%API_VERSION%/search/%TERMS%/all/10/%OS%/%VERSION%");
+pref("extensions.getAddons.recommended.browseURL", "https://addons.mozilla.org/%LOCALE%/thunderbird/recommended");
+pref("extensions.getAddons.recommended.url", "https://services.addons.mozilla.org/%LOCALE%/thunderbird/api/%API_VERSION%/list/featured/all/10/%OS%/%VERSION%");
+pref("extensions.getAddons.search.browseURL", "https://addons.mozilla.org/%LOCALE%/thunderbird/search?q=%TERMS%");
+pref("extensions.getAddons.search.url", "https://services.addons.mozilla.org/%LOCALE%/thunderbird/api/%API_VERSION%/search/%TERMS%/all/10/%OS%/%VERSION%");
 
 pref("xpinstall.whitelist.add", "addons.mozilla.org");
 pref("xpinstall.whitelist.add.36", "getpersonas.com");

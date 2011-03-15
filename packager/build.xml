@@ -49,6 +49,8 @@ $ ant -Damo=1 package-addons
   <target name="build-all" description="Extract Thunderbird, patch and build Trustedbird and all add-ons" depends="distclean, trustedbird, package-addons">
   </target>
 
+  <target name="build-only" description="Build without cleaning previously built components" depends="patch-trustedbird, package-trustedbird-source, build-trustedbird, package-trustedbird">
+  </target>
 
   <!-- Target: trustedbird -->
   <target name="trustedbird" description="Extract Thunderbird, patch and build Trustedbird" depends="clean-trustedbird, extract-thunderbird, patch-trustedbird, package-trustedbird-source, build-trustedbird, package-trustedbird">
