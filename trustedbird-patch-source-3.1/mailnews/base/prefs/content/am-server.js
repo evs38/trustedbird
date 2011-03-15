@@ -126,7 +126,7 @@ function initServerType()
   var verboseName = messengerBundle.getString(propertyName);
   setDivText("servertype.verbose", verboseName);
 
-  secureSelect();
+  secureSelect(true);
 
   setLabelFromStringBundle("authMethod-no", "authNo");
   setLabelFromStringBundle("authMethod-old", "authOld");
@@ -226,7 +226,7 @@ function onAdvanced()
   }
 }
 
-function secureSelect()
+function secureSelect(aLoading)
 {
     var socketType = document.getElementById("server.socketType").value;
     var serverType = document.getElementById("server.type").value;
@@ -241,11 +241,11 @@ function secureSelect()
 
     if (socketType == Ci.nsMsgSocketType.SSL) {
       portDefault.value = defaultPortSecure;
-      if (port.value == "" || (port.value == defaultPort && prevDefaultPort != portDefault.value))
+      if (port.value == "" || (!aLoading && port.value == defaultPort && prevDefaultPort != portDefault.value))
         port.value = defaultPortSecure;
     } else {
         portDefault.value = defaultPort;
-        if (port.value == "" || (port.value == defaultPortSecure && prevDefaultPort != portDefault.value))
+        if (port.value == "" || (!aLoading && port.value == defaultPortSecure && prevDefaultPort != portDefault.value))
           port.value = defaultPort;
     }
 
