@@ -457,7 +457,7 @@ $ ant -Damo=1 package-addons
 
     <!-- Add version -->
     <replace file="${local.build.dir}/${local.addon.name}/install.rdf" token="__VERSION__" value="${local.addon.version}" />
-    <replace file="${local.build.dir}/${local.addon.name}/update.rdf" token="__VERSION__" value="${local.addon.version}" />
+    <replace file="${local.build.dir}/${local.addon.name}/${local.addon.update.rdf.filename}" token="__VERSION__" value="${local.addon.version}" />
 
     <!-- Add update.rdf URL -->
     <replace file="${local.build.dir}/${local.addon.name}/install.rdf" token="__UPDATE_RDF_URL__" value="${addon.updates.url}/${local.addon.name}/${local.addon.update.rdf.filename}" />
@@ -469,7 +469,7 @@ $ ant -Damo=1 package-addons
     <replace file="${local.build.dir}/${local.addon.name}/install.rdf" token="__TARGET_PLATFORM__" value="${local.addon.target.platform}" />
 
     <!-- Add XPI URL -->
-    <replace file="${local.build.dir}/${local.addon.name}/update.rdf" token="__XPI_URL__" value="${local.addon.update.path}/${local.addon.filename}" />
+    <replace file="${local.build.dir}/${local.addon.name}/${local.addon.update.rdf.filename}" token="__XPI_URL__" value="${local.addon.update.path}/${local.addon.filename}" />
 
     <!-- Call ant if available -->
     <if>
@@ -518,11 +518,11 @@ $ ant -Damo=1 package-addons
     <checksum file="${local.dist.dir}/${local.addon.filename}" algorithm="sha1" property="local.update.hash" />
 
     <!-- Add XPI hash -->
-    <replace file="${local.build.dir}/${local.addon.name}/update.rdf" token="__UPDATE_HASH__" value="sha1:${local.update.hash}" />
+    <replace file="${local.build.dir}/${local.addon.name}/${local.addon.update.rdf.filename}" token="__UPDATE_HASH__" value="sha1:${local.update.hash}" />
 
     <!-- Copy update.rdf -->
     <mkdir dir="${local.dist.dir}/updates/${local.addon.name}" />
-    <copy file="${local.build.dir}/${local.addon.name}/update.rdf" tofile="${local.dist.dir}/updates/${local.addon.name}/${local.addon.update.rdf.filename}" />
+    <copy file="${local.build.dir}/${local.addon.name}/${local.addon.update.rdf.filename}" tofile="${local.dist.dir}/updates/${local.addon.name}/${local.addon.update.rdf.filename}" />
 
     <!-- Only for MRS add-on: build and package client API -->
     <if>

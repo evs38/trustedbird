@@ -19,8 +19,8 @@
 
     <!-- Informations -->
     <em:homepageURL>http://www.cassidian.com/cassidian/int/en.html</em:homepageURL>
-    <em:updateURL>${thunext.site}/update/fr/intraced/update.rdf</em:updateURL>
-    <em:updateKey>THE KEY</em:updateKey>
+    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
+    <em:updateKey>__UPDATE_KEY__</em:updateKey>
     <em:iconURL>chrome://ximfmail/content/resource/icon-ximfmail.png</em:iconURL>
   <em:optionsURL/><em:aboutURL/></Description>
 </RDF>

@@ -11,27 +11,7 @@
 				</ximf:aliasHeader>
 		</ximf:association>
 	</ximf:rule>	
-	<!-- 
-	<ximf:rule id="security-sign-rule" description="Règle de signature des entêtes XIMF" >	
-		<ximf:secureHeaders targetName="SecureHeaders">		
-			<ximf:aliasHeader headerName="X-XIMF-Security-Policy-Identifier" status="0"/>	
-			<ximf:aliasHeader headerName="X-XIMF-Security-Classification-Identifier" status="0"/>
-			<ximf:aliasHeader headerName="X-XIMF-Security-Classification" status="0"/>			
-			<ximf:aliasHeader headerName="Reply-To" status="0"/>
-			<ximf:aliasHeader headerName="Sender" status="0"/>		 			
-			<ximf:aliasHeader headerName="To" status="0"/>
-			<ximf:aliasHeader headerName="Cc" status="0"/>
-			<ximf:aliasHeader headerName="From" status="0"/>
-			<ximf:aliasHeader headerName="Subject" status="0"/>	
-		</ximf:secureHeaders>
-		<ximf:securityLabel targetName="SecurityLabel" id="intraced">
-			<ximf:aliasHeader headerName="SecurityPolicyIdentifier" headerRef="X-XIMF-Security-Policy-Identifier"/>			
-			<ximf:aliasHeader headerName="SecurityClassification" headerRef="X-XIMF-Security-Classification-Identifier"/>							
-			<ximf:aliasHeader headerName="ESSPrivacyMark" headerRef="X-XIMF-Privacy-Mark"/>							
-			<ximf:aliasHeader headerName="SecurityCategory" headerRef="X-XIMF-Security-Categories-Identifier" type="2"/>
-		</ximf:securityLabel>	 
-	</ximf:rule>		
-	 -->
+
 	<ximf:rule id="label-pictures-rule" description="rule to display pictures on received mails" >	
 		<ximf:classificationPictures targetName="ClassificationPictures">
 			<ximf:aliasHeader headerName="url" headerRef="X-XIMF-Security-Classification-Identifier" >					
