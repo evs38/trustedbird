@@ -310,7 +310,9 @@ customProperties.prototype = {
 		for (var i in this.deliveredToArray) {
 			if (this.deliveredToArray[i].finalRecipient == finalRecipient) {
 				// Already exists: update data
-				if (timeoutDelay > 0) this.deliveredToArray[i].timeoutDelay = timeoutDelay;
+				if (timeoutDelay > 0) {
+					this.deliveredToArray[i].timeoutDelay = timeoutDelay;
+				}
 				this.deliveredToArray[i].requests |= requests;
 				return this.deliveredToArray[i];
 			}

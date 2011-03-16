@@ -75,7 +75,8 @@ var notifyListener = {
 	regExpCache : {
 		removeEOL: new RegExp('\\n','g'),
 		removeCR: new RegExp('\\r','g'),
-		trim: new RegExp("(?:^\\s*)|(?:\\s*$)","g")
+		trim: new RegExp("(?:^\\s*)|(?:\\s*$)","g"),
+		messageId: new RegExp("\\nMessage-ID:(.*(?:\\n[ \\t].*){0,2}\\n)","ig")
 	},
 
 	/**
@@ -124,7 +125,7 @@ var notifyListener = {
 		
 		try {
 			var header = item.QueryInterface(Components.interfaces.nsIMsgDBHdr);
-			var folder = header.folder.QueryInterface(Components.interfaces.nsIMsgFolder);
+			var folder = header.folder.QueryInterface(Components.interfaces.nsIMsgFolder); // TCN is this here only to be an potential exception source ?
 		}
 		catch (e) {
 			// item is not a message
@@ -137,15 +138,23 @@ var notifyListener = {
 			/* Message has not been already analyzed */
 			SetBusyCursor(window, true);
 
-			/* Get message source and parse it */
-			notifyListener.getMsgSrc(header, notifyListener.parseMsg);
-			
+			var hdrChecking = {
+				onHdrChecked : function(header, msgHdr, checkResult) {
+					if(checkResult) {
+						// Get message source and parse it
+						srv.warningSrv("Message handled by add-on");
+						notifyListener.getMsgSrc(header, notifyListener.parseMsg);
+					}
+				}
+			}
+			notifyListener.checkMsgHdr(header, hdrChecking.onHdrChecked);
+
 			SetBusyCursor(window, false);
 		}
 	},
 	msgsMoveCopyCompleted : function(aMove, aSrcItems, aDestFolder) { this.itemMoveCopyCompleted(aMove, aSrcItems, aDestFolder); },
 	itemMoveCopyCompleted : function(aMove, aSrcItems, aDestFolder) {
-		try {
+		if (trustedBird_getPlatformVersion() >= "1.9") {
 			/* Thunderbird 3 */
 			var list = aSrcItems.QueryInterface(Components.interfaces.nsIArray);
 			for (var i = 0; i < list.length; i++) {
@@ -154,7 +163,8 @@ var notifyListener = {
 				var newHeader = findMsg.searchByMsgId(header.messageId);
 				if (newHeader != null) this.itemAdded(newHeader);
 			}
-		} catch (e) {
+		}
+		else {
 			/* Thunderbird 2 */
 			var list = aSrcItems.QueryInterface(Components.interfaces.nsISupportsArray);
 			for (var i = 0; i < list.Count(); i++) {
@@ -168,6 +178,94 @@ var notifyListener = {
 	},
 	msgsDeleted : function(aMsgs) {},
 	itemDeleted : function(aItem) {},
+	
+	checkMsgHdr: function(header, callback) {
+		if (!header) return;
+		
+		var MsgURI = header.folder.getUriForMsg(header);
+		
+		var streamListener = {
+			QueryInterface: function(aIID) {
+				if (aIID.equals(Components.interfaces.nsISupports)
+					|| aIID.equals(Components.interfaces.nsIStreamListener))
+					return this;
+				throw Components.results.NS_NOINTERFACE;
+			},
+			data: "",
+			onStartRequest: function(request, context) {},
+			onDataAvailable: function(request, context, inputStream, offset, available) {
+				var stream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
+				stream.init(inputStream);
+				this.data += stream.read(available);
+				
+				var p = this.data.indexOf("\r\n\r\n");
+				if (p > 0) {
+				  this.data = this.data.substring(0, p);
+				  request.cancel(0); // we found header, this is not an error case
+				}
+				else {
+					p = this.data.indexOf("\r\r");
+					if (p > 0) {
+						this.data = this.data.substring(0, p);
+						request.cancel(0); // we found header, this is not an error case
+					}
+					else {
+						p = this.data.indexOf("\n\n");
+						if (p > 0) {
+							this.data = this.data.substring(0, p);
+							request.cancel(0); // we found header, this is not an error case
+						}
+					}
+				}
+
+				stream = null;
+			},
+			onStopRequest: function(request, context, status) {
+				if (Components.isSuccessCode(status)) {
+					callback(header, this.data, this.headerCheck(this.data));
+				}
+				else {
+					srv.errorSrv("notifyListener.checkHdr - "+MsgURI+" - Error: "+status);
+				}
+			},
+			
+			/**
+				Check if message should be handled by add-on
+			*/
+			// TODO this function MUST be optimized
+			headerCheck: function(msgHdr) {
+				var mimeHeaders = Components.classes["@mozilla.org/messenger/mimeheaders;1"].createInstance().QueryInterface(Components.interfaces.nsIMimeHeaders);
+				mimeHeaders.initialize(msgHdr, msgHdr.length);
+				
+				var dsnRequestHeader = mimeHeaders.extractHeader("X-DSN", false); /* X-DSN header is added by this add-on when a message is sent with a DSN SUCCESS request */
+				var mdnRequestHeader = mimeHeaders.extractHeader("Disposition-Notification-To", false);
+				if ((dsnRequestHeader != null || mdnRequestHeader != null) && isSentMessage(header)) {
+					return true;
+				}
+				
+				var contentTypeHeader = mimeHeaders.extractHeader("content-type", false);
+				if ((/multipart\/report/i).test(contentTypeHeader)) {
+					return true;
+				}
+				
+				var failedRecipients = mimeHeaders.extractHeader("X-Failed-Recipients", false);
+				if(failedRecipients != null && failedRecipients != "") {
+					return true;
+				}
+				
+				return false;
+			}
+		}
+
+		var messageService = messenger.messageServiceFromURI(MsgURI);
+		try { 
+			messageService.streamMessage(MsgURI, streamListener, null, null, false, null);
+		} 
+		catch (ex) {
+			return false; 
+		}
+	},
+	
 	/**
 		Get message source
 		@param {nsIMsgDBHdr} header
@@ -226,8 +324,7 @@ var notifyListener = {
 		/* Don't parse message if it's in trash folder */
 		const MSG_FOLDER_FLAG_TRASH = 0x0100;
 		if (header.folder.flags & MSG_FOLDER_FLAG_TRASH) return false;
-		
-		
+				
 		/* Remove CR in message source */
 		msgSrc = msgSrc.replace(notifyListener.regExpCache.removeCR, "");
 		
@@ -241,7 +338,6 @@ var notifyListener = {
 		/* Read user preferences to determine if DSN and MDN should be taken into account */
 		var parseDsn = srv.preferences.getBoolPref(srv.extensionKey + ".parse_dsn");
 		var parseMdn = srv.preferences.getBoolPref(srv.extensionKey + ".parse_mdn");
-
 		
 		/* Get current notification data from notification db and save it to the message db */
 		var data = notificationDbHandler.getMessageField(header.messageId, "notificationData");
@@ -310,7 +406,7 @@ var notifyListener = {
 		}
 		
 		
-		/* Check if message is a notification report */
+		/* Check if message is a RFC compliant notification report */
 		var contentTypeHeader = mimeHeaders.extractHeader("content-type", false);
 		var notificationType = "";
 		if ((/multipart\/report/i).test(contentTypeHeader)) {
@@ -319,17 +415,12 @@ var notifyListener = {
 				if (!parseDsn) return true; /* Ignore this message: user doesn't want to parse DSN */
 				notificationType = "DSN";
 			}
-			
 			/* Check if message is a MDN */
-			if ((/report\-type[ \\s]*=[ \\s]*"?disposition\-notification"?/i).test(contentTypeHeader)) {
+			else if ((/report\-type[ \\s]*=[ \\s]*"?disposition\-notification"?/i).test(contentTypeHeader)) {
 				if (!parseMdn) return true; /* Ignore this message: user doesn't want to parse MDN */
 				notificationType = "MDN";
 			}
 		}
-		
-		/* Stop here if message is not a notification */
-		if (notificationType == "") return true;
-		
 		
 		srv.logSrv(notificationType + " (MsgKey="+header.messageKey + ") - in /" + header.folder.prettyName + "/ folder (" + header.folder.rootFolder.prettyName+ ")");
 		var originalMsgId;
@@ -361,13 +452,15 @@ var notifyListener = {
 			for (var i in deliveryReports) {
 				srv.logSrv(notificationType + " (MsgKey=" + header.messageKey + ") - " + deliveryReports[i].finalRecipient + " " + deliveryReports[i].actionValue);
 				/* Add report to notification data */
-				if (dsnParserObj.isValidReport(deliveryReports[i].actionValue)) originalMsgNotificationData.addDsnReport(deliveryReports[i], header.messageId);
+				if (dsnParserObj.isValidReport(deliveryReports[i].actionValue)) {
+					originalMsgNotificationData.addDsnReport(deliveryReports[i], header.messageId);	
+				}
 			}
 
 		}
 
 		/* Parse MDN message */
-		if (notificationType == "MDN") {
+		else if (notificationType == "MDN") {
 			var mdnParserObj = new mdnParser(msgSrc);
 
 			/* Read MDN report */
@@ -390,23 +483,69 @@ var notifyListener = {
 
 			/* Update notification data with new report */
 			srv.logSrv(notificationType + " (MsgKey=" + header.messageKey + ") - " + mdnReport.finalRecipient + " " + mdnReport.dispositionMode + " " + mdnReport.dispositionType + " " + mdnReport.originalMessageId);
-			if (mdnParserObj.isValidDisposition(mdnReport.dispositionType)) originalMsgNotificationData.addMdnReport(mdnReport, header.messageId);
+			if (mdnParserObj.isValidDisposition(mdnReport.dispositionType)) {
+				originalMsgNotificationData.addMdnReport(mdnReport, header.messageId);
+			}
 		}
-		
+		else {
+			/* Non RFC compliant reports */		
+			var failedRecipients = mimeHeaders.extractHeader("X-Failed-Recipients", false);
+			if(failedRecipients != null && failedRecipients != "") {				
+				// TODO: check message format on exim specification, to be suer to get the correct Original MEssage ID
+				var arrayId;
+				
+				// Get In-Reply-To header: if present, it should contain the original message ID
+				var originalMsgId = mimeHeaders.extractHeader("In-Reply-To", false);
+				if(originalMsgId == null || originalMsgId == "") {
+					// Get second Message-ID. It should correspond to the original Message-ID
+					notifyListener.regExpCache.messageId.lastIndex = 0;
+					if(notifyListener.regExpCache.messageId.exec(msgSrc) != null) {
+						arrayId = notifyListener.regExpCache.messageId.exec(msgSrc);
+						if(arrayId != null) {
+							notifyListener.regExpCache.trim.lastIndex = 0;
+							originalMsgId = arrayId[1].replace(notifyListener.regExpCache.trim, "");
+						}
+					}
+					if(originalMsgId == null || originalMsgId == "") {
+						srv.warningSrv("Unable to get original message ID from exim delivery failure report: " + msgSrc);
+						return true;
+					}
+				}
+				
+				var data = notificationDbHandler.getMessageField(originalMsgId, "notificationData");
+				originalMsgNotificationData = new customProperties(data);
+				
+				var failedRecipientsArray = failedRecipients.split(",");
+				for(failedIndex in failedRecipientsArray) {
+					// Create a fake DSN with action set to "failed"
+					var report=new deliveryReport();
+					report.actionValue="failed";
+					report.finalRecipient=failedRecipientsArray[failedIndex];
+					report.originalRecipient=failedRecipientsArray[failedIndex];
+					originalMsgNotificationData.addDsnReport(report, header.messageId);
+				}
+			}
+			else {
+				/* Stop here if message is not a notification */
+				return true;
+			}
+		}
 		
 		/* Mark the notification as read if needed */
 		var markAsReadPref = srv.preferences.getBoolPref(srv.extensionKey + ".mark_notifications_as_read");
 		if (markAsReadPref) {
 			/* Mark as read in message db */
-			header.markRead(true);
+			if(!header.isRead) { // Don't mark message read if it is already read...
+				header.markRead(true);
 			
-			/* Mark as read in IMAP */
-			try {
-				var imapFolder = header.folder.QueryInterface(Components.interfaces.nsIMsgImapMailFolder);
-				var imapUids = [];
-				imapUids.push(header.messageKey);
-				imapFolder.storeCustomKeywords(null, "\\Seen", "", imapUids, 1);
-			} catch (e) {}
+				/* Mark as read in IMAP */
+				try {
+					var imapFolder = header.folder.QueryInterface(Components.interfaces.nsIMsgImapMailFolder);
+					var imapUids = [];
+					imapUids.push(header.messageKey);
+					imapFolder.storeCustomKeywords(null, "\\Seen", "", imapUids, 1);
+				} catch (e) {}
+			}
 		}
 		
 		/* Move notification to original thread if needed */
@@ -429,7 +568,7 @@ var notifyListener = {
 	
 	moveNotificationWithSource : function(header, msgSrc, originalMsgId) {
 		if (!header) return;
-		if (header.messageId == "") return;
+		if (header.messageId == "" || header.messageId == null) return;
 		
 
 		/* Search original message in message db */
@@ -486,6 +625,7 @@ var notifyListener = {
 		if (file) {
 			// remove old msgDbHdr. It's important to do that first. (why?)
 			
+			
 			var list;
 			if (trustedBird_getPlatformVersion() >= "1.9") {
 				list = Components.classes["@mozilla.org/array;1"].createInstance(Components.interfaces.nsIMutableArray);
@@ -519,15 +659,20 @@ var notifyListener = {
 		var fileTb2 = null;
 		var fileTb3 = null;
 		
-		try {
-			// TB 2.0.0.*
-			fileTb2 = Components.classes["@mozilla.org/filespec;1"].createInstance(Components.interfaces.nsIFileSpec);
-			fileTb2.nativePath = file;
-		} catch (e) {
-			// TB 3.0.* (XPCOM 1.9)
+		
+		// TCN why do we create a new message here ?? Can't we just move existing message ?
+		var list;
+		if (trustedBird_getPlatformVersion() >= "1.9") {
+			// >= TB 3.0
 			fileTb3 = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
 			fileTb3.initWithPath(file);
 		}
+		else {
+			// TB 2
+			fileTb2 = Components.classes["@mozilla.org/filespec;1"].createInstance(Components.interfaces.nsIFileSpec);
+			fileTb2.nativePath = file;
+		}
+
 		var copyService = Components.classes["@mozilla.org/messenger/messagecopyservice;1"].getService(Components.interfaces.nsIMsgCopyService);
 
 		count++;
