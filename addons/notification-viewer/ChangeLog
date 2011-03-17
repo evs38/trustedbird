@@ -1,3 +1,9 @@
+notification-viewer (1.0.4)
+  * Add: possibility to prevent move of failed notifications
+  * Fix: add-on now handles Exim bounce messages
+-- Mar 17 2011
+
+
 notification-viewer (1.0.3)
   * Add Thunderbird 3.1 compatibility
   * Fix notification info for messages displayed in tabs
