@@ -142,7 +142,6 @@ var notifyListener = {
 				onHdrChecked : function(header, msgHdr, checkResult) {
 					if(checkResult) {
 						// Get message source and parse it
-						srv.warningSrv("Message handled by add-on");
 						notifyListener.getMsgSrc(header, notifyListener.parseMsg);
 					}
 				}
@@ -427,6 +426,7 @@ var notifyListener = {
 		var originalMsgNotificationData;
 		
 		/* Parse DSN message */
+		var DSNFailed = false;
 		if (notificationType == "DSN") {
 			var dsnParserObj = new dsnParser(msgSrc);
 
@@ -449,11 +449,18 @@ var notifyListener = {
 			originalMsgNotificationData = new customProperties(data);
 
 			/* Update notification data with new reports */
-			for (var i in deliveryReports) {
+			/* TCN
+			   See http://www.rfc-editor.org/rfc/rfc1894.txt
+			   I understand from this RFC that there is only ONE message delivery-status part in a DSN. Why bother with a list ?
+			*/
+			for (var i in deliveryReports) { 
 				srv.logSrv(notificationType + " (MsgKey=" + header.messageKey + ") - " + deliveryReports[i].finalRecipient + " " + deliveryReports[i].actionValue);
 				/* Add report to notification data */
 				if (dsnParserObj.isValidReport(deliveryReports[i].actionValue)) {
 					originalMsgNotificationData.addDsnReport(deliveryReports[i], header.messageId);	
+					if(deliveryReports[i].actionValue=="failed") {
+						DSNFailed = true;
+					}
 				}
 			}
 
@@ -523,6 +530,7 @@ var notifyListener = {
 					report.finalRecipient=failedRecipientsArray[failedIndex];
 					report.originalRecipient=failedRecipientsArray[failedIndex];
 					originalMsgNotificationData.addDsnReport(report, header.messageId);
+					DSNFailed=true;
 				}
 			}
 			else {
@@ -549,7 +557,7 @@ var notifyListener = {
 		}
 		
 		/* Move notification to original thread if needed */
-		var originalMsgDBHdr = notifyListener.moveNotificationWithSource(header, msgSrc, originalMsgId);
+		var originalMsgDBHdr = notifyListener.moveNotificationWithSource(header, msgSrc, originalMsgId, DSNFailed);
 		
 		/* Save notification data into database */
 		saveNotificationData(originalMsgNotificationData, originalMsgId, originalMsgDBHdr);
@@ -567,6 +575,10 @@ var notifyListener = {
 	},
 	
 	moveNotificationWithSource : function(header, msgSrc, originalMsgId) {
+		notifyListener.moveNotificationWithSource(header, msgSrc, originalMsgId, false);
+	},
+	
+	moveNotificationWithSource : function(header, msgSrc, originalMsgId, DSNFailed) {
 		if (!header) return;
 		if (header.messageId == "" || header.messageId == null) return;
 		
@@ -579,6 +591,10 @@ var notifyListener = {
 		var originalHeader = findMsg.searchByMsgId(originalMsgId);
 		
 		if (srv.preferences.getBoolPref(srv.extensionKey + ".thread_on_original_message")) {
+			// Do not move failed notifications
+			if(DSNFailed && srv.preferences.getBoolPref(srv.extensionKey + ".do_not_thread_failed_notification")) {
+				return originalHeader;
+			}
 			if (originalHeader) {
 				/* If notification is not already in correct thread */
 				if (header.folder.folderURL != originalHeader.folder.folderURL || header.threadParent != originalHeader.messageKey) {
@@ -624,8 +640,6 @@ var notifyListener = {
 		
 		if (file) {
 			// remove old msgDbHdr. It's important to do that first. (why?)
-			
-			
 			var list;
 			if (trustedBird_getPlatformVersion() >= "1.9") {
 				list = Components.classes["@mozilla.org/array;1"].createInstance(Components.interfaces.nsIMutableArray);
@@ -659,8 +673,7 @@ var notifyListener = {
 		var fileTb2 = null;
 		var fileTb3 = null;
 		
-		
-		// TCN why do we create a new message here ?? Can't we just move existing message ?
+
 		var list;
 		if (trustedBird_getPlatformVersion() >= "1.9") {
 			// >= TB 3.0

@@ -224,6 +224,7 @@ var prefDialogBox = {
 		this.parseMdnDsn();
 		document.getElementById("markRead").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".mark_notifications_as_read");
 		document.getElementById("moveNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".thread_on_original_message");
+		document.getElementById("doNotMoveFailedNotification").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".do_not_thread_failed_notification");
 		document.getElementById("notificationsDisplayTextAndIcons").selectedIndex = (this.services.preferences.getIntPref(this.services.extensionKey+".display_text_and_icons"))-1;
 		document.getElementById("showOnHeaderView").checked = this.services.preferences.getBoolPref(this.services.extensionKey+".display_headerview");
 	},
@@ -251,6 +252,7 @@ var prefDialogBox = {
 		this.services.preferences.setIntPref(this.services.extensionKey+".timeout",timeOutValue);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".mark_notifications_as_read",document.getElementById("markRead").checked);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".thread_on_original_message",document.getElementById("moveNotification").checked);
+		this.services.preferences.setBoolPref(this.services.extensionKey+".do_not_thread_failed_notification",document.getElementById("doNotMoveFailedNotification").checked);
 		this.services.preferences.setIntPref(this.services.extensionKey+".display_text_and_icons",(document.getElementById("notificationsDisplayTextAndIcons").selectedIndex)+1);
 		this.services.preferences.setBoolPref(this.services.extensionKey+".display_headerview",document.getElementById("showOnHeaderView").checked);
 

@@ -48,6 +48,7 @@
 <!ENTITY PrefsDialog.groupBoxDeliveryNotification "Messages de notification">
 <!ENTITY PrefsDialog.markRead "Marquer la notification comme lue">
 <!ENTITY PrefsDialog.moveNotification "Déplacer la notification dans le fil du message d'origine">
+<!ENTITY PrefsDialog.doNotMoveFailedNotification "Ne pas déplacer en cas d'échec">
 <!ENTITY PrefsDialog.display "Affichage">
 <!ENTITY PrefsDialog.display.notificationsDisplayTextAndIcons "Afficher les notifications avec">
 <!ENTITY PrefsDialog.display.textOnly "Texte seulement">

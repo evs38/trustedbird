@@ -81,7 +81,8 @@
 							<checkbox id="markRead" label="&PrefsDialog.markRead;" flex="1" />
 						</hbox>
 						<hbox flex="1">
-							<checkbox id="moveNotification" label="&PrefsDialog.moveNotification;" flex="1" />
+							<checkbox id="moveNotification" label="&PrefsDialog.moveNotification;" flex="1" onclick="document.getElementById('doNotMoveFailedNotification').disabled = this.checked;"/>
+							<checkbox id="doNotMoveFailedNotification" label="&PrefsDialog.doNotMoveFailedNotification;" flex="1" />
 						</hbox>
 					</groupbox>
 					<spacer flex="2" />
