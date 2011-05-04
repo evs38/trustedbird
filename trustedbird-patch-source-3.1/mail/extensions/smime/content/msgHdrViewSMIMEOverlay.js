@@ -251,7 +251,7 @@ var smimeHeaderSink =
 
 	if(aSecureHeaders)
 	{
-		//gConsole.logStringMessage("*** secureHeaders analysis begin ***\ncanonization Algorithm : " + aCanonAlgo);
+		// gConsole.logStringMessage("*** secureHeaders analysis begin ***\ncanonization Algorithm : " + aCanonAlgo);
 		gSecureHeadersState=1;
 		var secureHeaders=aSecureHeaders.QueryInterface(nsIArray);
 		var hdrArray=getMsgHdr(); //get selected mime message headers list 
@@ -277,7 +277,7 @@ var smimeHeaderSink =
 						 // RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
 						tmp_hdrName = tmp_hdrName.toLowerCase();
 					}
-					//gConsole.logStringMessage("secureHeadersStatus - \n check for signed header "+tmp_hdrName);
+					// gConsole.logStringMessage("secureHeadersStatus - \n check for signed header "+tmp_hdrName);
 					for(var j=0;j<hdrArray.length;++j){
 						tmp_hdrMimeName = hdrArray[j]._hdrName;
 						if(aCanonAlgo){
@@ -285,7 +285,7 @@ var smimeHeaderSink =
 							tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
 						}						
 						
-						//gConsole.logStringMessage("secureHeadersStatus - \nsigned header : "+tmp_hdrName+"\nmime header   : "+tmp_hdrMimeName);	
+						// gConsole.logStringMessage("secureHeadersStatus - \nsigned header : "+tmp_hdrName+"\nmime header   : "+tmp_hdrMimeName);	
 							
 						if(tmp_hdrName==tmp_hdrMimeName){
 							// compare secured value ans MIME value of header
@@ -300,21 +300,21 @@ var smimeHeaderSink =
 							if(aCanonAlgo){
 								hdrMimeValue = canonilizeHeaderValue(hdrMimeValue);
 								hdrValue = canonilizeHeaderValue(hdrValue);
-								//gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
+								// gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
 							}												
 							
 							if(hdrValue!=hdrMimeValue) //test if the header value in the signature and that one in the mime message is the same
 							{
 								hdrValidity="invalid"; //header was modified
 								secStatus=false;
-								gConsole.logStringMessage("Warning - failed on verifing secured header "+hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
+								// gConsole.logStringMessage("Warning - failed on verifing secured header "+hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
 							}
 							
 							// decode values from MIME format
 							var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
 							hdrMimeValue = mimeEncoder.decodeMimeHeader(hdrMimeValue, charset, false, true);//encodeMimePartIIStr(hdrValue, false, "ISO-8859-1" , 0, 72);
 							hdrValue = mimeEncoder.decodeMimeHeader(hdrValue,charset,false,true);
-							//gConsole.logStringMessage("secureHeadersStatus - header "+hdrName+" \nmime value:  >" +hdrMimeValue+ "<\nsigned value:>"+hdrValue+"<");	
+							// gConsole.logStringMessage("secureHeadersStatus - header "+hdrName+" \nmime value:  >" +hdrMimeValue+ "<\nsigned value:>"+hdrValue+"<");	
 							
 							
 							break; // header is correctly checked
@@ -456,16 +456,16 @@ function getMessageHeaders(aMsgDBHdr) {
     while (inputStream.available()) {
       content += inputStream.read(512);
       var p = content.indexOf("\r\n\r\n");
-      var p1 = content.indexOf("\r\r");
-      var p2 = content.indexOf("\n\n");
       if (p > 0) {
         content = content.substring(0, p);
         break;
       }
+      var p1 = content.indexOf("\r\r");
       if (p1 > 0) {
         content = content.substring(0, p1);
         break;
       }
+      var p2 = content.indexOf("\n\n");
       if (p2 > 0) {
         content = content.substring(0, p2);
         break;
@@ -624,42 +624,64 @@ function getMsgHdr(){
    			dump("Error line " + Error().lineNumber + " : "+ e + " - file "+ Error().fileName);
    			return _HdrArray;
  		}
-		
+
 		// analyse des donnees du message selectionne
  		ScriptInputStream.available();
  		var content = "";
- 		var tmpBuf = "";
- 		while (ScriptInputStream .available()) {
- 			tmpBuf = ScriptInputStream.read(512);
- 			content = content + tmpBuf;
- 			// extrac headers
- 			// RFC 2822 :  The body is simply a sequence of characters that
-   			// follows the header and is separated from the header by an empty line
-   			// (i.e., a line with nothing preceding the CRLF). 			
- 			if(tmpBuf.indexOf("\r\n\r\n",0) != -1){			
- 				break;
- 			}
-		}
+ 		//var tmpBuf = "";
+
+        // extrac headers
+		// RFC 2822 :  The body is simply a sequence of characters that
+		// follows the header and is separated from the header by an empty line
+		// (i.e., a line with nothing preceding the CRLF).
+        // TCN: in nsImapProtocol.cpp is mentioned a conversion to native line feed
+        var linefeedStr = ""; // native line feed in this message (used later while retrieving headers line by line)
+        while (ScriptInputStream.available()) {
+          content += ScriptInputStream.read(512);
+          var p = content.indexOf("\r\n\r\n");
+          if (p > 0) {
+            linefeedStr = "\r\n";
+            content = content.substring(0, p);
+            break;
+          }
+          var p1 = content.indexOf("\r\r");
+          if (p1 > 0) {
+            linefeedStr = "\r";
+            content = content.substring(0, p1);
+            break;
+          }
+          var p2 = content.indexOf("\n\n");
+          if (p2 > 0) {
+            linefeedStr = "\n";
+            content = content.substring(0, p2);
+            break;
+          }
+        }
 		
 		// unfolding mime headers
 		content = UnfoldingMimeValue(content);
 		
 		// create array oh MIME headers
-		var cur_pos_CRLF = 0; //current position of CRLF
+		var cur_pos_CRLF = 0; //current position of line feed (CR, CRLF or LF)
 		var cur_pos_str = 0; // current position of string
 		var ligne_header = "";
-		while((cur_pos_CRLF=content.indexOf("\r\n",cur_pos_str))!=-1)
+        //gConsole.logStringMessage("Content: " + content);
+		while((cur_pos_CRLF=content.indexOf(linefeedStr,cur_pos_str))!=-1)
 		{
-			ligne_header+=content.substring(cur_pos_str,cur_pos_CRLF);
+   			ligne_header+=content.substring(cur_pos_str,cur_pos_CRLF);
+
+            //gConsole.logStringMessage("ligne_header: " + ligne_header);
 			if(ligne_header.indexOf(":",0)!=-1){
 				var msghdr = new MsgHdrObj();
 				// header
 				msghdr._hdrName = ligne_header.substring(0,ligne_header.indexOf(":",0));				
 				msghdr._hdrValue = ligne_header.substring(ligne_header.indexOf(":",0)+1);
+                gConsole.logStringMessage("msghdr._hdrName: " + msghdr._hdrName);
+                gConsole.logStringMessage("msghdr._hdrValue: " + msghdr._hdrValue);
 				_HdrArray.push(msghdr);				
 			}
 			ligne_header="";
-			cur_pos_str=cur_pos_CRLF+2;			
+   			cur_pos_str=cur_pos_CRLF + linefeedStr.length;
 		}
 		return _HdrArray;
 }
