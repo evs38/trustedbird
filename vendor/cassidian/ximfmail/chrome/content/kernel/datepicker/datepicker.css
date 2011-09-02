@@ -1,0 +1,253 @@
+#datepicker-button{
+	list-style-image:url('chrome://ximfmail/content/datepicker/date-n.png');
+	max-width:20px;
+	min-width:20px;
+	width:20px;
+	padding:0px;
+	margin:0px;
+	border-style: none;
+	-moz-box-pack:center;
+	-moz-box-align:center;
+	-moz-outline-width: 0px !important;
+	-moz-border-top-colors: none !important;
+	-moz-border-right-colors: none !important;
+	-moz-border-bottom-colors: none !important;
+	-moz-border-left-colors: none !important;
+	-moz-appearance: none !important;
+}
+#datepicker-button:hover{
+	list-style-image:url('chrome://ximfmail/content/datepicker/date-h.png');
+}
+
+#oe-date-picker-overlay-box
+{
+	color: black;
+	background-color        : #F8F8F8;
+	font-size               : 10px;
+}
+
+ 
+#oe-date-picker-year-controls-box
+{
+	border              : 2px solid #7090b0; 
+	-moz-box-align       : center;
+	-moz-box-pack        : center;
+	background-color    : #7090b0
+}
+
+#oe-date-picker-year-title-text
+{
+	color: #FFFFFF;
+	font-weight: bold;
+	font-size:1.5em;
+}
+
+#oe-date-picker-currenttime-text
+{
+	list-style-image:url('chrome://ximfmail/content/datepicker/date-n.png');
+	
+}
+
+#oe-date-picker-currenttime-text:hover
+{
+	list-style-image:url('chrome://ximfmail/content/datepicker/date-h.png');
+	
+}
+
+
+#oe-date-picker-year-previous-button
+{
+  list-style-image: url("chrome://ximfmail/content/datepicker/left_arrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-previous-button:hover
+{
+  list-style-image: url("chrome://ximfmail/content/datepicker/left_arrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-previous-jump-button
+{
+  list-style-image: url("chrome://ximfmail/content/datepicker/left_dblarrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-previous-jump-button:hover
+{
+  list-style-image: url("chrome://ximfmail/content/datepicker/left_dblarrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-jump-button
+{
+	list-style-image        : url("chrome://ximfmail/content/datepicker/right_dblarrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-jump-button:hover
+{
+	list-style-image        : url("chrome://ximfmail/content/datepicker/right_dblarrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-button
+{
+	list-style-image        : url("chrome://ximfmail/content/datepicker/right_arrow.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-button:hover
+{
+	list-style-image        : url("chrome://ximfmail/content/datepicker/right_arrow_hov.png");
+	width:1.5em;
+	height:1.5em;
+}
+
+#oe-date-picker-year-next-button-box
+{
+   -moz-box-pack           : end;
+}
+
+#oe-date-picker-year-grid
+{
+   border-top         : 1px solid #2085c4; 
+   border-left        : 1px solid #2085c4; 
+   margin-top         : 1px;
+   margin-right       : 1px;
+}
+
+#ximfmail-date-picker-hour-grid
+{
+   border-top         : 1px solid #2085c4; 
+   border-left        : 1px solid #2085c4; 
+   margin-top         : 1px;
+   margin-right       : 1px;
+}
+
+.oe-date-picker-year-month-box-class
+{
+   -moz-box-align       : center;
+   border-right         : 1px solid #2085c4; 
+   border-bottom        : 1px solid #2085c4;
+   background-color     : #E9E9E9;
+}
+
+
+.oe-date-picker-year-month-box-class:hover
+{
+   background-color     : #C9E8F1;
+}
+
+.oe-date-picker-year-month-box-class[selected="true"]
+{
+   background-color       : #6699CC;
+}
+
+
+.oe-date-picker-month-day-number-class
+{
+   margin                  : 1px;
+}
+
+.oe-date-picker-month-day-number-class[selected="true"]
+{
+
+   background-color       : #6699CC;
+}
+
+#oe-date-picker-month-grid
+{
+   margin-right          : 0px;
+   margin-bottom         : 0px;
+}
+
+#start-date-button
+{
+	border: 0px;
+	list-style-image        : url("chrome://ximfmail/content/datepicker/calendar-down.gif");
+	margin: 0px;
+	padding: 0px;
+	max-width: 36px;
+}
+
+#start-date-button:hover
+{
+	margin: 0px;
+	padding: 0px;
+	list-style-image        : url("chrome://ximfmail/content/datepicker/calendar-up.gif");
+}
+
+.oe-date-picker-month-day-box-class
+{
+   min-width            : 25px;
+   min-height           : 15px;
+   background-color     : #FFFFFF;
+}
+
+.oe-date-picker-month-day-box-class[selected="true"]
+{
+   background-color       : #6699CC;
+}
+
+.oe-date-picker-month-day-box-class:hover
+{
+   background-color     : #FFFF99;
+}
+
+.oe-date-picker-month-day-box-class
+{
+  -moz-box-align       : center;
+   border-right         : 1px solid #E2E2E2; 
+   border-bottom        : 1px solid #E2E2E2;
+   border-top           : 1px solid #E2E2E2; 
+   border-left          : 1px solid #E2E2E2;
+}
+
+.oe-date-picker-month-days-header-class
+{
+	margin					: 0px;
+	padding					: 0px;
+}
+
+.oe-date-picker-month-days-header-class-red
+{
+	color                   : #FF0000;
+}
+
+#oe-date-picker-month-days-header-box
+{
+	margin					: 0px 0px;
+}
+
+.oe-date-picker-month-days-box-header-class
+{
+	-moz-box-align			: center;
+}
+
+#ximf-date-picker-end-controls-box
+{
+	border              : 2px solid #7090b0; 
+	-moz-box-align       : center;
+	-moz-box-pack        : center;
+	background-color    : #7090b0
+}
+
+#ximf-date-picker-ok-control-box
+{
+	list-style-image        : url("chrome://ximfmail/content/datepicker/ok.png");
+
+}
+
+#ximf-date-picker-ok-control-box:hover
+{
+	list-style-image        : url("chrome://ximfmail/content/datepicker/ok_hov.png");
+
+}

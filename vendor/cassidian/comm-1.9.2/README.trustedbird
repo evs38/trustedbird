@@ -1,0 +1,10 @@
+Trustedbird
+-----------
+
+This software is an email client based on Mozilla Thunderbird 3.1 with additional features:
+* S/MIME signed receipts (RFC 2634)
+
+
+Trustedbird/Milimail project
+URL: http://www.trustedbird.org
+Licenses: MPL 1.1+/GPL 2.0+/LGPL 2.1+

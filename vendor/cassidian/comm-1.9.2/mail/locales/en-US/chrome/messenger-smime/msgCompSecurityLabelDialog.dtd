@@ -1,0 +1,9 @@
+<!--LOCALIZATION NOTE msgCompSecurityLabelDialog.dtd UI for selecting security label properties when composing a message -->
+
+<!ENTITY securityLabelDialog.name "Security Label">
+<!ENTITY securityLabelDialog.securityPolicyIdentifier.name "Security Policy:">
+<!ENTITY securityLabelDialog.securityClassification.name "Security Classification:">
+<!ENTITY securityLabelDialog.privacyMark.name "Privacy Mark:">
+<!ENTITY securityLabelDialog.securityCategories.name "Security Categories:">
+<!ENTITY securityLabelDialog.securityCategories.button.add.name "Add">
+<!ENTITY securityLabelDialog.securityCategories.button.remove.name "Remove selected">
