@@ -50,6 +50,7 @@ window.addEventListener('messagepane-loaded', InitXimfailMsgWindow, true);
 /*
  * Create a message listener  
  */
+var gIdTimeOut = null;
 function InitXimfailMsgWindow(){
    gMessageListeners.push({
     onStartHeaders: function (){
@@ -57,7 +58,9 @@ function InitXimfailMsgWindow(){
     onEndHeaders: function(){
     },
     onEndAttachments: function (){    	
-		setTimeout("ParseMsgXimfHeaders()",500);
+    	if(gIdTimeOut != null)
+    	  clearTimeout(gIdTimeOut);
+		  gIdTimeOut = setTimeout("ParseMsgXimfHeaders()",500);
 	},
   });
 }
@@ -94,9 +97,9 @@ function ParseMsgXimfHeaders() {
 					$("#ximfmail-custom-panel").removeAttr("collapsed");
 				}					
 			}else{
+				//if (window.arguments[0] instanceof Components.interfaces.nsIMsgDBHdr){
 				// message is displayed in new window				
-				if (window.arguments[0] instanceof Components.interfaces.nsIMsgDBHdr){
-      				msgHdr = window.arguments[0];
+      			//var msgHdr = window.arguments[0];
       				$("#ximfmail-custom-panel").removeAttr("collapsed");
       				CreateXimfmailCatalog();					
 					gXimfHeaders.set(msgDBHdr.folder.getUriForMsg(msgDBHdr)); 
@@ -105,8 +108,6 @@ function ParseMsgXimfHeaders() {
 					//if(ShowExpandedHeaders())				
 					//	$("#ximfHeadBox").removeAttr("collapsed");	
       			}
-			}
-			
 			// common elements to display			  				
 			if(ShowExpandedHeaders()){					
 				$("#ximfHeadBox").removeAttr("collapsed");								 			
@@ -315,8 +316,15 @@ function ShowXimfmailPanel(){
 					if(ximfValue){													
 						// search for value and comlete display box
 						var display_box = $("textbox[refheader='" + xheader_dom[idx_xheader_dom].getAttribute("id") + "']");
-						
 						if(display_box.length > 0){					
+							try{
+								// ximfValue is in Array
+								if(ximfValue.constructor == Array){											
+									var sSeparator  = display_box[0].getAttribute("ximfseparator");
+									ximfValue = ximfValue.join(sSeparator);
+								}								
+							}catch(e){}
+										
 							// default values
 							display_box[0].setAttribute("value",ximfValue);
 							display_box[0].setAttribute("ximfvalue",ximfValue);
@@ -358,6 +366,16 @@ function ShowXimfmailPanel(){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
 						var ximfValue = gXimfHeaders.getValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
 						if(ximfValue){
+							try{
+								// ximfValue is in Array								
+								if(ximfValue.constructor == Array){
+									var display_box = $("textbox[refheader='" + xheader_dom[idx_xheader_dom].getAttribute("id") + "']");
+									if(display_box.length > 0){											
+										var sSeparator  = display_box[0].getAttribute("ximfseparator");
+										ximfValue = ximfValue.join(sSeparator);
+									}
+								}								
+							}catch(e){}							
 							xheader_dom[idx_xheader_dom].setAttribute("value",ximfValue);
 						}								
 						}	
@@ -376,6 +394,16 @@ function ShowXimfmailPanel(){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
 						var ximfValue = gXimfHeaders.getValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
 						if(ximfValue){												
+							try{
+								// ximfValue is in Array								
+								if(ximfValue.constructor == Array){
+									var display_box = $("textbox[refheader='" + xheader_dom[idx_xheader_dom].getAttribute("id") + "']");
+									if(display_box.length > 0){											
+										var sSeparator  = display_box[0].getAttribute("ximfseparator");
+										ximfValue = ximfValue.join(sSeparator);
+									}
+								}								
+							}catch(e){}													
 							xheader_dom[idx_xheader_dom].listaddress = ximfValue;
 							//alert("load address values \n"+ximfValue+"\n"+xheader_dom[idx_xheader_dom].listaddress);									
 						}								

@@ -82,7 +82,7 @@ var gMaxTimeoutXimfmail=0;
 function XimfmailStartup(){
 	if(!gCurrentIdentity){ 
 		if(gMaxTimeoutXimfmail<20){
-			setTimeout("XimfmailStartup()", 20);
+			setTimeout("XimfmailStartup()", 100);
 			++gMaxTimeoutXimfmail;
 		}	
 		return;
@@ -91,13 +91,12 @@ function XimfmailStartup(){
 	var currentInstance = null;
 	var current_definition = null;
 	//is Template or Draft message
+	var typeMsg = -1;
 	try{
 		// get current definition and default instance of account loaded		
 		currentInstance = gPrefBranch.getCharPref("ximfmail.composeMsg.instance");
 		current_definition =  gPrefBranch.getCharPref("mailnews.theme.mailpanel");
-			
 		var args = window.arguments[0];
-		var typeMsg = -1;
 		if(args){
 			typeMsg = args.type;
 		}else{			
@@ -118,6 +117,7 @@ function XimfmailStartup(){
         	case nsIMsgCompType.ForwardAsAttachment: 	
 				//alert("typeMsg = " + args.type + "\nUri of message : " + args.originalMsgURI);
 				gJSLoader.loadSubScript("chrome://ximfmail/content/messageAnalyser-ximfmail.js");
+					
 				var msgAnalyser = new XimfMessageAnalyser();
 				
 				// search for template XIMF	
@@ -132,9 +132,18 @@ function XimfmailStartup(){
 				var uriXimfInstance = msgAnalyser.hasXimfHeaders(current_definition);
 				if(uriXimfInstance){				
 					currentInstance = uriXimfInstance;
-				}								
 				LoadXimfmailPanel(currentInstance);
 				ComputeWithForm(msgAnalyser);				
+				}else{					
+					$("#ximfmailComposeMessageHeadersTablist").empty();
+					$("#ximfmailComposeMessageTitle").attr("value","");
+					$("#isUsingXimfail").attr("hidden","false");						
+					gXimfHdrs=null;						
+					//remove ximf events ...
+					HideSendMessageElements(true);
+					$("#addressingWidget").unbind("command",SpecialXimfRule_CheckAddress);			
+					ReloadSecurityAccess();					
+				}			
 				break;
 			default :				
 				LoadXimfmailPanel(currentInstance);							

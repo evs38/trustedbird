@@ -67,6 +67,12 @@ function XimfMessageAnalyser(){
 		 * Create array of {[headerName][headerValue],[headerName][headerValue],...}
 		 */
 		XimfMessageAnalyser.prototype.createXimfHdrArray = function(){
+
+			var nbBytes = 0;
+			var tmpBuf = "";
+			var content = ""; 
+			
+			// first try to open URI
 			try{
 				var cmessenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);
 				var msgSvc =  cmessenger.messageServiceFromURI(_mailUri);
@@ -88,14 +94,14 @@ function XimfMessageAnalyser(){
 						
 				if(!ScriptInputStream)	return;
 				// extract headers datas of selected message		 	
-		 		var content = "";		 		 		
-				var nbBytes = ScriptInputStream.available();
-				var tmpBuf = ScriptInputStream.read(nbBytes);
-
+				nbBytes = ScriptInputStream.available();
+				tmpBuf = ScriptInputStream.read(nbBytes);
 				// RFC 2822 :  The body is simply a sequence of characters that
 		   		// follows the header and is separated from the header by an empty line
 		   		// (i.e., a line with nothing preceding the CRLF). 		
 				var endHdrsNlock = tmpBuf.indexOf("\r\n\r\n",0);
+				if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\n\n",0);
+				if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\r\r",0);								
 				if(endHdrsNlock != -1){					
 			 		content = tmpBuf.substring(0,endHdrsNlock);
 				}else{
@@ -106,8 +112,46 @@ function XimfMessageAnalyser(){
 				tmpBuf = null;
 				ScriptInputStream.close();
 				consumer.close();
+        
+			}catch(e){}
+			 
+			try{
+				// _mailUri can be a path : case of open file message
+				if(tmpBuf == "")
+				{
+					var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+					var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+					file.initWithPath(_mailUri);
+					stream.init(file, -1, 0, 0);
+	
+					var ScriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
+					var ScriptInputStream = ScriptInput.QueryInterface(Components.interfaces.nsIScriptableInputStream);
+					ScriptInputStream.init(stream);
+		        
+					//if(!ScriptInputStream)  return;
+					// extract headers datas of selected message
+					nbBytes = ScriptInputStream.available();
+					tmpBuf = ScriptInputStream.read(nbBytes);
+					
+					// RFC 2822 :  The body is simply a sequence of characters that
+					// follows the header and is separated from the header by an empty line
+					// (i.e., a line with nothing preceding the CRLF).    
+					var endHdrsNlock = tmpBuf.indexOf("\r\n\r\n",0);					
+					if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\n\n",0);					
+					if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\r\r",0);				
+					if(endHdrsNlock != -1){						      
+					  content = tmpBuf.substring(0,endHdrsNlock);
+					}else{
+					  content = tmpBuf;
+					} 
+		  
+					tmpBuf = null;
+					ScriptInputStream.close();
+					stream.close();
+				}
+			  
 				//msgSvc
-				var separator = new RegExp("[\r\n]+","g"); // end line
+				var separator = new RegExp("\\r\\n|\\r|\\n", "i");// end line
 				var tab = content.split(separator);
 		
 				// filter on IMF headers - append data to array

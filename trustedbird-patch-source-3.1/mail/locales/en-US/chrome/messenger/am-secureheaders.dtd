@@ -8,6 +8,7 @@
 <!ENTITY useSecureHeaders.label "Use secure headers">
 <!ENTITY secureHeadersDescription.label "Secure headers definition" >
 <!ENTITY secureHeadersDatas.label "Secure headers" >
+<!ENTITY smime.am.infomsg.label "Set security state of each message">
 
 
 

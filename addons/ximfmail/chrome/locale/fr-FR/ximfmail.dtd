@@ -9,7 +9,7 @@
 <!ENTITY ximfmail.am.xsmtpCompatibilityCheck "Assurer la compatibilité XSMTP des entêtes XIMF">
 <!ENTITY ximfmail.am.dialogTitle "XIMFMAIL : entêtes de messages">
 <!ENTITY ximfmail.am.description "Utilisation et gestion d'entêtes XIMF">
-<!ENTITY ximfmail.compose.headerTab "chargement...">
+<!ENTITY ximfmail.compose.headerTab " ">
 <!ENTITY ximfmail.compose.advancedTab "Avancé">
 <!ENTITY ximfmail.am.instanceGroup.reception "Réception">
 <!ENTITY ximfmail.am.instanceTreeThreadChoice "Trier les entêtes de messages avec l'instance : ">

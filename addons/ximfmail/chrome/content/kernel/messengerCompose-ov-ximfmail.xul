@@ -44,7 +44,6 @@
 <!-- Feuilles de style  -->
 <?xml-stylesheet href="chrome://ximfmail/skin" type="text/css"?>
 
-
 <!-- Internationalisation -->
 <!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximfmail.dtd">
 
@@ -65,8 +64,6 @@
   		<broadcaster id="isShowingXimfail" hidden="false"/>
   		<broadcaster id="isUsingXimfail" hidden="false"/>
 	</broadcasterset>
-	
-	<!-- Configuration XIMF Intraced -->	
 	<toolbox id="headers-box">
 		<toolbar insertbefore="FormatToolbar">
 			<vbox id="ximfmailComposeMessagePanel" observes="isUsingXimfail" flex="1">
@@ -76,10 +73,9 @@
 					<image id="ximfmailComposeMessageLogo"/>
 					<label id="ximfmailComposeMessageTitle" value="&ximfmail.compose.headerTab;" />									
 					<spacer flex="1" />
-					<!-- <image id="ximfmailComposeMessageState" class="ximfmailUnacceptState"/>  -->				
 				</hbox>								
 				<tabbox id="ximfmailComposeMessageHeadersTablist" observes="isShowingXimfail" handleCtrlTab="true" eventnode="parent"/>									
 			</vbox>
 		</toolbar>						
 	</toolbox>	
-</overlay>	
+</overlay>

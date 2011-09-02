@@ -64,7 +64,7 @@ var gDlgEditorXimf_maxItem_alert = "";
 $(document).ready(function(){		
 	var gArgs = window.arguments;
 	if(gArgs[0].length < 5){ 
-		alert("error nbargs = "+gArgs[0].length)
+		ximfAlert("error nbargs = "+gArgs[0].length)
 		return;}	
 	
 	// load background datas
@@ -82,7 +82,7 @@ $(document).ready(function(){
 		gDlgEditorXimf_maxItem_alert = gXimfMaxItems + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");	
 		$("#textbox-editor").attr("style","width:400px;height:100px");
 	}else{		
-		gDlgEditorXimf_maxItem_lert = gXimfMaxItems + "1 "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows.one");
+		gDlgEditorXimf_maxItem_alert = gXimfMaxItems + "1 "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows.one");
 		$("#textbox-editor").attr("maxrows","1");
 	}
 	RefreshEditor();
@@ -97,25 +97,39 @@ $(document).ready(function(){
 function doOK()
 {
   if(!gEditorElt) return false;
-  
   if(gXimfMinItems){
 	  if( getWritedRowsCount() < parseInt(gXimfMinItems)){
-			alert("no enough item");
+			ximfAlert("not enough item");
 	  }
   }
   
-  var newvalue = null;
+  var newvalue = "";
   if(!gXimfSeparator){		
 		newvalue = gEditorElt.value;	
 	}else{			
 		var reg=new RegExp("\n", "g");
-		newvalue = gEditorElt.value.replace(reg , gXimfSeparator);
+		//newvalue = gEditorElt.value.replace(reg , gXimfSeparator);
+		var arrayValue = gEditorElt.value.split(reg);	
+		var nbElements = arrayValue.length;
+		if(parseInt(gXimfMaxItems)<arrayValue.length){
+			nbElements = parseInt(gXimfMaxItems);
+			ximfAlert(gDlgEditorXimf_maxItem_alert);
+		}	
+		for(var i=0 ; i<nbElements ; ++i){
+			if(arrayValue[i]!=""){
+				if(i==0)
+					newvalue = arrayValue[i];
+				else
+					newvalue += gXimfSeparator + arrayValue[i];		
+			} 
+		}
+	}
+	
 		
 		//remove last separator		
 		if(newvalue.lastIndexOf(gXimfSeparator)+1 == newvalue.length){
 			newvalue = newvalue.substring(0,newvalue.lastIndexOf(gXimfSeparator));
 		}
-	}
 	
   window.opener.document.getElementById(gBoxOpener).value = newvalue;
   window.opener.document.getElementById(gBoxOpener).setAttribute("ximfvalue", newvalue);    
@@ -129,12 +143,41 @@ function doCancel()
   return true;
 }
 
+
 /*
  * 
  */
 function onCheck(aEvent){
 	if(!gEditorElt) return false;
 	var key = aEvent.which;	
+	switch(key){
+		case 13: // key=="\n"			
+		if( getWritedRowsCount() >= parseInt(gXimfMaxItems)){
+			ximfAlert(gDlgEditorXimf_maxItem_alert);	
+			var reg = new RegExp("\n", "g");
+			var artxt = gEditorElt.value.split(reg);
+			var newText = "";
+			for(var i=0 ; i < gXimfMaxItems; ++i){
+				if(i < artxt.length){
+					if(gXimfMaxItems-1 == i){
+						newText += artxt[i];
+					}else{
+						newText += artxt[i] + "\n";
+					}
+				}
+			}
+			gEditorElt.value = newText;		
+		}
+		case 8: // backspace
+		case 0: // delete
+			break;
+		default:
+			if( getWritedRowsCount() > parseInt(gXimfMaxItems)){
+				ximfAlert(gDlgEditorXimf_maxItem_alert);	
+				return false;
+			}
+	}
+	/*
 	// check for entries items
 	if(key == 13){ // key=="\n"		
 		if( getWritedRowsCount() >= parseInt(gXimfMaxItems)){
@@ -159,7 +202,7 @@ function onCheck(aEvent){
 			alert(gDlgEditorXimf_maxItem_alert);	
 			return false;
 		}
-	}
+	}*/
 	return true;
 }
 
@@ -189,7 +232,8 @@ function RefreshEditor(){
 			if(gCurrentText){				
 				var reg=new RegExp(gXimfSeparator, "g");		
 				var multitxt = gCurrentText.replace(reg , "\n");		
-				gEditorElt.setAttribute("value",multitxt+"\n");
+				//gEditorElt.setAttribute("value",multitxt+"\n");
+				gEditorElt.setAttribute("value",multitxt);
 			}				
 		}catch(e){
 			gConsole.logStringMessage("[ximfmail - RefreshEditor ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);		

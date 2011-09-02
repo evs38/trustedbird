@@ -246,13 +246,18 @@ var secureheaders_OnSend = {
 			// get preferences informations to sign
 			var arrayHeaderToSign = ReadXmlHeadersToSign();
 			
-			//always apply relaxed canon algorithm 
+			// relaxed canon algorithm as default value 
 			msgSMimeCompFields.canonAlgorithme = 1;
 			
 			if(arrayHeaderToSign){
 				var secHeader = null;
 				
 				for(i=0;i<arrayHeaderToSign.length;++i){ 
+					if(arrayHeaderToSign[i]._name == "canonalgo"){
+						// is canonalgo value
+						msgSMimeCompFields.canonAlgorithme = parseInt(arrayHeaderToSign[i]._status);
+						//gConsole.logStringMessage("[ _secure_headers - AddSecureHeadersArray] canonAlgorithme = " + msgSMimeCompFields.canonAlgorithme);
+					}else{					
 					// create Header object
 					secHeader = Components.classes["@mozilla.org/messenger-smime/smime-secure-header;1"].createInstance(Components.interfaces.nsIMsgSMIMESecureHeader);
 					secHeader.headerName=arrayHeaderToSign[i]._name;
@@ -264,6 +269,7 @@ var secureheaders_OnSend = {
 					// push Header object to array of msgCompFields object
 					msgSMimeCompFields.addSecureHeader(secHeader);
 				}
+			}
 			}
 		}catch(e){
 			gConsole.logStringMessage("[ _secure_headers - AddSecureHeadersArray] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
@@ -314,6 +320,13 @@ function ReadXmlHeadersToSign(){
 		var sValue="";
 		
 		if(compatibleTag.length>0){
+			// get canonical algorithm
+			if(compatibleTag[0].hasAttribute("canonalgo")){
+				var canonalgo = compatibleTag[0].getAttribute("canonalgo");				
+				tabSecureHeaders.push(new xSecureHeader("canonalgo", canonalgo));
+				gConsole.logStringMessage("[ ReadXmlHeadersToSign ] get canonical algorithm : " + canonalgo);
+			}
+			
 			// get headers to sign
 			var childNodes = compatibleTag[0].childNodes;
 			for(var j=0; j <childNodes.length; ++j ){
@@ -328,6 +341,7 @@ function ReadXmlHeadersToSign(){
 						
 						/*if(childNodes[j].hasAttribute("encrypted"))
 							header_encrypted = parseInt(childNodes[j].getAttribute("encrypted"));*/
+						
 						// load values to array
 						tabSecureHeaders.push(new xSecureHeader(header_name, header_status));
 					}

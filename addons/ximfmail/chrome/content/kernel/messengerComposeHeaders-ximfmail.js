@@ -208,7 +208,7 @@ function InsertXimfmailComposer(currentInstance){
 		
 		// controler init		
 		LoadXimfhdrsEventObserver();	
-		ExecuteMuseHdrsDefaultValuesRule();		
+		ExecuteXimfHdrsDefaultValuesRule();		
 		InitSpecialXimfRules();
 		CheckXimfhdrsSelection();
 	}catch(e){
@@ -515,7 +515,7 @@ function HideSendMessageElements(isToSend){
 					}
 				}
 			}catch(ex){
-					gConsole.logStringMessage("[ximfmuse - OpenTreeDialogBox_Svc ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
+					gConsole.logStringMessage("[ximfmail - OpenTreeDialogBox_Svc ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 			}
 		}	
 		
@@ -523,7 +523,7 @@ function HideSendMessageElements(isToSend){
 		window.openDialog(gChomeXulXimfTreeDialog,"showmore", "chrome,resizable,centerscreen,modal",args);
 		
 		if(args.retIsCancel){
-			gConsole.logStringMessage("[ximfmuse - OpenTreeDialogBox_Svc ] selection has been canceled !");		
+			gConsole.logStringMessage("[ximfmail - OpenTreeDialogBox_Svc ] selection has been canceled !");		
 			return;			
 		}
 		
@@ -620,7 +620,6 @@ function OpenInfoDialog(idBox){
 }
 // END DOM FUNCTIONS
 
-
 /*
  * EVENT MANAGER OF XIMFMAIL ELEMENTS
  */	
@@ -639,6 +638,7 @@ function LoadXimfhdrsEventObserver(){
 	$("button[class*='ximfTreeDialog']").bind("command",OnClickTreeDialogButton);
 	$("button[class*='ximfDatepicker']").bind("command",OnClickDatepicker);	
 	$("textbox[class='ximfEditor']").click(OnXimfhdrsEditor);		
+	$("textbox[class='ximfEditor']").bind("change",OnCheckXimfhdrsEditor);		
 	$("button[class*='ximfEditor']").bind("command",OnClickEditorButton);
 	
 	// get complete information of ximf hdr
@@ -792,6 +792,7 @@ function OnClickEditorButton(evt){
 	XimfailComposeCanClose();
 };	
 
+
 function OnXimfhdrsEditor(evt){	
 	var id = evt.currentTarget.id;	
 	var bx = document.getElementById(id);
@@ -839,9 +840,39 @@ function OnSelectContextBox(evt){
 		gConsole.logStringMessage("[ximfmail - OnSelectXimfmailContextBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 	}
 }		
+
+function OnCheckXimfhdrsEditor(evt){
+	try{
+		//alert(evt.currentTarget.id)
+		var domElt = evt.currentTarget;
+		var maxItems = domElt.getAttribute("ximfmaxitems");		 
+		var separatorItem = domElt.getAttribute("ximfseparator");	
+		var labelHeader = document.getElementById(domElt.getAttribute("refheader")).getAttribute("value");	
+		if(maxItems==""){return;}		
+		var dlgEditorXimf_maxItem_alert = maxItems + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");	
+		var arrayItem = domElt.value.split(separatorItem);	
+		var nbItems = arrayItem.length;
+		if(parseInt(maxItems)<arrayItem.length){
+			nbItems = parseInt(maxItems);
+			ximfAlert(labelHeader,dlgEditorXimf_maxItem_alert);	
+			var newvalue = "";		
+			for(var i=0 ; i<nbItems ; ++i){
+				if(arrayItem[i]!=""){
+					if(i==0)
+						newvalue = arrayItem[i];
+					else
+						newvalue += separatorItem + arrayItem[i];		
+				} 
+			}
+			domElt.value = newvalue;
+			domElt.inputField = newvalue;
+		} 
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - OnCheckXimfhdrsEditor ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
+	}
+}
+
 // END EVENT FUNCTIONS
-
-
 
 
 /*
@@ -1947,7 +1978,7 @@ function ExecuteXimfHdrsAssociationRule(){
 						
 						if(valueName != "" && !isAlertDisplayed){
 							// ask for delete datas
-							alert(sAlertLabel);
+							ximfAlert(sAlertLabel);
 							isAlertDisplayed = true;	
 						}							
 						
@@ -1971,7 +2002,7 @@ function ExecuteXimfHdrsAssociationRule(){
 					
 				if(valueName != "" && !isAlertDisplayed){
 					// ask for delete datas
-					alert(sAlertLabel);	
+					ximfAlert(sAlertLabel);	
 					isAlertDisplayed = true;
 				}
 				EraseAndComputeXimfhdrsTextbox($("textbox[refheader='"+headerName+"']").attr("id"));
@@ -1985,16 +2016,16 @@ function ExecuteXimfHdrsAssociationRule(){
 /*
  * XIMF RULES AND DOM : manage default values
  */
-function ExecuteMuseHdrsDefaultValuesRule(){
+function ExecuteXimfHdrsDefaultValuesRule(){
 	
 	try{		
 		// get default value in ximfHdr
 		var textboxXimfHdrs = $("textbox[class='XimfTextboxDisplay']");		
 		for(var i=0; i<textboxXimfHdrs.length; ++i){
 			try{
-				var refDefaultItemMuseHdr = $("panel[id='" + $(textboxXimfHdrs[i]).attr("refpanel") + "']").attr("ximfdefault");			
-				if(refDefaultItemMuseHdr && $(textboxXimfHdrs[i]).attr("ximfvalue") == "" ){
-					var item = $("#"+refDefaultItemMuseHdr);
+				var refDefaultItemHdr = $("panel[id='" + $(textboxXimfHdrs[i]).attr("refpanel") + "']").attr("ximfdefault");			
+				if(refDefaultItemHdr && $(textboxXimfHdrs[i]).attr("ximfvalue") == "" ){
+					var item = $("#"+refDefaultItemHdr);
 					if(item.length > 0){
 						$(textboxXimfHdrs[i]).attr("ximfvalue",$(item[0]).attr("ximfvalue"));
 						textboxXimfHdrs[i].value = $(item[0]).attr("label");					
@@ -2003,14 +2034,14 @@ function ExecuteMuseHdrsDefaultValuesRule(){
 							$(textboxXimfHdrs[i]).attr("ximftecvalue",techvalue);
 						}
 					}else{
-						$(textboxXimfHdrs[i]).attr("ximfvalue",refDefaultItemMuseHdr);
-						textboxXimfHdrs[i].value = refDefaultItemMuseHdr;
+						$(textboxXimfHdrs[i]).attr("ximfvalue",refDefaultItemHdr);
+						textboxXimfHdrs[i].value = refDefaultItemHdr;
 					}
 				}
 			}catch(err){}
 		}			
 	}catch(err){
-		gConsole.logStringMessage("[ximfmail - ExecuteMuseHdrsDefaultValuesRule ] \n " + err + "\nfile : " + Error().fileName+"\nline : "+err.lineNumber);
+		gConsole.logStringMessage("[ximfmail - ExecuteXimfHdrsDefaultValuesRule ] \n " + err + "\nfile : " + Error().fileName+"\nline : "+err.lineNumber);
 	}	
 	
 	

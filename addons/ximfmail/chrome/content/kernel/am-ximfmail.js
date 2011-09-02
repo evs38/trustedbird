@@ -68,6 +68,16 @@ function onCommandTheme(){
  * load pref ximfmail settings
  */  
 function onInit(aPageId, aServerId){
+	
+	if(gXimfmailIdentity == null){
+		// no account id (local folder)
+		$("#checkListTheme").attr("checked", "false");
+		UseXimfmail();
+		$("#checkListTheme").attr("disabled", "true");		
+		return;		
+	}
+	$("#checkListTheme").removeAttr("disabled");
+	
 	//get XIMF instances of profile for account
 	CreateXimfmailCatalog();
 	var listInstances = document.getElementById("listThemPopup");		
@@ -125,6 +135,7 @@ function onPreInit(account, accountValues){
  * save all changes on this page
  */
 function onSave(){
+	if(gXimfmailIdentity == null)return;
 	// save ximfmail selection to preferences
 	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_theme_ref", $("#listTheme").attr("value"));
 	SetXimfmailPref(gXimfmailIdentity.key, "ximfmail_theme_name", $("#listTheme").attr("label"));

@@ -49,6 +49,8 @@ var gSignedUINode = null;
 var gEncryptedUINode = null;
 var gSMIMEContainer = null;
 var gStatusBar = null;
+var gSMIMEInfoMsg = null;
+var gSMIMEInfoMsgMore = null;
 
 var gEncryptedURIService = null;
 var gMyLastEncryptedURI = null;
@@ -87,6 +89,8 @@ var smimeHeaderSink =
       case nsICMSMessageErrors.SUCCESS:
         gSignedUINode.setAttribute("signed", "ok");
         gStatusBar.setAttribute("signed", "ok");
+        gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_ok"));  
+        gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_ok").replace(/<BR>/g,"\n");
         break;
 
       case nsICMSMessageErrors.VERIFY_NOT_YET_ATTEMPTED:
@@ -103,6 +107,8 @@ var smimeHeaderSink =
       default:
         gSignedUINode.setAttribute("signed", "notok");
         gStatusBar.setAttribute("signed", "notok");
+        gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_notok"));
+        gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_notok").replace(/<BR>/g,"\n");
         break;
     }
   },
@@ -269,8 +275,8 @@ var smimeHeaderSink =
 				var tmp_hdrName = "";
 				var tmp_hdrMimeName = "";
 				//var headerEncrypted = sHeader.headerEncrypted;
-				if(hdrStatus == "0") 
-				{
+				//if(hdrStatus == "0") 
+				//{
 					//Verify the value validity only in the case where header status is duplicated
 					tmp_hdrName = hdrName;
 					if(aCanonAlgo){
@@ -300,14 +306,19 @@ var smimeHeaderSink =
 							if(aCanonAlgo){
 								hdrMimeValue = canonilizeHeaderValue(hdrMimeValue);
 								hdrValue = canonilizeHeaderValue(hdrValue);
-								// gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
+								//gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
+							}else{
+								hdrMimeValue = UnfoldingMimeValue(hdrMimeValue);
+								hdrMimeValue = deleteLastCRLF(hdrMimeValue);
+								hdrValue = UnfoldingMimeValue(hdrValue);
+								hdrValue = deleteLastCRLF(hdrValue);
 							}												
 							
 							if(hdrValue!=hdrMimeValue) //test if the header value in the signature and that one in the mime message is the same
 							{
 								hdrValidity="invalid"; //header was modified
 								secStatus=false;
-								// gConsole.logStringMessage("Warning - failed on verifing secured header "+hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
+								gConsole.logStringMessage("Warning - failed on verifing secured header "+hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
 							}
 							
 							// decode values from MIME format
@@ -326,7 +337,7 @@ var smimeHeaderSink =
 						hdrValidity="invalid"; //header was modified
 						secStatus=false;	
 					}
-				}
+				//}
 				
 				//set the display secure headers information in the string to parse after in the GUI
 				gSecureHeaders+=hdrName+HEADER_VAL_SEPARATOR;
@@ -346,9 +357,10 @@ var smimeHeaderSink =
 			gSignedUINode.setAttribute("signed", "mismatch");
 			gStatusBar.setAttribute("signed", "mismatch");
 			gSecureHeadersState=0;
+			gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
+			gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
 		}
 		//gConsole.logStringMessage("*** secureHeaders analysis end ***");
-		
 	} 
   },
   // Check the SMIME receipt with the request
@@ -523,7 +535,40 @@ function onSMIMEStartHeaders()
 }
 
 function onSMIMEEndHeaders()
-{}
+{
+  gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_default"));
+  
+  // display secure info message panel
+  var setSmimeInfoMsg = true;
+  var prefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
+  try{  	
+    if(gCurrentIdentity){
+   	 	setSmimeInfoMsg =  gCurrentIdentity.getBoolAttribute("secureheaders.smimeinfomsg");
+   	 	//gConsole.logStringMessage("[msgHdrViewSMIMEOnLoad] secureheaders.smimeinfomsg pref = "+setSmimeInfoMsg);
+   	 	prefBranch.setBoolPref("smimeinfomsg_on", setSmimeInfoMsg);		
+	}	
+  }catch(e){
+  	//gConsole.logStringMessage("[msgHdrViewSMIMEOnLoad] smimeinfomsg error : " + e);
+  	var prefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
+	if(prefBranch.prefHasUserValue("smimeinfomsg_on")){
+		setSmimeInfoMsg = prefBranch.getBoolPref("smimeinfomsg_on");
+		//gConsole.logStringMessage("[msgHdrViewSMIMEOnLoad] smimeinfomsg used : " + setSmimeInfoMsg);
+  	}
+  }
+  if(document.getElementById("singlemessage")== undefined){
+  	if(setSmimeInfoMsg){
+   		document.getElementById("secureinfomsg2").setAttribute("collapsed","false");
+   	}else{
+   		document.getElementById("secureinfomsg2").setAttribute("collapsed","true");
+   	}
+   }else{
+   	if(setSmimeInfoMsg){
+   		document.getElementById("secureinfomsg").setAttribute("collapsed","false");
+   	}else{
+   		document.getElementById("secureinfomsg").setAttribute("collapsed","true");
+   	}
+   }    	
+}
 
 function onSmartCardChange()
 {
@@ -560,6 +605,24 @@ function msgHdrViewSMIMEOnLoad(event)
   gEncryptedURIService = 
     Components.classes["@mozilla.org/messenger-smime/smime-encrypted-uris-service;1"]
     .getService(Components.interfaces.nsIEncryptedSMIMEURIsService);
+    
+    // display security information message    
+	gSMIMEInfoMsg = document.getElementById("secureinfomsgl");
+   	gSMIMEInfoMsgMore = document.getElementById("secureinfomsgd");
+  	if(gSMIMEInfoMsg == undefined){
+  		gSMIMEInfoMsg = document.getElementById("secureinfomsgl2");
+  		gSMIMEInfoMsgMore = document.getElementById("secureinfomsgd2");
+  	}
+  	gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_default"));  
+  	gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
+  	
+  	try{
+    	if(gCurrentIdentity){   	 	
+   	 		//gConsole.logStringMessage("[msgHdrViewSMIMEOnLoad] secureheaders.smimeinfomsg pref = "+setSmimeInfoMsg);
+   	 		var prefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
+			prefBranch.setBoolPref("smimeinfomsg_on", gCurrentIdentity.getBoolAttribute("secureheaders.smimeinfomsg"));
+		}	
+  	}catch(e){gConsole.logStringMessage("[msgHdrViewSMIMEOnLoad] smimeinfomsg error : " + e);}
 }
 
 function msgHdrViewSMIMEOnUnload(event)
@@ -669,8 +732,6 @@ function getMsgHdr(){
 		while((cur_pos_CRLF=content.indexOf(linefeedStr,cur_pos_str))!=-1)
 		{
    			ligne_header+=content.substring(cur_pos_str,cur_pos_CRLF);
-
-            //gConsole.logStringMessage("ligne_header: " + ligne_header);
 			if(ligne_header.indexOf(":",0)!=-1){
 				var msghdr = new MsgHdrObj();
 				// header
@@ -700,55 +761,6 @@ function getMimeValueCharset(val)
 	return res;
 }
 
-function _to_utf8(s) {
-  var c, d = "";
-  for (var i = 0; i < s.length; i++) {
-    c = s.charCodeAt(i);
-    if (c <= 0x7f) {
-      d += s.charAt(i);
-    } else if (c >= 0x80 && c <= 0x7ff) {
-      d += String.fromCharCode(((c >> 6) & 0x1f) | 0xc0);
-      d += String.fromCharCode((c & 0x3f) | 0x80);
-    } else {
-      d += String.fromCharCode((c >> 12) | 0xe0);
-      d += String.fromCharCode(((c >> 6) & 0x3f) | 0x80);
-      d += String.fromCharCode((c & 0x3f) | 0x80);
-    }
-  }
-  return d;
-}
-
-function _from_utf8(s) {
-  var c, d = "", flag = 0, tmp;
-  for (var i = 0; i < s.length; i++) {
-    c = s.charCodeAt(i);
-    if (flag == 0) {
-      if ((c & 0xe0) == 0xe0) {
-        flag = 2;
-        tmp = (c & 0x0f) << 12;
-      } else if ((c & 0xc0) == 0xc0) {
-        flag = 1;
-        tmp = (c & 0x1f) << 6;
-      } else if ((c & 0x80) == 0) {
-        d += s.charAt(i);
-      } else {
-        flag = 0;
-      }
-    } else if (flag == 1) {
-      flag = 0;
-      d += String.fromCharCode(tmp | (c & 0x3f));
-    } else if (flag == 2) {
-      flag = 3;
-      tmp |= (c & 0x3f) << 6;
-    } else if (flag == 3) {
-      flag = 0;
-      d += String.fromCharCode(tmp | (c & 0x3f));
-    } else {
-      flag = 0;
-    }
-  }
-  return d;
-}
 
 /*
  * 
@@ -807,6 +819,22 @@ function deleteFirstAndLastWhiteSpace(str){
 	return rv;
 }
 
+/*
+ * Delete CRLF at end of sequence str
+ * CRLF DOS : "\r\n"
+ * CRLF UNIX : "\n"
+ * CRLF OS : "\r"
+ */
+function deleteLastCRLF(str){
+	var rv=str;	
+	var imax=rv.length;
+	if(rv[imax-1] == "\n")
+		rv = rv.slice(0,imax-1);
+	imax=rv.length;
+	if(rv[imax-1] == "\r")
+		rv = rv.slice(0,imax-1);		
+	return rv;	
+}
 
 /*
  * RFC 4871 - relaxed header canonicalization algorithm
@@ -814,9 +842,6 @@ function deleteFirstAndLastWhiteSpace(str){
 function canonilizeHeaderValue(hdrval){	
 	// Unfold all header field continuation lines as described in [RFC2822]
 	var val = UnfoldingMimeValue(hdrval);
-	
-	// delete CRLF
-	//val = ReplaceStr(val,"\r\n"," ");	
 	
 	// Convert all sequences of one or more WSP characters to a single SP character
 	val = ReplaceStr(val,"\t"," ");

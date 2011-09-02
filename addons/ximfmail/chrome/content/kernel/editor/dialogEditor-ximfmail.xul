@@ -52,6 +52,7 @@
    	buttonlabelaccept="&treedialog.buttonlabelaccept;"
    	ondialogaccept="return doOK();"
   	ondialogcancel="return doCancel();">
+  	<script type="application/javascript"	src="chrome://ximfmail/content/ximfmail.js" />
 	<script type="application/javascript"	src="chrome://ximfmail/content/editor/dialogEditor-ximfmail.js" />	
 	<dialogheader id="editorDialogHeader" />
 	<textbox id="textbox-editor" maxrows="30" style="width:400px;" flex="1"/>

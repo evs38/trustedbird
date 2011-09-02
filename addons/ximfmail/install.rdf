@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:name>XIMFMail</em:name>
-    <em:version>3.1.5+0.3.0d</em:version>
+    <em:version>3.1.9+0.5.1</em:version>
     <em:id>{A627B834-BD9F-4b3f-9AF5-347B5A570402}</em:id>
     <em:description>Xtend Internet Message Format engine</em:description>
 
@@ -19,8 +19,6 @@
 
     <!-- Informations -->
     <em:homepageURL>http://www.cassidian.com/cassidian/int/en.html</em:homepageURL>
-    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
-    <em:updateKey>__UPDATE_KEY__</em:updateKey>
     <em:iconURL>chrome://ximfmail/content/resource/icon-ximfmail.png</em:iconURL>
   <em:optionsURL/><em:aboutURL/></Description>
 </RDF>

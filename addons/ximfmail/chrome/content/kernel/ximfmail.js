@@ -632,3 +632,12 @@ function CreateSecurityLabelXml(){
 			gConsole.logStringMessage("[ximfmail - CreateSecurityLabelXml ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);
 	}	
 }
+
+function ximfAlert(title,message){	
+	if(!message){
+		message = title;
+		title = "";
+	}
+	var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+  	prompts.alert(window,title, message); 
+}

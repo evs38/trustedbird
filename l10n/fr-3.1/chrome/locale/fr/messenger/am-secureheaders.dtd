@@ -6,3 +6,4 @@
 <!ENTITY useSecureHeaders.label 		"Activer les entêtes sécurises pour ce compte">
 <!ENTITY secureHeadersDescription.label	"Définition des entêtes sécurisés">
 <!ENTITY secureHeadersDatas.label 		"Entêtes sécurisés" >
+<!ENTITY smime.am.infomsg.label 		"Indiquer l'état de sécurité de chaque message">

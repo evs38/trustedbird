@@ -80,8 +80,8 @@ var DEFAULT_XIMF_VERSION = "1.0";
 var DEFAULT_XIMF_NAME = "XIMF_BASIC";
 var XIMF_VERSION_HEADER = "X-XIMF-Version";
 var XIMF_NAME_HEADER = "X-XIMF-NAME";
-var XIMF_ENDLINE = "\r\n"; //fin de ligne
-var XIMF_SEPARATOR_HEADER = ": "; //fin de ligne
+var XIMF_ENDLINE = "\r\n"; // Windows CRLF
+var XIMF_SEPARATOR_HEADER = ": ";
 
 var XIMFMAIL_SECURE_HEADERS_XML_FILE = "secureHeadersMail.xml";
 var XIMFMAIL_SECURITY_LABEL_XML_DIR = "securityLabel";

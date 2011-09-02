@@ -8,7 +8,7 @@
 <!ENTITY ximfmail.am.xsmtpCompatibilityCheck "Assure XSMTP compatibility with XIMF headers">
 <!ENTITY ximfmail.am.dialogTitle "XIMF : headers of messages">
 <!ENTITY ximfmail.am.description "Manage and use XIMF headers for sending messages">
-<!ENTITY ximfmail.compose.headerTab "loading...">
+<!ENTITY ximfmail.compose.headerTab " ">
 <!ENTITY ximfmail.compose.advancedTab "Advanced">
 <!ENTITY ximfmail.am.instanceGroup.reception "Read">
 <!ENTITY ximfmail.am.instanceTreeThreadChoice "Sort headers of messages with instance : ">

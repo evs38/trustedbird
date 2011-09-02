@@ -59,7 +59,7 @@ EADS Defence and Security - 1 Boulevard Jean Moulin -  ZAC de la Clef Saint Pier
       		<button id="browseForXmlFolder" label="&browseFolder.label;" filepickertitle="&secureHeaderFolderPicker.label;"
               accesskey="&browseFolder.accesskey;" oncommand="BrowseForXmlFile()"/>
     	</hbox>
+		<checkbox id="smimeinfomsgcheck" label="&smime.am.infomsg.label;" checked="true"/>
   	</vbox>
-
  </groupbox>     
 </page>

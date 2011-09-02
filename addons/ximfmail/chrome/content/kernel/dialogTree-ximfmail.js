@@ -163,7 +163,7 @@ function OnPushAddSelection(){
 	  				if(gArgsOpener.maxItemsSelected){  					
 	  					var nbItems = $("#ximfmail_selection listitem");  					
 	  					if(nbItems.length >= gArgsOpener.maxItemsSelected){
-	  						alert(gDlgTreeXimf_maxItem_alert);	  						
+	  						ximfAlert(gDlgTreeXimf_maxItem_alert);	  						
 	  						return;
 	  					}
 	  				}			  					

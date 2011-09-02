@@ -789,12 +789,6 @@ nsresult nsImapProtocol::SetupWithUrl(nsIURI * aURL, nsISupports* aConsumer)
         nsCOMPtr<nsIInterfaceRequestor> aggregrateIR;
         NS_NewInterfaceRequestorAggregation(interfaceRequestor, ir, getter_AddRefs(aggregrateIR));
         m_mockChannel->SetNotificationCallbacks(aggregrateIR);
-		
-        /*TCN: see bug 568929 on Thunderbird
-		nsCOMPtr<nsIInterfaceRequestor> interfaceRequestor;
-        msgWindow->GetNotificationCallbacks(getter_AddRefs(interfaceRequestor));
-        m_mockChannel->SetNotificationCallbacks(interfaceRequestor);
-		*/
       }
     }
 
@@ -4074,15 +4068,6 @@ void nsImapProtocol::ProcessMailboxUpdate(PRBool handlePossibleUndo)
   // wait for a list of bodies to fetch.
   if (!DeathSignalReceived() && GetServerStateParser().LastCommandSuccessful())
   {
-	
-	/* TCN see bug 572974 on Thunderbird
-    WaitForPotentialListOfBodysToFetch(&msgIdList, msgCount);
-    if ( msgCount && !DeathSignalReceived() && GetServerStateParser().LastCommandSuccessful())
-    {
-      FolderMsgDump(msgIdList, msgCount, kEveryThingRFC822Peek);
-    }*/
-
-	
     WaitForPotentialListOfBodysToFetch(&msgIdList, msgCount);
     if ( msgCount && !DeathSignalReceived() && GetServerStateParser().LastCommandSuccessful())
     {

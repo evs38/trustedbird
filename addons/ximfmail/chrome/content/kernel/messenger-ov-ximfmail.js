@@ -152,7 +152,7 @@ function OnCommandComposeMsgXimfmail(event){
 }
 
 /*
- * contexte compte utilisateur selectionné
+ * Inspect account user
  */ 
 function OnSelectfolderPane(){
 	try{
@@ -182,10 +182,12 @@ function OnSelectfolderPane(){
 		if (IsXimfailActivated(gCurrentIdentity)){				
 			pref.setBoolPref("mailnews.headers.showXimfmail",true);
 			$("#menupopup-newmsg").attr("datasources","chrome://theme_ximfmail/content/ximfCatalog.rdf");
+			$("#menupopup-newmsg menuitem").attr("hidden","false");
 				$("#ximfmail-custom-panel").attr("hidden","false");				
 		}else{
 			pref.setBoolPref("mailnews.headers.showXimfmail",false);
 			$("#menupopup-newmsg").attr("datasources","");
+			$("#menupopup-newmsg menuitem").attr("hidden","true");
 			$("#ximfmail-custom-panel").attr("hidden","true");		
 		}
 		
@@ -229,7 +231,7 @@ function OnComposeDefaultMsg(evt){
 }
 
 /*
- *  nom du compte utilisateur en cours d'utilisation
+ *  Get account user settings
  */
  function GetCurrentUser() { 	
  	var folder=GetFirstSelectedMsgFolder();

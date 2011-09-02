@@ -31,7 +31,7 @@ EADS Defence and Security - 1 Boulevard Jean Moulin -  ZAC de la Clef Saint Pier
 var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 
-var gXimfmailIdentity=null;
+var gCurrentIdentity=null;
 
 const nsIFilePicker = Components.interfaces.nsIFilePicker;
 const PREF_SECUREHEADERS_FOLDER_DATAS="secureheaders.folderdata";
@@ -39,10 +39,10 @@ const PREF_SECUREHEADERS_FOLDER_DATAS="secureheaders.folderdata";
 //const DEFAULT_SECUREHEADERS_XML_RELATIVE_DIR = "secureHeader/";
 const DEFAULT_SECUREHEADERS_XML_DIR = "secureHeaders"
 const DEFAULT_SECUREHEADERS_XML_FILE = "secureHeadersDefault.xml"
-
+const PREF_SECUREHEADERS_SMIMEINFO = "secureheaders.smimeinfomsg";
 
 function onPreInit(account, accountValues){
-	gXimfmailIdentity = account.defaultIdentity;
+	gCurrentIdentity = account.defaultIdentity;
 }
 
 
@@ -62,7 +62,7 @@ function onInit(aPageId, aServerId){
 	
 	var currentFolderTextBox = document.getElementById("secureheaders.xmlPath");
 	if(currentFolderTextBox.value==""){	 	
-		var pref_data = gXimfmailIdentity.getCharAttribute(PREF_SECUREHEADERS_FOLDER_DATAS)	 	;
+		var pref_data = gCurrentIdentity.getCharAttribute(PREF_SECUREHEADERS_FOLDER_DATAS)	 	;
 		if(pref_data){	 		
 			currentFolderTextBox.value = pref_data;
 		}else{
@@ -74,15 +74,26 @@ function onInit(aPageId, aServerId){
 			var currentFolderTextBox = document.getElementById("secureheaders.xmlPath");
 			currentFolderTextBox.value = file.path;
 			//currentFolderTextBox.value = file.path + DEFAULT_SECUREHEADERS_XML_DIR+DEFAULT_SECUREHEADERS_XML_FILE;
-			gXimfmailIdentity.setCharAttribute(PREF_SECUREHEADERS_FOLDER_DATAS,currentFolderTextBox.value);
+			gCurrentIdentity.setCharAttribute(PREF_SECUREHEADERS_FOLDER_DATAS,currentFolderTextBox.value);
 	 	}
   }
+ 
+	if(gCurrentIdentity.getBoolAttribute(PREF_SECUREHEADERS_SMIMEINFO)){
+		document.getElementById("smimeinfomsgcheck").setAttribute("checked", "true");
+	}else{
+		document.getElementById("smimeinfomsgcheck").setAttribute("checked", "false");
+	}
 }
 
 function onSave(){
 	// save secure headers selection to preferences
 	 var currentFolderTextBox = document.getElementById("secureheaders.xmlPath");	
-	gXimfmailIdentity.setCharAttribute(PREF_SECUREHEADERS_FOLDER_DATAS,currentFolderTextBox.value);
+	gCurrentIdentity.setCharAttribute(PREF_SECUREHEADERS_FOLDER_DATAS,currentFolderTextBox.value);
+	if(document.getElementById("smimeinfomsgcheck").getAttribute("checked") == "true"){	
+		gCurrentIdentity.setBoolAttribute(PREF_SECUREHEADERS_SMIMEINFO,true);		
+	}else{		
+		gCurrentIdentity.setBoolAttribute(PREF_SECUREHEADERS_SMIMEINFO,false);
+	}
 }
 
 
@@ -111,16 +122,3 @@ function BrowseForXmlFile(){
   	currentFolderTextBox.value = fp.file.path;
   }
 }
-/*
- function getFilePathInProfile(aRelativePath){
-    // get nsIFile directory of user profile
-    var file = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
-
-    // Add relative data file
-    var path = aRelativePath.split("/");
-    for (var i = 0, sz = path.length; i < sz; i++) {
-        if (path[i] != "")
-           file.append(path[i]);
-    }
-    return file.path;
-}*/

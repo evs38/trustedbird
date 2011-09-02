@@ -7,5 +7,3 @@ overlay chrome://messenger/content/messenger.xul chrome://ximfmail/content/messe
 overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://ximfmail/content/messengerCompose-ov-ximfmail.xul
 overlay chrome://messenger/content/messageWindow.xul chrome://ximfmail/content/messageWindow-ov-ximfmail.xul
 overlay chrome://messenger-smime/content/msgReadSecurityInfo.xul chrome://ximfmail/content/msgReadSecurityInfo-ov-ximfmail.xul
-
-
