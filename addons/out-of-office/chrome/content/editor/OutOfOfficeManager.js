@@ -68,6 +68,7 @@ function OutOfOfficeSettings (services) {
 	this.CONST_HEADER 						= new String("OutOfOfficeSettings: "); // for trace 
 	this.CONST_KEYWORD_PREFIX				= new String( "@" );
 	this.CONST_KEYWORD_REDIRECTION			= new String( "redirection" );
+	this.CONST_KEYWORD_FROMADDRESSES			= new String( "addresses" );
 	this.CONST_KEYWORD_REDIRECTIONADDRESS	= new String( "redirection.address" );
 	this.CONST_KEYWORD_KEEPMESSAGE			= new String( "redirection.keepMessage" );
 	this.CONST_KEYWORD_NOTIFICATION			= new String( "notification" );
@@ -89,6 +90,12 @@ function OutOfOfficeSettings (services) {
 		@type boolean
 	*/
 	this.redirectionEnable = false;
+
+	/**
+	 * 		The fromAddresses field indicates the address mail from the selected account.
+	 * 		@type string
+	 */
+	this.fromAddresses = "";
 
 	/**
 	 * 		The destinationAddress field indicates the address mail to redirect the received
@@ -226,6 +233,28 @@ OutOfOfficeSettings.prototype = {
 	
 	/**
 	 * 	@TODO
+	 * 	@return (string) fromAddresses containing the addresses from the redirection
+	 */
+	getFromAddresses : function()
+	{
+		if (this.fromAddresses != null) {
+			return this.fromAddresses;
+		} else {
+			return "";
+		}
+	},
+
+	/**
+	 * 	@TODO
+	 * 	@param (string) value containing the addresses from the redirection
+	 */
+	setFromAddresses : function(value)
+	{
+		this.fromAddresses = value;
+	},
+
+	/**
+	 * 	@TODO
 	 * 	@return (string) redirectionDestinationAddress containing the address of the redirection
 	 */
 	getRedirectionAddress : function()
@@ -351,9 +380,10 @@ OutOfOfficeSettings.prototype = {
 		@param {boolean} notificationEnable Define the notificationEnable field of the OutOfOfficeSettings object
 		@param {string} notificationMessage Define the notificationMessage field of the OutOfOfficeSettings object
 	*/
-	setDataFromFields : function(redirectionEnable,redirectionDestinationAddress,redirectionKeepMessage,notificationEnable,notificationMessage)
+	setDataFromFields : function(redirectionEnable,fromAddresses,redirectionDestinationAddress,redirectionKeepMessage,notificationEnable,notificationMessage)
 	{
 		this.setRedirection( redirectionEnable );
+		this.setFromAddresses( fromAddresses );
 		this.setRedirectionAddress( redirectionDestinationAddress );
 		this.setRedirectionKeepMessage( redirectionKeepMessage );
 		this.setNotification( notificationEnable );
@@ -368,6 +398,7 @@ OutOfOfficeSettings.prototype = {
 	setDataFromObject : function(objSettings)
 	{
 		this.setRedirection( objSettings.getRedirection() );
+		this.setAddresses( objSettings.getFromAddresses() );
 		this.setRedirectionAddress( objSettings.getRedirectionAddress() );
 		this.setRedirectionKeepMessage( objSettings.getRedirectionKeepMessage() );
 		this.setNotification( objSettings.getNotification() );
@@ -448,6 +479,8 @@ OutOfOfficeSettings.prototype = {
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_REDIRECTION 			+ "=" + this.getRedirection() );
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
+		this.insertLine(this.CONST_KEYWORD_FROMADDRESSES 			+ "=" + this.getFromAddresses() );
+		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_REDIRECTIONADDRESS	+ "=" + this.getRedirectionAddress() );
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_KEEPMESSAGE 			+ "=" + this.getRedirectionKeepMessage() );
@@ -456,7 +489,7 @@ OutOfOfficeSettings.prototype = {
 		var tempNotification = this.encodeNotification( this.getNotificationMessage() );
 		this.insertLine("# *\t" + this.CONST_KEYWORD_PREFIX, false);
 		this.insertLine(this.CONST_KEYWORD_NOTIFICATIONMESSAGE	+ "=" + tempNotification);
-		this.insertLine("# ******************************************************************************");
+		this.insertLine("# ******************************************************************************");	//Line 12
 		this.services.logSrv( this.toString() + "\tgenerate header of the script");
 	},
 	
@@ -479,7 +512,6 @@ OutOfOfficeSettings.prototype = {
 	 */
 	insertRequires : function()
 	{
-		this.insertLine();
 		var require = false;
 		if( this.getNotification() == true ){
 			require = true;
@@ -530,12 +562,16 @@ OutOfOfficeSettings.prototype = {
 		if( this.getNotification() == false ){
 			return; // Do not need to add notification code
 		}
-		this.insertLine("vacation");
-		this.insertLine("\t:subject \"", false);
-		this.insertLine(this.getNotificationSubject(), false);
-		this.insertLine("\" \"", false);
-		this.insertLine(this.getNotificationMessage(), false);
-		this.insertLine("\";");
+		this.insertLine("# rule:[OutOfOfficeFilter]");
+		this.insertLine("if true");
+		this.insertLine("{");
+		this.insertLine("\tvacation :addresses \"", false);
+		this.insertLine(this.getFromAddresses(), false);
+		this.insertLine("\" text: ");
+		this.insertLine(this.getNotificationMessage());
+		this.insertLine(".");
+		this.insertLine(";");
+		this.insertLine("}");
 		this.services.logSrv( this.toString() + "\tgenerateCoreNotification");
 	},
 
@@ -645,6 +681,23 @@ OutOfOfficeSettings.prototype = {
 
 	/**
 		@TODO
+		@return (string) fromAddresses containing the address from the redirection
+	*/
+	readPreferenceFromAddresses : function()
+	{
+		try {
+			var valueToRead = this.prefURI+ "." +this.CONST_KEYWORD_FROMADDRESSES;
+			this.setFromAddresses( gPreference.getCharPref(valueToRead) );
+			this.services.logSrv( this.toString() + valueToRead + "=" + this.getFromAddresses() );
+		}
+		catch(e) {
+			this.setFromAddresses(gOutOfOfficeManager.account.getDescription()); 
+			this.services.logSrv( this.toString() + "Set fromAddresses to default value (account description)" );
+		}
+	},
+
+	/**
+		@TODO
 		@return (boolean) redirectionEnable containing the activation status of redirection
 	*/
 	readPreferenceRedirection : function()
@@ -738,6 +791,7 @@ OutOfOfficeSettings.prototype = {
 		}
 		this.services.logSrv( this.toString() + "read preferences...");
 		this.readPreferenceRedirection();
+		this.readPreferenceFromAddresses();
 		this.readPreferenceRedirectionAddress();
 		this.readPreferenceRedirectionKeepMessage();
 		this.readPreferenceNotification();
@@ -756,6 +810,7 @@ OutOfOfficeSettings.prototype = {
 		this.services.logSrv( this.toString() + "save preferences");
 
 		gPreference.setBoolPref(this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTION + ".enabled", this.getRedirection());
+		gPreference.setCharPref(this.prefURI+ "." +this.CONST_KEYWORD_FROMADDRESSES, this.getFromAddresses());
 		gPreference.setCharPref(this.prefURI+ "." +this.CONST_KEYWORD_REDIRECTIONADDRESS, this.getRedirectionAddress());
 		gPreference.setBoolPref(this.prefURI+ "." +this.CONST_KEYWORD_KEEPMESSAGE + ".enabled", this.getRedirectionKeepMessage());
 		gPreference.setBoolPref(this.prefURI+ "." +this.CONST_KEYWORD_NOTIFICATION + ".enabled", this.getNotification());

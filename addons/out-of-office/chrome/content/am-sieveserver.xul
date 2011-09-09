@@ -53,13 +53,13 @@
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/preferences.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
 
+	<script type="application/javascript" src="chrome://out_of_office/content/OutOfOfficeOverlay.js" />
 	<script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
 	<script type="application/x-javascript" src="chrome://out_of_office/content/am-sieveserver.js"/>
   
 	<dialogheader title="&outofoffice.pane.title;"/>
 
-	<vbox id="sieveserverIdentityEdit" >
-		<hbox id="smtpServerInfoBox">
+		<hbox id="smtpServerInfoBox" class="indent">
 			<stack flex="1" class="inset">
 				<spacer id="backgroundBox"/>
 				<grid>
@@ -139,7 +139,7 @@
 			</vbox>
 		</hbox>
 		<!-- This part is hidden, to make configuration more simply -->
-		<hbox hidden="true" >
+		<hbox >
 			<vbox flex="1">
 				<groupbox id="groupLogin" flex="1">
 					<caption id="labelLogin" label="&options.login.label;" />
@@ -184,43 +184,4 @@
 				</groupbox>
 			</vbox>
 		</hbox>
-<!--
-		Olivier Brun 
-		- Options not used in the first version. 
-		- These parameters come from sieve extension.
-		- Option for Dialog window definition add it ==> style="width: 45em; height: 27em;" 
-	
-		<vbox>
-			<groupbox>
-				<caption label="&options.misc;" />
-				<grid>
-					<colums>
-						<column />
-						<column />
-						<column />
-					</colums>
-					<rows>
-						<row align="center">
-							<checkbox id="cbxKeepAlive" label="&options.misc.keepalive;"
-								accesskey="&options.misc.keepalive.key;" oncommand="onKeepAliveCommand(this)" />
-							<textbox id="txtKeepAlive" onchange="onKeepAliveChange(this)"
-								size="6" />
-							<label value="ms" />
-						</row>
-						<row align="center">
-							<checkbox id="cbxCompile" label="&options.misc.compile;"
-								accesskey="&options.misc.compile.key;" oncommand="onCompileCommand(this)" />
-							<textbox id="txtCompile" onchange="onCompileChange(this)"
-								size="6" />
-							<label value="ms" />
-						</row>
-					</rows>
-				</grid>
-				<checkbox id="cbxDebug" label="Debug options"
-					accesskey="D" oncommand="onDebugCommand(this)" />
-			</groupbox>
-		</vbox>
--->
-
-	</vbox>
 </page>

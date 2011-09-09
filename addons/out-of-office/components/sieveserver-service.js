@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -12,15 +12,15 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is mozilla.org code.
+ * The Original Code is mozilla.org Code.
  *
  * The Initial Developer of the Original Code is
  * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1999
+ * Portions created by the Initial Developer are Copyright (C) 1998-2001
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+ *   Prin JC (jisse44)
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -36,104 +36,140 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* Created with Mozilla documentation:
+https://developer.mozilla.org/en/XPCOM_Interface_Reference/NsIMsgAccountManagerExtension/Building_an_Account_Manager_Extension?action=edit
+*/
+
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cr = Components.results;
+
+
+//class constructor
+function SieveAccountManagerExtension() {};
+
+// class definition
+SieveAccountManagerExtension.prototype = 
+{
+  classID : Components.ID("{717489b0-7d88-11dd-ad8b-0800200c9a66}"),
+  contactID : "@mozilla.org/accountmanager/extension;1?name=sieveserver",
+  classDescription: "OutOfOffice Account Manager Extension Service",
+  
+  name : "sieveserver",  
+  chromePackageName : "out_of_office",
+  showPanel: function(server) 
+  {
+    if (server.type == "imap")
+      return true;
+      
+    if (server.type == "pop3")
+      return true;
+      
+    return false;
+  },
+
+  QueryInterface: function(aIID)
+  {
+    if (!aIID.equals(Components.interfaces.nsIMsgAccountManagerExtension) 
+      && !aIID.equals(Components.interfaces.nsISupports))
+      throw Components.results.NS_ERROR_NO_INTERFACE;
+    return this;
+  }
+};
+
+// ************************************************************************** //
+
+/***********************************************************
+class factory
+
+This object is a member of the global-scope Components.classes.
+
+
+* @deprecated since Gecko 2.0 
+*/
+var SieveAccountManagerExtensionFactory = 
+{
+  createInstance : function (aOuter, aIID)
+  {
+    if (aOuter != null)
+      throw Components.results.NS_ERROR_NO_AGGREGATION;
+      
+    return (new SieveAccountManagerExtension()).QueryInterface(aIID);
+  }
+}
+
 /**
- * @fileoverview Account Manager Extension - Extend account manager properties tree by adding a new menu entry.
- * @author Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+ * module definition (xpcom registration)
+ *
+ * @deprecated since Gecko 2.0 
  */
-
-/**
- * Global variables
- */
-// components defined in this file
-const OUT_OF_OFFICE_EXTENSION_SERVICE_CONTRACTID =
-    "@mozilla.org/accountmanager/extension;1?name=sieveserver";
-const OUT_OF_OFFICE_EXTENSION_SERVICE_CID =
-	Components.ID("{717489b0-7d88-11dd-ad8b-0800200c9a66}");
-
-/* interfaces used in this file */
-const nsIMsgAccountManagerExtension  = Components.interfaces.nsIMsgAccountManagerExtension;
-const nsICategoryManager = Components.interfaces.nsICategoryManager;
-const nsISupports = Components.interfaces.nsISupports;
-
-/**
- * @class Account manager extension service use by the account manager to add a new menu entry.
- * This allow the user to configure this extension from the account properties. 
- * @constructor
- * @author Olivier Brun / BT Global Services / Etat francais Ministere de la Defense
- */
-function OUT_OF_OFFICEService()
-{}
-
-OUT_OF_OFFICEService.prototype.name = "sieveserver";
-OUT_OF_OFFICEService.prototype.chromePackageName = "out_of_office";
-OUT_OF_OFFICEService.prototype.showPanel =
-function (server)
+var SieveAccountManagerExtensionModule = 
 {
-  // show the panel only for imap accounts
-  return (server.type == "imap");
-}
+  registerSelf: function(compMgr, fileSpec, location, type)
+  {
+    compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
+    compMgr.registerFactoryLocation(
+        SieveAccountManagerExtension.prototype.classID, 
+        SieveAccountManagerExtension.prototype.classDescription,
+        SieveAccountManagerExtension.prototype.contactID,
+        fileSpec, location, type);
+        
+    var catMgr = Components.classes["@mozilla.org/categorymanager;1"]
+                     .getService(Ci.nsICategoryManager);
+               
+    catMgr.addCategoryEntry(
+        "mailnews-accountmanager-extensions",
+        SieveAccountManagerExtension.prototype.classDescription,
+        SieveAccountManagerExtension.prototype.contactID,
+        true, true);    
+  },
 
-/* factory for command line handler service (OUT_OF_OFFICEService) */
-var OUT_OF_OFFICEFactory = new Object();
+  unregisterSelf: function(compMgr, location, type)
+  {
+    compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
+    compMgr.unregisterFactoryLocation(
+        SieveAccountManagerExtension.prototype.classID, location);
+    
+    var catMgr = Components.classes["@mozilla.org/categorymanager;1"]
+                     .getService(Ci.nsICategoryManager);
+    catMgr.deleteCategoryEntry(
+        "mailnews-accountmanager-extensions",
+        SieveAccountManagerExtension.prototype.contactID, true);    
+  },
+  
+  getClassObject: function(aCompMgr, aCID, aIID)
+  {
+    if (!aIID.equals(Ci.nsIFactory))
+      throw Cr.NS_ERROR_NOT_IMPLEMENTED;
 
-OUT_OF_OFFICEFactory.createInstance =
-function (outer, iid) {
-  if (outer != null)
-    throw Components.results.NS_ERROR_NO_AGGREGATION;
+    if (aCID.equals(SieveAccountManagerExtension.prototype.classID))
+      return SieveAccountManagerExtensionFactory;
 
-  if (!iid.equals(nsIMsgAccountManagerExtension) && !iid.equals(nsISupports))
-    throw Components.results.NS_ERROR_INVALID_ARG;
+    throw Cr.NS_ERROR_NO_INTERFACE;
+  },
 
-  return new OUT_OF_OFFICEService();
-}
+  canUnload: function(aCompMgr) { return true; }
+};
 
-var OUT_OF_OFFICEModule = new Object();
+/***********************************************************
+module initialization
 
-OUT_OF_OFFICEModule.registerSelf =
-function (compMgr, fileSpec, location, type)
+When the application registers the component, this function
+is called.
+***********************************************************/
+
+try
 {
-  debug("*** Registering out of office account manager extension.\n");
-  compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-  compMgr.registerFactoryLocation(OUT_OF_OFFICE_EXTENSION_SERVICE_CID,
-                                  "OUT OF OFFICE Account Manager Extension Service",
-                                  OUT_OF_OFFICE_EXTENSION_SERVICE_CONTRACTID,
-                                  fileSpec,
-                                  location,
-                                  type);
-  catman = Components.classes["@mozilla.org/categorymanager;1"].getService(nsICategoryManager);
-  catman.addCategoryEntry("mailnews-accountmanager-extensions",
-                          "out of office account manager extension",
-                          OUT_OF_OFFICE_EXTENSION_SERVICE_CONTRACTID, true, true);
+  Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 }
+catch (e) { }
 
-OUT_OF_OFFICEModule.unregisterSelf =
-function(compMgr, fileSpec, location)
-{
-  compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-  compMgr.unregisterFactoryLocation(OUT_OF_OFFICE_EXTENSION_SERVICE_CID, fileSpec);
-  catman = Components.classes["@mozilla.org/categorymanager;1"].getService(nsICategoryManager);
-  catman.deleteCategoryEntry("mailnews-accountmanager-extensions",
-                             OUT_OF_OFFICE_EXTENSION_SERVICE_CONTRACTID, true);
-}
+// Gecko 2.x uses NSGetFactory to register XPCOM Components...
+// ... while Gecko 1.x uses NSGetModule
 
-OUT_OF_OFFICEModule.getClassObject =
-function (compMgr, cid, iid) {
-  if (cid.equals(OUT_OF_OFFICE_EXTENSION_SERVICE_CID))
-    return OUT_OF_OFFICEFactory;
 
-  if (!iid.equals(Components.interfaces.nsIFactory))
-    throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-
-  throw Components.results.NS_ERROR_NO_INTERFACE;
-}
-
-OUT_OF_OFFICEModule.canUnload =
-function(compMgr)
-{
-  return true;
-}
-
-/* entry point */
-function NSGetModule(compMgr, fileSpec) {
-  return OUT_OF_OFFICEModule;
-}
+if ((typeof(XPCOMUtils) != "undefined") && (typeof(XPCOMUtils.generateNSGetFactory) != "undefined"))
+  var NSGetFactory = XPCOMUtils.generateNSGetFactory([SieveAccountManagerExtension]);
+else
+  var NSGetModule = function(compMgr, fileSpec) { return SieveAccountManagerExtensionModule; }

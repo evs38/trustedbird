@@ -229,8 +229,13 @@ function onLoginSelect(sender)
 	else if (sender.selectedItem.id == "rbCustomAuth")
 		type = 2;
 	
-	gSieveServerToConfigure.setLoginIndex( type );
-	enableLogin(type);
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.setLoginIndex( type );
+		enableLogin(type);
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -267,9 +272,14 @@ function enableLogin(type)
 function onLoginChange(sender)
 {
 	var cbxPassword = document.getElementById('cbxPassword');
-	gSieveServerToConfigure.setUserPasswordCheck(cbxPassword.checked);
-	gSieveServerToConfigure.setUserName(document.getElementById('txtUsername').value);
-	gSieveServerToConfigure.setUserPassword( ( (cbxPassword.checked == true) ? document.getElementById('txtPassword').value : null ) );
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.setUserPasswordCheck(cbxPassword.checked);
+		gSieveServerToConfigure.setUserName(document.getElementById('txtUsername').value);
+		gSieveServerToConfigure.setUserPassword( ( (cbxPassword.checked == true) ? document.getElementById('txtPassword').value : null ) );
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -307,8 +317,13 @@ function enablePassword(enabled)
  */
 function onHostCommand(sender)
 {
-	gSieveServerToConfigure.setHostType(sender.checked);
-	enableHost(sender.checked);
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.setHostType(sender.checked);
+		enableHost(sender.checked);
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -331,8 +346,13 @@ function enableHost(enabled)
  */
 function onHostnameChange(sender)
 {
-	globalServices.logSrv( sender.value );
-	gSieveServerToConfigure.setHostName( sender.value );
+	if(gSieveServerToConfigure != null) {
+		globalServices.logSrv( sender.value );
+		gSieveServerToConfigure.setHostName( sender.value );
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -341,8 +361,13 @@ function onHostnameChange(sender)
  */
 function onPortChange(sender)
 {
-	globalServices.logSrv( sender.value );
-	gSieveServerToConfigure.setHostPort(sender.value)
+	if(gSieveServerToConfigure != null) {
+		globalServices.logSrv( sender.value );
+		gSieveServerToConfigure.setHostPort(sender.value)
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -351,7 +376,12 @@ function onPortChange(sender)
  */
 function onTLSCommand(sender)
 {
-	gSieveServerToConfigure.setHostTLS(sender.checked);        
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.setHostTLS(sender.checked);        
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -360,8 +390,13 @@ function onTLSCommand(sender)
  */
 function onKeepAliveCommand(sender)
 {
-	gSieveServerToConfigure.enableKeepAlive(sender.checked);
-	enableKeepAlive(sender.checked);    
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.enableKeepAlive(sender.checked);
+		enableKeepAlive(sender.checked);
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -384,7 +419,12 @@ function enableKeepAlive(enabled)
  */
 function onKeepAliveChange(sender)
 {
-	gSieveServerToConfigure.setKeepAliveInterval(sender.value);    
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.setKeepAliveInterval(sender.value);    
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -393,8 +433,13 @@ function onKeepAliveChange(sender)
  */
 function onCompileCommand(sender)
 {    
-	gSieveServerToConfigure.setCompileCheck(sender.checked); 
-	enableCompile(sender.checked);    
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.setCompileCheck(sender.checked); 
+		enableCompile(sender.checked);    
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -417,7 +462,12 @@ function enableCompile(enabled)
  */
 function onCompileChange(sender)
 {
-	gSieveServerToConfigure.setCompileDelay(sender.value);
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.setCompileDelay(sender.value);
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -425,8 +475,13 @@ function onCompileChange(sender)
  * @param (object) sender Context of the event
  */
 function onDebugCommand(sender)
-{    
-	gSieveServerToConfigure.getDebugMode(sender.checked);
+{
+	if(gSieveServerToConfigure != null) {
+		gSieveServerToConfigure.getDebugMode(sender.checked);
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }
 
 /**
@@ -437,8 +492,8 @@ function onDebugCommand(sender)
 */
 function updateData(bSaveAndValidate)
 {
- if (gSieveServerToConfigure == null){
- 	throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	if (gSieveServerToConfigure == null){
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
 	}
 	if(bSaveAndValidate == undefined){
 		bSaveAndValidate = true;
@@ -503,7 +558,10 @@ function LoadData()
  * @return (boolean) True indicate that the data are correct, False indicate an invalid data set.
  */
 function checkDataValidity()
-{
+{	
+	if(gSieveServerToConfigure == null) {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 	var type = gSieveServerToConfigure.getLoginIndex();
 	if ((type < 0) || (type > 2)){
 		alertDataValidity("&outofoffice.settings.invalid.choice;", 'labelLogin' );
@@ -571,11 +629,16 @@ function alertDataValidity( message, fieldName, value )
  */
 function SaveData()
 {
-	// TODO Make this attribute accessible to the final user.
-	// Hard coded. Activation of the sieve server the current gAccount
-	gAccount.setEnabled(true);
-	/*
-	 * Update gAccount settings
-	 */
-	gSieveServerToConfigure.updateAccount(gAccount);
+	if(gSieveServerToConfigure != null) {
+		// TODO Make this attribute accessible to the final user.
+		// Hard coded. Activation of the sieve server the current gAccount
+		gAccount.setEnabled(true);
+		/*
+		 * Update gAccount settings
+		 */
+		gSieveServerToConfigure.updateAccount(gAccount);
+	}
+	else {
+		throw "updateData(): Sieve server account to configure cannot be null (gSieveServerToConfigure)!";
+	}
 }

@@ -45,16 +45,19 @@
 
 <overlay id="sieveOverlay"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<script type="application/x-javascript"
-		src="chrome://out_of_office/content/libs/preferences.js" />
+	<script type="application/javascript" src="chrome://out_of_office/content/OutOfOfficeOverlay.js" />
+	<script type="application/x-javascript"	src="chrome://out_of_office/content/libs/preferences.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/misc.js" />
 	<script type="application/x-javascript" src="chrome://out_of_office/content/libs/main.js" />
 	<menupopup id="taskPopup">
-		<menuitem id="menuOutOfOfficeParametersDialog" insertafter="applyFilters"
+		<menuitem id="menuOutOfOfficeParametersDialog" insertbefore="filtersCmd"
 			label="&outofoffice.menu.parameters;"
 			oncommand='window.open("chrome://out_of_office/content/editor/OutOfOfficeAccountListView.xul", "outofofficeOptions", "chrome,centerscreen");'
 			accesskey="&outofoffice.menu.parameters.key;" />
+		  <menuitem id="menuOutOfOfficeOptionsDialog" insertbefore="filtersCmd" label="&outofoffice.pane.title;"
+  	  	oncommand='gSivExtUtils.OpenSettings();' 
+  		   />
 		<menuseparator id="menuOutOfOfficeSeparator"
-			insertafter="applyFilters" />
+			insertbefore="filtersCmd" />
 	</menupopup>
 </overlay>

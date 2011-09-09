@@ -21,6 +21,7 @@
    -
    - Contributor(s): 
     -   Olivier Brun BT Global Services / Etat francais Ministere de la Defense
+    -   JC Prin (jisse44)
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,31 +38,43 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <rdf:Description about="urn:mozilla:install-manifest">
+	<rdf:Description about="urn:mozilla:install-manifest">
 
-    <em:id>out.of.office@milimail.org</em:id>
-    <em:name>Out Of Office</em:name>
-    <em:version>__VERSION__</em:version>
+		<em:id>out.of.office@milimail.org</em:id>
+		<em:name>Out Of Office</em:name>
+		<em:version>1.0.3</em:version>
 
-    <em:creator>Trustedbird/Milimail project</em:creator>
-    <em:developer>Olivier Brun</em:developer>
+		<em:creator>Trustedbird/Milimail project</em:creator>
+		<em:developer>Olivier Brun</em:developer>
+		<em:contributor>JC Prin (jisse44)</em:contributor>
 
-    <em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
-    <em:iconURL>chrome://out_of_office/content/images/logo_extension.png</em:iconURL>
+		<em:homepageURL>http://www.trustedbird.org/</em:homepageURL>
+		<em:iconURL>chrome://out_of_office/content/images/logo_extension.png</em:iconURL>
 
-    <em:updateURL>__UPDATE_RDF_URL__</em:updateURL>
-    <em:updateKey>__UPDATE_KEY__</em:updateKey>
+		<em:targetApplication>
+			<rdf:Description>
+				<!-- Thunderbird -->
+				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+				<em:minVersion>2.0</em:minVersion>
+				<em:maxVersion>8.0</em:maxVersion>
+			</rdf:Description>
+		</em:targetApplication>
 
-    <em:targetApplication>
-      <rdf:Description>
-        <!-- Thunderbird -->
-        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>2.0</em:minVersion>
-        <em:maxVersion>3.1.*</em:maxVersion>
-      </rdf:Description>
-    </em:targetApplication>
+		<em:localized>
+			<Description>
+				<em:locale>en-US</em:locale>
+				<em:name>Out Of Office</em:name>
+				<em:description>Setup vacation notifications and redirections using Sieve.</em:description>
+			</Description>
+		</em:localized>
 
-    <em:description>Setup vacation notifications and redirections using Sieve.</em:description>
+		<em:localized>
+			<Description>
+				<em:locale>fr-FR</em:locale>
+				<em:name>Out Of Office</em:name>
+				<em:description>Paramétrage des notifications d'absences et de redirections en utilisant Sieve</em:description>
+			</Description>
+		</em:localized>
 
-  </rdf:Description>
+	</rdf:Description>
 </rdf:RDF>

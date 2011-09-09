@@ -61,6 +61,25 @@
 	<script type="application/x-javascript" src="chrome://messenger/content/messengercompose/MsgComposeCommands.js"/>
 	<script type="application/x-javascript" src="chrome://messenger/content/messengercompose/addressingWidgetOverlay.js"/>
 
+	<vbox index="fromAdd" flex="1">
+	<hbox>
+		<grid>
+			<columns>
+				<column flex="1"/>
+			</columns>
+			<rows>
+				<row align="center" id="fromAddressesRow1">
+					<label id="labelOutOfOfficeFromAddresses" value="&outofoffice.from.address;" />
+					<textbox id="fromColTxt" class="plain textbox-addressingWidget uri-element" style="width: 25em;"
+						oninput="gContentChanged=true; onOutOfOfficeFromAddressInput(this);"
+						onchange="onOutOfOfficeFromAddressChange(this);" maxrows="3" flex="1">
+					</textbox>
+				</row>
+			</rows>
+		</grid>
+	</hbox>
+	</vbox>
+
       <vbox index="other" flex="1">
         <vbox id="customFields" class="alignBoxWithFieldset">
           <hbox flex="1">
@@ -97,13 +116,7 @@
 							</listitem>
 						</listbox>
 					</row>
-					<!--Old control for get mail address for the redirection function (Use it in case of bug with autocompletion)   
-					<row align="center" >
-						<label id="labelOutOfOfficeDestinationAddressOld" value="&outofoffice.destination.address;" accesskey="&outofoffice.destination.address.key;" 
-						   					control="txtOutOfOfficeDestinationAddress"/>
-						<textbox id="txtOutOfOfficeDestinationAddressOld" flex="1" oninput="onOutOfOfficeDestinationAddressInput(this)" onchange="onOutOfOfficeDestinationAddressChange(this)" />
-					</row>
-					 -->
+
 					<row align="center">
 						<checkbox id="outofofficeKeepMessageCheckbox" label="&outofoffice.keep.message;" accesskey="&outofoffice.keep.message.key;" 
 								oncommand="onOutOfOfficeKeepMessageCommand(this)"/>
@@ -123,16 +136,7 @@
 				</groupbox>
 			</hbox>
 		</vbox>
-		<!-- Not used 
-		<vbox flex="1">
-			<hbox flex="1">
-				<caption>          
-					<checkbox id="outofofficeScriptActivation" label="&outofoffice.activation;" accesskey="&outofoffice.activation.key;" 
-							oncommand="onOutOfOfficeActivationCommand(this)"/>
-				</caption>
-			</hbox>
-		</vbox>
-		-->
+
 		<groupbox id="gbError" hidden="true">
 			<caption>
 				<image src="chrome://sieve/content/images/syntaxError.png" width="16" height="16"/>

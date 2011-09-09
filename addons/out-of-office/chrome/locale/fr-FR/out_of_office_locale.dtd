@@ -49,6 +49,7 @@
 <!ENTITY outofoffice.list.title "Liste des Comptes pour les Paramètres d'Absence">
 <!ENTITY outofoffice.description "Configure une notification d'absence et/ou une redirection de message">
 
+<!ENTITY outofoffice.from.address "Addresses FROM">
 <!ENTITY outofoffice.settings.title "Paramètres d'Absence pour le Compte">
 <!ENTITY outofoffice.redirection "Activer une redirection">
 <!ENTITY outofoffice.redirection.key "R">

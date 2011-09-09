@@ -1,3 +1,10 @@
+
+out-of-office (1.0.3)
+  * Add Thunderbird 5 to 8 compatibility
+  * Changes for mailnews-accountmanager-extensions
+  * Fix Laurent Cailleux Request (https://adullact.net/tracker/index.php?func=detail&aid=5020&group_id=569&atid=1672)
+-- Aug 01 2011
+
 out-of-office (1.0.2)
   * Add Thunderbird 3.1 compatibility
   * Fix a javascript warning

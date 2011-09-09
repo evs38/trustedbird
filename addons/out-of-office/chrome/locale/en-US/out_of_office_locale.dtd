@@ -49,6 +49,7 @@
 <!ENTITY outofoffice.list.title "Out of Office Account List">
 <!ENTITY outofoffice.description "Configure a vacation notification and/or redirection">
 
+<!ENTITY outofoffice.from.address "Addresses FROM">
 <!ENTITY outofoffice.settings.title "Out of Office Settings for account">
 <!ENTITY outofoffice.redirection "Activate a redirection">
 <!ENTITY outofoffice.redirection.key "R">

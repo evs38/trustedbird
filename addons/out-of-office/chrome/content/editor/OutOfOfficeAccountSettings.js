@@ -144,6 +144,41 @@ function enableOutOfOfficeRedirectionCtrl(enabled)
 	globalServices.enableCtrlID('outofofficeKeepMessageCheckbox', enabled);
 }
 
+
+/**
+ * Function called when the user type a character in the text field.
+ * @param (object) sender Context of the event
+ */
+function onOutOfOfficeFromAddressInput(from)
+{
+	onFromAddressChange(from);
+}
+
+/**
+ * Function called when the destination address fields has changed.
+ * @param (object) sender Context of the event
+ */
+function onOutOfOfficeFromAddressChange(from)
+{
+	onFromAddressChange(from);
+}
+
+/**
+ * Function called when the destination address fields has changed.
+ * @param (object) sender Context of the event
+ */
+function onFromAddressChange(from)
+{
+	var newEmailAddress = globalServices.getStringValue('fromColTxt');
+	globalServices.displayFieldOnError( 'fromColTxt', !globalServices.isAddressMailValid( newEmailAddress ) );
+	/*
+	 * Old code to get Email address without auto-completion
+	 * globalServices.displayFieldOnError( 'txtOutOfOfficeDestinationAddress', !globalServices.isAddressMailValid( globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ) );
+	 */
+	globalServices.logSrv("From addresses have changed=" + newEmailAddress );
+}
+
+
 /**
  * Function called when the user type a character in the text field.
  * @param (object) sender Context of the event
@@ -265,6 +300,7 @@ function updateData(bSaveAndValidate)
 	if(bSaveAndValidate == true){	// Retrieve and validate value from control ID
 		gOutOfOfficeManager.getSettings().setDataFromFields(	
 			globalServices.getBooleanValue('outofofficeRedirectionCheckbox') ,
+			globalServices.getShortAddressMailFrom(globalServices.getStringValue('fromColTxt')) ,
 			globalServices.getShortAddressMailFrom(globalServices.getStringValue('addressCol2#1')) ,
 		//	globalServices.getStringValue('txtOutOfOfficeDestinationAddress') ,
 			globalServices.getBooleanValue('outofofficeKeepMessageCheckbox') ,
@@ -286,6 +322,7 @@ function updateData(bSaveAndValidate)
 		}
 	} else {	// Set value to control ID
 		globalServices.setBooleanValue('outofofficeRedirectionCheckbox', gOutOfOfficeManager.getSettings().getRedirection() );
+		globalServices.setStringValue('fromColTxt', gOutOfOfficeManager.getSettings().getFromAddresses() );
 		globalServices.setStringValue('addressCol2#1', gOutOfOfficeManager.getSettings().getRedirectionAddress() );
 	//	globalServices.setStringValue('txtOutOfOfficeDestinationAddress', gOutOfOfficeManager.getSettings().getRedirectionAddress() );
 		globalServices.setBooleanValue('outofofficeKeepMessageCheckbox', gOutOfOfficeManager.getSettings().getRedirectionKeepMessage() );
