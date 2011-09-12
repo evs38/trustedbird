@@ -825,7 +825,7 @@ SieveInitRequest.prototype.addResponse
     USES CLASSES        : SievePlainResponse
         
     CONSCTURCTOR        : SievePlainRequest(String username)
-    DECLARED FUNCTIONS  : void addSaslPlainListener(...)
+    DECLARED FUNCTIONS  : void addSaslListener(...)
                           void addErrorListener(...)
                           void addResponse(String data)                          
                           String getNextRequest()
@@ -859,7 +859,7 @@ SieveInitRequest.prototype.addResponse
     var request = new SieveSaslPlainRequest('geek');
     request.setPassword('th3g33k1');
     request.addErrorListener(event);
-    request.addSaslPlainListener(event);
+    request.addSaslListener(event);
                         
     sieve.addRequest(request);
 
@@ -926,7 +926,7 @@ SieveSaslPlainRequest.prototype.getNextRequest
   return "AUTHENTICATE \"PLAIN\" \""+logon+"\"\r\n";
 }
 
-SieveSaslPlainRequest.prototype.addSaslPlainListener
+SieveSaslPlainRequest.prototype.addSaslListener
     = function (listener)
 {
   this.responseListener = listener;
@@ -952,7 +952,7 @@ SieveSaslPlainRequest.prototype.addResponse
   var response = new SieveSaslPlainResponse(data);
 			
   if ((response.getResponse() == 0) && (this.responseListener != null))
-    this.responseListener.onSaslPlainResponse(response);			
+    this.responseListener.onSaslResponse(response);			
   else if ((response.getResponse() != 0) && (this.errorListener != null))
     this.errorListener.onError(response);
 }
@@ -965,7 +965,7 @@ SieveSaslPlainRequest.prototype.addResponse
     USES CLASSES        : SieveSaslLoginResponse
         
     CONSCTURCTOR        : SieveLoginRequest(String username)
-    DECLARED FUNCTIONS  : void addSaslLoginListener(...)
+    DECLARED FUNCTIONS  : void addSaslListener(...)
                           void addErrorListener(...)
                           void addResponse(String data)                          
                           String getNextRequest()
@@ -1008,7 +1008,7 @@ SieveSaslPlainRequest.prototype.addResponse
     var request = new SieveSaslLoginRequest('geek');
     request.setPassword('th3g33k1');
     request.addErrorListener(event);
-    request.addSaslLoginListener(event);
+    request.addSaslListener(event);
                         
     sieve.addRequest(request);
 
@@ -1076,9 +1076,9 @@ SieveSaslLoginRequest.prototype.getNextRequest
     case 0:
       return "AUTHENTICATE \"LOGIN\"\r\n";    
     case 1: 
-      return "{"+btoa(this.username).length+"}\r\n"+btoa(this.username);
+      return "{"+btoa(this.username).length+"+}\r\n"+btoa(this.username)+"\r\n";
     case 2:
-      return "{"+btoa(this.password).length+"}\r\n"+btoa(this.password); 
+      return "{"+btoa(this.password).length+"+}\r\n"+btoa(this.password)+"\r\n"; 
     default : 
       return ""; //it might be better to throw an Execption       
   }  
@@ -1093,7 +1093,7 @@ SieveSaslLoginRequest.prototype.hasNextRequest
   return true;
 }
 
-SieveSaslLoginRequest.prototype.addSaslLoginListener
+SieveSaslLoginRequest.prototype.addSaslListener
     = function (listener)
 {
   this.responseListener = listener;
@@ -1123,10 +1123,125 @@ SieveSaslLoginRequest.prototype.addResponse
 	  return;
 	
   if ((this.response.getResponse() == 0) && (this.responseListener != null))
-    this.responseListener.onSaslLoginResponse(this.response);			
+    this.responseListener.onSaslResponse(this.response);			
   else if ((this.response.getResponse() != 0) && (this.errorListener != null))
     this.errorListener.onError(this.response);
 }
+
+/*******************************************************************************
+ 
+  FACTSHEET: 
+  ==========
+    CLASS NAME          : SieveSaslDigestMd5Request
+    USES CLASSES        : SieveSaslDigestMd5Response
+        
+    CONSCTURCTOR        : SieveDigestMd5Request(String username)
+    DECLARED FUNCTIONS  : void addSaslListener(...)
+                          void addErrorListener(...)
+                          void addResponse(String data)                          
+                          String getNextRequest()
+                          Boolean hasNextRequest()
+                          void setPassword(String password)
+    EXCEPTIONS          : 
+    AUTHOR              : T.Cassan        
+    
+  DESCRIPTION:
+  ============
+    [...]
+
+  EXAMPLE:
+  ========
+
+  PROTOCOL INTERACTION: 
+  =====================
+
+*******************************************************************************/
+
+function SieveSaslDigestMd5Request() 
+{
+  this.response = new SieveSaslLoginResponse();
+}
+
+SieveSaslDigestMd5Request.prototype.setUsername
+    = function (username)
+{
+  this.username = username;
+}
+
+SieveSaslDigestMd5Request.prototype.setPassword
+    = function (password)
+{
+  this.password = password;
+}
+
+SieveSaslDigestMd5Request.prototype.getNextRequest
+    = function ()
+{
+  switch (this.response.getState())
+  {
+    case 0: 
+      return "AUTHENTICATE \"DIGEST-MD5\" \r\n";    
+    case 1: 
+      this.response.getChallenge();
+      // TODO build the response for the challange
+      var cryptoHash =
+        Components.classes["@mozilla.org/security/hash;1"]
+          .getService(Components.interfaces.nsICryptoHash);
+      cryptoHash.init(cryptoHash.MD5);
+      cryptoHash.update(this.username,this.username.length);
+      var challenge = cryptoHash.finish(true);
+      return "{"+challenge.length+"+}\r\n"+challenge + "\r\n";
+	case 2:
+      this.response.getChallenge();
+      // TODO build the response for the challange
+      var cryptoHash =
+        Components.classes["@mozilla.org/security/hash;1"]
+          .getService(Components.interfaces.nsICryptoHash);
+      cryptoHash.init(cryptoHash.MD5);
+      cryptoHash.update(this.password,this.password.length);
+      var challenge = cryptoHash.finish(true);
+      return "{"+challenge.length+"+}\r\n"+challenge + "\r\n";
+    default : 
+      return ""; //it might be better to throw an Exception       
+  }  
+}
+
+SieveSaslDigestMd5Request.prototype.hasNextRequest
+    = function ()
+{
+  if (this.response.getState() == 4) 
+    return false;
+  
+  return true;
+}
+
+SieveSaslDigestMd5Request.prototype.addSaslListener
+    = function (listener)
+{
+  this.responseListener = listener;
+} 
+   
+SieveSaslDigestMd5Request.prototype.addErrorListener
+    = function (listener)
+{
+  this.errorListener = listener;
+}
+
+SieveSaslDigestMd5Request.prototype.addResponse 
+    = function (data)
+{
+
+  this.response.add(data);	
+		
+	if (this.response.getState() != 4)
+	  return;
+	
+  if ((response.getResponse() == 0) && (this.responseListener != null))
+    this.responseListener.onSaslDigestMd5Response(response);			
+  else if ((response.getResponse() != 0) && (this.errorListener != null))
+    this.errorListener.onError(response);
+}
+
 
 /*******************************************************************************
  

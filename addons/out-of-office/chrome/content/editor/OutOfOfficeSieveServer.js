@@ -88,12 +88,16 @@ var gEventConnection =
 		{
 			case "login":
 				request = new SieveSaslLoginRequest();      
-				request.addSaslLoginListener(gEventConnection);
+				request.addSaslListener(gEventConnection);
 				break;
+			/*case "digest-md5":
+				request = new SieveSaslDigestMD5Request();      
+				request.addSaslListener(gEventConnection);
+				break;*/
 			case "plain":
 			default: // plain is the fallback...
 				request = new SieveSaslPlainRequest();
-				request.addSaslPlainListener(gEventConnection);
+				request.addSaslListener(gEventConnection);
 				break;        
 		}
 		request.addErrorListener(gEventConnection);
@@ -159,24 +163,15 @@ var gEventConnection =
 		gSieve.addRequest(request);	  
 	},
 
-	onSaslLoginResponse: function(response)
+	onSaslResponse: function(response)
 	{	// Require
 		if( gOutOfOfficeSieveServer == null ){
-			throw new Exception("gEventConnection:onSaslLoginResponse: Require invalid (gOutOfOfficeSieveServer).");
+			throw new Exception("gEventConnection:onSaslResponse: Require invalid (gOutOfOfficeSieveServer).");
 		}
-		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onSaslLoginResponse.");
+		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onSaslResponse.");
 		gEventConnection.onLoginResponse(response);
 	},
 
-
-	onSaslPlainResponse: function(response)
-	{	// Require
-		if( gOutOfOfficeSieveServer == null ){
-			throw new Exception("gEventConnection:onSaslPlainResponse: Require invalid (gOutOfOfficeSieveServer).");
-		}
-		gOutOfOfficeSieveServer.getServices().logSrv( gOutOfOfficeSieveServer.toString() + "gEventConnection:onSaslPlainResponse.");
-		gEventConnection.onLoginResponse(response);
-	},
 
 	onLoginResponse: function(response)
 	{	// Require
