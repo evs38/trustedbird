@@ -274,12 +274,19 @@ function onLoad()
 
     var secureStatelabel = document.getElementById("secureHeadersStateLabel");
     secureStatelabel.hidden = false;
-    if(gSecureHeadersState>0)
-    {
+    switch (gSecureHeadersState) {
+		case 1:
       secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.valid.label");
-    }
-    else{
+			break;
+		case 2:
+			secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.missing.label");
+			break;
+		case 3:
+			secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.none.label");
+			break;
+		default:
       secureStatelabel.value = bundle_secure_headers.getString("allsecureheaders.invalid.label");
+			break;
     }
   }
   

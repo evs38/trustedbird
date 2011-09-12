@@ -1,0 +1,3 @@
+<!--LOCALIZATION NOTE msgHdrViewSMIMEOverlay.dtd UI for secure headers hooks in message reading -->
+
+<!ENTITY signer.label "Signataire">

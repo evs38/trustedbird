@@ -177,6 +177,7 @@
   locale/@AB_CD@/messenger-smime/msgSMIMEReceiptGenerator.properties    (%chrome/messenger-smime/msgSMIMEReceiptGenerator.properties)
   locale/@AB_CD@/messenger-smime/msgSecurityLabel.properties            (%chrome/messenger-smime/msgSecurityLabel.properties)
   locale/@AB_CD@/messenger-smime/msgCompSecurityLabelDialog.dtd         (%chrome/messenger-smime/msgCompSecurityLabelDialog.dtd)
+  locale/@AB_CD@/messenger-smime/msgHdrViewSMIMEOverlay.dtd     (%chrome/messenger-smime/msgHdrViewSMIMEOverlay.dtd)
 % locale messenger-region @AB_CD@ %locale/@AB_CD@/messenger-region/
   locale/@AB_CD@/messenger-region/region.properties                     (%chrome/messenger-region/region.properties)
 % locale mozldap @AB_CD@ %locale/@AB_CD@/mozldap/

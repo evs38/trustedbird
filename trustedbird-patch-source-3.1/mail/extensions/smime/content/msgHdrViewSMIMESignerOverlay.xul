@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!DOCTYPE overlay SYSTEM "chrome://messenger-smime/locale/msgHdrViewSMIMEOverlay.dtd">
+<overlay id="msgHdrViewSecureHeadersOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://messenger-smime/content/msgHdrViewSMIMEOverlay.js"/>
+  <rows id="expandedHeader2Rows">
+	<row id="expandedsignerRow" insertafter="expandedtoRow" collapsed="true">
+		<label 	id="expandedsignerLabel" class="headerName"
+				value="&signer.label;"
+				control="expandedsignerBox"/>
+		<mail-headerfield   id="expandedsignerBox" flex="1"/>
+    </row>
+  </rows>
+</overlay>

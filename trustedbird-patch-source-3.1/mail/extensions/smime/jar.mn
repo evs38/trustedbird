@@ -2,6 +2,7 @@ messenger.jar:
 % content messenger-smime %content/messenger-smime/ xpcnativewrappers=yes
 % overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://messenger-smime/content/msgCompSMIMEOverlay.xul
 % overlay chrome://messenger/content/msgHdrViewOverlay.xul chrome://messenger-smime/content/msgHdrViewSMIMEOverlay.xul
+% overlay chrome://messenger/content/msgHdrViewOverlay.xul chrome://messenger-smime/content/msgHdrViewSMIMESignerOverlay.xul
 % overlay chrome://messenger/content/messenger.xul chrome://messenger-smime/content/msgReadSMIMEOverlay.xul
 % overlay chrome://messenger/content/messageWindow.xul chrome://messenger-smime/content/msgReadSMIMEOverlay.xul
 % overlay chrome://messenger/content/am-identity-edit.xul chrome://messenger/content/am-smimeIdentityEditOverlay.xul
@@ -11,6 +12,7 @@ messenger.jar:
 *  content/messenger-smime/msgCompSecurityInfo.xul                  (content/msgCompSecurityInfo.xul)
 *  content/messenger-smime/msgHdrViewSMIMEOverlay.js                (content/msgHdrViewSMIMEOverlay.js)
    content/messenger-smime/msgHdrViewSMIMEOverlay.xul               (content/msgHdrViewSMIMEOverlay.xul)
+   content/messenger-smime/msgHdrViewSMIMESignerOverlay.xul         (content/msgHdrViewSMIMESignerOverlay.xul)
    content/messenger/am-smime.xul                                   (/mailnews/extensions/smime/content/am-smime.xul)
    content/messenger/am-smime.js                                    (/mailnews/extensions/smime/content/am-smime.js)
    content/messenger/am-smimeIdentityEditOverlay.xul                (/mailnews/extensions/smime/content/am-smimeIdentityEditOverlay.xul)

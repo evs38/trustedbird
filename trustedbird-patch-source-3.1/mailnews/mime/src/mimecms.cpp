@@ -423,13 +423,15 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
       // Handle Signed Headers
       nsCOMPtr<nsIMutableArray> secureHeaders;
       PRInt32 canonAlgo;
-      msg->GetSecureHeader(getter_AddRefs(secureHeaders),&canonAlgo);
+      rv = msg->GetSecureHeader(getter_AddRefs(secureHeaders),&canonAlgo);
       proxySink->SecureHeadersStatus(secureHeaders,canonAlgo);
     }
 	else
 	{
       nsCOMPtr<nsIMutableArray> secureHeaders;
-	  proxySink->SecureHeadersStatus(secureHeaders,0);
+	  PRInt32 canonAlgo;
+      rv = msg->GetSecureHeader(getter_AddRefs(secureHeaders),&canonAlgo);
+	  proxySink->SecureHeadersStatus(secureHeaders,canonAlgo);
 	}
 
     if (signature_status == nsICMSMessageErrors::SUCCESS)
@@ -453,11 +455,12 @@ NS_IMETHODIMP nsSMimeVerificationListener::Notify(nsICMSMessage2 *aVerifiedMessa
                                        NS_ConvertUTF8toUTF16(securityCategories));
     }
   }
-  else
-  {
-    nsCOMPtr<nsIMutableArray> secureHeaders;
-	proxySink->SecureHeadersStatus(secureHeaders,0);
-  }
+  // else
+  // {
+  // TCN: in this case I think proxySink is not intialized (GetProxyForObject failed) => Never pass here or crash
+  //   nsCOMPtr<nsIMutableArray> secureHeaders;
+  //   proxySink->SecureHeadersStatus(secureHeaders,0);
+  // }
 
   return NS_OK;
 }

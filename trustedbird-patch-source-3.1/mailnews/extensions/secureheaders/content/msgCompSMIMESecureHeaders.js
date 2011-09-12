@@ -258,18 +258,18 @@ var secureheaders_OnSend = {
 						msgSMimeCompFields.canonAlgorithme = parseInt(arrayHeaderToSign[i]._status);
 						//gConsole.logStringMessage("[ _secure_headers - AddSecureHeadersArray] canonAlgorithme = " + msgSMimeCompFields.canonAlgorithme);
 					}else{					
-					// create Header object
-					secHeader = Components.classes["@mozilla.org/messenger-smime/smime-secure-header;1"].createInstance(Components.interfaces.nsIMsgSMIMESecureHeader);
-					secHeader.headerName=arrayHeaderToSign[i]._name;
-					if(arrayHeaderToSign[i]._status!="")
-						secHeader.headerStatus=arrayHeaderToSign[i]._status;
-					/*if(arrayHeaderToSign[i]._encrypted!="")
-						secHeader.headerEncrypted=arrayHeaderToSign[i]._encrypted;*/
-					
-					// push Header object to array of msgCompFields object
-					msgSMimeCompFields.addSecureHeader(secHeader);
+						// create Header object
+						secHeader = Components.classes["@mozilla.org/messenger-smime/smime-secure-header;1"].createInstance(Components.interfaces.nsIMsgSMIMESecureHeader);
+						secHeader.headerName=arrayHeaderToSign[i]._name;
+						if(arrayHeaderToSign[i]._status!="")
+							secHeader.headerStatus=arrayHeaderToSign[i]._status;
+						/*if(arrayHeaderToSign[i]._encrypted!="")
+							secHeader.headerEncrypted=arrayHeaderToSign[i]._encrypted;*/
+						
+						// push Header object to array of msgCompFields object
+						msgSMimeCompFields.addSecureHeader(secHeader);
+					}
 				}
-			}
 			}
 		}catch(e){
 			gConsole.logStringMessage("[ _secure_headers - AddSecureHeadersArray] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
@@ -341,7 +341,6 @@ function ReadXmlHeadersToSign(){
 						
 						/*if(childNodes[j].hasAttribute("encrypted"))
 							header_encrypted = parseInt(childNodes[j].getAttribute("encrypted"));*/
-						
 						// load values to array
 						tabSecureHeaders.push(new xSecureHeader(header_name, header_status));
 					}
