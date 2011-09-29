@@ -400,63 +400,66 @@ var smimeHeaderSink =
 		//    1°) check if the header is in the configuration file
 		//    2°) In this case, check that it was secured in signature
 		//    3°) If the header was not secured, raise a warning (status change ?)
+		gConsole.logStringMessage("Checking secure headers");
 		var arrayHeaderInConf = ReadXmlHeadersToSign();
-		for(var j=0;j<hdrArray.length;++j){
-			var tmp_hdrMimeName = hdrArray[j]._hdrName;
-			//gConsole.logStringMessage("Header in message: " + tmp_hdrMimeName);
-			if(aCanonAlgo){
-				// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
-				tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
-			}
-			for(i=0;i<arrayHeaderInConf.length;++i){ 
-				// Check if header is in message
-				var confHdrName = arrayHeaderInConf[i]._name;
-				//gConsole.logStringMessage("Header in conf: " + confHdrName);
-				confHdrName = confHdrName.toLowerCase();
-				if(confHdrName == tmp_hdrMimeName) {
-					// gConsole.logStringMessage("****** Header found in conf and message: " + confHdrName);
-					var hdrSecured = false;
-					for(var i=0;i<secureHeaders.length;++i)
-		{
-						var sHeader = secureHeaders.queryElementAt(i,nsIMsgSMIMESecureHeader);
-						if(sHeader){								
-							var hdrName = sHeader.headerName; // signed header
-							if(aCanonAlgo){
-								hdrName = hdrName.toLowerCase();
-							}
-							if(hdrName == confHdrName) {
-								//gConsole.logStringMessage("****** Header found in conf, message and signature: " + confHdrName);
-								hdrSecured = true;
-								break;
+		if(arrayHeaderInConf) {
+			for(var j=0;j<hdrArray.length;++j){
+				var tmp_hdrMimeName = hdrArray[j]._hdrName;
+				//gConsole.logStringMessage("Header in message: " + tmp_hdrMimeName);
+				if(aCanonAlgo){
+					// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
+					tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
+				}
+				for(i=0;i<arrayHeaderInConf.length;++i){ 
+					// Check if header is in message
+					var confHdrName = arrayHeaderInConf[i]._name;
+					//gConsole.logStringMessage("Header in conf: " + confHdrName);
+					confHdrName = confHdrName.toLowerCase();
+					if(confHdrName == tmp_hdrMimeName) {
+						// gConsole.logStringMessage("****** Header found in conf and message: " + confHdrName);
+						var hdrSecured = false;
+						for(var i=0;i<secureHeaders.length;++i)
+						{
+							var sHeader = secureHeaders.queryElementAt(i,nsIMsgSMIMESecureHeader);
+							if(sHeader){								
+								var hdrName = sHeader.headerName; // signed header
+								if(aCanonAlgo){
+									hdrName = hdrName.toLowerCase();
+								}
+								if(hdrName == confHdrName) {
+									//gConsole.logStringMessage("****** Header found in conf, message and signature: " + confHdrName);
+									hdrSecured = true;
+									break;
+								}
 							}
 						}
-					}
-					if(!hdrSecured) {
-						//gConsole.logStringMessage("****** Header found in conf, message but NOT in secure headers: " + confHdrName);
-						
-						
-						gSecureHeaders+=confHdrName+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=""+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=""+""+HEADER_VAL_SEPARATOR; 
-						gSecureHeaders+=""+"invalid"+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=hdrArray[j]._hdrName+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=aCanonAlgo+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=SECURE_HEADER_SEPARATOR;
-						
-						// TODO 
-						// A header that should be secured was not found in the secure header structure
-						// => Set signed status to mismatch
-						gSignedUINode.setAttribute("signed", "mismatch");
-						gStatusBar.setAttribute("signed", "mismatch");
-						gSecureHeadersState=2;
-						gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
-						gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
+						if(!hdrSecured) {
+							//gConsole.logStringMessage("****** Header found in conf, message but NOT in secure headers: " + confHdrName);
+							
+							
+							gSecureHeaders+=confHdrName+HEADER_VAL_SEPARATOR;
+							gSecureHeaders+=""+HEADER_VAL_SEPARATOR;
+							gSecureHeaders+=""+""+HEADER_VAL_SEPARATOR; 
+							gSecureHeaders+=""+"invalid"+HEADER_VAL_SEPARATOR;
+							gSecureHeaders+=hdrArray[j]._hdrName+HEADER_VAL_SEPARATOR;
+							gSecureHeaders+=aCanonAlgo+HEADER_VAL_SEPARATOR;
+							gSecureHeaders+=SECURE_HEADER_SEPARATOR;
+							
+							// TODO 
+							// A header that should be secured was not found in the secure header structure
+							// => Set signed status to mismatch
+							gSignedUINode.setAttribute("signed", "mismatch");
+							gStatusBar.setAttribute("signed", "mismatch");
+							gSecureHeadersState=2;
+							gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
+							gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
 
-						
-						
-					}
+							
+							
+						}
 
-					break;
+						break;
+					}
 				}
 			}
 		}
@@ -938,8 +941,8 @@ function getMsgHdr(){
 				// header
 				msghdr._hdrName = ligne_header.substring(0,ligne_header.indexOf(":",0));				
 				msghdr._hdrValue = ligne_header.substring(ligne_header.indexOf(":",0)+1);
-                gConsole.logStringMessage("msghdr._hdrName: " + msghdr._hdrName);
-                gConsole.logStringMessage("msghdr._hdrValue: " + msghdr._hdrValue);
+                //gConsole.logStringMessage("msghdr._hdrName: " + msghdr._hdrName);
+                //gConsole.logStringMessage("msghdr._hdrValue: " + msghdr._hdrValue);
 				_HdrArray.push(msghdr);				
 			}
 			ligne_header="";
