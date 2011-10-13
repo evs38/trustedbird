@@ -255,7 +255,7 @@ var secureheaders_OnSend = {
 				for(i=0;i<arrayHeaderToSign.length;++i){ 					
 					if(arrayHeaderToSign[i]._name == "canonalgo"){
 						// is canonalgo value
-						msgSMimeCompFields.canonAlgorithme = parseInt(arrayHeaderToSign[i]._status);
+						msgSMimeCompFields.canonAlgorithme = parseInt(arrayHeaderToSign[i]._status,10);
 						//gConsole.logStringMessage("[ _secure_headers - AddSecureHeadersArray] canonAlgorithme = " + msgSMimeCompFields.canonAlgorithme);
 					}else{					
 						// create Header object
@@ -324,7 +324,7 @@ function ReadXmlHeadersToSign(){
 			if(compatibleTag[0].hasAttribute("canonalgo")){
 				var canonalgo = compatibleTag[0].getAttribute("canonalgo");				
 				tabSecureHeaders.push(new xSecureHeader("canonalgo", canonalgo));
-				gConsole.logStringMessage("[ ReadXmlHeadersToSign ] get canonical algorithm : " + canonalgo);
+				//gConsole.logStringMessage("[ ReadXmlHeadersToSign ] get canonical algorithm : " + canonalgo);
 			}
 			
 			// get headers to sign
@@ -337,10 +337,10 @@ function ReadXmlHeadersToSign(){
 					if(childNodes[j].localName == "header"){
 						header_name = childNodes[j].getAttribute("name");
 						if(childNodes[j].hasAttribute("status"))
-							header_status = parseInt(childNodes[j].getAttribute("status"));
+							header_status = parseInt(childNodes[j].getAttribute("status"),10);
 						
 						/*if(childNodes[j].hasAttribute("encrypted"))
-							header_encrypted = parseInt(childNodes[j].getAttribute("encrypted"));*/
+							header_encrypted = parseInt(childNodes[j].getAttribute("encrypted"),10);*/
 						
 						// load values to array
 						tabSecureHeaders.push(new xSecureHeader(header_name, header_status));

@@ -22,7 +22,6 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -157,7 +156,7 @@ interface nsIMIMEHeaderParam : nsISupports {
    * @param aEatContinuation When set, removes CR/LF
    * @return                 decoded header value
    */
-  //[noscript]
+  [noscript]
   ACString decodeRFC2047Header(in string aHeaderVal,
                                in string aDefaultCharset,
                                in boolean aOverrideCharset,

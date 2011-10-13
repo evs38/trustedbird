@@ -485,7 +485,7 @@ function ReadXmlHeadersToSecure(params){
 							header_status = childNodes[j].getAttribute("status");
 						}
 						if(childNodes[j].hasAttribute("encrypted"))
-							header_encrypted = parseInt(childNodes[j].getAttribute("encrypted"));
+							header_encrypted = parseInt(childNodes[j].getAttribute("encrypted"),10);
 						// load values to array
 						tabSecureHeaders.push(new xSecureHeader(header_name, header_status,header_encrypted));									
 					}				

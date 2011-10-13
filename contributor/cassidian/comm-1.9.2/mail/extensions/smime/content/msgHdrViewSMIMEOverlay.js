@@ -59,10 +59,6 @@ var gSMIMEBundle = null;
 //var gBrandBundle; -- defined in mailWindow.js
 
 // manipulates some globals from msgReadSMIMEOverlay.js
-
-const SECURE_HEADER_SEPARATOR = "###HEADER_SEPARATOR###";
-const HEADER_VAL_SEPARATOR = "###HEADER_VAL###";
-
 const nsICMSMessageErrors = Components.interfaces.nsICMSMessageErrors;
 
 var smimeHeaderSink = 
@@ -74,17 +70,17 @@ var smimeHeaderSink =
 
   signedStatus: function(aNestingLevel, aSignatureStatus, aSignerCert)
   {    
-    if (aNestingLevel > 1) {
+  	if (aNestingLevel > 1) {
       // we are not interested
-      return;
+     return;
     }
 
     gSignatureStatus = aSignatureStatus;
     gSignerCert = aSignerCert;
 
     gSMIMEContainer.collapsed = false;
-    gSignedUINode.collapsed = false;     
-  
+    gSignedUINode.collapsed = false;
+  	//gConsole.logStringMessage("[smimeHeaderSink:smimeHeaderSink] nsICMSMessageErrors : " + aSignatureStatus);
     switch (aSignatureStatus) {
       case nsICMSMessageErrors.SUCCESS:
         gSignedUINode.setAttribute("signed", "ok");
@@ -95,13 +91,13 @@ var smimeHeaderSink =
 
       case nsICMSMessageErrors.VERIFY_NOT_YET_ATTEMPTED:
         gSignedUINode.setAttribute("signed", "unknown");
-        gStatusBar.setAttribute("signed", "unknown");   
+        gStatusBar.setAttribute("signed", "unknown");
         break;
 
       case nsICMSMessageErrors.VERIFY_CERT_WITHOUT_ADDRESS:
       case nsICMSMessageErrors.VERIFY_HEADER_MISMATCH:
         gSignedUINode.setAttribute("signed", "mismatch");
-        gStatusBar.setAttribute("signed", "mismatch");        
+        gStatusBar.setAttribute("signed", "mismatch");
         break;
 
       default:
@@ -249,116 +245,170 @@ var smimeHeaderSink =
     if (askUser)
       gMessageNotificationBar.setSMIMEReceiptRequestMsg(SMIMEReceiptGenerator, aReceiptsTo);
   },
-  secureHeadersStatus: function(aSecureHeaders, aCanonAlgo)
-  {
+  updateSecureHeadersState: function(msgSrc){
+  	// parse mime msg : extract headers
+ 	var currentMimeHeaderDataArray = {};
+  	// get MIME headers only
+  	var idxEnd = msgSrc.indexOf("\r\n\r\n",0); // * CRLF DOS : "\r\n"
+  	if(idxEnd == -1) idxEnd = msgSrc.indexOf("\n\n",0); // * CRLF UNIX : "\n"
+  	if(idxEnd == -1) idxEnd = msgSrc.indexOf("\r\r",0); //CRLF OS : "\r"
+  	if(idxEnd != -1) msgSrc = msgSrc.substr(0,idxEnd); //dbg gConsole.logStringMessage("[smime - MessageAnalyser - succes getting mime headers : ] \n" + msgSrc);		
+  	  	
+  	// filter on IMF headers - append data to array 
+  	var separator = new RegExp("\\r\\n|\\r|\\n", "i");// end line
+	var tab = msgSrc.split(separator);		
+	var reg_folding = new RegExp("(  )","g");
+	var reg_folding2 = new RegExp("(\t)","g");
+	for(var idxTab=0; idxTab<tab.length; ++idxTab){
+		var header_line = tab[idxTab];		
+		// search for long header fields (folding) - RFC 2822
+		if(header_line[0]!= " "){
+			try{			 	
+				while( idxTab < tab.length ){
+					var next_line = tab[idxTab+1];
+					if(next_line){
+						if(next_line[0] == " " || next_line[0] == "\t"){																		
+							header_line += next_line; //next_line.toLowerCase();
+							header_line = header_line.replace(reg_folding," ");
+							header_line = header_line.replace(reg_folding2,"");
+							++idxTab;
+						}else{ break; }
+					}else{ break; }
+				}
+			}catch(e){}
+		}
+		//gConsole.logStringMessage("[ximfmail - createXimfHdrArray - decode header line : ] \n" + header_line);		
+						
+		if(header_line.indexOf(":")!=-1){
+			var oEntry = new Object;
+			oEntry.headerName = header_line.substring(0,header_line.indexOf(": ",0));
+			oEntry.headerValue = header_line.substring(header_line.indexOf(": ",header_line)+2);
+			currentMimeHeaderDataArray[oEntry.headerName] = oEntry;
+			//gConsole.logStringMessage("[smime - MessageAnalyser - push : ] \n" + oEntry.headerName + " :: "+ oEntry.headerValue);		
+		}
+	}
+  	
+  	// Compute secure headers and mime headers
+  	//gConsole.logStringMessage("[smime - updatesecureheaders ] *** secureHeaders analysis begin *** " );
 	var secStatus = true; //flag for the global secure headers status, set at true as default means all secure headers were not modified
-	gSecureHeaders="";	
-	if(aSecureHeaders)
-	{
-		//gConsole.logStringMessage("*** secureHeaders analysis begin ***\ncanonization Algorithm : " + aCanonAlgo);
-		gSecureHeadersState=1;
-		var secureHeaders=aSecureHeaders.QueryInterface(nsIArray);
-		var hdrArray=getMsgHdr(); //get selected mime message headers list 
-		for(var i=0;i<secureHeaders.length;++i)
-		{
-			var sHeader = secureHeaders.queryElementAt(i,nsIMsgSMIMESecureHeader);
-			if(sHeader){								
-				var hdrName = sHeader.headerName; // signed header
-				var hdrValue = sHeader.headerValue; // Value in the signature
-				var hdrMimeValue = "";	// value in the MIME message				
-				var hdrStatus = ""+sHeader.headerStatus;
-				var hdrValidity = "valid" //set the default header validity to ok, it means the header was not modified
-				var hdrCanonizValue=aCanonAlgo;
-				var headerMimeExists = false;
-				var tmp_hdrName = "";
-				var tmp_hdrMimeName = "";
-				//var headerEncrypted = sHeader.headerEncrypted;
-				//if(hdrStatus == "0") 
-				//{
-					//Verify the value validity only in the case where header status is duplicated
-					tmp_hdrName = hdrName;
-					if(aCanonAlgo){
-						 // RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
-						tmp_hdrName = tmp_hdrName.toLowerCase();
-					}
-					//gConsole.logStringMessage("secureHeadersStatus - \n check for signed header "+tmp_hdrName);
-					for(var j=0;j<hdrArray.length;++j){
-						tmp_hdrMimeName = hdrArray[j]._hdrName;
-						if(aCanonAlgo){
-							// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
-							tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
-						}						
-						
-						//gConsole.logStringMessage("secureHeadersStatus - \nsigned header : "+tmp_hdrName+"\nmime header   : "+tmp_hdrMimeName);	
-							
-						if(tmp_hdrName==tmp_hdrMimeName){
-							// compare secured value ans MIME value of header
-							headerMimeExists = true; // header is in mime																
-							hdrMimeValue=hdrArray[j]._hdrValue;																						
-							var charset = getMimeValueCharset(hdrMimeValue);							
-						
-							// body - delete SP/WPS characters before and after body
-							hdrMimeValue = deleteFirstAndLastWhiteSpace(hdrMimeValue);
-							hdrValue = deleteFirstAndLastWhiteSpace(hdrValue);
-														
-							if(aCanonAlgo){
-								hdrMimeValue = canonilizeHeaderValue(hdrMimeValue);
-								hdrValue = canonilizeHeaderValue(hdrValue);
-								//gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
-							}else{
-								hdrMimeValue = UnfoldingMimeValue(hdrMimeValue);
-								hdrMimeValue = deleteLastCRLF(hdrMimeValue);
-								hdrValue = UnfoldingMimeValue(hdrValue);
-								hdrValue = deleteLastCRLF(hdrValue);
-							}												
-							
-							if(hdrValue!=hdrMimeValue) //test if the header value in the signature and that one in the mime message is the same
-							{
-								hdrValidity="invalid"; //header was modified
-								secStatus=false;
-								gConsole.logStringMessage("Warning - failed on verifing secured header "+hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
-							}
-							
-							// decode values from MIME format
-							var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
-							hdrMimeValue = mimeEncoder.decodeMimeHeader(hdrMimeValue, charset, false, true);//encodeMimePartIIStr(hdrValue, false, "ISO-8859-1" , 0, 72);
-							hdrValue = mimeEncoder.decodeMimeHeader(hdrValue,charset,false,true);
-							//gConsole.logStringMessage("secureHeadersStatus - header "+hdrName+" \nmime value:  >" +hdrMimeValue+ "<\nsigned value:>"+hdrValue+"<");	
-														
-							break; // header is correctly checked
-						}					
-					}
-					
-					// mime header has been lost, deleted...
-					if(!headerMimeExists){						
-						hdrValidity="invalid"; //header was modified
-						secStatus=false;	
-					}
-				//}
-				
-				//set the display secure headers information in the string to parse after in the GUI
-				gSecureHeaders+=hdrName+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=hdrValue+HEADER_VAL_SEPARATOR; //put the value decoded instead of the value in the signature (encoded RFC2047) for the diplay
-				gSecureHeaders+=""+hdrStatus+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=""+hdrValidity+HEADER_VAL_SEPARATOR;
-				//gSecureHeaders+=""+headerEncrypted+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=hdrMimeValue+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=hdrCanonizValue+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=SECURE_HEADER_SEPARATOR;
+	gSecureHeadersState=1;		
+	for (headerName in gSecureHeadersArray) {	
+			//Verify the value validity only in the case where header status is duplicated
+			var headerMimeExists = false;
+			var tmp_hdrName = gSecureHeadersArray[headerName].hdrName;
+			var canonalgo = gSecureHeadersArray[headerName].hdrCanonAlgo;
+			if(canonalgo){
+				 // RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
+				tmp_hdrName = tmp_hdrName.toLowerCase();
 			}
+			//gConsole.logStringMessage("secureHeadersStatus - \n check for signed header "+tmp_hdrName);
+			//for(var j=0;j<hdrArray.length;++j){
+			for(headerMimeName in currentMimeHeaderDataArray){
+				var tmp_hdrMimeName = currentMimeHeaderDataArray[headerMimeName].headerName;
+				if(canonalgo){
+					// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
+					tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
+				}						
+						
+				//gConsole.logStringMessage("secureHeadersStatus - \nsigned header : "+tmp_hdrName+"\nmime header   : "+tmp_hdrMimeName);	
+				if(tmp_hdrName == tmp_hdrMimeName){
+					// compare secured value ans MIME value of header
+					headerMimeExists = true; // header is in mime		
+					var hdrValue = 	gSecureHeadersArray[headerName].hdrSecureValue;													
+					var hdrMimeValue = currentMimeHeaderDataArray[headerMimeName].headerValue;																						
+					var charset = getMimeValueCharset(hdrMimeValue);							
+						
+					// body - delete SP/WPS characters before and after body
+					hdrMimeValue = deleteFirstAndLastWhiteSpace(hdrMimeValue);
+					hdrValue = deleteFirstAndLastWhiteSpace(hdrValue);
+														
+					if(canonalgo){
+						hdrMimeValue = canonilizeHeaderValue(hdrMimeValue);
+						hdrValue = canonilizeHeaderValue(hdrValue);
+						//gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
+					}else{
+						hdrMimeValue = UnfoldingMimeValue(hdrMimeValue);
+						hdrMimeValue = deleteLastCRLF(hdrMimeValue);
+						hdrValue = UnfoldingMimeValue(hdrValue);
+						hdrValue = deleteLastCRLF(hdrValue);
+					}
+							
+					if(hdrValue!=hdrMimeValue) //test if the header value in the signature and that one in the mime message is the same
+					{
+						gSecureHeadersArray[headerName].hdrSignedRes = "invalid"; //hdrValidity="invalid"; //header was modified
+						secStatus=false;
+						//dbg gConsole.logStringMessage("Warning - failed on verifing secured header "+tmp_hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
+						gConsole.logStringMessage("[smimeHeaderSink:updateSecureHeadersState]Warning - failed on verifing secured header ");
+					}
+							
+					// decode values from MIME format
+					var tmpDecdodedValue=null;
+					var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
+					tmpDecdodedValue = mimeEncoder.decodeMimeHeader(hdrMimeValue, charset, false, true);//encodeMimePartIIStr(hdrValue, false, "ISO-8859-1" , 0, 72);
+					if(tmpDecdodedValue){
+						gSecureHeadersArray[headerName].hdrMimeValue = tmpDecdodedValue;
+					}else{
+						gSecureHeadersArray[headerName].hdrMimeValue = hdrMimeValue;
+					}
+					tmpDecdodedValue = null;
+					tmpDecdodedValue = mimeEncoder.decodeMimeHeader(hdrValue,charset,false,true);
+					if(tmpDecdodedValue){
+						gSecureHeadersArray[headerName].hdrSecureValue = tmpDecdodedValue;
+					}else{
+						gSecureHeadersArray[headerName].hdrSecureValue = hdrValue;
+					}
+					gSecureHeaders = "signedData in";
+					//dbg gConsole.logStringMessage("secureHeadersStatus - header "+headerName+" \nmime value:  >" +gSecureHeadersArray[headerName].hdrMimeValue+ "<\nsigned value:>"+gSecureHeadersArray[headerName].hdrSecureValue+"<");	
+					break; // header is correctly checked
+				}					
+			}
+					
+			// mime header has been lost, deleted...
+			if(!headerMimeExists){						
+				gSecureHeadersArray[headerName].hdrSignedRes ="invalid"; //header was modified
+				secStatus=false;	
+			}		
 		}
 		
 		if((!secStatus) && (gSignatureStatus == nsICMSMessageErrors.SUCCESS))
 		{
 			//At least one secure header was modified, set the signed status to mismastch
+			gConsole.logStringMessage("[smimeHeaderSink:updateSecureHeadersState] At least one secure header was modified ");
 			gSignedUINode.setAttribute("signed", "mismatch");
 			gStatusBar.setAttribute("signed", "mismatch");
 			gSecureHeadersState=0;
 			gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
 			gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
-		}
-		//gConsole.logStringMessage("*** secureHeaders analysis end ***");		
-	} 
+		}				
+	},//end updateSecureHeadersState	
+  secureHeadersStatus: function(aSecureHeaders, aCanonAlgo){  	
+	gSecureHeaders = "";	
+  	gSecureHeadersArray={}; // clear array	
+	if(aSecureHeaders)
+	{
+		var secureHeadersArray=aSecureHeaders.QueryInterface(nsIArray);
+		if(secureHeadersArray.length <= 0 ){
+			gConsole.logStringMessage("[smimeHeaderSink:secureHeadersStatus] *** no secure headers in smime signeddata ");
+			return;
+		}		
+		
+		for(var i=0;i<secureHeadersArray.length;++i)
+		{
+			var sHeader = secureHeadersArray.queryElementAt(i,nsIMsgSMIMESecureHeader);
+			if(sHeader){	
+				var oEntry = new Object;
+				oEntry.hdrName = sHeader.headerName; // signed header
+				oEntry.hdrSecureValue = sHeader.headerValue; // Value in the signature
+				oEntry.hdrMimeValue = "";	// value in the MIME message
+				oEntry.hdrSignedStatus = sHeader.headerStatus;
+				oEntry.hdrCanonAlgo = aCanonAlgo;
+				oEntry.hdrEncryptStatus = "";
+				oEntry.hdrSignedRes = "valid";
+				gSecureHeadersArray[oEntry.hdrName] = oEntry;				
+			}
+		}  			
+  		getMessageSource(gFolderDisplay.selectedMessageUris[0], this.updateSecureHeadersState); 		
+	}  	
   },
   // Check the SMIME receipt with the request
   SMIMEReceiptStatus: function(aSignedContentIdentifier,
@@ -422,7 +472,6 @@ var smimeHeaderSink =
 
     gMessageNotificationBar.setSMIMEReceiptMsg(requestMsgHdr);
   },
-
   securityLabelStatus: function(aSecurityPolicyIdentifier, aSecurityClassification, aPrivacyMark, aSecurityCategories)
   {
     gSecurityPolicyIdentifier = aSecurityPolicyIdentifier;
@@ -533,8 +582,6 @@ function onSMIMEStartHeaders()
 
 function onSMIMEEndHeaders()
 {
-  gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_default"));
-  
   // display secure info message panel
   var setSmimeInfoMsg = true;
   var prefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
@@ -564,9 +611,21 @@ function onSMIMEEndHeaders()
    	}else{
    		document.getElementById("secureinfomsg").setAttribute("collapsed","true");
    	}
-   }    	
+   }
+   
+   // check if message is signed
+   if(checkSignedDataMsg()){
+   		//gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString(""));
+   		//gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_nok").replace(/<BR>/g,"\n");
+   		gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_default"));  
+   		gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
+   }else{
+   		gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_unsecured"));  
+        gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
+    }
 }
 
+//
 function onSmartCardChange()
 {
   // only reload encrypted windows
@@ -575,6 +634,7 @@ function onSmartCardChange()
   }
 }
 
+//
 function msgHdrViewSMIMEOnLoad(event)
 {
   window.crypto.enableSmartCardEvents = true;
@@ -602,7 +662,7 @@ function msgHdrViewSMIMEOnLoad(event)
   gEncryptedURIService = 
     Components.classes["@mozilla.org/messenger-smime/smime-encrypted-uris-service;1"]
     .getService(Components.interfaces.nsIEncryptedSMIMEURIsService);
-    
+      
     // display security information message    
 	gSMIMEInfoMsg = document.getElementById("secureinfomsgl");
    	gSMIMEInfoMsgMore = document.getElementById("secureinfomsgd");
@@ -610,9 +670,7 @@ function msgHdrViewSMIMEOnLoad(event)
   		gSMIMEInfoMsg = document.getElementById("secureinfomsgl2");
   		gSMIMEInfoMsgMore = document.getElementById("secureinfomsgd2");
   	}
-  	gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_default"));  
-  	gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
-  	
+   	
   	try{
     	if(gCurrentIdentity){   	 	
    	 		//gConsole.logStringMessage("[msgHdrViewSMIMEOnLoad] secureheaders.smimeinfomsg pref = "+setSmimeInfoMsg);
@@ -620,6 +678,16 @@ function msgHdrViewSMIMEOnLoad(event)
 			prefBranch.setBoolPref("smimeinfomsg_on", gCurrentIdentity.getBoolAttribute("secureheaders.smimeinfomsg"));
 		}	
   	}catch(e){gConsole.logStringMessage("[msgHdrViewSMIMEOnLoad] smimeinfomsg error : " + e);}
+  	
+  	// new folder selected : collapse gSMIMEInfoMsg container  
+  	try{
+		var el = document.getElementById("folderTree");
+     	el.addEventListener("select", function(){
+     		if(document.getElementById("singlemessage") != undefined)
+   			document.getElementById("secureinfomsg").setAttribute("collapsed","true");},
+   			false);
+  	}catch(e){}
+  	
 }
 
 function msgHdrViewSMIMEOnUnload(event)
@@ -657,73 +725,6 @@ function msgHdrViewSMIMEOnMessagePaneUnhide()
       gEncryptedUINode.collapsed = false;
     }
   }
-}
-
-function MsgHdrObj(){
-		this._hdrName;
-		this._hdrValue;
-}
-
-
-/**
-* Get the Message header list
-*/
-function getMsgHdr(){
-		var _HdrArray = new Array;
-		var msgURI = gFolderDisplay.selectedMessageUris[0];
-		var cmessenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);
-		var msgSvc =  cmessenger.messageServiceFromURI(msgURI);
-		var MsgStream =  Components.classes["@mozilla.org/network/sync-stream-listener;1"].createInstance();
- 		var consumer = MsgStream.QueryInterface(Components.interfaces.nsIInputStream);
- 		var ScriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
- 		var ScriptInputStream = ScriptInput.QueryInterface(Components.interfaces.nsIScriptableInputStream);
- 		ScriptInputStream.init(consumer);
- 		try{
-   			msgSvc.streamMessage(msgURI, MsgStream, msgWindow, null, false, null);
- 		}catch (e){
-   			dump("Error line " + Error().lineNumber + " : "+ e + " - file "+ Error().fileName);
-   			return _HdrArray;
- 		}
-		
-		// analyse des donnees du message selectionne
- 		ScriptInputStream.available();
- 		var content = "";
- 		var tmpBuf = "";
- 		while (ScriptInputStream .available()) {
- 			tmpBuf = ScriptInputStream.read(512);
- 			content = content + tmpBuf;
- 			// extrac headers
- 			// RFC 2822 :  The body is simply a sequence of characters that
-   			// follows the header and is separated from the header by an empty line
-   			// (i.e., a line with nothing preceding the CRLF). 			
- 			if(tmpBuf.indexOf("\r\n\r\n",0) != -1 ||
- 				tmpBuf.indexOf("\n\n",0) != -1 ||
-				tmpBuf.indexOf("\r\r",0) != -1){
- 				break;
- 			}
-		}
-		
-		// unfolding mime headers
-		content = UnfoldingMimeValue(content);
-		
-		// create array oh MIME headers
-		var cur_pos_CRLF = 0; //current position of CRLF
-		var cur_pos_str = 0; // current position of string
-		var ligne_header = "";
-		while((cur_pos_CRLF=content.indexOf("\r\n",cur_pos_str))!=-1)
-		{
-			ligne_header+=content.substring(cur_pos_str,cur_pos_CRLF);
-			if(ligne_header.indexOf(":",0)!=-1){
-				var msghdr = new MsgHdrObj();
-				// header
-				msghdr._hdrName = ligne_header.substring(0,ligne_header.indexOf(":",0));				
-				msghdr._hdrValue = ligne_header.substring(ligne_header.indexOf(":",0)+1);
-				_HdrArray.push(msghdr);				
-			}
-			ligne_header="";
-			cur_pos_str=cur_pos_CRLF+2;			
-		}
-		return _HdrArray;
 }
 
 function getMimeValueCharset(val)
@@ -832,6 +833,76 @@ function canonilizeHeaderValue(hdrval){
 	return val;
 }
 
+/*
+ * 
+ */
+function checkSignedDataMsg(){
+	// 	
+	var list="";
+	var headerName;
+	var regHdrName_contentype = new RegExp("content-type", "ig");
+	var regHdrValue_signed = new RegExp("multipart/signed", "ig");
+	for (headerName in currentHeaderData) {
+		//list += currentHeaderData[headerName].headerName +":"+currentHeaderData[headerName].headerValue + " $$ ";
+		if(regHdrName_contentype.test(currentHeaderData[headerName].headerName)){
+			if(regHdrValue_signed.test(currentHeaderData[headerName].headerValue)){
+				gConsole.logStringMessage("[checkSignedDataSmimeSelectedMsg] Msg Is Signed");
+				return true;
+			}
+    	}
+	}
+	gConsole.logStringMessage("[checkSignedDataSmimeSelectedMsg] Msg Is Unsigned");
+	//dbg gConsole.logStringMessage("[checkSignedDataSmimeSelectedMsg] list : " + list);	
+	return false;
+}
+
+ /**
+Get message source
+@param {nsIMsgDBHdr} header
+@param {function} callbackFunction Function to call when data are received: callbackFunction(header, receivedData, callbackParam)
+@param callbackParam Parameter of callbackFunction
+@return {string} Message source or <b>false</b> if an error occurs
+*/
+function getMessageSource(mailUri, callbackFunction, callbackParam){
+	if (!mailUri) return;	
+	var streamListener = {
+		QueryInterface: function(aIID) {
+			if (aIID.equals(Components.interfaces.nsISupports)
+				|| aIID.equals(Components.interfaces.nsIStreamListener))
+				return this;
+			throw Components.results.NS_NOINTERFACE;
+		},
+		data: "",
+		isDataComplete: false,
+		onStartRequest: function(request, context) {},
+		onDataAvailable: function(request, context, inputStream, offset, available) {
+			if(!this.isDataComplete ){
+				var stream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
+				stream.init(inputStream);
+				this.data += stream.read(available);
+				stream.close();
+				stream = null;
+							
+				// parse headers only
+				var idxEnd = this.data.indexOf("\r\n\r\n",0); // * CRLF DOS : "\r\n"
+  				if(idxEnd == -1) idxEnd = this.data.indexOf("\n\n",0); // * CRLF UNIX : "\n"
+  				if(idxEnd == -1) idxEnd = this.data.indexOf("\r\r",0); //CRLF OS : "\r"
+  				if(idxEnd != -1) this.isDataComplete = true;	// msgSrc = msgSrc.substr(0,idxEnd); //dbg gConsole.logStringMessage("[smime - MessageAnalyser - succes getting mime headers : ] \n" + msgSrc);		
+  			}
+		},
+		onStopRequest: function(request, context, status) {
+			if (Components.isSuccessCode(status)) {
+				callbackFunction(this.data, callbackParam);
+			} else {
+				srv.errorSrv("notifyListener.getMsgSrc - "+mailUri+" - Error: "+status);
+			}
+		}
+	}
+
+	var cmessenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);
+	var msgSvc =  cmessenger.messageServiceFromURI(mailUri);
+	try { msgSvc.streamMessage(mailUri, streamListener, null, null, false, null); } catch (ex) { return false; }
+}
 addEventListener('messagepane-loaded', msgHdrViewSMIMEOnLoad, true);
 addEventListener('messagepane-unloaded', msgHdrViewSMIMEOnUnload, true);
 addEventListener('messagepane-hide', msgHdrViewSMIMEOnMessagePaneHide, true);

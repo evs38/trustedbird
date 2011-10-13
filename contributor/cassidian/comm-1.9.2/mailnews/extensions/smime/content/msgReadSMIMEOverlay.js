@@ -49,7 +49,19 @@ var gSecurityCategories = null;
 var gSecurityLabelConf = null;
 var gSecureHeaders = "";
 var gSecureHeadersState=-1;
-
+/*
+gSecureHeadersArray[o.hdrName]={
+	o.hdrName = sHeader.headerName; // signed header
+	o.hdrSecureValue = sHeader.headerValue; // value in the signature
+	o.hdrMimeValue = "";	// value in the MIME message
+	o.hdrSignedStatus = sHeader.headerStatus;
+	o.hdrCanonAlgo = aCanonAlgo;
+	o.hdrEncryptStatus = "";
+	o.hdrSignedRes = "valid";}
+*/
+const SECURE_HEADER_SEPARATOR = "###HEADER_SEPARATOR###";
+const HEADER_VAL_SEPARATOR = "###HEADER_VAL###";
+var gSecureHeadersArray={};
 addEventListener("load", smimeReadOnLoad, false);
 
 function smimeReadOnLoad()
@@ -121,6 +133,21 @@ function showMessageReadSecurityInfo()
   params.SetString(1, gPrivacyMark);
   params.SetString(2, gSecurityCategories);
   params.SetString(12,gSecureHeaders);
+  
+  //create string with gSecureHeadersArray
+  var arraySecureHeadersString = "";
+  for (headerName in gSecureHeadersArray) { 		
+  	arraySecureHeadersString+=gSecureHeadersArray[headerName].hdrName+HEADER_VAL_SEPARATOR;
+	arraySecureHeadersString+=gSecureHeadersArray[headerName].hdrSecureValue+HEADER_VAL_SEPARATOR; //put the value decoded instead of the value in the signature (encoded RFC2047) for the diplay
+	arraySecureHeadersString+=gSecureHeadersArray[headerName].hdrMimeValue+HEADER_VAL_SEPARATOR;
+	arraySecureHeadersString+=""+gSecureHeadersArray[headerName].hdrSignedStatus+HEADER_VAL_SEPARATOR;	
+	arraySecureHeadersString+=gSecureHeadersArray[headerName].hdrCanonAlgo+HEADER_VAL_SEPARATOR;
+	//arraySecureHeadersString+=""+gSecureHeadersArray[headerName].hdrEncryptStatus+HEADER_VAL_SEPARATOR;
+	arraySecureHeadersString+=""+gSecureHeadersArray[headerName].hdrSignedRes+HEADER_VAL_SEPARATOR;
+	arraySecureHeadersString+=SECURE_HEADER_SEPARATOR;
+  }  
+  params.SetString(13,arraySecureHeadersString);  
+
 
   window.openDialog("chrome://messenger-smime/content/msgReadSecurityInfo.xul",
                     "", "chrome,resizable=1,modal=1,dialog=1", pkiParams);

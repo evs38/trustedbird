@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<profile>
+	<theme name="Company Def"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="D:\DOC\DOC_THUN_INTRACED\ximf_profile.xsd">
+		<instance id="smtp" ximfVersion="2.0" version="1.0" label="Message standard" name="smtp" directory="" author="string"/>
+		<instance id="idAmocoDefinition" ximfVersion="2.0" version="1.0"
+			name="Amoco"
+			directory="{E255643F-7DCA-4cd8-B0C2-61EAADE39FCE}/chrome/content/AmocoCorporation/"
+			author="Ximfmail">
+			<schema id="AAAAB" name="Amoco">headers-amoco.xml</schema>
+			<dictionary author="EADS DS">dictionary-amoco.xml</dictionary>
+			<ihm id="AAAAC" name="string">ihm-amoco.xml</ihm>
+			<rule id="AAAAD" author="string">rules-amoco.xml</rule>
+		</instance>
+		<instance id="idCaterpillarDefinition" ximfVersion="2.0"
+			version="1.0" name="Caterpillar"
+			directory="{E255643F-7DCA-4cd8-B0C2-61EAADE39FCE}/chrome/content/CaterpillarInc/"
+			author="Ximfmail">
+			<schema name="Caterpillar">headers-caterpillar.xml</schema>
+			<dictionary>dictionary-caterpillar.xml</dictionary>
+			<ihm>ihm-caterpillar.xml</ihm>
+			<rule author="string">rules-caterpillar.xml</rule>
+		</instance>
+		<instance id="idWhirlpoolDefinition" ximfVersion="2.0"
+			version="1.0" name="Whirlpool"
+			directory="{E255643F-7DCA-4cd8-B0C2-61EAADE39FCE}/chrome/content/WhirlpoolCorporation/"
+			author="Ximfmail">
+			<schema name="Whirlpool">headers-whirlpool.xml</schema>
+			<dictionary>dictionary-whirlpool.xml</dictionary>
+			<ihm>ihm-whirlpool.xml</ihm>
+			<rule>rules-whirlpool.xml</rule>
+		</instance>
+	</theme>
+</profile>
