@@ -33,6 +33,7 @@
  *   Dan Mosedale <dmose@mozilla.org>
  *   Michiel van Leeuwen <mvl@exedo.nl>
  *   Joachim Herb <herb@leo.org>
+ *   Copyright (c) 2010 CASSIDIAN - All rights reserved
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or

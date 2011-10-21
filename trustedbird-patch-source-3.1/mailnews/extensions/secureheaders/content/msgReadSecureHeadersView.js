@@ -27,34 +27,64 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 EADS Defence and Security - 1 Boulevard Jean Moulin -  ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000)
  * ***** END LICENSE BLOCK ***** */
 
-var gSecureHeaders="";
-
 const SECURE_HEADER_SEPARATOR = "###HEADER_SEPARATOR###";
 const HEADER_VAL_SEPARATOR = "###HEADER_VAL###";
 
+/*
+gSecureHeadersArray[o.hdrName]={
+	o.hdrName = sHeader.headerName; // signed header
+	o.hdrSecureValue = sHeader.headerValue; // Value in the signature
+	o.hdrMimeValue = "";	// value in the MIME message
+	o.hdrSignedStatus = sHeader.headerStatus;
+	o.hdrCanonAlgo = aCanonAlgo;
+	o.hdrEncryptStatus = "";
+	o.hdrSignedRes = "valid";}
+*/
 function onLoad()
 {
 	var gSecureHeadersBundle = document.getElementById("bundle_secure_headers_view");
 
-	gSecureHeaders = window.arguments[0];
+	var secureHeadersString = window.arguments[0];	
 	
-	if(gSecureHeaders!=""){
-		var treechild = document.getElementById("secHeader_treechild_id");
-		var each_header_tab=gSecureHeaders.split(SECURE_HEADER_SEPARATOR);
-		for(var i=0;i<each_header_tab.length;++i)
-		{
-			var each_value_tab=each_header_tab[i].split(HEADER_VAL_SEPARATOR);
-			var label;
-			if(each_value_tab.length>=3){
-				//read the current header property
-				var headerName = each_value_tab[0];
-				var headerValue = each_value_tab[1];
-				var headerStatus = each_value_tab[2];
-				var headerSecStatus = each_value_tab[3];
-				//var headerEncrypted = parseInt(each_value_tab[4]);
-				var headerMime =  each_value_tab[4];
-				var headerCanoniz = each_value_tab[5];
+	if(secureHeadersString=="")return;
+	// split secureHeadersString to cSecureHeadersArray
+	var cSecureHeadersArray = {}; 
+	var each_header_tab=secureHeadersString.split(SECURE_HEADER_SEPARATOR);
+	for(var i=0;i<each_header_tab.length;++i){
+		var each_value_header_tab=each_header_tab[i].split(HEADER_VAL_SEPARATOR);
+		var oEntry = new Object;
+		var headerNameEntry = "";			
+		for(var idxElt=0;idxElt<each_value_header_tab.length;++idxElt){			
+			switch(idxElt){
+				case 0:
+					headerNameEntry = each_value_header_tab[idxElt];
+					oEntry.hdrName = each_value_header_tab[idxElt];
+					break;
+				case 1:
+					oEntry.hdrSecureValue = each_value_header_tab[idxElt];
+					break;
+				case 2:
+					oEntry.hdrMimeValue = each_value_header_tab[idxElt];
+					break;
+				case 3:
+					oEntry.hdrSignedStatus = each_value_header_tab[idxElt];
+					break;
+				case 4:
+					oEntry.hdrCanonAlgo = each_value_header_tab[idxElt];
+					break;
+				case 5:
+					oEntry.hdrSignedRes = each_value_header_tab[idxElt];
+					break;				
+			}
+		}
+		oEntry.hdrEncryptStatus = "";
+		if(headerNameEntry!="") cSecureHeadersArray[headerNameEntry] = oEntry;
+	}
 				
+	// create tree viewer
+	var treechild = document.getElementById("secHeader_treechild_id");	
+	for (headerName in cSecureHeadersArray) {
+		var label="";					
 				//create each element for the tree
 				var treeitem=document.createElement("treeitem");
 				var treerow=document.createElement("treerow");
@@ -66,14 +96,13 @@ function onLoad()
 				//var encryptedcell=document.createElement("treecell");
 				
 				//set the header name, value and status
-				namecell.setAttribute("label",headerName);
-				valuecell.setAttribute("label",headerValue); // signed value
-				namecell.setAttribute("properties",headerSecStatus); 
-				valueMimecell.setAttribute("label",headerMime); // displayed value in message
+		namecell.setAttribute("label",cSecureHeadersArray[headerName].hdrName);
+		valuecell.setAttribute("label",cSecureHeadersArray[headerName].hdrSecureValue); // signed value
+		namecell.setAttribute("properties",cSecureHeadersArray[headerName].hdrSignedRes); 
+		valueMimecell.setAttribute("label",cSecureHeadersArray[headerName].hdrMimeValue); // displayed value in message
 				
 				//set the header status
-				switch(headerStatus)
-				{
+		switch(cSecureHeadersArray[headerName].hdrSignedStatus){
 					case "-1":
 						label=gSecureHeadersBundle.getString("notdefine.label");
 					break;
@@ -94,10 +123,10 @@ function onLoad()
 				
 				//set the canonization algo used
 				var sAlgo = "";
-				switch(parseInt(headerCanoniz,10)){
+		switch(parseInt(cSecureHeadersArray[headerName].hdrCanonAlgo,10)){
 					case 0:
 						sAlgo =	gSecureHeadersBundle.getString("headercanoniz.simple.label");
-						break
+				break;
 					case 1:
 						sAlgo = gSecureHeadersBundle.getString("headercanoniz.relaxed.label");
 						break;					
@@ -105,8 +134,7 @@ function onLoad()
 				canonizcell.setAttribute("label",sAlgo);
 				
 				//set the header encrypted
-				/*switch(headerEncrypted)
-				{
+		/*switch(gSecureHeadersArray[headerName].hdrEncryptStatus){
 					case -1:
 						label=gSecureHeadersBundle.getString("notdefine.label");
 					break;
@@ -131,8 +159,6 @@ function onLoad()
 				//treerow.appendChild(encryptedcell);
 				treeitem.appendChild(treerow);
 				treechild.appendChild(treeitem);
-			}
-		}
 	}
 }
 

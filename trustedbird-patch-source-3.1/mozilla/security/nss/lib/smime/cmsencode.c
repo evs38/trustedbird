@@ -37,7 +37,7 @@
 /*
  * CMS encoding.
  *
- * $Id: cmsencode.c,v 1.6 2006/06/08 22:01:02 nelson%bolyard.com Exp $
+ * $Id: cmsencode.c,v 1.6.66.1 2010/12/23 18:03:41 kaie%kuix.de Exp $
  */
 
 #include "cmslocal.h"

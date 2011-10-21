@@ -347,6 +347,6 @@ function viewSecureHeaders(){
   if(gSecureHeaders!="")
   {
     window.openDialog('chrome://messenger-smime/content/msgReadSecureHeadersView.xul',
-                    '', 'chrome,resizable=1,modal=1,dialog=1', gSecureHeaders );
+                    '', 'chrome,resizable=1,modal=1,dialog=1', params.GetString(13) );
   }
 }

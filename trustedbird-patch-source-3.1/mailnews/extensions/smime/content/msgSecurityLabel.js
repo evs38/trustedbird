@@ -158,7 +158,7 @@ securityLabelConf.prototype = {
           if (itemNode.nodeName == "item") {
             var label = itemNode.getAttribute("label").trim();
             var value = itemNode.getAttribute("value").trim();
-            value = parseInt(value);
+            value = parseInt(value,10);
             if (label != "" && value >= 0 && value <= 256) {
               if (displayValue != "false" && displayValue != "0")
                 label += " (" + value + ")";

@@ -37,7 +37,7 @@
 /*
  * CMS decoding.
  *
- * $Id: cmsdecode.c,v 1.9 2006/08/05 01:19:23 julien.pierre.bugs%sun.com Exp $
+ * $Id: cmsdecode.c,v 1.9.66.1 2010/12/23 18:03:41 kaie%kuix.de Exp $
  */
 
 #include "cmslocal.h"
