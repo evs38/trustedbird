@@ -310,206 +310,192 @@ var smimeHeaderSink =
   	// Compute secure headers and mime headers
   	//gConsole.logStringMessage("[smime - updatesecureheaders ] *** secureHeaders analysis begin *** " );
 	var secStatus = true; //flag for the global secure headers status, set at true as default means all secure headers were not modified
-		gSecureHeadersState=1;
+	gSecureHeadersState=1;
 	for (headerName in gSecureHeadersArray) {	
-				//Verify the value validity only in the case where header status is duplicated
-			var headerMimeExists = false;
-			var tmp_hdrName = gSecureHeadersArray[headerName].hdrName;
-			var canonalgo = gSecureHeadersArray[headerName].hdrCanonAlgo;
+			//Verify the value validity only in the case where header status is duplicated
+		var headerMimeExists = false;
+		var tmp_hdrName = gSecureHeadersArray[headerName].hdrName;
+		var canonalgo = gSecureHeadersArray[headerName].hdrCanonAlgo;
+		if(canonalgo){
+			 // RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
+			tmp_hdrName = tmp_hdrName.toLowerCase();
+		}
+		//gConsole.logStringMessage("secureHeadersStatus - \n check for signed header "+tmp_hdrName);
+		//for(var j=0;j<hdrArray.length;++j){
+		for(headerMimeName in currentMimeHeaderDataArray){
+			var tmp_hdrMimeName = currentMimeHeaderDataArray[headerMimeName].headerName;
 			if(canonalgo){
-					 // RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
-					tmp_hdrName = tmp_hdrName.toLowerCase();
-				}
-			//gConsole.logStringMessage("secureHeadersStatus - \n check for signed header "+tmp_hdrName);
-			//for(var j=0;j<hdrArray.length;++j){
-			for(headerMimeName in currentMimeHeaderDataArray){
-				var tmp_hdrMimeName = currentMimeHeaderDataArray[headerMimeName].headerName;
+				// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
+				tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
+			}						
+				
+			//gConsole.logStringMessage("secureHeadersStatus - \nsigned header : "+tmp_hdrName+"\nmime header   : "+tmp_hdrMimeName);	
+			if(tmp_hdrName == tmp_hdrMimeName){
+					// compare secured value ans MIME value of header
+				headerMimeExists = true; // header is in mime																
+				var hdrValue = 	gSecureHeadersArray[headerName].hdrSecureValue;													
+				var hdrMimeValue = currentMimeHeaderDataArray[headerMimeName].headerValue;																						
+				var charset = getMimeValueCharset(hdrMimeValue);							
+			
+				// body - delete SP/WPS characters before and after body
+				hdrMimeValue = deleteFirstAndLastWhiteSpace(hdrMimeValue);
+				hdrValue = deleteFirstAndLastWhiteSpace(hdrValue);
+												
 				if(canonalgo){
-						// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
-						tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
-					}						
+					hdrMimeValue = canonilizeHeaderValue(hdrMimeValue);
+					hdrValue = canonilizeHeaderValue(hdrValue);
+					//gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
+				}else{
+					hdrMimeValue = UnfoldingMimeValue(hdrMimeValue);
+					hdrMimeValue = deleteLastCRLF(hdrMimeValue);
+					hdrValue = UnfoldingMimeValue(hdrValue);
+					hdrValue = deleteLastCRLF(hdrValue);
+				}												
 					
-				//gConsole.logStringMessage("secureHeadersStatus - \nsigned header : "+tmp_hdrName+"\nmime header   : "+tmp_hdrMimeName);	
-				if(tmp_hdrName == tmp_hdrMimeName){
-						// compare secured value ans MIME value of header
-						headerMimeExists = true; // header is in mime																
-					var hdrValue = 	gSecureHeadersArray[headerName].hdrSecureValue;													
-					var hdrMimeValue = currentMimeHeaderDataArray[headerMimeName].headerValue;																						
-						var charset = getMimeValueCharset(hdrMimeValue);							
+				if(hdrValue!=hdrMimeValue) //test if the header value in the signature and that one in the mime message is the same
+				{
+					gSecureHeadersArray[headerName].hdrSignedRes = "invalid"; //hdrValidity="invalid"; //header was modified
+					secStatus=false;
+				//gConsole.logStringMessage("Warning - failed on verifing secured header "+hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
+				}
+				else {
+					// secure and mime header have same value 
+							
+					// TCA
+					// In case gSignatureStatus == nsICMSMessageErrors.VERIFY_CERT_WITHOUT_ADDRESS, 
+					// if 'from' secure header value, is the same as 'from' mime header value, then
+					// change status icon to ok
+					if(secStatus && gSignatureStatus == nsICMSMessageErrors.VERIFY_CERT_WITHOUT_ADDRESS) {
+						if(hdrName == "from" ) {
+							gSignedUINode.setAttribute("signed", "ok");
+							gStatusBar.setAttribute("signed", "ok");
+						}
+					}
+				}
 					
-						// body - delete SP/WPS characters before and after body
-						hdrMimeValue = deleteFirstAndLastWhiteSpace(hdrMimeValue);
-						hdrValue = deleteFirstAndLastWhiteSpace(hdrValue);
-													
-					if(canonalgo){
-							hdrMimeValue = canonilizeHeaderValue(hdrMimeValue);
-							hdrValue = canonilizeHeaderValue(hdrValue);
-							//gConsole.logStringMessage("secureHeadersStatus - relaxed canonicalization \n mime value:\n>" +hdrMimeValue+ "<\nsigend value:\n>"+hdrValue+"<");
-						}else{
-							hdrMimeValue = UnfoldingMimeValue(hdrMimeValue);
-							hdrMimeValue = deleteLastCRLF(hdrMimeValue);
-							hdrValue = UnfoldingMimeValue(hdrValue);
-							hdrValue = deleteLastCRLF(hdrValue);
-						}												
-						
-						if(hdrValue!=hdrMimeValue) //test if the header value in the signature and that one in the mime message is the same
-						{
-						gSecureHeadersArray[headerName].hdrSignedRes = "invalid"; //hdrValidity="invalid"; //header was modified
-							secStatus=false;
-						//gConsole.logStringMessage("Warning - failed on verifing secured header "+hdrName+" :\n mime value:\n>" +hdrMimeValue+ "<\nsecured value:\n>"+hdrValue+"<");
-					}
-					else {
-						// secure and mime header have same value 
-								
-						// TCA
-						// In case gSignatureStatus == nsICMSMessageErrors.VERIFY_CERT_WITHOUT_ADDRESS, 
-						// if 'from' secure header value, is the same as 'from' mime header value, then
-						// change status icon to ok
-						if(secStatus && gSignatureStatus == nsICMSMessageErrors.VERIFY_CERT_WITHOUT_ADDRESS) {
-							if(hdrName == "from" ) {
-								gSignedUINode.setAttribute("signed", "ok");
-								gStatusBar.setAttribute("signed", "ok");
-							}
-						}
-						}
-						
-						// decode values from MIME format
-					var tmpDecdodedValue=null;
-						var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
-					tmpDecdodedValue = mimeEncoder.decodeMimeHeader(hdrMimeValue, charset, false, true);//encodeMimePartIIStr(hdrValue, false, "ISO-8859-1" , 0, 72);
-					if(tmpDecdodedValue){
-						gSecureHeadersArray[headerName].hdrMimeValue = tmpDecdodedValue;
-					}else{
-						gSecureHeadersArray[headerName].hdrMimeValue = hdrMimeValue;
-					}
-					tmpDecdodedValue = null;
-					tmpDecdodedValue = mimeEncoder.decodeMimeHeader(hdrValue,charset,false,true);
-					if(tmpDecdodedValue){
-						gSecureHeadersArray[headerName].hdrSecureValue = tmpDecdodedValue;
-					}else{
-						gSecureHeadersArray[headerName].hdrSecureValue = hdrValue;
-					}
-					gSecureHeaders = "signedData in";
-					//dbg gConsole.logStringMessage("secureHeadersStatus - header "+headerName+" \nmime value:  >" +gSecureHeadersArray[headerName].hdrMimeValue+ "<\nsigned value:>"+gSecureHeadersArray[headerName].hdrSecureValue+"<");	
-						break; // header is correctly checked
-					}					
+				// decode values from MIME format
+				var tmpDecdodedValue=null;
+					var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
+				tmpDecdodedValue = mimeEncoder.decodeMimeHeader(hdrMimeValue, charset, false, true);//encodeMimePartIIStr(hdrValue, false, "ISO-8859-1" , 0, 72);
+				if(tmpDecdodedValue){
+					gSecureHeadersArray[headerName].hdrMimeValue = tmpDecdodedValue;
+				}else{
+					gSecureHeadersArray[headerName].hdrMimeValue = hdrMimeValue;
 				}
-				
-				// mime header has been lost, deleted...
-				if(!headerMimeExists){						
-				gSecureHeadersArray[headerName].hdrSignedRes ="invalid"; //header was modified
-					secStatus=false;	
+				tmpDecdodedValue = null;
+				tmpDecdodedValue = mimeEncoder.decodeMimeHeader(hdrValue,charset,false,true);
+				if(tmpDecdodedValue){
+					gSecureHeadersArray[headerName].hdrSecureValue = tmpDecdodedValue;
+				}else{
+					gSecureHeadersArray[headerName].hdrSecureValue = hdrValue;
 				}
-				
-				//set the display secure headers information in the string to parse after in the GUI
-				gSecureHeaders+=hdrName+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=hdrValue+HEADER_VAL_SEPARATOR; //put the value decoded instead of the value in the signature (encoded RFC2047) for the diplay
-				gSecureHeaders+=""+hdrStatus+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=""+hdrValidity+HEADER_VAL_SEPARATOR;
-				//gSecureHeaders+=""+headerEncrypted+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=hdrMimeValue+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=hdrCanonizValue+HEADER_VAL_SEPARATOR;
-				gSecureHeaders+=SECURE_HEADER_SEPARATOR;
-			}
+				gSecureHeaders = "signedData in";
+				//dbg gConsole.logStringMessage("secureHeadersStatus - header "+headerName+" \nmime value:  >" +gSecureHeadersArray[headerName].hdrMimeValue+ "<\nsigned value:>"+gSecureHeadersArray[headerName].hdrSecureValue+"<");	
+				break; // header is correctly checked
+			}					
 		}
-		
-		if((!secStatus))
-		{
-			// TCA I don't see why we shouldn't override signed status only in the case of succesful signature check
-			// if(gSignatureStatus == nsICMSMessageErrors.SUCCESS) {
-			//At least one secure header was modified, set the signed status to "not ok"
-			gSignedUINode.setAttribute("signed", "notok");
-			gStatusBar.setAttribute("signed", "notok");
-			//}
-			gSecureHeadersState=0;
-			gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
-			gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
+			
+		// mime header has been lost, deleted...
+		if(!headerMimeExists){						
+			gSecureHeadersArray[headerName].hdrSignedRes ="invalid"; //header was modified
+			secStatus=false;	
 		}
-		//gConsole.logStringMessage("*** secureHeaders analysis end ***");
-		
-		
-		// Calls ReadXmlHeadersToSign (see msgCompSMIMESecureHeaders.js) to load the secureHeaders.xml configuration file
-		// For each header in the message:
-		//    1°) check if the header is in the configuration file
-		//    2°) In this case, check that it was secured in signature
-		//    3°) If the header was not secured, raise a warning (status change ?)
-		gConsole.logStringMessage("Checking secure headers");
-		var arrayHeaderInConf = ReadXmlHeadersToSign();
-		if(arrayHeaderInConf) {
-			for(var j=0;j<hdrArray.length;++j){
-				var tmp_hdrMimeName = hdrArray[j]._hdrName;
-				//gConsole.logStringMessage("Header in message: " + tmp_hdrMimeName);
-				if(aCanonAlgo){
-					// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
-					tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
-				}
-				for(i=0;i<arrayHeaderInConf.length;++i){ 
-					// Check if header is in message
-					var confHdrName = arrayHeaderInConf[i]._name;
-					//gConsole.logStringMessage("Header in conf: " + confHdrName);
-					confHdrName = confHdrName.toLowerCase();
-					if(confHdrName == tmp_hdrMimeName) {
-						// gConsole.logStringMessage("****** Header found in conf and message: " + confHdrName);
-						var hdrSecured = false;
-						for(var i=0;i<secureHeaders.length;++i)
-						{
-							var sHeader = secureHeaders.queryElementAt(i,nsIMsgSMIMESecureHeader);
-							if(sHeader){								
-								var hdrName = sHeader.headerName; // signed header
-								if(aCanonAlgo){
-									hdrName = hdrName.toLowerCase();
-								}
-								if(hdrName == confHdrName) {
-									//gConsole.logStringMessage("****** Header found in conf, message and signature: " + confHdrName);
-									hdrSecured = true;
-									break;
-								}
-							}
-						}
-						if(!hdrSecured) {
-							//gConsole.logStringMessage("****** Header found in conf, message but NOT in secure headers: " + confHdrName);
-							
-							
-							gSecureHeaders+=confHdrName+HEADER_VAL_SEPARATOR;
-							gSecureHeaders+=""+HEADER_VAL_SEPARATOR;
-							gSecureHeaders+=""+""+HEADER_VAL_SEPARATOR; 
-							gSecureHeaders+=""+"invalid"+HEADER_VAL_SEPARATOR;
-							gSecureHeaders+=hdrArray[j]._hdrName+HEADER_VAL_SEPARATOR;
-							gSecureHeaders+=aCanonAlgo+HEADER_VAL_SEPARATOR;
-							gSecureHeaders+=SECURE_HEADER_SEPARATOR;
-							
-							// TODO 
-							// A header that should be secured was not found in the secure header structure
-							// => Set signed status to mismatch
-							gSignedUINode.setAttribute("signed", "mismatch");
-							gStatusBar.setAttribute("signed", "mismatch");
-							gSecureHeadersState=2;
-							gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
-							gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
-
-							
-							
-						}
-
-						break;
-					}
-				}
-			}
-		}
+			
+		//set the display secure headers information in the string to parse after in the GUI
+		gSecureHeaders+=hdrName+HEADER_VAL_SEPARATOR;
+		gSecureHeaders+=hdrValue+HEADER_VAL_SEPARATOR; //put the value decoded instead of the value in the signature (encoded RFC2047) for the diplay
+		gSecureHeaders+=""+hdrStatus+HEADER_VAL_SEPARATOR;
+		gSecureHeaders+=""+hdrValidity+HEADER_VAL_SEPARATOR;
+		//gSecureHeaders+=""+headerEncrypted+HEADER_VAL_SEPARATOR;
+		gSecureHeaders+=hdrMimeValue+HEADER_VAL_SEPARATOR;
+		gSecureHeaders+=hdrCanonizValue+HEADER_VAL_SEPARATOR;
+		gSecureHeaders+=SECURE_HEADER_SEPARATOR;
 	}
-	else {
-		// TODO 
-		// No secure headers: mismatch
-		// No secure header was found: Trustedbird's security policy is to have secure headers
-		// => Set signed status to mismatch
-		//gConsole.logStringMessage("****** No secure header ******");
-		gSignedUINode.setAttribute("signed", "mismatch");
-		gStatusBar.setAttribute("signed", "mismatch");
-		gSecureHeadersState=3;
+		
+	if(!secStatus)
+	{
+		// TCA I don't see why we shouldn't override signed status only in the case of succesful signature check
+		// if(gSignatureStatus == nsICMSMessageErrors.SUCCESS) {
+		//At least one secure header was modified, set the signed status to "not ok"
+		gSignedUINode.setAttribute("signed", "notok");
+		gStatusBar.setAttribute("signed", "notok");
+		//}
+		gSecureHeadersState=0;
 		gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
 		gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
 	}
-	},//end updateSecureHeadersState	
+	//gConsole.logStringMessage("*** secureHeaders analysis end ***");
+	
+	
+	// Calls ReadXmlHeadersToSign (see msgCompSMIMESecureHeaders.js) to load the secureHeaders.xml configuration file
+	// For each header in the message:
+	//    1°) check if the header is in the configuration file
+	//    2°) In this case, check that it was secured in signature
+	//    3°) If the header was not secured, raise a warning (status change ?)
+	gConsole.logStringMessage("Checking secure headers");
+	var arrayHeaderInConf = ReadXmlHeadersToSign();
+	if(arrayHeaderInConf) {
+		for(var j=0;j<hdrArray.length;++j){
+			var tmp_hdrMimeName = hdrArray[j]._hdrName;
+			//gConsole.logStringMessage("Header in message: " + tmp_hdrMimeName);
+			if(aCanonAlgo){
+				// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
+				tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
+			}
+			for(i=0;i<arrayHeaderInConf.length;++i){ 
+				// Check if header is in message
+				var confHdrName = arrayHeaderInConf[i]._name;
+				//gConsole.logStringMessage("Header in conf: " + confHdrName);
+				confHdrName = confHdrName.toLowerCase();
+				if(confHdrName == tmp_hdrMimeName) {
+					// gConsole.logStringMessage("****** Header found in conf and message: " + confHdrName);
+					var hdrSecured = false;
+					for(var i=0;i<secureHeaders.length;++i)
+					{
+						var sHeader = secureHeaders.queryElementAt(i,nsIMsgSMIMESecureHeader);
+						if(sHeader){								
+							var hdrName = sHeader.headerName; // signed header
+							if(aCanonAlgo){
+								hdrName = hdrName.toLowerCase();
+							}
+							if(hdrName == confHdrName) {
+								//gConsole.logStringMessage("****** Header found in conf, message and signature: " + confHdrName);
+								hdrSecured = true;
+								break;
+							}
+						}
+					}
+					if(!hdrSecured) {
+						//gConsole.logStringMessage("****** Header found in conf, message but NOT in secure headers: " + confHdrName);
+						
+						
+						gSecureHeaders+=confHdrName+HEADER_VAL_SEPARATOR;
+						gSecureHeaders+=""+HEADER_VAL_SEPARATOR;
+						gSecureHeaders+=""+""+HEADER_VAL_SEPARATOR; 
+						gSecureHeaders+=""+"invalid"+HEADER_VAL_SEPARATOR;
+						gSecureHeaders+=hdrArray[j]._hdrName+HEADER_VAL_SEPARATOR;
+						gSecureHeaders+=aCanonAlgo+HEADER_VAL_SEPARATOR;
+						gSecureHeaders+=SECURE_HEADER_SEPARATOR;
+						
+						// TODO 
+						// A header that should be secured was not found in the secure header structure
+						// => Set signed status to mismatch
+						gSignedUINode.setAttribute("signed", "mismatch");
+						gStatusBar.setAttribute("signed", "mismatch");
+						gSecureHeadersState=2;
+						gSMIMEInfoMsg.setAttribute("value", gSMIMEBundle.getString("secureinfomsg_hdrnok"));
+						gSMIMEInfoMsgMore.value=gSMIMEBundle.getString("secureinfomsgmore_default").replace(/<BR>/g,"\n");
+
+						
+						
+					}
+
+					break;
+				}
+			}
+		}
+	}
+  },//end updateSecureHeadersState	
   secureHeadersStatus: function(aSecureHeaders, aCanonAlgo){  	
 	gSecureHeaders = "";	
   	gSecureHeadersArray={}; // clear array	
@@ -535,9 +521,10 @@ var smimeHeaderSink =
 				oEntry.hdrSignedRes = "valid";
 				gSecureHeadersArray[oEntry.hdrName] = oEntry;				
 			}
-		}  			
+		}
   		getMessageSource(gFolderDisplay.selectedMessageUris[0], this.updateSecureHeadersState); 		
-	} 
+	}
+  },
   // Check the SMIME receipt with the request
   SMIMEReceiptStatus: function(aSignedContentIdentifier,
                                aSignedContentIdentifierLen,
