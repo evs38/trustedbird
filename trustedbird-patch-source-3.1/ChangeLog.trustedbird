@@ -1,3 +1,6 @@
+trustedbird (3.1.15+0.5.3)
+* Upgrade to Thunderbird 3.1.15
+
 trustedbird (3.1.14+0.5.3)
 * Corrective on blocking TrustedBird on downloading messages with big attachments 
 * Correctives on security informations of signed messages function
