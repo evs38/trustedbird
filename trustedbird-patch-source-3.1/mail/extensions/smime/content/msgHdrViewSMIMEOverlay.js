@@ -375,7 +375,7 @@ var smimeHeaderSink =
 					
 				// decode values from MIME format
 				var tmpDecdodedValue=null;
-					var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
+				var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
 				tmpDecdodedValue = mimeEncoder.decodeMimeHeader(hdrMimeValue, charset, false, true);//encodeMimePartIIStr(hdrValue, false, "ISO-8859-1" , 0, 72);
 				if(tmpDecdodedValue){
 					gSecureHeadersArray[headerName].hdrMimeValue = tmpDecdodedValue;
@@ -400,16 +400,6 @@ var smimeHeaderSink =
 			gSecureHeadersArray[headerName].hdrSignedRes ="invalid"; //header was modified
 			secStatus=false;	
 		}
-			
-		//set the display secure headers information in the string to parse after in the GUI
-		gSecureHeaders+=hdrName+HEADER_VAL_SEPARATOR;
-		gSecureHeaders+=hdrValue+HEADER_VAL_SEPARATOR; //put the value decoded instead of the value in the signature (encoded RFC2047) for the diplay
-		gSecureHeaders+=""+hdrStatus+HEADER_VAL_SEPARATOR;
-		gSecureHeaders+=""+hdrValidity+HEADER_VAL_SEPARATOR;
-		//gSecureHeaders+=""+headerEncrypted+HEADER_VAL_SEPARATOR;
-		gSecureHeaders+=hdrMimeValue+HEADER_VAL_SEPARATOR;
-		gSecureHeaders+=hdrCanonizValue+HEADER_VAL_SEPARATOR;
-		gSecureHeaders+=SECURE_HEADER_SEPARATOR;
 	}
 		
 	if(!secStatus)
@@ -435,13 +425,9 @@ var smimeHeaderSink =
 	gConsole.logStringMessage("Checking secure headers");
 	var arrayHeaderInConf = ReadXmlHeadersToSign();
 	if(arrayHeaderInConf) {
-		for(var j=0;j<hdrArray.length;++j){
-			var tmp_hdrMimeName = hdrArray[j]._hdrName;
+		for(headerMimeName in currentMimeHeaderDataArray){
+			var tmp_hdrMimeName = currentMimeHeaderDataArray[headerMimeName].headerName;
 			//gConsole.logStringMessage("Header in message: " + tmp_hdrMimeName);
-			if(aCanonAlgo){
-				// RFC 4871 - relaxed header canonicalization algorithm - convert header field names to lowercase
-				tmp_hdrMimeName = tmp_hdrMimeName.toLowerCase();
-			}
 			for(i=0;i<arrayHeaderInConf.length;++i){ 
 				// Check if header is in message
 				var confHdrName = arrayHeaderInConf[i]._name;
@@ -450,33 +436,50 @@ var smimeHeaderSink =
 				if(confHdrName == tmp_hdrMimeName) {
 					// gConsole.logStringMessage("****** Header found in conf and message: " + confHdrName);
 					var hdrSecured = false;
-					for(var i=0;i<secureHeaders.length;++i)
-					{
-						var sHeader = secureHeaders.queryElementAt(i,nsIMsgSMIMESecureHeader);
-						if(sHeader){								
-							var hdrName = sHeader.headerName; // signed header
-							if(aCanonAlgo){
-								hdrName = hdrName.toLowerCase();
-							}
-							if(hdrName == confHdrName) {
-								//gConsole.logStringMessage("****** Header found in conf, message and signature: " + confHdrName);
-								hdrSecured = true;
-								break;
-							}
+					for (headerName in gSecureHeadersArray) {
+						if(confHdrName == headerName) {
+							hdrSecured = true;
+							break;
 						}
 					}
+					
 					if(!hdrSecured) {
 						//gConsole.logStringMessage("****** Header found in conf, message but NOT in secure headers: " + confHdrName);
 						
+						var finalHdrMimeValue = "";
+						var hdrMimeValue = currentMimeHeaderDataArray[headerMimeName].headerValue;																						
+						var charset = getMimeValueCharset(hdrMimeValue);							
+					
+						// body - delete SP/WPS characters before and after body
+						hdrMimeValue = deleteFirstAndLastWhiteSpace(hdrMimeValue);
+						hdrValue = deleteFirstAndLastWhiteSpace(hdrValue);
+														
+						// No canon algo
+						hdrMimeValue = UnfoldingMimeValue(hdrMimeValue);
+						hdrMimeValue = deleteLastCRLF(hdrMimeValue);
+						hdrValue = UnfoldingMimeValue(hdrValue);
+						hdrValue = deleteLastCRLF(hdrValue);
 						
-						gSecureHeaders+=confHdrName+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=""+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=""+""+HEADER_VAL_SEPARATOR; 
-						gSecureHeaders+=""+"invalid"+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=hdrArray[j]._hdrName+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=aCanonAlgo+HEADER_VAL_SEPARATOR;
-						gSecureHeaders+=SECURE_HEADER_SEPARATOR;
+						// decode values from MIME format
+						var tmpDecdodedValue=null;
+						var mimeEncoder = Components.classes["@mozilla.org/messenger/mimeconverter;1"].getService(Components.interfaces.nsIMimeConverter);
+						tmpDecodedValue = mimeEncoder.decodeMimeHeader(hdrMimeValue, charset, false, true);//encodeMimePartIIStr(hdrValue, false, "ISO-8859-1" , 0, 72);
+						if(tmpDecodedValue){
+							finalHdrMimeValue = tmpDecodedValue;
+						}else{
+							finalHdrMimeValue = hdrMimeValue;
+						}
 						
+						var oEntry = new Object;
+						oEntry.hdrName = headerName; // signed header
+						oEntry.hdrSecureValue = ""; // Value in the signature
+						oEntry.hdrMimeValue = finalHdrMimeValue;// value in the MIME message
+						oEntry.hdrSignedStatus = sHeader.headerStatus;
+						oEntry.hdrCanonAlgo = "";
+						oEntry.hdrEncryptStatus = "";
+						oEntry.hdrSignedRes = "invalid";
+						gSecureHeadersArray[oEntry.hdrName] = oEntry;
+
 						// TODO 
 						// A header that should be secured was not found in the secure header structure
 						// => Set signed status to mismatch

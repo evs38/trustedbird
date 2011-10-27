@@ -136,7 +136,7 @@ function showMessageReadSecurityInfo()
   
   //create string with gSecureHeadersArray
   var arraySecureHeadersString = "";
-  for (headerName in gSecureHeadersArray) { 		
+  for (headerName in gSecureHeadersArray) { 
   	arraySecureHeadersString+=gSecureHeadersArray[headerName].hdrName+HEADER_VAL_SEPARATOR;
 	arraySecureHeadersString+=gSecureHeadersArray[headerName].hdrSecureValue+HEADER_VAL_SEPARATOR; //put the value decoded instead of the value in the signature (encoded RFC2047) for the diplay
 	arraySecureHeadersString+=gSecureHeadersArray[headerName].hdrMimeValue+HEADER_VAL_SEPARATOR;
