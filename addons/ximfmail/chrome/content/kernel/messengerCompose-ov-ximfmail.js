@@ -115,44 +115,42 @@ function XimfmailStartup(){
         	case nsIMsgCompType.ReplyToSender:	
         	case nsIMsgCompType.ForwardInline:		
         	case nsIMsgCompType.ForwardAsAttachment: 	
-				//alert("typeMsg = " + args.type + "\nUri of message : " + args.originalMsgURI);
-				gJSLoader.loadSubScript("chrome://ximfmail/content/messageAnalyser-ximfmail.js");
-					
-				var msgAnalyser = new XimfMessageAnalyser();
-				
-				// search for template XIMF	
+				var uriMsg = null;
 				if( args){			
-					msgAnalyser.setOriginalURI(args.originalMsgURI); 
+					uriMsg = args.originalMsgURI; 
 				}else{
-					if(gMsgCompose) msgAnalyser.setOriginalURI(gMsgCompose.originalMsgURI); 	
+					if(gMsgCompose) uriMsg = gMsgCompose.originalMsgURI; 	
 				}
-				msgAnalyser.createXimfHdrArray();			 	
-				
-				// get instance of message	
-				var uriXimfInstance = msgAnalyser.hasXimfHeaders(current_definition);
-				if(uriXimfInstance){				
-					currentInstance = uriXimfInstance;
-				LoadXimfmailPanel(currentInstance);
-				ComputeWithForm(msgAnalyser);				
-				}else{					
-					$("#ximfmailComposeMessageHeadersTablist").empty();
-					$("#ximfmailComposeMessageTitle").attr("value","");
-					$("#isUsingXimfail").attr("hidden","false");						
-					gXimfHdrs=null;						
-					//remove ximf events ...
-					HideSendMessageElements(true);
-					$("#addressingWidget").unbind("command",SpecialXimfRule_CheckAddress);			
-					ReloadSecurityAccess();					
-				}			
+				XimfmailGetMessage(uriMsg,XimfmailParseAndUpdateComposeMesssage); 				
 				break;
 			default :				
-				LoadXimfmailPanel(currentInstance);							
+				LoadXimfmailPanel(currentInstance);
 				break;
 		}
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - XimfmailStartup ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 	}	
 	//gConsole.logStringMessage("DBG [ximfmail - messengerCompose - XimfmailStartup ] \n XIMF instance : "+ currentInstance + "\n XIMF definition : " + current_definition);
+}
+
+/*
+ * Get Extended headers of messages and display known instances
+ */
+function XimfmailParseAndUpdateComposeMesssage(msgSrc,uriSrc){
+	var currentXimfHdrArray = XimfmailParseMessage(msgSrc);
+	var ximfMsg = new XimfmailMesssage();
+	if(ximfMsg.init(uriSrc,currentXimfHdrArray)){
+		LoadXimfmailPanel(ximfMsg._instanceMsgXimf);
+		ComputeWithForm(ximfMsg);
+				}else{					
+					$("#ximfmailComposeMessageHeadersTablist").empty();
+					$("#ximfmailComposeMessageTitle").attr("value","");
+					$("#isUsingXimfail").attr("hidden","false");						
+					//remove ximf events ...
+					HideSendMessageElements(true);
+					$("#addressingWidget").unbind("command",SpecialXimfRule_CheckAddress);			
+					ReloadSecurityAccess();					
+				}			
 }
 
 /*

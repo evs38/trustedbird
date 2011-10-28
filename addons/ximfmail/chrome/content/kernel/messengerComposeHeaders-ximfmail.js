@@ -113,6 +113,10 @@ function XimfmailInstanceHeaders(){
 		//		
 		XimfmailInstanceHeaders.prototype.loadXimfSecurityRules = function(){
 			var isSigned = false;
+			
+			// get secure state from prefs
+			if (gSMFields)	isSigned = gSMFields.signMessage;  				
+
 			// secure headers			
 			try{
 				// create XMLFile at temp directory with rules datas
@@ -141,7 +145,7 @@ function XimfmailInstanceHeaders(){
 						$("#idItemSecureHeaders_2").attr("disabled","true");										
 						if(!isSigned){
 							toggleSignMessage();// signMessage(); // from file msgCompSMIMIEOverlay.js
-							isSigned = true
+							isSigned = true;
 						}				
 						$("#menu_securitySign1").attr("disabled","true");
 						$("#menu_securitySign2").attr("disabled","true");	
@@ -318,7 +322,7 @@ function CustomXimfhdrsInputBox(){
 				inputbox[0].setAttribute("ximfmaxitems", listEditorClass[i].getAttribute("ximfmaxitems"));
 				inputbox[0].setAttribute("ximfminitems", listEditorClass[i].getAttribute("ximfminitems"));
 				inputbox[0].setAttribute("ximseparator", listEditorClass[i].getAttribute("ximseparator"));
-				inputbox[0].setAttribute("tabindex",parseInt(i)+100);
+				inputbox[0].setAttribute("tabindex",parseInt(i, 10)+100);
 				inputbox[0].setAttribute("class","ximfEditor");							
 				inputbox[0].removeAttribute("popup");
 				inputbox[0].removeAttribute("readonly");
@@ -567,7 +571,7 @@ function OpenCalendarDialog(button){
 		var idBox = button.getAttribute("refBox");
 		var ebox = document.getElementById(idBox);
 		args.push(idBox); // args[0] : id de la textbox a enrichir
-		args.push(ebox.getAttribute("value")); // displayed date
+		args.push(ebox.value); // displayed date
 		args.push($("label[id='"+ebox.getAttribute("refheader")+"']").attr("value"));
 
 		// open dialog		
@@ -708,7 +712,7 @@ function LoadXimfhdrsEventObserver(){
 	
 	// panel can accept more than 1 entry for header
 	$("panel").bind("popuphidden",function(evt){
-		if(parseInt($(evt.currentTarget).attr("ximfmaxitem")) > 1 ){
+		if(parseInt($(evt.currentTarget).attr("ximfmaxitem"), 10) > 1 ){
 			// if panel has XIMF multiset implementation, don't compute it
 			var multisetPanel = $("#" + evt.currentTarget.id + " button[class='ximfButton']");
 			if(multisetPanel.length <=0){
@@ -723,7 +727,7 @@ function LoadXimfhdrsEventObserver(){
 	
 	// panel - first entry must be selected before selecting composed item
 	$("panel").bind("popupshown",function(evt){
-		if(parseInt($(evt.currentTarget).attr("ximfmaxitem")) <= 1 ) return;
+		if(parseInt($(evt.currentTarget).attr("ximfmaxitem"), 10) <= 1 ) return;
 		var richitems = $("#" + evt.currentTarget.id + " richlistbox" ).children("richlistitem");			
 		for(i=0 ; i<richitems.length; ++i){
 			var chk1 = richitems[i].firstElementChild;
@@ -821,7 +825,7 @@ function OnSelectContextBox(evt){
 	try{		
 		idBox = evt.currentTarget.getAttribute("idbox"); 
 	 	var eltTextbox = document.getElementById(idBox);
-	 	switch(parseInt(evt.currentTarget.getAttribute("idx"))){ 	 			 		
+	 	switch(parseInt(evt.currentTarget.getAttribute("idx"), 10)){ 	 			 		
 	 		case 1:
 	 			// erase all selected values
 	 			EraseAndComputeXimfhdrsTextbox(eltTextbox.id, true);
@@ -852,8 +856,8 @@ function OnCheckXimfhdrsEditor(evt){
 		var dlgEditorXimf_maxItem_alert = maxItems + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");	
 		var arrayItem = domElt.value.split(separatorItem);	
 		var nbItems = arrayItem.length;
-		if(parseInt(maxItems)<arrayItem.length){
-			nbItems = parseInt(maxItems);
+		if(parseInt(maxItems, 10)<arrayItem.length){
+			nbItems = parseInt(maxItems, 10);
 			ximfAlert(labelHeader,dlgEditorXimf_maxItem_alert);	
 			var newvalue = "";		
 			for(var i=0 ; i<nbItems ; ++i){
@@ -1626,9 +1630,9 @@ function IsAcceptableXimfCompstring(idCompstring){
 /*
  *  Compute DOM with datas (used to load draft or template message)
 */
-function ComputeWithForm(ximfMessageAnalyser){
-	if (!ximfMessageAnalyser instanceof XimfMessageAnalyser){
-		gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - refreshDatas] \n parameter of refreshDatas ust be a XimfMessageAnalyser object");
+function ComputeWithForm(ximfMessage){	
+	if (!ximfMessage instanceof XimfmailMesssage){
+		gConsole.logStringMessage("[ximfmail - ComputeWithForm ] \n parameter of refreshDatas must be a ximfMessage object");
 		return false;			
 	}
 	
@@ -1642,7 +1646,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 			var display_box = null;
 			try{
 				//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for textbox : " + xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));		
-				var ximfValue = ximfMessageAnalyser.getHeaderValue(xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));
+				var ximfValue = ximfMessage.getHeaderValue(xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));
 				if(ximfValue){						
 					// search for value and complete display box
 					var display_box_list = $("textbox[refheader='" + xheader_dom[idx_xheader_dom].getAttribute("id") + "']");
@@ -1842,7 +1846,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 					var ximfLabelId = $("textbox[id='"+oriTxtboxId+"']").attr("refheader");
 					if(ximfLabelId){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = ximfMessageAnalyser.getHeaderValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
+						var ximfValue = ximfMessage.getHeaderValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
 						if(ximfValue){								
 							xheader_dom[idx_xheader_dom].setAttribute("value",ximfValue);
 						}								
@@ -1859,7 +1863,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute(_XIMF_ATT_REF_HEADER);								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = ximfMessageAnalyser.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
+						var ximfValue = ximfMessage.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
 						if(ximfValue){												
 							xheader_dom[idx_xheader_dom].listaddress = ximfValue;
 							//alert("load address values \n"+ximfValue+"\n"+xheader_dom[idx_xheader_dom].listaddress);									
@@ -1877,7 +1881,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute(_XIMF_ATT_REF_HEADER);								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = ximfMessageAnalyser.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
+						var ximfValue = ximfMessage.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
 						if(ximfValue){
 							//alert($("label[id='"+refHeader+"']").attr("ximfheader")+" :: "+ximfValue)
 							var thisDate = ConvertZTimeToLocal(ximfValue);	
@@ -2023,9 +2027,9 @@ function ExecuteXimfHdrsDefaultValuesRule(){
 		var textboxXimfHdrs = $("textbox[class='XimfTextboxDisplay']");		
 		for(var i=0; i<textboxXimfHdrs.length; ++i){
 			try{
-				var refDefaultItemHdr = $("panel[id='" + $(textboxXimfHdrs[i]).attr("refpanel") + "']").attr("ximfdefault");			
-				if(refDefaultItemHdr && $(textboxXimfHdrs[i]).attr("ximfvalue") == "" ){
-					var item = $("#"+refDefaultItemHdr);
+				var refDefaultItemXimfHdr = $("panel[id='" + $(textboxXimfHdrs[i]).attr("refpanel") + "']").attr("ximfdefault");			
+				if(refDefaultItemXimfHdr && $(textboxXimfHdrs[i]).attr("ximfvalue") == "" ){
+					var item = $("#"+refDefaultItemXimfHdr);
 					if(item.length > 0){
 						$(textboxXimfHdrs[i]).attr("ximfvalue",$(item[0]).attr("ximfvalue"));
 						textboxXimfHdrs[i].value = $(item[0]).attr("label");					
@@ -2034,8 +2038,8 @@ function ExecuteXimfHdrsDefaultValuesRule(){
 							$(textboxXimfHdrs[i]).attr("ximftecvalue",techvalue);
 						}
 					}else{
-						$(textboxXimfHdrs[i]).attr("ximfvalue",refDefaultItemHdr);
-						textboxXimfHdrs[i].value = refDefaultItemHdr;
+						$(textboxXimfHdrs[i]).attr("ximfvalue",refDefaultItemXimfHdr);
+						textboxXimfHdrs[i].value = refDefaultItemXimfHdr;
 					}
 				}
 			}catch(err){}

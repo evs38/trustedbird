@@ -45,10 +45,11 @@
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
 
+var gXimfCatalog = null;
 
 try{
 	gJSLoader.loadSubScript("chrome://ximfmail/content/ximfCatalog.js");
-	var gXimfCatalog = new XimfCatalog();
+	gXimfCatalog = new XimfCatalog();
 }catch(e){
 	gConsole.logStringMessage("[ximfmail - Load XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
 }
@@ -56,8 +57,9 @@ try{
 /*
  * Load informations of ximf extensions in RDF memory 
  */
-function CreateXimfmailCatalog(){
+function CreateXimfmailCatalog(aclLevel){
 	try{		
+		if(!gXimfCatalog) gXimfCatalog = new XimfCatalog();
 		var extensionPath = getFilePathInProfile("extensions/");
 		var extensionList = getExtensionsList();	
 		var sCompletePath;	
@@ -70,7 +72,7 @@ function CreateXimfmailCatalog(){
 			if(dir.exists()){												
 				// get xml profile	  	
 	  			var xmlDoc = GetXmlDocument(sCompletePath); 	  			
-				gXimfCatalog.registerXimfmailProfileNode(xmlDoc.documentElement);					
+				gXimfCatalog.registerXimfmailProfileNode(xmlDoc.documentElement,aclLevel);					
 				dump(sCompletePath + " : " + extensionList[i].name);
 				//alert(sCompletePath + " : " + extensionList[i].name);						
 			}									
@@ -427,42 +429,55 @@ function ConvertZTimeToLocal(thisdate){
 	// get date
 	new_date = parts[1];	
 	// get month
+	var month = "";
 	switch(parts[2].toLowerCase()){
 		case "jan":
 			new_date += "/01/"; 
+			month = "0";
 			break;
 		case "feb":
 			new_date += "/02/"; 
+			month = "1";
 			break;
 		case "mar":
 			new_date += "/03/"; 
+			month = "2";
 			break;
 		case "apr":
 			new_date += "/04/"; 
+			month = "3";
 			break;
 		case "may":
 			new_date += "/05/"; 
+			month = "4";
 			break;
 		case "jun":
 			new_date += "/06/"; 
+			month = "5";
 			break;
 		case "jul":
 			new_date += "/07/"; 
+			month = "6";
 			break;
 		case "aug":
 			new_date += "/08/"; 
+			month = "7";
 			break;
 		case "sep":
 			new_date += "/09/"; 
+			month = "8";
 			break;
 		case "oct":
 			new_date += "/10/"; 
+			month = "9";
 			break;
 		case "nov":
 			new_date += "/11/"; 
+			month = "10";
 			break;
 		case "dec":
 			new_date += "/12/"; 
+			month = "11";
 			break;
 		default : new_date += "/??/"; 
 	}	
@@ -470,6 +485,10 @@ function ConvertZTimeToLocal(thisdate){
 	new_date += parts[3];
 	//get time, adjust time GMT and LocaleTime
 	var cdat = new Date();
+	cdat.setUTCFullYear(parseInt("20"+parts[3], 10));
+	cdat.setUTCMonth(parseInt(month, 10));
+	cdat.setUTCDate(parseInt(parts[1], 10));
+	  
 	var hour = parts[4];
 	var min = parts[5];
 	try{
@@ -482,22 +501,23 @@ function ConvertZTimeToLocal(thisdate){
 	}catch(e){}
 	
 	//  get local time
-	var time = (parseInt(hour)*60) + parseInt(min) + (cdat.getTimezoneOffset()*-1);
-	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] Formule \n"+(parseInt(hour)*60)+"+"+parseInt(min)+"+" +cdat.getTimezoneOffset()+"="+time);
+	var time = (parseInt(hour, 10)*60) + parseInt(min, 10) + (cdat.getTimezoneOffset()*-1);
+	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] Formule \n"+(parseInt(hour, 10)*60)+"+"+parseInt(min, 10)+"+" +cdat.getTimezoneOffset()+"="+time);
 	
-	var hour = parseInt(parseInt(time)/60);
-	if(parseInt(min) < 0){
+	var hour = parseInt(parseInt(time, 10)/60, 10);
+	if(parseInt(hour, 10)<=9) hour = "0" + hour;
+	if(parseInt(min, 10) < 0){
 		
 	}
-	if(parseInt(min) < 24){
+	if(parseInt(min, 10) < 24){
 		
 	}
-	var min = parseInt(parseInt(time)%60);
-	if(parseInt(min)<=9) min = "0" + min;	
+	var min = parseInt(parseInt(time, 10)%60, 10);
+	if(parseInt(min, 10)<=9) min = "0" + min;	
 	
 	new_date += " "+ hour +":"+min;
 	
-	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] \n"+hour+":"+min+" >> " +time+"\n"+time+"/60 = "+ parseInt(time)/60 + "\n" + time + "%60 = " + parseInt(time)%60);
+	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] \n"+hour+":"+min+" >> " +time+"\n"+time+"/60 = "+ parseInt(time, 10)/60 + "\n" + time + "%60 = " + parseInt(time, 10)%60);
 	  	
 	return new_date;
 }							

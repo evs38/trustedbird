@@ -41,125 +41,82 @@
  * ***** END LICENSE BLOCK ***** */
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
-
 gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
 
 
-/*
- * read datas of a message from an valid URI
- */
-function XimfMessageAnalyser(){
-	var _mailUri = null;
-	var _xHdrArray =[]; // array of ximfHdr : _ximfHdrArray[ximfHdr]
+/**
+Get message source
+@param {nsIMsgDBHdr} header
+@param {function} callbackFunction Function to call when data are received: callbackFunction(header, receivedData, callbackParam)
+@param callbackParam Parameter of callbackFunction
+@return {string} Message source or <b>false</b> if an error occurs
+*/
+function XimfmailGetMessage(mailUri, callbackFunction, callbackParam){
+	if (!mailUri) return;	
+	var streamListener = {
+		QueryInterface: function(aIID) {
+			if (aIID.equals(Components.interfaces.nsISupports)
+				|| aIID.equals(Components.interfaces.nsIStreamListener))
+				return this;
+			throw Components.results.NS_NOINTERFACE;
+		},
+		data: "",
+		isDataComplete: false,
+		onStartRequest: function(request, context) {},
+		onDataAvailable: function(request, context, inputStream, offset, available) {
+			if(!this.isDataComplete ){
+				var stream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
+				stream.init(inputStream);
+				this.data += stream.read(available);
+				stream.close();
+				stream = null;
 	
-	function xHdr(){
-		this._hdrName;
-		this._hdrValue;
+				// parse headers only
+				var idxEnd = this.data.indexOf("\r\n\r\n",0); // * CRLF DOS : "\r\n"
+  				if(idxEnd == -1) idxEnd = this.data.indexOf("\n\n",0); // * CRLF UNIX : "\n"
+  				if(idxEnd == -1) idxEnd = this.data.indexOf("\r\r",0); //CRLF OS : "\r"
+  				if(idxEnd != -1) this.isDataComplete = true;	// msgSrc = msgSrc.substr(0,idxEnd); //dbg gConsole.logStringMessage("[smime - MessageAnalyser - succes getting mime headers : ] \n" + msgSrc);		
+  			}
+		},
+		onStopRequest: function(request, context, status) {
+			if (Components.isSuccessCode(status)) {				
+				callbackFunction( this.data, mailUri, callbackParam);
+			} else {
+				srv.errorSrv("notifyListener.getMsgSrc - "+mailUri+" - Error: "+status);
 	}
-		
-	if(typeof XimfMessageAnalyser.initialized == "undefined"){		
-		
-		XimfMessageAnalyser.prototype.setOriginalURI = function(uri){
-			 _mailUri = uri;
 		}		
-		/*
-		 * Extract Headers fields from mail
-		 * Create array of {[headerName][headerValue],[headerName][headerValue],...}
-		 */
-		XimfMessageAnalyser.prototype.createXimfHdrArray = function(){
-
-			var nbBytes = 0;
-			var tmpBuf = "";
-			var content = ""; 
-			
-			// first try to open URI
-			try{
-				var cmessenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);
-				var msgSvc =  cmessenger.messageServiceFromURI(_mailUri);
-		
-				//var xmsgHdr = _messenger.msgHdrFromURI(gCurrentMessageUri); // ok, entetes basic de messages
-				var MsgStream =  Components.classes["@mozilla.org/network/sync-stream-listener;1"].createInstance();
-		 		var consumer = MsgStream.QueryInterface(Components.interfaces.nsIInputStream);
-		 		var ScriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
-		 		var ScriptInputStream = ScriptInput.QueryInterface(Components.interfaces.nsIScriptableInputStream);
-		 		ScriptInputStream.init(consumer);
-		
-		 		try{
-		   			msgSvc.streamMessage(_mailUri, MsgStream, msgWindow, null, false, null);
-		 		}catch (e){
-		 			// can't read heafer message (bad uri...)		   		
-					gConsole.logStringMessage("[ximfmail - MessageAnalyser - createXimfHdrArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
-					return;	
-				}	 			
-						
-				if(!ScriptInputStream)	return;
-				// extract headers datas of selected message		 	
-				nbBytes = ScriptInputStream.available();
-				tmpBuf = ScriptInputStream.read(nbBytes);
-				// RFC 2822 :  The body is simply a sequence of characters that
-		   		// follows the header and is separated from the header by an empty line
-		   		// (i.e., a line with nothing preceding the CRLF). 		
-				var endHdrsNlock = tmpBuf.indexOf("\r\n\r\n",0);
-				if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\n\n",0);
-				if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\r\r",0);								
-				if(endHdrsNlock != -1){					
-			 		content = tmpBuf.substring(0,endHdrsNlock);
-				}else{
-					content = tmpBuf;
 				}	
 	
-				//alert(content);
-				tmpBuf = null;
-				ScriptInputStream.close();
-				consumer.close();
-        
-			}catch(e){}
-			 
-			try{
-				// _mailUri can be a path : case of open file message
-				if(tmpBuf == "")
-				{
-					var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
-					var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
-					file.initWithPath(_mailUri);
-					stream.init(file, -1, 0, 0);
-	
-					var ScriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
-					var ScriptInputStream = ScriptInput.QueryInterface(Components.interfaces.nsIScriptableInputStream);
-					ScriptInputStream.init(stream);
-		        
-					//if(!ScriptInputStream)  return;
-					// extract headers datas of selected message
-					nbBytes = ScriptInputStream.available();
-					tmpBuf = ScriptInputStream.read(nbBytes);
-					
-					// RFC 2822 :  The body is simply a sequence of characters that
-					// follows the header and is separated from the header by an empty line
-					// (i.e., a line with nothing preceding the CRLF).    
-					var endHdrsNlock = tmpBuf.indexOf("\r\n\r\n",0);					
-					if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\n\n",0);					
-					if(endHdrsNlock == -1)	endHdrsNlock = tmpBuf.indexOf("\r\r",0);				
-					if(endHdrsNlock != -1){						      
-					  content = tmpBuf.substring(0,endHdrsNlock);
+	gConsole.logStringMessage("[ximfmail - XimfmailGetMessage ]");
+	$("#ximfmailMailPanel").attr("collapsed","true"); // XIMF headers ihm
+	$("#ximfmail-custom-panel").attr("collapsed","true"); //XIMF account profile type ihm
+	$("#ximfHeadBox").attr("collapsed","true");	// XIMF pictures ihm	
+	var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
+	pref = pref.QueryInterface(Components.interfaces.nsIPrefBranch2);
+	if(pref.getBoolPref("mailnews.headers.showXimfmail")){
+		// parse message to get XIMF headers
+		var cmessenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);
+		var msgSvc =  cmessenger.messageServiceFromURI(mailUri);
+		try { msgSvc.streamMessage(mailUri, streamListener, null, null, false, null); } catch (ex) { return false; }		
 					}else{
-					  content = tmpBuf;
+		DeleteXimfHeaders();
 					} 
+}
 		  
-					tmpBuf = null;
-					ScriptInputStream.close();
-					stream.close();
-				}
-			  
-				//msgSvc
+/*
+ * Set Ximf headers of message to array
+ * 
+ * 
+ */	
+function XimfmailParseMessage(msgSrc){
 				var separator = new RegExp("\\r\\n|\\r|\\n", "i");// end line
-				var tab = content.split(separator);
-		
+	var tab = msgSrc.split(separator);
+	var currentXimfHdrArray = [];
 				// filter on IMF headers - append data to array
-				if(_xHdrArray.length > 0)
-					_xHdrArray.splice(0,_xHdrArray.length);
 		 		var reg_folding = new RegExp("(  )","g");
 		 		var reg_folding2 = new RegExp("(\t)","g");
 		 		var idxTab=0;
+
 				for(idxTab=0; idxTab<tab.length; ++idxTab){
 					var header_line = tab[idxTab];		
 					// search for long header fields (folding) - RFC 2822
@@ -182,94 +139,151 @@ function XimfMessageAnalyser(){
 					
 					// fill _ximfHdrArray			
 					//var lowcaseTmp = header_line.toLowerCase();
+			
 					var lowcaseTmp = header_line; //String_from_utf8(header_line).toLowerCase(); 			
 					if(lowcaseTmp.indexOf(":")!=-1){
-						var xhdr = new xHdr();
+				var xhdr = new Object;
 						xhdr._hdrName = lowcaseTmp.substring(0,lowcaseTmp.indexOf(": ",0));
 						xhdr._hdrValue = lowcaseTmp.substring(lowcaseTmp.indexOf(": ",lowcaseTmp)+2);
 						
 						// decode MIME Header
 						xhdr._hdrValue = DecodeMimeXimfheader(xhdr._hdrValue);						
 												
-						_xHdrArray.push(xhdr);
+				currentXimfHdrArray.push(xhdr);
 						//gConsole.logStringMessage("[ximfmail - MessageAnalyser - push : ] \n" + xhdr._hdrName + " :: "+xhdr._hdrValue);		
 					}			
 				}
-			}catch(e){
-				gConsole.logStringMessage("[ximfmail - MessageAnalyser - createXimfHdrArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
-			}
-		}
 			
-			/*
-			 * 
+	return currentXimfHdrArray;
+}
+
+	
+/*
+ * Ximf headers of current message
 			 */
-			XimfMessageAnalyser.prototype.getHeaderValue = function(headerName){	
-				var value = null;
+function XimfmailMesssage(){	
+	this._mailUri = null;	
+	this._instanceMsgXimf = null;
+	this._current_definition = null;
+	this._currentXimfHdrArray = [];
+	if(typeof XimfmailMesssage.initialized == "undefined"){
+		// set uri of message
+		XimfmailMesssage.prototype.set = function(uri){
 				try{					
-					var tmpHead = null;
-					for(var idx_xHdrArray = 0 ; idx_xHdrArray < _xHdrArray.length ; ++idx_xHdrArray){
-						tmpHead = _xHdrArray[idx_xHdrArray]._hdrName;						
-						if(headerName.toLowerCase() == tmpHead.toLowerCase()){
-							value = _xHdrArray[idx_xHdrArray]._hdrValue;							
-							break;
-						}
-					}
+				if(!uri) return;
+				if(this._mailUri ==	uri) return;
+				this._mailUri =	uri;				
 				}catch(e){
-					gConsole.logStringMessage("[ximfmail - MessageAnalyser - getHeaderValue ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+				gConsole.logStringMessage("[ximfmail - XimfmailMesssage.set ] " + e +"\nline : " + e.lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
 				}
-				return value;
+			return false;
+		};
+		//
+		XimfmailMesssage.prototype.init = function(uri,headerArray){
+			try{
+				if(!uri) return;
+				if(this._mailUri ==	uri) return;
+				this._mailUri =	uri;
+				this._instanceMsgXimf = null;
+				
+				this._currentXimfHdrArray=headerArray;
+				
+				// get account XIMF definition
+				var prefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
+				this._current_definition = "";				
+				if(prefBranch.prefHasUserValue("mailnews.instance.mailpanel")){
+					if(prefBranch.prefHasUserValue("mailnews.theme.mailpanel"))
+						this._current_definition =  prefBranch.getCharPref("mailnews.theme.mailpanel");
+				}else{
+					gConsole.logStringMessage("DBG [ximfmail - XimfmailMesssage.init ] no ximf preferences ");
+					return false;					
 			}
-			/*
-			 * 
-			 */
-			XimfMessageAnalyser.prototype.getCompleteArray = function(){
-				return _xHdrArray;
+												 	
+				var uriXimfInstance = this.hasXimfHeaders(this._current_definition);
+				if(uriXimfInstance){
+					gConsole.logStringMessage("DBG [ximfmail - XimfmailMesssage.init ] mail instance :  " + uriXimfInstance);			
+					this._instanceMsgXimf = uriXimfInstance;
+					return true;
+				}else{
+					return false;
 			}
-			/*
-			 * search for associated XIMF INSTANCE of account definition
-			 */
-			XimfMessageAnalyser.prototype.hasXimfHeaders = function(currentDefinition){			
-				var uriInstanceXimf = null;
-				var sdefinition = null;
+				
+				
+			}catch(e){
+				gConsole.logStringMessage("[ximfmail - XimfmailMesssage.init ] " + e +"\nline : " + e.lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
+			}
+			return false;
+		};		
+		
+		
+		// check message with XimfmailCatalog
+		XimfmailMesssage.prototype.hasXimfHeaders = function(currentDefinition){
+			try{			
 				var sversion = null;
 				var sname = null;
+				
 				sversion = this.getHeaderValue(XIMF_VERSION_HEADER);
 				sname = this.getHeaderValue(XIMF_NAME_HEADER);				
 				gConsole.logStringMessage("DBG [ximfmail - MessageAnalyser - hasXimfHeaders ] \ndefinition uri = "+ currentDefinition +"\nXIMF version = "+ sversion+"\nXIMF name = "+sname );
 				
 				//if(gXimfCatalog && sname &&	sversion)				
-				if(gXimfCatalog && sname)				
+				if(!sname) return null;
+				
+				// check currentDefinition in XimfmailCatalog
+				CreateXimfmailCatalog();
 					uriInstanceXimf = gXimfCatalog.getInstanceUri(currentDefinition,sname,sversion);							
 							
-				return uriInstanceXimf;
+			}catch(e){
+				gConsole.logStringMessage("[ximfmail - XimfmailMesssage.hasXimfHeaders ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
 			}
+					
+				return uriInstanceXimf;
+		};
+		
+		// get XIMF value from message
+		XimfmailMesssage.prototype.getHeaderValue = function(headerName){
+			var value = null;
+			try{					
+				var tmpHead = null;
+				for(var idx_xHdrArray = 0 ; idx_xHdrArray < this._currentXimfHdrArray.length ; ++idx_xHdrArray){
+					tmpHead = this._currentXimfHdrArray[idx_xHdrArray]._hdrName;						
+					if(headerName.toLowerCase() == tmpHead.toLowerCase()){
+						value = this._currentXimfHdrArray[idx_xHdrArray]._hdrValue;							
+						break;
+					}
+				}
+			}catch(e){
+				gConsole.logStringMessage("[ximfmail - XimfmailMesssage.getValue ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+			}
+			return value;
+		};
 			
-			/*
-			 * add or replace Ximfheader in _xHdrArray
-			 */
-			XimfMessageAnalyser.prototype.setHeaderValue = function(headerName, headerValue){	
+		// get XIMF value from message
+		XimfmailMesssage.prototype.getCompleteArray = function(){
+			return this._currentXimfHdrArray();
+		};
+		// set XIMF value to message
+		XimfmailMesssage.prototype.setXimfHeader = function(headerName,headerValue){		
 				try{					
 					var isNewHeader = true;
-					for(var idx_xHdrArray = 0 ; idx_xHdrArray < _xHdrArray.length ; ++idx_xHdrArray){
-						var tmpHead = _xHdrArray[idx_xHdrArray]._hdrName;						
+				for(var idx_xHdrArray = 0 ; idx_xHdrArray < this._currentXimfHdrArray.length ; ++idx_xHdrArray){
+					var tmpHead = this._currentXimfHdrArray[idx_xHdrArray]._hdrName;						
 						if(tmpHead.toLowerCase() == headerName.toLowerCase()){
-							_xHdrArray[idx_xHdrArray]._hdrValue = headerValue;
+						this._currentXimfHdrArray[idx_xHdrArray]._hdrValue = headerValue;
 							isNewHeader = false;
 							break;
 						}
 					}
 					if(isNewHeader){
-						var xhdr = new xHdr();
+					var xhdr = new Object;
 						xhdr._hdrName = headerName;
 						xhdr._hdrValue = headerValue;
-						_xHdrArray.push(xhdr);
+					this._currentXimfHdrArray.push(xhdr);
 					}
 				}catch(e){
-					gConsole.logStringMessage("[ximfmail - MessageAnalyser - setHeaderValue ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+					gConsole.logStringMessage("[ximfmail - XimfmailMesssage.setXimfHeader ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
 				}				
-			}
-		
-		// MessageAnalyser
-	 	XimfMessageAnalyser.initialized = true;
+		};
+		XimfmailMesssage.initialized = true;
 	 }
 }

@@ -1,0 +1,4 @@
+Ximfmail (0.6.4)
+* Corrective on blocking TrustedBird on downloading messages with big attachments 
+* Corrective on using settings to sign messages
+-- Sep 09 2011

@@ -92,6 +92,9 @@
 						<triple subject="?elt"
 								predicate="http://www.ximfmail.com/RDF#instanceLabel"
 								object="?label" />	
+						<triple subject="?elt"
+								predicate="http://www.ximfmail.com/RDF#active"
+								object="true" />
 					</conditions>
 					<action>	
 						<menuitem  uri="?elt" 

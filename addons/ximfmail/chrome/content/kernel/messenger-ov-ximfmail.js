@@ -40,9 +40,9 @@
  * ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
  * ***** END LICENSE BLOCK ***** */
 // global variables
-var gCurrentIdentity=null;
-var gPreviousIdentity=null;
-var gComposeMsgByMenuitem=false;
+var gCurrentIdentity = null;
+var gPreviousIdentity = null;
+var gComposeMsgByMenuitem = false;
 var gXimfThreadTree = null;
 
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
@@ -85,7 +85,7 @@ $(document).ready(function(){
 	$("#threadTree").bind('select', OnSelectMsg);
 	
 	// Security Labels compatibility (RFC2634)
-	try{CreateSecurityLabelXml()}catch(e){}
+	try{CreateSecurityLabelXml();}catch(e){}
 });
 
 

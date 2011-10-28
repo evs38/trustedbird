@@ -55,8 +55,13 @@ function XimfDataSource(){
 	this._refDataSource;				
 }
 
-
-
+// RDF list
+var gMaxDataList = 15;
+var gCurposList = -1;
+var gIDTimeoutList = null;
+var gIDTimeoutListSearch = null;
+var gSearchText = "";
+var gRDFList = null;
 
 
 var gArgsOpener = null;
@@ -71,6 +76,16 @@ $(document).ready(function(){
  	$("#ximfmail_dTreeDel").bind("command",OnPushDelSelection);
  	$("#ximfmail_dTreeRaz").bind("command",OnPushRazSelection);	
 
+ 	// event for scroll 
+  $("#ximfmailTreeDialogScroll").mousemove(OnClickScrollTreeList);
+  $("#ximfmailTreeDialogScroll").click(OnClickScrollTreeList);
+  $("#iTreechildDialog").mousemove(OnClickScrollTreeList);
+  $(window).resize(OnClickScrollTreeList);
+  
+  document.getElementById("iTreechildDialog").addEventListener('DOMMouseScroll', OnScrollTreeList, false);
+  $("#ximfmail.treedialog").keypress(OnKeyPressScrollTreeList);
+  $("#ximfmailTreeDialogDisplaybox").keypress(OnKeyPressScrollTreeList);
+  
 	// load background datas
 	try{
 		gArgsOpener = gArgs[0];	// gArgs[0] is an XimfmailTreedialogArgs object - XimfmailTreedialogArgs class description at ximfmail.js file
@@ -80,10 +95,10 @@ $(document).ready(function(){
 	}
 	
 	// create alert message 	
-	if(parseInt(gArgsOpener.maxItemsSelected) > 1){
+	if(parseInt(gArgsOpener.maxItemsSelected, 10) > 1){
 		gDlgTreeXimf_maxItem_alert = gArgsOpener.maxItemsSelected + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");
 	}else{
-		if(parseInt(gArgsOpener.maxItemsSelected) == 1){
+		if(parseInt(gArgsOpener.maxItemsSelected, 10) == 1){
 			gDlgTreeXimf_maxItem_alert = gArgsOpener.maxItemsSelected + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows.one");
 		}
 	}
@@ -105,7 +120,7 @@ $(document).ready(function(){
 			gConsole.logStringMessage("[ximfmail - AddCurrentSelection ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);
 	}
 	
-	setTimeout("LoadXmlDatas()", 50);	
+	LoadXmlDatas();	
 });
 
 /*
@@ -115,9 +130,16 @@ function LoadXmlDatas(){
 	try{			
 		//
 		var tree = document.getElementById("iTreechildDialog");		
-		tree.database.AddDataSource(gArgsOpener.dataSource);		
-		tree.setAttribute("ref",gArgsOpener.refdataSource);	
+		
+		gRDFList = new DialogTreeRDFClass();
+    gRDFList.initialize(gArgsOpener.dataSource, gArgsOpener.refdataSource);
+		
+		tree.database.AddDataSource(gRDFList.getDataSource());		
+		//tree.setAttribute("ref",gArgsOpener.refdataSource);	
 		tree.builder.rebuild();
+		
+		OnClickScrollTreeList(0);
+		
 		//
 		AddCurrentSelection();
 	}catch(e){	
@@ -280,4 +302,212 @@ function OnClickTreeData(evt){
     }
     //alert(row.value + " : " + idMatch);
     //return {row: row.value, col: idMatch};	
+}
+
+
+/* for  to scroll */
+function OnClickScrollTreeList(evt)
+{
+  try
+  {
+    if(parseInt($("#ximfmailTreeDialogScroll").attr("maxpos"), 10) <=0)
+      return;
+    var treeResult = document.getElementById("ximfmail.treedialog");
+    $("#iTreechildDialog").attr("hidevscroll","true");
+    var curpos = 0;
+    
+    curpos = parseInt($("#ximfmailTreeDialogScroll").attr("curpos"), 10);
+    var pageLength = gMaxDataList;
+    try{
+      pageLength = treeResult.boxObject.getPageLength();
+      if(0 == pageLength)
+        pageLength = gMaxDataList;
+    }catch(e){pageLength = gMaxDataList;}
+    
+    /*gConsole.logStringMessage("gCurposList=" + gCurposList + " curpos=" + curpos+ " gMaxDataList=" + gMaxDataList
+          + " pageLength=" + pageLength+ " gRDFList.getEntriesCount()=" + gRDFList.getEntriesCount());*/
+    
+    if(gCurposList != curpos || gMaxDataList != pageLength 
+       || gMaxDataList != gRDFList.getEntriesCount()
+       || evt == 0)
+    {
+      window.setCursor("wait");
+      gMaxDataList = pageLength;
+      var maxEntry = parseInt(gRDFList.getMaxEntry(), 10);
+      
+      gRDFList.updateDisplay(curpos,gMaxDataList-1);
+      var maxpos = gMaxDataList;
+      
+      if(maxEntry - gMaxDataList >= 0)
+        maxpos = maxEntry - gMaxDataList;
+      else
+        maxpos = -1;
+      
+      if(maxEntry < gMaxDataList)
+      gMaxDataList = maxEntry;
+      $("#ximfmailTreeDialogScroll").attr("maxpos",maxpos);
+      
+      gCurposList = curpos;
+      
+      if(maxEntry == 0 || maxpos <= 0) 
+      {
+        $("#ximfmailTreeDialogScroll").attr("hidden","true");
+        gMaxDataList = maxEntry;
+      }
+      else
+        $("#ximfmailTreeDialogScroll").removeAttr("hidden");
+      
+      if(treeResult.database != null)
+      {
+	      treeResult.database.AddDataSource(gRDFList.getDataSource());
+	      treeResult.builder.rebuild();
+	      clearTimeout(gIDTimeoutList);
+	      gIDTimeoutList = setTimeout(OnClickScrollTreeList,100,1);
+      }
+    }
+  }catch(e){
+    gConsole.logStringMessage("[ximfmail - OnClickScrollTreeList ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+  }
+  window.setCursor("auto");
+}
+
+function OnScrollTreeList(event)
+{
+  window.setCursor("wait");
+  try
+  {
+    var curpos = parseInt($("#ximfmailTreeDialogScroll").attr("curpos"), 10);
+    var addPos = 0;
+    if(event.detail == -3)
+      addPos = -3;
+    else if(event.detail == 3)
+      addPos = 3;
+    curpos += addPos;
+    var maxpos = parseInt(gRDFList.getMaxEntry(), 10) - gMaxDataList;
+    
+    if(curpos<0)
+      curpos = 0;
+    if(curpos>maxpos)
+      curpos = maxpos;
+  
+    $("#ximfmailTreeDialogScroll").attr("curpos", curpos);
+    OnClickScrollTreeList(0);
+  }
+  catch(e)
+  {
+    gConsole.logStringMessage("[ximfmail - OnScrollTreeList ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+  }
+  window.setCursor("auto");
+}
+
+function OnKeyPressScrollTreeList(event)
+{
+  window.setCursor("wait");
+  gConsole.logStringMessage("[ximfmail - OnKeyPressScrollTreeList ] enter");
+  try
+  {
+    var curpos = parseInt($("#ximfmailTreeDialogScroll").attr("curpos"), 10);
+    var addPos = 0;
+    var maxEntry = parseInt(gRDFList.getMaxEntry(), 10);
+    var maxpos = maxEntry - gMaxDataList;
+    var textToFind = "";
+    
+    switch(event.keyCode)
+    {
+      case 33:
+        // page up
+        addPos = 1-gMaxDataList;
+        break;
+        
+      case 34:
+        // page down
+        addPos = gMaxDataList-1;
+        break;
+        
+      case 35:
+        // end
+        addPos = 0;
+        curpos = maxpos;
+        break;
+      
+      case 36:
+        // beggin
+        addPos = 0;
+        curpos = 0;
+        break; 
+         
+      case 38:
+        // up
+        addPos = -1;
+        break;
+        
+      case 40:
+        // down
+        addPos = 1;
+        break;
+      
+      default:
+        if(event.charCode ==0)
+        {
+          window.setCursor("auto");
+          return;
+        }
+        else
+          textToFind = String.fromCharCode(event.charCode);
+    }
+        
+    if("" == textToFind)
+    {
+      curpos += addPos;
+      
+      if(curpos<0)
+        curpos = 0;
+      if(curpos>maxpos)
+        curpos = maxpos;
+    
+      $("#ximfmailTreeDialogScroll").attr("curpos", curpos);
+      OnClickScrollTreeList(0);
+    }
+    else
+    {
+      clearTimeout(gIDTimeoutListSearch);
+      gSearchText += textToFind;
+      var curposAfter = gRDFList.updateDisplayByText(gSearchText,gMaxDataList,curpos);
+      if(curposAfter == -1)
+      {
+        gSearchText = "";
+        window.setCursor("auto");
+        return;
+      }
+      else
+      {
+        var maxpos = gMaxDataList;
+        if(maxEntry - gMaxDataList >= 0)
+          maxpos = maxEntry - gMaxDataList;
+        else
+          maxpos = -1;
+        
+        if(maxEntry < gMaxDataList)
+         gMaxDataList = maxEntry;
+        
+        $("#ximfmailTreeDialogScroll").attr("maxpos",maxpos);
+        $("#ximfmailTreeDialogScroll").attr("curpos", curposAfter);
+        OnClickScrollTreeList(0);
+        
+        gIDTimeoutListSearch = setTimeout(resetSearchText,2000);
+      }
+    }
+    
+  }
+  catch(e)
+  {
+    gConsole.logStringMessage("[ximfmail - OnKeyPressScrollTreeList ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+  }
+  window.setCursor("auto");
+}
+
+function resetSearchText()
+{
+  gSearchText = "";
+  gIDTimeoutListSearch = null;
 }

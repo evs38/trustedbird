@@ -67,8 +67,8 @@
 		</row>
 	</rows>
 	
-	<!-- Display Ximf headers in message of new window -->
 	<vbox id="messagepanebox">	  		
+		<!-- Display Ximf headers in message of new window -->
   	 	<vbox id="ximfmailMailPanel" insertafter="msgHeaderView" collapsed="true">
 			<hbox id="ximfmailMailPanelFocusBar" class="ximfmailFocusBar" flex="1" align="center">			
 				<button class="ximfmailButton" id="ximfmailComposeMessageMaximize" tooltiptext="&ximfmail.compose.focus;" accesskey="+" hidden="true" />
