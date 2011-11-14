@@ -100,7 +100,7 @@ function XimfThreadTree(){
 		// get local lang				
 		var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 		var refLang = prefs.getCharPref("general.useragent.locale");
-		if(!refLang) refLang = "fr-FR";			
+		if(!refLang) refLang = "fr";			
 		var ilkEntities = null;
 		for(var idxLang=0 ; idxLang < dicoElements.length ; ++idxLang){		
 			if(dicoElements[idxLang].getAttribute("lang") == refLang){

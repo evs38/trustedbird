@@ -1,6 +1,6 @@
 content ximfmail jar:chrome/ximfmail.jar!/content/kernel/ xpcnativewrappers=yes
 content theme_ximfmail chrome/content/theme/ xpcnativewrappers=yes
-locale ximfmail fr jar:chrome/ximfmail.jar!/locale/fr-FR/
+locale ximfmail fr jar:chrome/ximfmail.jar!/locale/fr/
 locale ximfmail us jar:chrome/ximfmail.jar!/locale/en-US/
 skin ximfmail classic/1.0 jar:chrome/ximfmail.jar!/skin/
 overlay chrome://messenger/content/messenger.xul chrome://ximfmail/content/messenger-ov-ximfmail.xul
