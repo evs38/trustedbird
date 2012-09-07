@@ -1593,27 +1593,36 @@ nsAutoString& removeJumpSymb(nsAutoString& s)
  */
 nsAutoString& onlyOneWhiteSpace(nsAutoString& s){
 	s.ReplaceSubstring(NS_LITERAL_STRING("\t"), NS_LITERAL_STRING(" "));
-	s.ReplaceSubstring(NS_LITERAL_STRING("  "), NS_LITERAL_STRING(" "));
-	
+	s.ReplaceSubstring(NS_LITERAL_STRING("  "), NS_LITERAL_STRING(" "));	
 	return s;
 }
 
 
-nsAutoString& canonilizeHeaderValue(nsAutoString &hdrval)
+nsAutoString& canonilizeHeaderValue(nsAutoString &hdrval, PRInt32 iCanonAlgorithme)
 {
-	removeJumpSymb(hdrval);
-	onlyOneWhiteSpace(hdrval);
-	hdrval.CompressWhitespace(PR_TRUE,PR_TRUE);
+	if(iCanonAlgorithme){
+		// relaxed canonicalization algorithm
+		removeJumpSymb(hdrval);
+		onlyOneWhiteSpace(hdrval);
+		hdrval.CompressWhitespace(PR_TRUE,PR_TRUE);
+	}else{
+		// simple canonicalization algorithm
+		hdrval.StripChar(PRUnichar('\n'), hdrval.Length()-4);
+		hdrval.StripChar(PRUnichar('\r'), hdrval.Length()-4);
+	}
 	return hdrval;
 }
 
-nsAutoString& canonilizeHeaderName(nsAutoString &hdrname)
+nsAutoString& canonilizeHeaderName(nsAutoString &hdrname, PRInt32 iCanonAlgorithme)
 {
-	nsCAutoString utf8str =  NS_ConvertUTF16toUTF8(hdrname);
-	ToLowerCase(utf8str);
-	hdrname = NS_ConvertUTF8toUTF16(utf8str);
-	onlyOneWhiteSpace(hdrname);
-	hdrname.CompressWhitespace(PR_TRUE,PR_TRUE);
+	if(iCanonAlgorithme){
+		// relaxed canonicalization algorithm
+		nsCAutoString utf8str =  NS_ConvertUTF16toUTF8(hdrname);
+		ToLowerCase(utf8str);
+		hdrname = NS_ConvertUTF8toUTF16(utf8str);
+		onlyOneWhiteSpace(hdrname);
+		hdrname.CompressWhitespace(PR_TRUE,PR_TRUE);
+	}
 	return hdrname;
 }
 
@@ -1846,11 +1855,10 @@ nsresult nsMsgComposeSecure::ReadHeadersToSecure(nsIMsgIdentity * aIdentity,nsIM
 					_secureHeader->GetHeaderName(_headerName);
 					GetValueHeader(_headerName,aComposeFields,_headerValue);
 					if(!_headerValue.IsEmpty()){
-
-						 if(mCanonAlgorithme){
-							canonilizeHeaderName(_headerName);
-							canonilizeHeaderValue(_headerValue);
-						}
+						
+						canonilizeHeaderName(_headerName, mCanonAlgorithme);
+						canonilizeHeaderValue(_headerValue, mCanonAlgorithme);
+						
 						_secureHeader->SetHeaderName(_headerName);
 						_secureHeader->SetHeaderValue(_headerValue);
 						mSecureHeaders->AppendElement(_secureHeader,PR_FALSE);

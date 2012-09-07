@@ -68,8 +68,6 @@ function XimfTreeData(){
 				_dsCatalog = Components.classes["@mozilla.org/rdf/datasource;1?name=in-memory-datasource"].createInstance(Components.interfaces.nsIRDFDataSource);
 			 	//_dsCatalog = _rdfService.GetDataSource("rdf:ximfTree");		
 			}
-				
-					
 				//_dsCatalog = Components.classes["@mozilla.org/rdf/datasource;1?name=in-memory-datasource"].createInstance(Components.interfaces.nsIRDFDataSource);
 			
 			if(!_rdfCUtils)

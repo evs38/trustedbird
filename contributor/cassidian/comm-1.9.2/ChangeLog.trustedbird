@@ -1,3 +1,10 @@
+trustedbird (3.1.20+0.6.8)
+* Upgrade to Thunderbird 3.1.20
+* new on secure headers : secure information panel in received messages
+* new on secure headers : check headers of received message with local settings and display missings headers
+* correctives in secure headers : simple canonicalization format
+-- Sep 07 2012
+
 trustedbird (3.1.11+0.5.3)
 * Upgrade to Thunderbird 3.1.11
 * Corrective on blocking TrustedBird on downloading messages with big attachments 

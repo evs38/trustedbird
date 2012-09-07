@@ -65,7 +65,6 @@ function onclosepanel(){
 	}	
 }
 
-
 var gXimfHdrs = null;		
 //			
 function XimfmailInstanceHeaders(){
@@ -112,10 +111,12 @@ function XimfmailInstanceHeaders(){
 		};
 		//		
 		XimfmailInstanceHeaders.prototype.loadXimfSecurityRules = function(){
-			var isSigned = false;
-			
+			var isToogleSigned = false;
 			// get secure state from prefs
-			if (gSMFields)	isSigned = gSMFields.signMessage;  				
+			if(!gSMFields){
+				// use Trustedbird function to initialize gSMFields
+				onComposerReOpen();				
+			}
 
 			// secure headers			
 			try{
@@ -134,22 +135,30 @@ function XimfmailInstanceHeaders(){
 						serializer.serializeToStream(signHeaders, foStream, "");   // rememeber, doc is the DOM tree
 						foStream.close();
 						
-						// set folder datas					
+						// set folder datas
 						gCurrentIdentity.setCharAttribute("secureheaders.folderdata",file.path);
 						
-						// sign message with secure headers
+						// message with secure headers : force sign message
 						gCurrentIdentity.setBoolAttribute("secureheaders.checked",true);
 						$("#idItemSecureHeaders_1").attr("checked","true");					
 						$("#idItemSecureHeaders_2").attr("checked","true");					
 						$("#idItemSecureHeaders_1").attr("disabled","true");
-						$("#idItemSecureHeaders_2").attr("disabled","true");										
-						if(!isSigned){
-							toggleSignMessage();// signMessage(); // from file msgCompSMIMIEOverlay.js
-							isSigned = true;
-						}				
-						$("#menu_securitySign1").attr("disabled","true");
-						$("#menu_securitySign2").attr("disabled","true");	
+						$("#idItemSecureHeaders_2").attr("disabled","true");								
 						
+						$("#menu_securitySign1").attr("checked","true");
+						$("#menu_securitySign2").attr("checked","true");
+						$("#menu_securitySign1").attr("disabled","true");
+						$("#menu_securitySign2").attr("disabled","true");
+						
+						if(!gSMFields.signMessage){
+							toggleSignMessage();
+							isToogleSigned = true;
+							// if certificate problem resolved, try to load ui signature
+							if (gCurrentIdentity.getUnicharAttribute("signing_cert_name")&&!gSMFields.signMessage){
+								toggleSignMessage();// certificate is set by user
+							}
+							
+						}
 						gConsole.logStringMessage("ximfmail - loadSecurityRules - secureHeaders on ");					
 					}
 				}else{
@@ -164,19 +173,29 @@ function XimfmailInstanceHeaders(){
 				_eSSSecurityLabelHdrArray = CreateRulesArray(_instance,"ximf:securityLabel");
 				if(_eSSSecurityLabelHdrArray.length > 0){					
 					$("#menu_securityLabelDialog1").attr("checked","true");					
-					$("#menu_securityLabelDialog2").attr("checked","true");					
 					$("#menu_securityLabelDialog1").attr("disabled","true");
+					$("#menu_securityLabelDialog2").attr("checked","true");	
 					$("#menu_securityLabelDialog2").attr("disabled","true");
 					
-					if(!isSigned){
-						toggleSignMessage(); // from file msgCompSMIMIEOverlay.js
-						isSigned = true;
-					}
-					if(gSMFields){
-						gSMFields.securityClassification = -1;
-						gSMFields.privacyMark = "";
-						gSMFields.securityCategories = "";
-					}
+					$("#menu_securitySign1").attr("checked","true");					
+					$("#menu_securitySign1").attr("disabled","true");
+					$("#menu_securitySign2").attr("checked","true");
+					$("#menu_securitySign2").attr("disabled","true");
+					
+					if(!gSMFields.signMessage){
+						if(!isToogleSigned){
+							toggleSignMessage();
+							// if certificate problem resolved, try to load ui signature
+							if (gCurrentIdentity.getUnicharAttribute("signing_cert_name")&&!gSMFields.signMessage){
+								toggleSignMessage();// certificate is set by user
+							}
+						}
+					}					
+					
+					// 
+					gSMFields.securityClassification = -1;
+					gSMFields.privacyMark = "";
+					gSMFields.securityCategories = "";					
 					gConsole.logStringMessage("ximfmail - loadSecurityRules - securityLabels on ");	
 				}else{
 					gConsole.logStringMessage("ximfmail - loadSecurityRules - securityLabels off ");	
@@ -201,13 +220,11 @@ function XimfDataSource(){
 function InsertXimfmailComposer(currentInstance){
 	try{
 		if(gXimfHdrs){gXimfHdrs = null;}
-	
 		gXimfHdrs = new XimfmailInstanceHeaders();
 		gXimfHdrs.init(currentInstance);
 		gXimfHdrs.loadXimfSecurityRules();
 		
 		// ihm init		
-		ResetXimfhdrsDom();
 		InsertXimfhdrsDom(gXimfHdrs.getXimfInstanceResource(), gChromeXslMsgCompose);
 		
 		// controler init		
@@ -224,8 +241,12 @@ function InsertXimfmailComposer(currentInstance){
  * DOM MANIPULATIONS OF XIMFMAIL ELEMENTS
  */
 function ResetXimfhdrsDom(){
-	// delete old ximf items
-	$("#ximfmailComposeMessageHeadersTablist").empty();
+	try{
+		// delete old ximf items
+		$("#ximfmailComposeMessageHeadersTablist").empty();
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - ResetXimfhdrsDom ] " + e +"\nline : " + e.lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
+	}
 }
 		
 function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
@@ -234,8 +255,7 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 				$("#isUsingXimfail").attr("hidden","true");
 			 	return;
 			}
-			$("#isUsingXimfail").attr("hidden","false");
-							
+
 			if(gXimfCatalog){
 				$("#ximfmailComposeMessageTitle").attr("value",gXimfCatalog.getLabelInstance(ximfInstanceResource));
 			}else{
@@ -248,7 +268,7 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 				$("#ximfmailComposeMessageHeadersTablist").append(CreateDOMWithXimfInstance(ximfInstanceResource, urlXslTemplate));
 			}catch(e){
 				// TODO : alert user of xslt problem
-				("#isUsingXimfail").attr("hidden","false");
+				("#isUsingXimfail").attr("hidden","true");
 			}	
 			
 			// custom panels where maxitem=1 and contains composed elements
@@ -261,6 +281,7 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 					for(j=0;j<mnuitems.length;++j){
 						var chkbx = document.createElement("checkbox");
 						$(chkbx).attr("id",$(mnuitems[j]).attr("id"));
+						$(chkbx).attr("class","ximfCheckbox");
 						$(chkbx).attr("label",$(mnuitems[j]).attr("label"));
 						$(chkbx).attr("ximfvalue",$(mnuitems[j]).attr("ximfvalue"));
 						$(chkbx).attr("ximftextbox",$(mnuitems[j]).attr("ximftextbox"));
@@ -301,7 +322,10 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 		// Custom Ximf Headers Dom
 		CustomXimfhdrsInputBox();	
 		CustomXimfhdrsButton();	
-		CustomXimfhdrsTreeDialog();	// append DOM elements to access external datas	
+		CustomXimfhdrsTreeDialog();	// append DOM elements to access external datas
+		
+		// display Ximf elements
+		$("#isUsingXimfail").attr("hidden","false");
 }		
 
 /*
@@ -311,24 +335,24 @@ function CustomXimfhdrsInputBox(){
 	var listEditorClass = $("popup > textbox[class='ximfInputbox']");
 	for(var i = 0 ; i<listEditorClass.length ; ++i){	
 		try{
-			var idTxtBox = listEditorClass[i].getAttribute("ximfreftextbox");
-			var inputbox = $("textbox[id='"+idTxtBox+"'][class]");
-			if(inputbox[0].getAttribute("class") != "ximfDatetime"){									
-				var editor_button = $("textbox[id='"+idTxtBox+"']>button");
-				editor_button[0].setAttribute("class","ximfmailButtonTxt ximfEditor");					
-				editor_button[0].setAttribute("tooltiptext",getIlkProperties("ximfmail.composer.editor.image"));
-				editor_button[0].setAttribute("refbox",inputbox[0].getAttribute("id"));						
+			var idTxtBox = $(listEditorClass[i]).attr("ximfreftextbox");
+			var inputbox = $("textbox[id='"+idTxtBox+"']");
+			if($(inputbox).attr("class") != "ximfDatetime"){									
+				var editor_button = $("textbox[id='"+idTxtBox+"']>button");				
+				$(editor_button).attr("class","ximfmailButtonTxt ximfEditor");					
+				$(editor_button).attr("tooltiptext",getIlkProperties("ximfmail.composer.editor.image"));
+				$(editor_button).attr("refbox",$(inputbox).attr("id"));
 					
-				inputbox[0].setAttribute("ximfmaxitems", listEditorClass[i].getAttribute("ximfmaxitems"));
-				inputbox[0].setAttribute("ximfminitems", listEditorClass[i].getAttribute("ximfminitems"));
-				inputbox[0].setAttribute("ximseparator", listEditorClass[i].getAttribute("ximseparator"));
-				inputbox[0].setAttribute("tabindex",parseInt(i, 10)+100);
-				inputbox[0].setAttribute("class","ximfEditor");							
-				inputbox[0].removeAttribute("popup");
-				inputbox[0].removeAttribute("readonly");
+				$(inputbox).attr("ximfmaxitems", $(listEditorClass[i]).attr("ximfmaxitems"));
+				$(inputbox).attr("ximfminitems", $(listEditorClass[i]).attr("ximfminitems"));
+				$(inputbox).attr("ximseparator", $(listEditorClass[i]).attr("ximseparator"));
+				$(inputbox).attr("tabindex",parseInt(i, 10)+100);
+				$(inputbox).attr("class","ximfEditor");
+				$(inputbox).removeAttr("popup");
+				$(inputbox).removeAttr("readonly");
 			}
 		}catch(e){
-			gConsole.logStringMessage("[ximfmail - modifyEditorBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);			
+			gConsole.logStringMessage("[ximfmail - CustomXimfhdrsInputBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);			
 		}				
 	}
 	
@@ -463,7 +487,7 @@ function HideSendMessageElements(isToSend){
 			rdfdataSource = _dataSourceArray[idxDatasSource]._dataSource;
 			refRdfdataSource = _dataSourceArray[idxDatasSource]._refDataSource;
 		}else{							
-			// get xml schema from profile instance directory				
+			// get xml schema from profile instance directory
 			var sCompletePath = getFilePathInProfile("extensions/"+gXimfCatalog.getSchemaInstance(gXimfHdrs.getXimfInstanceResource()));
 			sCompletePath = sCompletePath.substring(0, sCompletePath.lastIndexOf("\\")+1) + keyCat;	  			
 			var dir = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
@@ -581,6 +605,7 @@ function OpenCalendarDialog(button){
 	}	
 }
 
+
 /*
  * Open window text editor
  */
@@ -644,6 +669,11 @@ function LoadXimfhdrsEventObserver(){
 	$("textbox[class='ximfEditor']").click(OnXimfhdrsEditor);
 	$("textbox[class='ximfEditor']").bind("change",OnCheckXimfhdrsEditor);		
 	$("button[class*='ximfEditor']").bind("command",OnClickEditorButton);
+	
+	// check for mandatory ximf headers when editor texbox has changed
+	$("#ximfmailComposeMessageHeadersTablist textbox").bind("change",function(e){
+		e.currentTarget.setAttribute("ximfvalue",e.currentTarget.value);
+		CheckXimfhdrsSelection();});
 	
 	// get complete information of ximf hdr
 	$("button[class*='ximfDetail']").bind("command",function(evt){
@@ -1265,7 +1295,7 @@ function ComputeXimfhdrsCheckPopup(xulElement){
 			var arrayCheckedbox = null;
 			while(nextElt){
 				if(nextElt.localName == "popup"){				
-					arrayCheckedbox = $("popup[id='"+nextElt.id+"'] checkbox[class='ximCheckbox'][checked]" );			
+					arrayCheckedbox = $("popup[id='"+nextElt.id+"'] checkbox[class='ximfCheckbox'][checked]" );			
 					//alert("checklist OK !!" + nextElt.id + arrayCheckbox.length);
 					// id of parent node
 					idTextBox = nextElt.getAttribute('ximfreftextbox'); 				
@@ -2346,7 +2376,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	// send hidden headers elements
 	var arrayValues = $("label[class='ximfHiddenHeader']");
 	if(arrayValues){						
-		for(var idx=0; idx<=arrayValues.length; idx++){
+		for(var idx=0; idx<arrayValues.length; idx++){
 			try {	
 				if(arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE)){					
 					sCompleteList += EncodeMimeXimfheader($(arrayValues[idx]).attr("ximfheader"), $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;											
@@ -2360,7 +2390,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	// send textbox elements
 	arrayValues = $("textbox[class='XimfTextboxDisplay']");
 	if(arrayValues){						
-		for(var idx=0; idx<=arrayValues.length; idx++){
+		for(var idx=0; idx<arrayValues.length; idx++){
 			try {	
 				if($(arrayValues[idx]).attr(_XIMF_ATT_XVALUE)){
 					sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;
@@ -2378,7 +2408,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	try{									
 		arrayValues = $("textbox[class='ximfEditor']");
 		if(arrayValues){
-			for( idx=0; idx<=arrayValues.length; idx++){					
+			for( idx=0; idx<arrayValues.length; idx++){					
 				if(arrayValues[idx].value){
 					try{
 						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].value, charSet) + headersSeparator;							
@@ -2397,7 +2427,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 		//arrayValues = $("#ximfmailComposeMessagePanel " + _XIMF_ELT_DATEPICKER);						
 		arrayValues = $("textbox[class='ximfDatetime']");	
 		if(arrayValues){			
-			for( idx=0; idx<=arrayValues.length; idx++){					
+			for( idx=0; idx<arrayValues.length; idx++){					
 				if(arrayValues[idx].value){						
 					try{
 						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE), charSet) + headersSeparator;							
@@ -2414,7 +2444,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	try{
 		arrayValues = $("#ximfmailComposeMessagePanel ximfaddress");
 		if(arrayValues){						
-			for( idx=0; idx<=arrayValues.length; idx++){				
+			for( idx=0; idx<arrayValues.length; idx++){				
 				if(arrayValues[idx].listaddress != ""){
 					try{
 						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].listaddress, charSet) + headersSeparator;

@@ -76,7 +76,7 @@ function onInit(aPageId, aServerId){
 			//currentFolderTextBox.value = file.path + DEFAULT_SECUREHEADERS_XML_DIR+DEFAULT_SECUREHEADERS_XML_FILE;
 			gCurrentIdentity.setCharAttribute(PREF_SECUREHEADERS_FOLDER_DATAS,currentFolderTextBox.value);
 	 	}
-  } 
+  }
  
 	if(gCurrentIdentity.getBoolAttribute(PREF_SECUREHEADERS_SMIMEINFO)){
 		document.getElementById("smimeinfomsgcheck").setAttribute("checked", "true");

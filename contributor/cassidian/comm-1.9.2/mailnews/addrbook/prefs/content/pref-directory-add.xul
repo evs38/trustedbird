@@ -121,7 +121,6 @@
              <checkbox id="secure" label="&directorySecure.label;"
                        accesskey="&directorySecure.accesskey;"
                        oncommand="onSecure();" disableiflocked="true"/>
-
           </vbox>
           <vbox>
               <description>&offlineText.label;</description>

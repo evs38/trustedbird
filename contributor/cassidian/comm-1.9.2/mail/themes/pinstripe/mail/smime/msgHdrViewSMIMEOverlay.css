@@ -82,8 +82,12 @@
 	margin-bottom:2px;
 	padding-left:5px;
 	background-color:#ffffcc;
-	
 }
+
+#secureinfomsgh[signed="notok"],#secureinfomsgh2[signed="notok"]{background-color:#ff5959;}
+#secureinfomsgh[signed="ok"],#secureinfomsgh2[signed="ok"]{background-color:#CAFF70;}
+#secureinfomsgh[signed="warning"],#secureinfomsgh2[signed="warning"]{background-color:#E76914;}
+
 #secureinfomsg label,
 #secureinfomsg2 label{
 	font-weight: bold;
@@ -91,7 +95,5 @@
 }
 #secureinfomsg label:hover,
 #secureinfomsg2 label:hover{
-	color: #ffffff;
-	background-color:#000080;
-	-moz-border-radius:3px;
+	color: #00007f;	
 }

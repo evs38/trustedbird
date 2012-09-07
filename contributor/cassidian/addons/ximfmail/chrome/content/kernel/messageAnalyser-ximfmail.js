@@ -40,8 +40,6 @@
  * ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
  * ***** END LICENSE BLOCK ***** */
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
-gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
 
 
 /**
@@ -58,7 +56,6 @@ function XimfmailGetMessage(mailUri, callbackFunction, callbackParam){
 			if (aIID.equals(Components.interfaces.nsISupports)
 				|| aIID.equals(Components.interfaces.nsIStreamListener))
 				return this;
-			throw Components.results.NS_NOINTERFACE;
 		},
 		data: "",
 		isDataComplete: false,
@@ -75,22 +72,30 @@ function XimfmailGetMessage(mailUri, callbackFunction, callbackParam){
 				var idxEnd = this.data.indexOf("\r\n\r\n",0); // * CRLF DOS : "\r\n"
   				if(idxEnd == -1) idxEnd = this.data.indexOf("\n\n",0); // * CRLF UNIX : "\n"
   				if(idxEnd == -1) idxEnd = this.data.indexOf("\r\r",0); //CRLF OS : "\r"
-  				if(idxEnd != -1) this.isDataComplete = true;	// msgSrc = msgSrc.substr(0,idxEnd); //dbg gConsole.logStringMessage("[smime - MessageAnalyser - succes getting mime headers : ] \n" + msgSrc);		
+  				if(idxEnd != -1) this.isDataComplete = true;		
+  				gConsole.logStringMessage("[XimfmailGetMessage - streamListener.onDataAvailable ]isDataComplete=true ");
   			}
+			gConsole.logStringMessage("[XimfmailGetMessage - streamListener.onDataAvailable ]");
 		},
 		onStopRequest: function(request, context, status) {
 			if (Components.isSuccessCode(status)) {				
+				gConsole.logStringMessage("[XimfmailGetMessage - streamListener.isDataComplete ] all mime headers have been parsed - status = " + status );					
 				callbackFunction( this.data, mailUri, callbackParam);
-			} else {
-				srv.errorSrv("notifyListener.getMsgSrc - "+mailUri+" - Error: "+status);
+			} else {				
+				if(this.isDataComplete == true){
+					// all mime headers have been parsed 
+					gConsole.logStringMessage("[XimfmailGetMessage - streamListener.isDataComplete ] all mime headers have been parsed !");					
+					callbackFunction( this.data, mailUri, callbackParam);
+				}else{
+					gConsole.logStringMessage("[XimfmailGetMessage - streamListener.onStopRequest ] Error: "+status);
+				}
 			}
 		}
 	}
 
 	gConsole.logStringMessage("[ximfmail - XimfmailGetMessage ]");
-	$("#ximfmailMailPanel").attr("collapsed","true"); // XIMF headers ihm
-	$("#ximfmail-custom-panel").attr("collapsed","true"); //XIMF account profile type ihm
-	$("#ximfHeadBox").attr("collapsed","true");	// XIMF pictures ihm	
+	//$("#ximfmailMailPanel").attr("collapsed","true"); // XIMF headers ihm
+	//$("#ximfmail-custom-panel").attr("collapsed","true"); //XIMF account profile type ihm
 	var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
 	pref = pref.QueryInterface(Components.interfaces.nsIPrefBranch2);
 	if(pref.getBoolPref("mailnews.headers.showXimfmail")){
@@ -100,60 +105,50 @@ function XimfmailGetMessage(mailUri, callbackFunction, callbackParam){
 		try { msgSvc.streamMessage(mailUri, streamListener, null, null, false, null); } catch (ex) { return false; }		
 	}else{
 		DeleteXimfHeaders();
+		gUriMsgLoading.remove(mailUri);
 	}	
 }
 	
 /*
- * Set Ximf headers of message to array
- * 
- * 
+ * Set Ximf headers of message to array : {[headerName][headerValue],[headerName][headerValue],...}
+ * headerName will be low-case formated
+ * use "for (headerName in gSecureHeadersArray) {}" to parse array
  */	
 function XimfmailParseMessage(msgSrc){
 	var separator = new RegExp("\\r\\n|\\r|\\n", "i");// end line
 	var tab = msgSrc.split(separator);
-	var currentXimfHdrArray = [];
+	var currentXimfHdrArray = {};
+	
 	// filter on IMF headers - append data to array			
 	var reg_folding = new RegExp("(  )","g");
-	var reg_folding2 = new RegExp("(\t)","g");
-	var idxTab=0;
-
-	for(idxTab=0; idxTab<tab.length; ++idxTab){
-		var header_line = tab[idxTab];		
-		// search for long header fields (folding) - RFC 2822
-		if(header_line[0]!= " "){
-			try{			 	
+	var reg_folding2 = new RegExp("(\t)","g");	
+	for(var idxTab=0; idxTab<tab.length; ++idxTab){
+		try{
+			var header_line = tab[idxTab];		
+			// search for long header fields (folding) - RFC 2822
+			if(header_line[0]!= " "){
 				while( idxTab < tab.length ){
-					var next_line = tab[idxTab+1];
-					if(next_line){
-						if(next_line[0] == " " || next_line[0] == "\t"){																		
-							header_line += next_line; //next_line.toLowerCase();
-							header_line = header_line.replace(reg_folding," ");
-							header_line = header_line.replace(reg_folding2,"");
-							++idxTab;
+					try{
+						var next_line = tab[idxTab+1];
+						if(next_line){
+							if(next_line[0] == " " || next_line[0] == "\t"){																		
+								header_line += next_line; //next_line.toLowerCase();
+								header_line = header_line.replace(reg_folding," ");
+								header_line = header_line.replace(reg_folding2,"");
+								++idxTab;
+							}else{ break; }
 						}else{ break; }
-					}else{ break; }
-				}
-			}catch(e){}
-		}						
-			//gConsole.logStringMessage("[ximfmail - createXimfHdrArray - decode header line : ] \n" + header_line);		
-		
-			// fill _ximfHdrArray			
-			//var lowcaseTmp = header_line.toLowerCase();
-			
-			var lowcaseTmp = header_line; //String_from_utf8(header_line).toLowerCase(); 			
-			if(lowcaseTmp.indexOf(":")!=-1){
-				var xhdr = new Object;
-				xhdr._hdrName = lowcaseTmp.substring(0,lowcaseTmp.indexOf(": ",0));
-				xhdr._hdrValue = lowcaseTmp.substring(lowcaseTmp.indexOf(": ",lowcaseTmp)+2);
-				
-				// decode MIME Header
-				xhdr._hdrValue = DecodeMimeXimfheader(xhdr._hdrValue);						
-										
-				currentXimfHdrArray.push(xhdr);
-				//gConsole.logStringMessage("[ximfmail - MessageAnalyser - push : ] \n" + xhdr._hdrName + " :: "+xhdr._hdrValue);		
+					}catch(e){}
+				}				
+			}	
+			// decode MIME Header and add header to arrray
+			if(header_line.indexOf(":")!=-1){
+				let hdrName = header_line.substring(0,header_line.indexOf(": ",0));						
+				let hdrValue = header_line.substring(header_line.indexOf(": ",header_line)+2);
+				if(hdrName != "")	currentXimfHdrArray[hdrName/*.toLowerCase()*/]= DecodeMimeXimfheader(hdrValue);
 			}
-	}
-	
+		}catch(e){}
+	}		
 	return currentXimfHdrArray;
 }
 
@@ -165,7 +160,7 @@ function XimfmailMesssage(){
 	this._mailUri = null;	
 	this._instanceMsgXimf = null;
 	this._current_definition = null;
-	this._currentXimfHdrArray = [];
+	this._currentXimfHdrArray = {};
 	if(typeof XimfmailMesssage.initialized == "undefined"){
 		// set uri of message
 		XimfmailMesssage.prototype.set = function(uri){
@@ -186,7 +181,12 @@ function XimfmailMesssage(){
 				this._mailUri =	uri;
 				this._instanceMsgXimf = null;
 				
-				this._currentXimfHdrArray=headerArray;
+				// this._currentXimfHdrArray=headerArray;
+				// be sure to have lower case header name
+				for(hdr in headerArray){
+					//this._currentXimfHdrArray[hdr.toLowerCase()] =  headerArray[hdr];
+					this._currentXimfHdrArray[hdr] =  headerArray[hdr];
+				}
 				
 				// get account XIMF definition
 				var prefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
@@ -197,8 +197,8 @@ function XimfmailMesssage(){
 				}else{
 					gConsole.logStringMessage("DBG [ximfmail - XimfmailMesssage.init ] no ximf preferences ");
 					return false;					
-				}					
-												 	
+				}
+				
 				var uriXimfInstance = this.hasXimfHeaders(this._current_definition);
 				if(uriXimfInstance){
 					gConsole.logStringMessage("DBG [ximfmail - XimfmailMesssage.init ] mail instance :  " + uriXimfInstance);			
@@ -230,8 +230,8 @@ function XimfmailMesssage(){
 				if(!sname) return null;
 				
 				// check currentDefinition in XimfmailCatalog
-				CreateXimfmailCatalog();
-				uriInstanceXimf = gXimfCatalog.getInstanceUri(currentDefinition,sname,sversion);
+				if(!gXimfCatalog){CreateXimfmailCatalog();}
+				var uriInstanceXimf = gXimfCatalog.getInstanceUri(currentDefinition,sname,sversion);
 			
 			}catch(e){
 				gConsole.logStringMessage("[ximfmail - XimfmailMesssage.hasXimfHeaders ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
@@ -244,44 +244,37 @@ function XimfmailMesssage(){
 		XimfmailMesssage.prototype.getHeaderValue = function(headerName){
 			var value = null;
 			try{					
-				var tmpHead = null;
-				for(var idx_xHdrArray = 0 ; idx_xHdrArray < this._currentXimfHdrArray.length ; ++idx_xHdrArray){
-					tmpHead = this._currentXimfHdrArray[idx_xHdrArray]._hdrName;						
-					if(headerName.toLowerCase() == tmpHead.toLowerCase()){
-						value = this._currentXimfHdrArray[idx_xHdrArray]._hdrValue;							
-						break;
-					}
+				//value = this._currentXimfHdrArray[headerName.toLowerCase()];
+				value = this._currentXimfHdrArray[headerName];				
+				if(value == null){
+					// try to get header insensitive case
+					for(hdr in this._currentXimfHdrArray){
+						if(headerName.toLowerCase() == hdr.toLowerCase()){						
+							value = this._currentXimfHdrArray[hdr];
+							break;
+							//alert("value as insensitive case founded : " +hdr+" : "+ value)
+						}
+					}					
 				}
+				
 			}catch(e){
 				gConsole.logStringMessage("[ximfmail - XimfmailMesssage.getValue ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+				value=null;
 			}
 			return value;
 		};
 		
 		// get XIMF value from message
-		XimfmailMesssage.prototype.getCompleteArray = function(){
-			return this._currentXimfHdrArray();
+		XimfmailMesssage.prototype.getCompleteXimfArray = function(){
+			return this._currentXimfHdrArray;
 		};
 		// set XIMF value to message
 		XimfmailMesssage.prototype.setXimfHeader = function(headerName,headerValue){		
-			try{					
-				var isNewHeader = true;
-				for(var idx_xHdrArray = 0 ; idx_xHdrArray < this._currentXimfHdrArray.length ; ++idx_xHdrArray){
-					var tmpHead = this._currentXimfHdrArray[idx_xHdrArray]._hdrName;						
-					if(tmpHead.toLowerCase() == headerName.toLowerCase()){
-						this._currentXimfHdrArray[idx_xHdrArray]._hdrValue = headerValue;
-						isNewHeader = false;
-						break;
-					}
-				}
-				if(isNewHeader){
-					var xhdr = new Object;
-					xhdr._hdrName = headerName;
-					xhdr._hdrValue = headerValue;
-					this._currentXimfHdrArray.push(xhdr);
-				}
+			try{
+				//this._currentXimfHdrArray[headerName.toLowerCase()] = headerValue;		
+				this._currentXimfHdrArray[headerName] = headerValue;
 			}catch(e){
-					gConsole.logStringMessage("[ximfmail - XimfmailMesssage.setXimfHeader ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+				gConsole.logStringMessage("[ximfmail - XimfmailMesssage.setXimfHeader ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
 			}		
 		};
 		XimfmailMesssage.initialized = true;
