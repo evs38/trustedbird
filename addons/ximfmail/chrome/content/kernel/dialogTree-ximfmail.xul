@@ -70,7 +70,7 @@
 			    </treecols>	
 			    <treechildren flex="1"
 			    	id="iTreechildDialog"
-	       			datasources="rdf:null"
+	       		datasources="rdf:null"
 					  ref="http://www.ximfmail.com/dialogtree/datas">
 					<template>
 			    		<treeitem uri="?uri">
@@ -81,7 +81,7 @@
 	         			</treeitem>
 	         		</template>
 	       		</treechildren>
-	  		</tree>	  		
+	  		</tree>
 	  		<scrollbar id="ximfmailTreeDialogScroll" curpos="0" maxpos="50" orient="vertical" />  		
   		</hbox>
   		<vbox id="ximfmailTreeDialogButtonbox">

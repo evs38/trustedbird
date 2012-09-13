@@ -1,3 +1,4 @@
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Copyright (c) 2008-2009 EADS DEFENCE AND SECURITY - All rights reserved.
  * ximfmail is under the triple license  MPL 1.1/GPL 2.0/LGPL 2.1.
@@ -126,10 +127,10 @@ function doOK()
 	}
 	
 		
-		//remove last separator		
-		if(newvalue.lastIndexOf(gXimfSeparator)+1 == newvalue.length){
-			newvalue = newvalue.substring(0,newvalue.lastIndexOf(gXimfSeparator));
-		}
+	//remove last separator		
+	if(newvalue.lastIndexOf(gXimfSeparator)+1 == newvalue.length){
+		newvalue = newvalue.substring(0,newvalue.lastIndexOf(gXimfSeparator));
+	}	
 	
   window.opener.document.getElementById(gBoxOpener).value = newvalue;
   window.opener.document.getElementById(gBoxOpener).setAttribute("ximfvalue", newvalue);    

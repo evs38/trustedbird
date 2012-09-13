@@ -43,12 +43,7 @@
 /* 
  * global variables
  */
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader); 
 var gXimfmailIdentity=null;
-gJSLoader.loadSubScript("chrome://ximfmail/content/jquery.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/controler-ximfmail.js");
-gJSLoader.loadSubScript("chrome://ximfmail/content/constant-ximfmail.js");
-
 
 /* 
  * new theme selection : load instances of theme
@@ -79,7 +74,7 @@ function onInit(aPageId, aServerId){
 	$("#checkListTheme").removeAttr("disabled");
 	
 	//get XIMF instances of profile for account
-	CreateXimfmailCatalog();
+	if(!gXimfCatalog) CreateXimfmailCatalog();
 	var listInstances = document.getElementById("listThemPopup");		
 	listInstances.database.AddDataSource(gXimfCatalog.getDSCatalog());	
 	listInstances.builder.rebuild();
@@ -118,10 +113,10 @@ function UseXimfmail(){
 	if($("#checkListTheme").attr("checked") == "true"){
  		$("#isUsingXimfail").attr("disabled","false"); 	 				 		
  		return false;		
- 	}else{ 		
+ 	}else{
  		$("#isUsingXimfail").attr("disabled","true");
  		return true;
- 	} 	
+ 	}
 }
  
 /*

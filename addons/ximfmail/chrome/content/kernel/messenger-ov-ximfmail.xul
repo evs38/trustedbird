@@ -43,10 +43,12 @@
 
 <?xml-stylesheet href="chrome://ximfmail/skin" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximfmail.dtd">
-<overlay id="ximfMessengerOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay id="ximfMessengerOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:html="http://www.w3.org/1999/xhtml">
 	
 	<script type="application/javascript"	src="chrome://ximfmail/content/jquery.js" />	
 	<script type="application/javascript"	src="chrome://ximfmail/content/constant-ximfmail.js" />
+	<script type="application/javascript" 	src="chrome://ximfmail/content/ximfCatalog.js" />
 	<script type="application/javascript"	src="chrome://ximfmail/content/controler-ximfmail.js" />
 	<script type="application/javascript"	src="chrome://ximfmail/content/ximfmail.js" />
 	<script type="application/javascript"	src="chrome://ximfmail/content/messageAnalyser-ximfmail.js" />
@@ -91,7 +93,7 @@
 								object="?pathDictionary" />
 						<triple subject="?elt"
 								predicate="http://www.ximfmail.com/RDF#instanceLabel"
-								object="?label" />	
+								object="?label" />								
 						<triple subject="?elt"
 								predicate="http://www.ximfmail.com/RDF#active"
 								object="true" />
@@ -113,8 +115,7 @@
 	
 	<!-- Display Ximf headers in single message -->
 	<vbox id="singlemessage">
-  	 	<vbox id="ximfmailMailPanel" insertafter="msgHeaderView" collapsed="true">
-  	 		
+  	 	<vbox id="ximfmailMailPanel" insertafter="msgHeaderView" collapsed="true">  	 		
 			<hbox id="ximfmailMailPanelFocusBar" class="ximfmailFocusBar" flex="1" align="center">
 				<button class="ximfmailButton" id="ximfmailComposeMessageMaximize" tooltiptext="&ximfmail.compose.focus;" accesskey="+" hidden="true" />
 				<button class="ximfmailButton" id="ximfmailComposeMessageMinimize" tooltiptext="&ximfmail.compose.unfocus;" accesskey="-" />
@@ -127,16 +128,13 @@
 			</hbox>	
 		</vbox>
 	</vbox>
-	<!-- Display Ximf pictures in message -->	
-	<rows id="expandedHeaderRows">
-		<row id="ximfHeadBox" insertbefore="expandedfromRow" collapsed="true">
-			<label  value=""/>
-			<hbox>
-  				<image id="ximfSecurityClassificationLabelImg"/>
-  				<spacer  flex="1"/> 
-  				<image id="ximfCategoryClassificationLabelImg"/>
-  				<spacer  flex="1"/> 
-  			</hbox>  			
-		</row>
-	</rows>
+	
+	<!-- Display Ximf pictures in message expandedHeadersBottomBox -->	
+	 <html:div id="expandedHeadersTopBox">
+	 	<hbox id="ximfHeadBox" insertafter="header-view-toolbox">
+	    	<image id="ximfSecurityClassificationLabelImg"/>	         
+	        <image id="ximfCategoryClassificationLabelImg"/>		                  
+	   	</hbox>
+	 </html:div>
+	 
 </overlay>

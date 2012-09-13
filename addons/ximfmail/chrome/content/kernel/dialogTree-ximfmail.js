@@ -74,8 +74,8 @@ $(document).ready(function(){
  	$("#ximfmail_dTreeAdd").bind("command",OnPushAddSelection);
  	$("#iTreechildDialog").dblclick(OnPushAddSelection);
  	$("#ximfmail_dTreeDel").bind("command",OnPushDelSelection);
- 	$("#ximfmail_dTreeRaz").bind("command",OnPushRazSelection);	
-
+ 	$("#ximfmail_dTreeRaz").bind("command",OnPushRazSelection);
+ 	
  	// event for scroll 
   $("#ximfmailTreeDialogScroll").mousemove(OnClickScrollTreeList);
   $("#ximfmailTreeDialogScroll").click(OnClickScrollTreeList);

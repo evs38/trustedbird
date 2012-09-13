@@ -43,42 +43,28 @@
 // GLOBALS
 //var relativeXimfCatalogPath = "ximf/ximfmail/chrome/content/theme/ximfCatalog.rdf";
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
 
-var gXimfCatalog = null;
-
-try{
-	gJSLoader.loadSubScript("chrome://ximfmail/content/ximfCatalog.js");
-	gXimfCatalog = new XimfCatalog();
-}catch(e){
-	gConsole.logStringMessage("[ximfmail - Load XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+function TRACE_DATE(){
+	var ladate=new Date();	
+	var h=ladate.getHours();
+	if (h<10) {h = "0" + h}
+	var m=ladate.getMinutes();
+	if (m<10) {m = "0" + m}
+	var s=ladate.getSeconds();
+	if (s<10) {s = "0" + s};	
+	return "\nDATE > "+ladate.getDate()+"/"+(ladate.getMonth()+1)+"/"+ladate.getFullYear()+" "+h+":"+m+":"+s+":"+ladate.getMilliseconds();	
 }
+
 
 /*
  * Load informations of ximf extensions in RDF memory 
  */
+var gXimfCatalog = null;
 function CreateXimfmailCatalog(aclLevel){
-	try{		
-		if(!gXimfCatalog) gXimfCatalog = new XimfCatalog();
-		var extensionPath = getFilePathInProfile("extensions/");
-		var extensionList = getExtensionsList();	
-		var sCompletePath;	
-		var dir = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
-  			
-		// search for themes extensions
-		for(i = 0; i<extensionList.length; i++){
-			sCompletePath = getFilePathInProfile("extensions/" + extensionList[i].id + "/chrome/content/ximfmail-profile.xml");
-			dir.initWithPath( sCompletePath );			
-			if(dir.exists()){												
-				// get xml profile	  	
-	  			var xmlDoc = GetXmlDocument(sCompletePath); 	  			
-				gXimfCatalog.registerXimfmailProfileNode(xmlDoc.documentElement,aclLevel);					
-				dump(sCompletePath + " : " + extensionList[i].name);
-				//alert(sCompletePath + " : " + extensionList[i].name);						
-			}									
-		}	
+	try{
+		if(!gXimfCatalog) gXimfCatalog = XimfCatalog.getInstance();		
 	}catch(e){
-			gConsole.logStringMessage("[ximfmail - Create XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+		gConsole.logStringMessage("[ximfmail - Create XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);
 	}
 }
 
@@ -233,7 +219,7 @@ function CreateRulesArray(instancePath,ruleType){
 				
 		//log array values		
 	}catch(e){
-		gConsole.logStringMessage("[ximfmail - CreateRulesArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);				
+		gConsole.logStringMessage("[ximfmail - CreateRulesArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);				
 	}	
 	
 	return tabHeaders;		
@@ -484,7 +470,7 @@ function ConvertZTimeToLocal(thisdate){
 	//get year
 	new_date += parts[3];
 	//get time, adjust time GMT and LocaleTime
-	var cdat = new Date();
+	var cdat = new Date();  
 	cdat.setUTCFullYear(parseInt("20"+parts[3], 10));
 	cdat.setUTCMonth(parseInt(month, 10));
 	cdat.setUTCDate(parseInt(parts[1], 10));
@@ -660,4 +646,30 @@ function ximfAlert(title,message){
 	}
 	var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
   	prompts.alert(window,title, message); 
+}
+
+/*
+ *  return value of array {[key][value],[key][value],...}
+ *  @param key : 
+ *  @param array : 
+ */
+function GetValueFromArrayWithInsensitiveKey(key, array){
+	var value = null;
+	try{					
+		value = array[key];				
+		if(value == null){
+			// try to get value of array with insensitive case key
+			for(akey in array){
+				if(akey.toLowerCase() == key.toLowerCase()){						
+					value = array[akey];	
+					//alert("GetValueFromArrayWithInsensitiveKey - value as insensitive case founded : " +akey+" : "+ value)
+					break;
+				}
+			}					
+		}		
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - GetValueFromArrayWithInsensitiveKey ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+		value=null;
+	}
+	return value;
 }

@@ -67,8 +67,9 @@ function OnDisplayInformations(){
 	}
 		
 	//add complete header to description
-	document.getElementById("ximfheaderName").value = title.substring(0,title.lastIndexOf(":"));
-	if(!xSeparator){		
+	//document.getElementById("ximfheaderName").value = title.substring(0,title.lastIndexOf(":"));
+	document.title = title.substring(0,title.lastIndexOf(":"));
+	if(!xSeparator){
 		document.getElementById("ximfheaderValue").value = val;
 	}else{		
 		var reg=new RegExp("["+xSeparator+"]+", "g");

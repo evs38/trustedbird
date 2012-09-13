@@ -1,7 +1,7 @@
 ximfmail.jar:
 %  content ximfmail %content/kernel/ xpcnativewrappers=yes
 %  content theme_ximfmail 	chrome/content/theme/ xpcnativewrappers=yes
-%  locale ximfmail fr %locale/fr/ 
+%  locale ximfmail fr %locale/fr-FR/ 
 %  locale ximfmail us %locale/en-US/
 %  skin ximfmail classic/1.0 %/skin/classic/
 %  overlay chrome://messenger/content/messenger.xul chrome://ximfmail/content/messenger-ov-ximfmail.xul
@@ -85,11 +85,11 @@ ximfmail.jar:
 	content/kernel/resource/icon-ximfmail.png	(chrome/content/kernel/resource/icon-ximfmail.png)	
 	content/kernel/resource/detail_text.png			(chrome/content/kernel/resource/detail_text.png)
 	content/kernel/resource/detail_text_over.png		(chrome/content/kernel/resource/detail_text_over.png)
-	locale/fr/datepicker.dtd			(chrome/locale/fr/datepicker.dtd)
+	locale/fr-FR/datepicker.dtd			(chrome/locale/fr-FR/datepicker.dtd)
 	locale/en-US/datepicker.dtd			(chrome/locale/en-US/datepicker.dtd)
-	locale/fr/ximfmail.dtd			(chrome/locale/fr/ximfmail.dtd)
-	locale/fr/ximfmail.properties	(chrome/locale/fr/ximfmail.properties)
-	locale/fr/am-ximfmail.properties	(chrome/locale/fr/am-ximfmail.properties)
+	locale/fr-FR/ximfmail.dtd			(chrome/locale/fr-FR/ximfmail.dtd)
+	locale/fr-FR/ximfmail.properties	(chrome/locale/fr-FR/ximfmail.properties)
+	locale/fr-FR/am-ximfmail.properties	(chrome/locale/fr-FR/am-ximfmail.properties)
 	locale/en-US/ximfmail.dtd			(chrome/locale/en-US/ximfmail.dtd)
 	locale/en-US/ximfmail.properties	(chrome/locale/en-US/ximfmail.properties)
 	locale/en-US/am-ximfmail.properties	(chrome/locale/en-US/am-ximfmail.properties)
