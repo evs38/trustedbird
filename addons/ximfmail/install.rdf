@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:name>XIMFMail</em:name>
-    <em:version>0.8.2</em:version>
+    <em:version>1.8.2</em:version>
     <em:id>{A627B834-BD9F-4b3f-9AF5-347B5A570402}</em:id>
     <em:description>Xtend Internet Message Format engine</em:description>
 

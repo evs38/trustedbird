@@ -470,7 +470,7 @@ function ConvertZTimeToLocal(thisdate){
 	//get year
 	new_date += parts[3];
 	//get time, adjust time GMT and LocaleTime
-	var cdat = new Date();  
+	var cdat = new Date();
 	cdat.setUTCFullYear(parseInt("20"+parts[3], 10));
 	cdat.setUTCMonth(parseInt(month, 10));
 	cdat.setUTCDate(parseInt(parts[1], 10));

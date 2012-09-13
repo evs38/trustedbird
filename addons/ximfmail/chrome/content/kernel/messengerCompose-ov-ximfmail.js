@@ -51,7 +51,7 @@ window.addEventListener("compose-window-init", XimfmailComposeInit, true);
 /*
  * (Re)open message composer with XIMF instance
  */
-function XimfmailComposeInit(){	
+function XimfmailComposeInit(){
 	// ximfmail not requested
 	ResetXimfhdrsDom();
 	if(!gPrefBranch) gPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
@@ -85,7 +85,7 @@ function XimfmailStartup(){
 			++gMaxTimeoutXimfmail;
 		}
 		return;
-	}	
+	}
 	
 	var currentInstance = null;
 	var current_definition = null;

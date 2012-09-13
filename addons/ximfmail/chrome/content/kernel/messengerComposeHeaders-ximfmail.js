@@ -54,7 +54,7 @@ function onclosepanel(){
 	//var a = document.getElementById("search");
 	var lisitem = $("#search-panel checkbox");
 	var resString = "";	
-	for(i=0;i<lisitem.length;++i){
+	for(var i=0;i<lisitem.length;++i){
 		if(lisitem[i].hasAttribute("checked"))
 		resString += $(lisitem[i]).attr("label")+ " | ";
 	}
@@ -273,7 +273,7 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 			
 			// custom panels where maxitem=1 and contains composed elements
 			var arrPanel = $("panel[ximfmaxitem='1']");
-			for(i=0;i<arrPanel.length;++i){				
+			for(var i=0;i<arrPanel.length;++i){				
 				// checkboxes are used
 				var chkboxes = $("panel[id='"+arrPanel[i].id+"'] checkbox");				
 				if(chkboxes.length>=1){					
@@ -700,7 +700,7 @@ function LoadXimfhdrsEventObserver(){
 		if(evt.keyCode == 13){			
 			var panel = evt.currentTarget;			
 			var richlistitem = $("#" + evt.currentTarget.id + " richlistitem");
-			for(i=0;i<richlistitem.length;++i){
+			for(var i=0;i<richlistitem.length;++i){
 				if(richlistitem[i].selected){
 					var nodes = richlistitem[i].childNodes;
 					for(j=0;j<nodes.length;++j){
@@ -725,7 +725,7 @@ function LoadXimfhdrsEventObserver(){
 	// check richlistitem where ximfchild=true (ximf computestring)
 	$("panel").bind("popuphiding",function(evt){
 		var CompstringItem = $("#" + evt.currentTarget.id + " richlistitem[ximfchild='true']");
-		for(i=0; i<CompstringItem.length; ++i){
+		for(var i=0; i<CompstringItem.length; i++){
 			var chk1 = CompstringItem[i].firstElementChild;
 			if(chk1.localName == "checkbox"){
 				if(chk1.checked){				
@@ -759,7 +759,7 @@ function LoadXimfhdrsEventObserver(){
 	$("panel").bind("popupshown",function(evt){
 		if(parseInt($(evt.currentTarget).attr("ximfmaxitem"), 10) <= 1 ) return;
 		var richitems = $("#" + evt.currentTarget.id + " richlistbox" ).children("richlistitem");			
-		for(i=0 ; i<richitems.length; ++i){
+		for(var i=0 ; i<richitems.length; ++i){
 			var chk1 = richitems[i].firstElementChild;
 			if(chk1.localName == "checkbox"){
 				if(!chk1.checked){
@@ -1487,7 +1487,7 @@ function ComputePanelOfCheckboxSelection(idCheckbox){
 		var nbItems = $(pnl).attr("ximfmaxitem");			
 		var richitems = $("#" + pnl.id + " richlistbox" ).children("richlistitem");			
 		var nbchkedboxes = 0;			
-		for(i=0 ; i<richitems.length; ++i){
+		for(var i=0 ; i<richitems.length; ++i){
 			var chk1 = richitems[i].firstElementChild;						
 			if(chk1.localName == "checkbox"){					
 				if(chk1.checked){
@@ -1515,7 +1515,7 @@ function ComputePanelOfCheckboxSelection(idCheckbox){
 		if(nbchkedboxes < nbItems){
 			// other items can be selected				
 			$(chkboxes).attr("disabled","false");//.removeAttr("disabled");	
-			for(i=0 ; i<richitems.length; ++i){
+			for(var i=0 ; i<richitems.length; ++i){
 				var chk1 = richitems[i].firstElementChild;
 				if(chk1.localName == "checkbox"){
 					if(!chk1.checked){
@@ -1531,7 +1531,7 @@ function ComputePanelOfCheckboxSelection(idCheckbox){
 			}
 		}else{
 			// max selection is selected, disable others items 
-			for(i=0 ; i<richitems.length; ++i){
+			for(var i=0 ; i<richitems.length; ++i){
 				var chk1 = richitems[i].firstElementChild;
 				if(chk1.localName == "checkbox"){
 					var eltsChild = richitems[i].getElementsByTagName("checkbox");					
@@ -1588,7 +1588,7 @@ function IsAcceptableXimfCompstring(idCompstring){
 			}else{
 				// search for textboxes
 				var childTxtboxList = siblingElement.getElementsByTagName("textbox");
-				for(i=0 ; i<childTxtboxList.length ; ++i){
+				for(var i=0 ; i<childTxtboxList.length ; ++i){
 					if(childTxtboxList[i].value !=""){
 						isAcceptableCompstring = true;
 						break;
@@ -1596,9 +1596,9 @@ function IsAcceptableXimfCompstring(idCompstring){
 				}
 				
 				if(!isAcceptableCompstring){
-				// search for checkboxes
-				var childCheckBoxList = siblingElement.getElementsByTagName("checkbox");
-					for(i=0 ; i<childCheckBoxList.length ; ++i){
+					// search for checkboxes
+					var childCheckBoxList = siblingElement.getElementsByTagName("checkbox");
+					for(var i=0 ; i<childCheckBoxList.length ; ++i){
 						if(childCheckBoxList[i].checked){
 							isAcceptableCompstring = true;
 							break;
@@ -1637,12 +1637,12 @@ function IsAcceptableXimfCompstring(idCompstring){
 		$("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] checkbox").removeAttr("checked");
 		$("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] checkbox").removeAttr("disabled");
 		var listTxtbox = $("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] textbox");
-		for(i=0;i<listTxtbox.length;++i)listTxtbox[i].value="";
+		for(var i=0;i<listTxtbox.length;++i)listTxtbox[i].value="";
 				
 		// delete repanel of linked values		
 		menu_link = $("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] menuitem[linkpopupbox]");
 		if(menu_link.length > 0){
-			for(i=0 ; i<menu_link.length ; ++i)	{	
+			for(var i=0 ; i<menu_link.length ; ++i)	{	
 				try{
 					var popupset = document.getElementById($(menu_link[i]).attr("linkpopupbox"));
 					var txtbox = document.getElementById(popupset.getAttribute(_XIMF_ATT_REF_BOX));
