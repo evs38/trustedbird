@@ -51,11 +51,17 @@ var gEncryptedURIService =
 var gNextSecurityButtonCommand = "";
 var gSMFields = null;
 
+var gEncryptOptionChanged;
+var gSignOptionChanged;
+
+var gSecurityLabelConf = null;
+
 function onComposerClose()
 {
   gSMFields = null;
   setNoEncryptionUI();
   setNoSignatureUI();
+  setSecurityLabelStatusBarUI();
 
   if (!gMsgCompose || !gMsgCompose.compFields)
     return;
@@ -98,6 +104,11 @@ function onComposerReOpen()
     setSignatureUI();
   else
     setNoSignatureUI();
+
+  if (gSMFields.signMessage)
+    gSMFields.SMIMEReceiptRequest = gCurrentIdentity.getBoolAttribute("smime_receipt_request");
+
+  setSecurityLabelStatusBarUI();
 }
 
 addEventListener("load", smimeComposeOnLoad, false);
@@ -195,11 +206,44 @@ function signMessage()
       return;
     }
 
+    gSMFields.SMIMEReceiptRequest = gCurrentIdentity.getBoolAttribute("smime_receipt_request");
+
     setSignatureUI();
   }
   else
   {
+    gSMFields.SMIMEReceiptRequest = false;
+
+    gSMFields.securityPolicyIdentifier = "";
+    setSecurityLabelStatusBarUI();
     setNoSignatureUI();
+  }
+
+  gSignOptionChanged = true;
+}
+
+function toggleSMIMEReceiptRequest()
+{
+  if (!gSMFields)
+    return;
+
+  gSMFields.SMIMEReceiptRequest = !gSMFields.SMIMEReceiptRequest;
+
+  if (gSMFields.SMIMEReceiptRequest)
+  {
+    var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+
+    if (!signingCertName)
+    {
+      gSMFields.SMIMEReceiptRequest = false;
+      showNeedSetupInfo();
+      return;
+    }
+
+    // Force signing
+    gSMFields.signMessage = true;
+
+    setSignatureUI();
   }
 }
 
@@ -214,6 +258,8 @@ function setSecuritySettings(menu_id)
           .setAttribute("checked", !gSMFields.requireEncryptMessage);
   document.getElementById("menu_securitySign" + menu_id)
           .setAttribute("checked", gSMFields.signMessage);
+  document.getElementById("menu_securitySMIMEReceiptRequest" + menu_id)
+          .setAttribute("checked", gSMFields.SMIMEReceiptRequest);
 }
 
 function setNextCommand(what)
@@ -238,6 +284,14 @@ function doSecurityButton()
 
     case "signMessage":
       signMessage();
+      break;
+
+    case "SMIMEReceiptRequest":
+      toggleSMIMEReceiptRequest();
+      break;
+
+    case "securityLabelDialog":
+      showSecurityLabelDialog();
       break;
 
     case "show":
@@ -397,4 +451,53 @@ function onComposerFromChanged()
     gSMFields.signMessage = false;
     setNoSignatureUI();
   }
+}
+
+/**
+ * Show a dialog to define Security Label settings
+ */
+function showSecurityLabelDialog() {
+  window.openDialog('chrome://messenger-smime/content/msgCompSecurityLabelDialog.xul', '', 'chrome,resizable=yes,titlebar,modal,width=500,height=350');
+
+  /* make sure we have a cert name for signing */
+  if (gSMFields.securityPolicyIdentifier != "")
+  {
+    var signingCertName = gCurrentIdentity.getUnicharAttribute("signing_cert_name");
+    if (!signingCertName)
+    {
+      gSMFields.securityPolicyIdentifier = "";
+      setSecurityLabelStatusBarUI();
+      showNeedSetupInfo();
+      return;
+    }
+
+    // Enable signing if disabled
+    if (!gSMFields.signMessage)
+      toggleSignMessage();
+  }
+
+  setSecurityLabelStatusBarUI();
+}
+
+/**
+ * Display Security Label info in status bar of compose window
+ */
+function setSecurityLabelStatusBarUI() {
+  if (!gSMFields || gSMFields.securityPolicyIdentifier == "") {
+    top.document.getElementById("securityLabel-status").label = "";
+    top.document.getElementById("securityLabel-status").collapsed = true;
+    return;
+  }
+
+  if (!gSecurityLabelConf)
+    gSecurityLabelConf = new securityLabelConf();
+
+  var securityLabelValue = "";
+
+  if (gSMFields.securityClassification != -1)
+    securityLabelValue = gSecurityLabelConf.getSecurityClassificationName(gSMFields.securityPolicyIdentifier, gSMFields.securityClassification) + " ";
+
+  securityLabelValue += "[" + gSecurityLabelConf.getSecurityPolicyIdentifierName(gSMFields.securityPolicyIdentifier) + "]";
+  top.document.getElementById("securityLabel-status").label = securityLabelValue;
+  top.document.getElementById("securityLabel-status").collapsed = false;
 }

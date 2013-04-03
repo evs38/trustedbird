@@ -47,6 +47,7 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/javascript" src="chrome://messenger-smime/content/msgCompSMIMEOverlay.js"/>
+  <script type="application/javascript" src="chrome://messenger-smime/content/msgSecurityLabel.js"/>
 
   <window id="msgcomposeWindow">
     <broadcaster id="securityStatus" crypto="" signing=""/>
@@ -66,8 +67,20 @@
           accesskey="&menu_securityEncryptRequire.accesskey;" label="&menu_securityEncryptRequire.label;" oncommand="encryptMessage()"/>
         <menuseparator/>
         <menuitem id="menu_securitySign1" type="checkbox" accesskey="&menu_securitySign.accesskey;" label="&menu_securitySign.label;" oncommand="signMessage()"/>
+		menuitem id="menu_securitySMIMEReceiptRequest1"
+              type="checkbox"
+              label="&menu_securitySMIMEReceiptRequest.label;"
+              accesskey="&menu_securitySMIMEReceiptRequest.accesskey;"
+              oncommand="toggleSMIMEReceiptRequest()"/>
+
+    <menuseparator id="menu_securityLabelDialogSeparator1"/>
+    <menuitem id="menu_securityLabelDialog1"
+              label="&menu_securityLabel.label;"
+              accesskey="&menu_securityLabel.accesskey;"
+              oncommand="showSecurityLabelDialog();"/>
       </menupopup>
     </menu>
+	<
   </menupopup>
 
   <toolbarpalette id="MsgComposeToolbarPalette">
@@ -84,7 +97,17 @@
           accesskey="&menu_securityEncryptRequire.accesskey;" label="&menu_securityEncryptRequire.label;" oncommand="setNextCommand('encryptMessage')"/>
         <menuseparator/>
         <menuitem id="menu_securitySign2" type="checkbox" accesskey="&menu_securitySign.accesskey;" label="&menu_securitySign.label;" oncommand="setNextCommand('signMessage');"/>
-        <menuseparator/>
+        <menuitem id="menu_securitySMIMEReceiptRequest2"
+                  type="checkbox"
+                  label="&menu_securitySMIMEReceiptRequest.label;"
+                  accesskey="&menu_securitySMIMEReceiptRequest.accesskey;"
+                  oncommand="setNextCommand('SMIMEReceiptRequest');"/>
+        <menuseparator id="menu_securityLabelDialogSeparator2"/>
+        <menuitem id="menu_securityLabelDialog2"
+                  label="&menu_securityLabel.label;"
+                  accesskey="&menu_securityLabel.accesskey;"
+                  oncommand="setNextCommand('securityLabelDialog');"/>
+        <menuseparator id="smimeToolbarButtonSeparator"/>
         <menuitem id="menu_securityStatus2" accesskey="&menu_securityStatus.accesskey;" label="&menu_securityStatus.label;" oncommand="setNextCommand('show');"/>
       </menupopup>
     </toolbarbutton>
@@ -93,6 +116,8 @@
   <statusbar id="status-bar">
     <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
       id="signing-status" oncommand="showMessageComposeSecurityStatus();"/>
+    <statusbarpanel insertbefore="offline-status" class="statusbarpanel-text" collapsed="true"
+      id="securityLabel-status" onclick="showSecurityLabelDialog();"/>
     <statusbarpanel insertbefore="offline-status" class="statusbarpanel-iconic" collapsed="true"
       id="encryption-status" oncommand="showMessageComposeSecurityStatus();"/>
   </statusbar>

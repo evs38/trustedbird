@@ -56,6 +56,7 @@
 
   <script type="application/javascript" src="chrome://help/content/contextHelp.js"/>
   <script type="application/javascript" src="chrome://messenger-smime/content/msgCompSecurityInfo.js"/>
+  <script type="application/javascript" src="chrome://messenger-smime/content/msgSecurityLabel.js"/>
 
   <stringbundle id="bundle_smime_comp_info" src="chrome://messenger-smime/locale/msgCompSecurityInfo.properties"/> 
 
@@ -66,6 +67,7 @@
     <columns>
       <column/>
       <column/>
+      <column/>
     </columns>
     <rows>
       <row>
@@ -73,8 +75,16 @@
         <label id="signed"/>
       </row>
       <row>
+        <label value="&status.securityLabel;"/>
+        <label id="securityLabel"/>
+      </row>
+      <row>
         <label value="&status.encrypted;"/>
         <label id="encrypted"/>
+      </row>
+      <row>
+        <label value="&secureHeaders.field;"/>
+        <label id="headerSecured"/>
       </row>
     </rows>
   </grid>

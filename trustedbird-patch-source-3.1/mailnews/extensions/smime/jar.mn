@@ -24,4 +24,6 @@ content/messenger-smime/certFetchingStatus.js (content/certFetchingStatus.js)
 content/messenger-smime/msgSecurityLabel.js (content/msgSecurityLabel.js)
 content/messenger-smime/msgCompSecurityLabelDialog.xul (content/msgCompSecurityLabelDialog.xul)
 content/messenger-smime/msgCompSecurityLabelDialog.js (content/msgCompSecurityLabelDialog.js)
+content/messenger-smime/msgCompSecurityLabelDialog.xul (content/msgCompSecurityLabelDialog.xul)
+content/messenger-smime/msgCompSecurityLabelDialog.js  (content/msgCompSecurityLabelDialog.js)
 #endif

@@ -259,16 +259,20 @@ function onLoad()
     }
     
     /* Security Label */
-    if (params.smFields.securityPolicyIdentifier != "") {
-      if (params.smFields.securityClassification != -1) {
-    	securityLabel_element.value = securityLabelGetSecurityClassificationName(params.smFields.securityPolicyIdentifier, params.smFields.securityClassification)
-    								+ " [" + securityLabelGetSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
-      } else {
-        securityLabel_element.value = "[" + securityLabelGetSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
-      }
-    } else {
-      securityLabel_element.value = no_string;
+    if (params.smFields.securityPolicyIdentifier != "")
+    {
+      var tSecurityLabelConf = new securityLabelConf();;
+      var securityLabelValue = "";
+      if (params.smFields.securityClassification != -1)
+        securityLabelValue = tSecurityLabelConf.getSecurityClassificationName(params.smFields.securityPolicyIdentifier, params.smFields.securityClassification) + " ";
+
+      securityLabelValue += "[" + tSecurityLabelConf.getSecurityPolicyIdentifierName(params.smFields.securityPolicyIdentifier) + "]";
+      securityLabel_element.value = securityLabelValue;
     }
+    else
+      securityLabel_element.value = no_string;
+
+  	}
   }
 
   var imax = gCount.value;
@@ -341,7 +345,7 @@ function viewSelectedCert()
 
 function doHelpButton()
 {
-  openHelp('compose_security');
+  openHelp('compose_security', 'chrome://communicator/locale/help/suitehelp.rdf');
 }
 
 function createCell(label)

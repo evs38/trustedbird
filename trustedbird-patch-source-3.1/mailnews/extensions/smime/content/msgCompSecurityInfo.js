@@ -192,6 +192,8 @@ function onLoad()
 
     var signed_element = document.getElementById("signed");
     var encrypted_element = document.getElementById("encrypted");
+    var signedReceiptRequest_element = document.getElementById("signedReceiptRequest");
+    var tripleWrapped_element = document.getElementById("tripleWrapped");
     var securityLabel_element = document.getElementById("securityLabel");
 
     if (params.smFields.requireEncryptMessage)
@@ -226,6 +228,32 @@ function onLoad()
       signed_element.value = no_string;
     }
 
+    if (params.smFields.signedReceiptRequest)
+    {
+      if (params.isSigningCertAvailable)
+        signedReceiptRequest_element.value = yes_string;
+      else
+        signedReceiptRequest_element.value = not_possible_string;
+    }
+    else
+      signedReceiptRequest_element.value = no_string;
+
+    if (params.smFields.tripleWrapMessage)
+    {
+      if (params.isEncryptionCertAvailable && canEncrypt.value && params.isSigningCertAvailable)
+      {
+        tripleWrapped_element.value = yes_string;
+      }
+      else
+      {
+        tripleWrapped_element.value = not_possible_string;
+      }
+    }
+    else
+    {
+      tripleWrapped_element.value = no_string;
+    }
+    
     /* Security Label */
     if (params.smFields.securityPolicyIdentifier != "")
     {
@@ -240,6 +268,7 @@ function onLoad()
     else
       securityLabel_element.value = no_string;
 
+  	}
   }
 
   var imax = gCount.value;
@@ -268,15 +297,15 @@ function onLoad()
   var gSecureBundle = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
   var secureBundle = gSecureBundle.createBundle(SECURE_HEADER_PROPERTIES_URL);
   var sLabel;
-  if(params.isSecureHeaderAvailable == "true"){
-    // get international label for new line
-    sLabel = secureBundle.GetStringFromName("yes.label");
-    document.getElementById("headerSecured").setAttribute("value",sLabel);
-    ReadSecureHeaders(params);
+  if(params.isSecureHeaderAvailable){
+	// get international label for new line
+	sLabel = secureBundle.GetStringFromName("yes.label");
+	document.getElementById("headerSecured").setAttribute("value",sLabel);
+	ReadSecureHeaders(params);
   }
   else{
-    sLabel = secureBundle.GetStringFromName("no.label");
-    document.getElementById("headerSecured").setAttribute("value",sLabel);
+	sLabel = secureBundle.GetStringFromName("no.label");
+	document.getElementById("headerSecured").setAttribute("value",sLabel);
   }
 }
 
