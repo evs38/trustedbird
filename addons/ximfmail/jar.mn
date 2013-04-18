@@ -11,6 +11,7 @@ ximfmail.jar:
 	content/kernel/am-ximfmail.xul 					(chrome/content/kernel/am-ximfmail.xul)	
 	content/kernel/dialogHdrInfo-ximfmail.xul		(chrome/content/kernel/dialogHdrInfo-ximfmail.xul)
 	content/kernel/dialogTree-ximfmail.xul			(chrome/content/kernel/dialogTree-ximfmail.xul)
+	content/kernel/dialogTree-rdf-ximfmail.js     	(chrome/content/kernel/dialogTree-rdf-ximfmail.js)
 	content/kernel/messageWindow-ov-ximfmail.xul	(chrome/content/kernel/messageWindow-ov-ximfmail.xul)
 	content/kernel/messengerCompose-ov-ximfmail.xul (chrome/content/kernel/messengerCompose-ov-ximfmail.xul)
 	content/kernel/messenger-ov-ximfmail.xul 		(chrome/content/kernel/messenger-ov-ximfmail.xul)

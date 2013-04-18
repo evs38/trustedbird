@@ -48,6 +48,10 @@
 	class="color-dialog" onload="parent.onPanelLoaded('am-ximfmail.xul');"
 	orient="vertical">
 
+	<script type="application/javascript" src="chrome://ximfmail/content/jquery.js" />
+	<script type="application/javascript" src="chrome://ximfmail/content/constant-ximfmail.js" />
+	<script type="application/javascript" src="chrome://ximfmail/content/ximfCatalog.js" />
+	<script type="application/javascript" src="chrome://ximfmail/content/controler-ximfmail.js" />
 	<script type="application/javascript" src="chrome://ximfmail/content/ximfmail.js" />
 	<script type="application/javascript" src="chrome://ximfmail/content/am-ximfmail.js" />
 	
@@ -117,7 +121,10 @@
 												object="?name" />	
 											<triple subject="?elt"
 												predicate="http://www.ximfmail.com/RDF#instanceLabel"
-												object="?label" />												
+												object="?label" />	
+											<triple subject="?elt"
+												predicate="http://www.ximfmail.com/RDF#active"
+												object="true" />											
 										</conditions>
 										<action>
 											<menuitem uri="?elt" value="?elt" label="?label"/>												

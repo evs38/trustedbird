@@ -103,7 +103,7 @@ function CreateRdfDatasSource(xmlDataPath){
 			RDFC_data = _rdfCUtils.MakeSeq(_dsCatalog, seqNode);
 			
 		}catch(e){
-				gConsole.logStringMessage("[ximfmail - XimfTreeData.registerXimfmailProfileNode ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+				gConsole.logStringMessage("[ximfmail - CreateRdfDatasSource ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
 		}			
 		
 		var treeTag = baseTag[0].getElementsByTagName("ximf:tree");		
@@ -128,7 +128,7 @@ function CreateRdfDatasSource(xmlDataPath){
 		xDataSource._refDataSource = datasUri;
 		return xDataSource; 
 	}catch(e){	
-		gConsole.logStringMessage("[ximfmail - XimfTreeData.CreateRdfDatasSource ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+		gConsole.logStringMessage("[ximfmail - CreateRdfDatasSource ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
 	}	
 }
 
@@ -170,10 +170,13 @@ function CreateRdfDatasSource_array(arrayDatas, strTitle){
 				
 			var arrayCols = arrayDatas[i];
 			for(var j = 0; j < arrayCols.length; ++j){
+				var valData = arrayCols[j];
+				if (valData == "")
+					valData = " ";
 				// append description element
 				_dsCatalog.Assert(_rdfService.GetResource(newURI), 
 					_rdfService.GetResource("http://www.ximfmail.com/RDF#column"+j), 
-					_rdfService.GetLiteral(arrayCols[j]), 
+					_rdfService.GetLiteral(valData), 
 					true
 				);		
 			}

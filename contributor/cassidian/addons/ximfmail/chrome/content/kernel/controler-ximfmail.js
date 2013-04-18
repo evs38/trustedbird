@@ -44,9 +44,6 @@
  * global variables
  */
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
-gJSLoader.loadSubScript("chrome://ximfmail/content/jquery.js");
-
 
 /*
  * 
@@ -105,7 +102,7 @@ function ChangeRefAttrRdfElement(idElement,refValue){
 	//$("#"+idElement).attr("ref",refValue);
 	
 	var list = document.getElementById(idElement);		
-	list.database.AddDataSource(gXimfCatalog.getDSCatalog());	
+	list.database.AddDataSource(XimfCatalog.getInstance().getDSCatalog());	
 	list.setAttribute("ref",refValue);
 	list.builder.rebuild();
 	

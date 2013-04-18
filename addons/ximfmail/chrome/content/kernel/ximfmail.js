@@ -43,40 +43,28 @@
 // GLOBALS
 //var relativeXimfCatalogPath = "ximf/ximfmail/chrome/content/theme/ximfCatalog.rdf";
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-var gJSLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].createInstance(Components.interfaces.mozIJSSubScriptLoader);
 
-
-try{
-	gJSLoader.loadSubScript("chrome://ximfmail/content/ximfCatalog.js");
-	var gXimfCatalog = new XimfCatalog();
-}catch(e){
-	gConsole.logStringMessage("[ximfmail - Load XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+function TRACE_DATE(){
+	var ladate=new Date();	
+	var h=ladate.getHours();
+	if (h<10) {h = "0" + h}
+	var m=ladate.getMinutes();
+	if (m<10) {m = "0" + m}
+	var s=ladate.getSeconds();
+	if (s<10) {s = "0" + s};	
+	return "\nDATE > "+ladate.getDate()+"/"+(ladate.getMonth()+1)+"/"+ladate.getFullYear()+" "+h+":"+m+":"+s+":"+ladate.getMilliseconds();	
 }
+
 
 /*
  * Load informations of ximf extensions in RDF memory 
  */
-function CreateXimfmailCatalog(){
-	try{		
-		var extensionPath = getFilePathInProfile("extensions/");
-		var extensionList = getExtensionsList();	
-		var sCompletePath;	
-		var dir = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
-  			
-		// search for themes extensions
-		for(i = 0; i<extensionList.length; i++){
-			sCompletePath = getFilePathInProfile("extensions/" + extensionList[i].id + "/chrome/content/ximfmail-profile.xml");
-			dir.initWithPath( sCompletePath );			
-			if(dir.exists()){												
-				// get xml profile	  	
-	  			var xmlDoc = GetXmlDocument(sCompletePath); 	  			
-				gXimfCatalog.registerXimfmailProfileNode(xmlDoc.documentElement);					
-				dump(sCompletePath + " : " + extensionList[i].name);
-				//alert(sCompletePath + " : " + extensionList[i].name);						
-			}									
-		}	
+var gXimfCatalog = null;
+function CreateXimfmailCatalog(aclLevel){
+	try{
+		if(!gXimfCatalog) gXimfCatalog = XimfCatalog.getInstance();		
 	}catch(e){
-			gConsole.logStringMessage("[ximfmail - Create XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);
+		gConsole.logStringMessage("[ximfmail - Create XimfCatalog ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);
 	}
 }
 
@@ -231,7 +219,7 @@ function CreateRulesArray(instancePath,ruleType){
 				
 		//log array values		
 	}catch(e){
-		gConsole.logStringMessage("[ximfmail - CreateRulesArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);				
+		gConsole.logStringMessage("[ximfmail - CreateRulesArray ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);				
 	}	
 	
 	return tabHeaders;		
@@ -427,42 +415,55 @@ function ConvertZTimeToLocal(thisdate){
 	// get date
 	new_date = parts[1];	
 	// get month
+	var month = "";
 	switch(parts[2].toLowerCase()){
 		case "jan":
 			new_date += "/01/"; 
+			month = "0";
 			break;
 		case "feb":
 			new_date += "/02/"; 
+			month = "1";
 			break;
 		case "mar":
 			new_date += "/03/"; 
+			month = "2";
 			break;
 		case "apr":
 			new_date += "/04/"; 
+			month = "3";
 			break;
 		case "may":
 			new_date += "/05/"; 
+			month = "4";
 			break;
 		case "jun":
 			new_date += "/06/"; 
+			month = "5";
 			break;
 		case "jul":
 			new_date += "/07/"; 
+			month = "6";
 			break;
 		case "aug":
 			new_date += "/08/"; 
+			month = "7";
 			break;
 		case "sep":
 			new_date += "/09/"; 
+			month = "8";
 			break;
 		case "oct":
 			new_date += "/10/"; 
+			month = "9";
 			break;
 		case "nov":
 			new_date += "/11/"; 
+			month = "10";
 			break;
 		case "dec":
 			new_date += "/12/"; 
+			month = "11";
 			break;
 		default : new_date += "/??/"; 
 	}	
@@ -470,6 +471,10 @@ function ConvertZTimeToLocal(thisdate){
 	new_date += parts[3];
 	//get time, adjust time GMT and LocaleTime
 	var cdat = new Date();
+	cdat.setUTCFullYear(parseInt("20"+parts[3], 10));
+	cdat.setUTCMonth(parseInt(month, 10));
+	cdat.setUTCDate(parseInt(parts[1], 10));
+	  
 	var hour = parts[4];
 	var min = parts[5];
 	try{
@@ -482,22 +487,23 @@ function ConvertZTimeToLocal(thisdate){
 	}catch(e){}
 	
 	//  get local time
-	var time = (parseInt(hour)*60) + parseInt(min) + (cdat.getTimezoneOffset()*-1);
-	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] Formule \n"+(parseInt(hour)*60)+"+"+parseInt(min)+"+" +cdat.getTimezoneOffset()+"="+time);
+	var time = (parseInt(hour, 10)*60) + parseInt(min, 10) + (cdat.getTimezoneOffset()*-1);
+	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] Formule \n"+(parseInt(hour, 10)*60)+"+"+parseInt(min, 10)+"+" +cdat.getTimezoneOffset()+"="+time);
 	
-	var hour = parseInt(parseInt(time)/60);
-	if(parseInt(min) < 0){
+	var hour = parseInt(parseInt(time, 10)/60, 10);
+	if(parseInt(hour, 10)<=9) hour = "0" + hour;
+	if(parseInt(min, 10) < 0){
 		
 	}
-	if(parseInt(min) < 24){
+	if(parseInt(min, 10) < 24){
 		
 	}
-	var min = parseInt(parseInt(time)%60);
-	if(parseInt(min)<=9) min = "0" + min;	
+	var min = parseInt(parseInt(time, 10)%60, 10);
+	if(parseInt(min, 10)<=9) min = "0" + min;	
 	
 	new_date += " "+ hour +":"+min;
 	
-	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] \n"+hour+":"+min+" >> " +time+"\n"+time+"/60 = "+ parseInt(time)/60 + "\n" + time + "%60 = " + parseInt(time)%60);
+	//gConsole.logStringMessage("DBG [Ximfmail - ConvertZTimeToLocal] \n"+hour+":"+min+" >> " +time+"\n"+time+"/60 = "+ parseInt(time, 10)/60 + "\n" + time + "%60 = " + parseInt(time, 10)%60);
 	  	
 	return new_date;
 }							
@@ -640,4 +646,30 @@ function ximfAlert(title,message){
 	}
 	var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
   	prompts.alert(window,title, message); 
+}
+
+/*
+ *  return value of array {[key][value],[key][value],...}
+ *  @param key : 
+ *  @param array : 
+ */
+function GetValueFromArrayWithInsensitiveKey(key, array){
+	var value = null;
+	try{					
+		value = array[key];				
+		if(value == null){
+			// try to get value of array with insensitive case key
+			for(akey in array){
+				if(akey.toLowerCase() == key.toLowerCase()){						
+					value = array[akey];	
+					//alert("GetValueFromArrayWithInsensitiveKey - value as insensitive case founded : " +akey+" : "+ value)
+					break;
+				}
+			}					
+		}		
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - GetValueFromArrayWithInsensitiveKey ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);	
+		value=null;
+	}
+	return value;
 }

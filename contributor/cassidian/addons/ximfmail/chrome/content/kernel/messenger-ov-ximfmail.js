@@ -43,7 +43,6 @@
 var gCurrentIdentity = null;
 var gPreviousIdentity = null;
 var gComposeMsgByMenuitem = false;
-var gXimfThreadTree = null;
 
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 var gXBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
@@ -58,12 +57,12 @@ var gChromeXslTreeRcv = "chrome://theme_ximfmail/content/threadTree-ximfmail.xsl
 $(document).ready(function(){
 	// init ximfmail operations
 	CreateXimfmailCatalog(); 
-    gXimfThreadTree = new XimfThreadTree();
+    OnSelectfolderPane(); 
+	
+    // Creating Ximf Custom Columns
     var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-	observerService.addObserver(XimfThreadTreeDBViewObserver, "MsgCreateDBView", false);        
-
-    OnSelectfolderPane();
-
+   	observerService.addObserver(XimfThreadTreeDBViewObserver, "MsgCreateDBView", false);         
+ 
 	// event manager
 	$("#folderTree").select(OnSelectfolderPane);
 	//optional-for technical informations $("#threadTree").select(OnSelectMsg);
@@ -73,7 +72,6 @@ $(document).ready(function(){
 	$("#key_openMessage").bind("command",OnOpenMsg);
 	$("#threadTree").keypress(OnOpenMsgWithKey);	
 	//
-	$("#threadTree").click(UpdateThreadPane);
 	$("#button-newmsg").mousedown(OnSelectfolderPane); // load instances	  
 	$("#button-newmsg").bind('command', OnComposeDefaultMsg); // use default instance 
 	$("#button-reply").mousedown(OnSelectfolderPane);
@@ -86,19 +84,8 @@ $(document).ready(function(){
 	
 	// Security Labels compatibility (RFC2634)
 	try{CreateSecurityLabelXml();}catch(e){}
+  
 });
-
-
-/*
- * save state of custom columns
- */
-function UpdateThreadPane(){
-	if(gXimfThreadTree){	
-		gXimfThreadTree.saveColumnToHide();
-	}
-}
-
- 
 
 /*
  * 
@@ -183,25 +170,17 @@ function OnSelectfolderPane(){
 			pref.setBoolPref("mailnews.headers.showXimfmail",true);
 			$("#menupopup-newmsg").attr("datasources","chrome://theme_ximfmail/content/ximfCatalog.rdf");
 			$("#menupopup-newmsg menuitem").attr("hidden","false");
-			$("#ximfmail-custom-panel").attr("hidden","false");				
+			$("#ximfmail-custom-panel").removeAttr("collapsed");		
+			$("#button-newmsg").attr("type","menu-button");
 		}else{
 			pref.setBoolPref("mailnews.headers.showXimfmail",false);
 			$("#menupopup-newmsg").attr("datasources","");
 			$("#menupopup-newmsg menuitem").attr("hidden","true");
-			$("#ximfmail-custom-panel").attr("hidden","true");		
-		}
-		
-		// load custom tree
-		if( gPreviousIdentity != gCurrentIdentity){	
-			gPreviousIdentity = gCurrentIdentity;
-			if(gXimfThreadTree){		
-				gXimfThreadTree.createThreadTree();
-				gXimfThreadTree.addCustomColumnHandler();
-			}
+			$("#ximfmail-custom-panel").attr("collapsed","true");		
+			$("#button-newmsg").attr("type","");
 		}
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - OnSelectfolderPane ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
-
 	}
 }
 
@@ -233,7 +212,8 @@ function OnComposeDefaultMsg(evt){
 /*
  *  Get account user settings
  */
- function GetCurrentUser() { 	
+ function GetCurrentUser() {
+	 
  	var folder=GetFirstSelectedMsgFolder();
 	var identity = null;	
 	var server;
@@ -250,7 +230,7 @@ function OnComposeDefaultMsg(evt){
 	}
 	if(identity){
   		gCurrentIdentity=identity;
-  		var prefName="mail.identity."+identity.key+".useremail";
+  		var prefName="mail.identity."+identity.key+".useremail";  		
   		try{
   			if(gXBranch.prefHasUserValue( prefName ))
   			return gXBranch.getCharPref(prefName);  		

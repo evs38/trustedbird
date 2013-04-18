@@ -696,6 +696,7 @@
 		   </xsl:if>		
 			<xsl:element name="checkbox">
 				<xsl:attribute name="id"><xsl:value-of select="$_id"/></xsl:attribute>    
+				<xsl:attribute name="class">ximfCheckbox</xsl:attribute>
 				<xsl:attribute name="disabled">false</xsl:attribute>
 				<xsl:attribute name="ximfconcatid"><xsl:value-of select="$_newConcat"/></xsl:attribute>
 				<xsl:attribute name="label">
@@ -835,7 +836,7 @@
 		<xsl:for-each select="$_refString">	
 			<richlistitem ximfenable="true">				
 				<xsl:element name="checkbox">
-					<xsl:attribute name="class">ximCheckbox</xsl:attribute>
+					<xsl:attribute name="class">ximfCheckbox</xsl:attribute>
 					<xsl:attribute name="disabled">false</xsl:attribute>
 					<xsl:attribute name="id">
 						<xsl:call-template name="GetUNID">

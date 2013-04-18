@@ -54,9 +54,10 @@
 	<xsl:template match="/">		
 		<xsl:for-each select="/ximf:instance/ximf:ihm/ximf:treeRcv">	
 			<xsl:for-each select="ximf:headerRef">
-				<splitter class="tree-splitter" ximfheadtree="1"/>			
+				<!-- <splitter class="tree-splitter" ximfheadtree="1"/>  -->			
 				<xsl:call-template	name="CreateCol">
 					<xsl:with-param	name="headerRef" select="." />
+					<xsl:with-param	name="indexNode" select="position()" />					
 				</xsl:call-template>
 			</xsl:for-each>
 		</xsl:for-each>	
@@ -64,9 +65,11 @@
 
 	<xsl:template name="CreateCol">
 		<xsl:param name="headerRef" select="" />
+		<xsl:param name="indexNode" select="" />		
 		<xsl:for-each select="/ximf:instance/ximf:header[$headerRef=@id]">
 			<xsl:element name="treecol">				
 				<xsl:attribute name="id"><xsl:value-of select="@headerName"/></xsl:attribute>
+				<xsl:attribute name="ordinal"><xsl:value-of select="100+$indexNode"/></xsl:attribute>
 				<xsl:attribute name="label">
    					<xsl:call-template name="getInternational">
             			<xsl:with-param name="ilk" select="@ilk" />            					
@@ -77,10 +80,10 @@
             			<xsl:with-param name="ilk" select="@ilk" />            					
         			</xsl:call-template> 
         		</xsl:attribute>				
-				<xsl:attribute name="persist">hidden ordinal width</xsl:attribute>	
-				<xsl:attribute name="flex">1</xsl:attribute>
-				<xsl:attribute name="hidden">false</xsl:attribute>
-				<xsl:attribute name="ximfheadtree">1</xsl:attribute>					
+				<xsl:attribute name="persist">hidden ordinal width</xsl:attribute>
+				<xsl:attribute name="currentView">unthreaded</xsl:attribute>
+				<xsl:attribute name="flex">1</xsl:attribute>				
+				<xsl:attribute name="ximfheadtree">1</xsl:attribute>				
 			</xsl:element>
 		</xsl:for-each>
 	</xsl:template>

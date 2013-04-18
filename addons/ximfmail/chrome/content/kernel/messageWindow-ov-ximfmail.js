@@ -41,84 +41,116 @@
  * ***** END LICENSE BLOCK ***** */
  
 var gConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-var gXimfHeaders = null;
 
 //
 window.addEventListener('messagepane-loaded', InitXimfailMsgWindow, true);
-
+ 
+/*
+ * gUriMsgLoading check for messages which are currently loading * 
+ */
+var gUriMsgLoading = {
+		uriList : [], // array of uri loading
+		add : function(uri){
+			if(uri) this.uriList.push(uri)
+			gConsole.logStringMessage("[ximfmail - gUriMsgLoading.add ]  uri :  " + uri);
+		},
+		remove : function(uri){
+			if(!uri) return;
+			var idx = 0;
+			try{
+			for(idx ; idx<this.uriList.length ; ++idx){
+				if(this.uriList[idx] === uri){
+					this.uriList.splice(idx,1);
+					gConsole.logStringMessage("[ximfmail - gUriMsgLoading.remove ]  uri :  " + uri);			    	
+					return;
+				}
+			}
+			}catch(e){
+				gConsole.logStringMessage("[ximfmail - gUriMsgLoading.remove ] error for uri  " + uri +"\n error: "+  e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);             
+			}
+		},
+		isLoading : function(uri){
+			if(!uri) return;
+			try{
+				for(var idx=0 ; idx<this.uriList.length ; ++idx){
+					if(this.uriList[idx] === uri){
+						gConsole.logStringMessage("[ximfmail - gUriMsgLoading.isloading : true ]  uri :  " + uri);			    	
+						return true;
+					}
+				}
+			}catch(e){
+				gConsole.logStringMessage("[ximfmail - gUriMsgLoading.isloading ] error for uri  " + uri +"\n error: "+  e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);
+			}
+			gConsole.logStringMessage("[ximfmail - gUriMsgLoading.isloading : false ]  uri :  " + uri);
+			return false;
+		}		
+};
 
 /*
  * Create a message listener  
  */
-var gIdTimeOut = null;
 function InitXimfailMsgWindow(){
+   //	
    gMessageListeners.push({
     onStartHeaders: function (){
+    	$("#ximfmailMailPanel").attr("collapsed","true"); // box for ximf headers
+    	$("#ximfHeadBox").attr("collapsed","true"); // box for ximf pictures
     },
-    onEndHeaders: function(){
+    onEndHeaders: function(){ 
+    	var uriMsg = null;
+    	if (gMessageDisplay.isDummy){
+    		// displayed message from disk
+    		uriMsg = gMessageDisplay.displayedUri;    	
+    		gConsole.logStringMessage("[ximfmail - InitXimfailMsgWindow.onEndHeaders ]\ndisplayed message from disk - url = "+uriMsg);
+    	}else{
+    	   	// get uri of selected message
+    		var msgDBHdr = gFolderDisplay.selectedMessage;
+    		if(msgDBHdr)	uriMsg = msgDBHdr.folder.getUriForMsg(msgDBHdr);
+    	}
+    	if(!gUriMsgLoading.isLoading(uriMsg)){
+    		gUriMsgLoading.add(uriMsg);
+    		XimfmailGetMessage(uriMsg,XimfmailParseAndOpenMesssage);
+    	}
     },
-    onEndAttachments: function (){    	
-    	if(gIdTimeOut != null)
-    	  clearTimeout(gIdTimeOut);
-		  gIdTimeOut = setTimeout("ParseMsgXimfHeaders()",500);
-	},
+    onEndAttachments: function (){
+	}
   });
 }
 
 /*
  * Get Extended headers of messages and display known instances
  */
-function ParseMsgXimfHeaders() {
+function XimfmailParseAndOpenMesssage(msgSrc,uriSrc){
+	var currentXimfHdrArray = XimfmailParseMessage(msgSrc);	
 	try{
-		gConsole.logStringMessage("[ximfmail - ParseMsgXimfHeaders ]");
-		var msgDBHdr = gFolderDisplay.selectedMessage;	
-		 if(!msgDBHdr){
-		 	gConsole.logStringMessage("[ximfmail - ParseMsgXimfHeaders ] no message selected");	
-		 	return;
-		 }  	
-		 	 			
-		$("#ximfmailMailPanel").attr("collapsed","true"); // XIMF headers ihm
-		$("#ximfmail-custom-panel").attr("collapsed","true"); //XIMF account profile type ihm
-		$("#ximfHeadBox").attr("collapsed","true");	// XIMF pictures ihm	
-		var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
-		pref = pref.QueryInterface(Components.interfaces.nsIPrefBranch2);
-		if(pref.getBoolPref("mailnews.headers.showXimfmail")){
-			gXimfHeaders = new XimfmailDbMsg();
-			var folderPaneElt = document.getElementById('folderPaneBox');			
-			if(folderPaneElt){				
-				gXimfHeaders.set(msgDBHdr.folder.getUriForMsg(msgDBHdr)); 	
-				// is read message opened in new tab
-				if(folderPaneElt.hasAttribute("collapsed")){
-					$("#ximfmail-custom-panel").attr("collapsed","true");						
-					if(ShowXimfmailPanel()){
-						$("#ximfmailMailPanel").removeAttr("collapsed");
+		
+			var ximfMsg = new XimfmailMesssage();
+			if(ximfMsg.init(uriSrc,currentXimfHdrArray)){	
+				//alert("XimfmailParseMesssage uriSrc = " + uriSrc +" \n valid ximfmail message")				
+				var folderPaneElt = document.getElementById('folderPaneBox'); 			
+				if(folderPaneElt){
+					// is read message opened in new tab
+					if(folderPaneElt.hasAttribute("collapsed")){
+						$("#ximfmail-custom-panel").attr("collapsed","true");	
+						if(ShowXimfmailPanel(ximfMsg)){
+							$("#ximfmailMailPanel").removeAttr("collapsed");
+						}					
+					}else{							
+						$("#ximfmail-custom-panel").removeAttr("collapsed");						
 					}					
-				}else{							
-					$("#ximfmail-custom-panel").removeAttr("collapsed");
-				}					
-			}else{
-				//if (window.arguments[0] instanceof Components.interfaces.nsIMsgDBHdr){
-				// message is displayed in new window				
-      			//var msgHdr = window.arguments[0];
-      				$("#ximfmail-custom-panel").removeAttr("collapsed");
-      				CreateXimfmailCatalog();					
-					gXimfHeaders.set(msgDBHdr.folder.getUriForMsg(msgDBHdr)); 
-					if(ShowXimfmailPanel())
-						$("#ximfmailMailPanel").removeAttr("collapsed");					
-					//if(ShowExpandedHeaders())				
-					//	$("#ximfHeadBox").removeAttr("collapsed");	
-      			}
-			// common elements to display			  				
-			if(ShowExpandedHeaders()){					
-				$("#ximfHeadBox").removeAttr("collapsed");								 			
-			}	  	
-		}else{
-			DeleteXimfHeaders();
-		}
+				}else{								
+					// message is displayed in new window			      		
+					if(ShowXimfmailPanel(ximfMsg))	$("#ximfmailMailPanel").removeAttr("collapsed");
+				}
+				// common elements to display			  				
+				ShowExpandedHeaders(ximfMsg);
+			}
+			
 	}catch(e){
-		gConsole.logStringMessage("[ximfmail - ParseMsgXimfHeaders ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);			 			
+		gConsole.logStringMessage("XimfmailParseAndOpenMesssage error:"+e);
 	}
-}
+	gUriMsgLoading.remove(uriSrc);
+};
 
 
 /*
@@ -132,66 +164,10 @@ function DeleteXimfHeaders(){
 		if($("#signedHdrIcon").attr("signed") == "ximfalert"){
 			$("#signedHdrIcon").attr("signed","");
 		}
+		try{$(".ximfImgCategory").remove()}catch(e){}
 	}catch(e){}
 }	
 
-/*
- * Ximf headers of current message
- */
-function XimfmailDbMsg(){	
-	this._mailUri = null;
-	this._msgAnalyser = null;
-	this._instanceMsgXimf = null;
-
-	// parse and save ximf headers message
-	this.set = function(uri){
-		try{
-			if(!uri) return;
-			if(this._mailUri ==	uri) return;
-			this._mailUri =	uri;
-			this._instanceMsgXimf = null;
-			this._msgAnalyser=null;
-			
-			// get account XIMF definition
-			var prefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
-			var current_definition = "";				
-			if(prefBranch.prefHasUserValue("mailnews.instance.mailpanel")){
-				if(prefBranch.prefHasUserValue("mailnews.theme.mailpanel"))
-					current_definition =  prefBranch.getCharPref("mailnews.theme.mailpanel");
-			}else{
-				gConsole.logStringMessage("DBG [ximfmail - XimfmailDbMsg.set ] no ximf preferences ");					
-			}
-								
-			// search for template XIMF			
-			this._msgAnalyser = new XimfMessageAnalyser();		
-			this._msgAnalyser.setOriginalURI(this._mailUri); 
-			this._msgAnalyser.createXimfHdrArray();			 	
-			var uriXimfInstance = this._msgAnalyser.hasXimfHeaders(current_definition);
-			if(uriXimfInstance){		
-				gConsole.logStringMessage("DBG [ximfmail - XimfmailDbMsg.set ] mail instance :  " + uriXimfInstance);			
-				this._instanceMsgXimf = uriXimfInstance;
-				return true;
-			}				
-		}catch(e){
-			gConsole.logStringMessage("[ximfmail - XimfmailDbMsg.reload ] " + e +"\nline : " + e.lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
-		}
-		return false;
-	};
-
-	// get XIMF value from message
-	this.getValue = function(headerName){
-		return this._msgAnalyser.getHeaderValue(headerName);
-	};
-	
-	// get XIMF value from message
-	this.getCompleteArray = function(){
-		return this._msgAnalyser.getCompleteArray();
-	};
-	
-	this.setXimfHeader = function(headerName,value){		
-		this._msgAnalyser.setHeaderValue(headerName,value);
-	};
-}
 
 /* 
  * Dom document manipulations
@@ -252,11 +228,15 @@ function ConvertMimeDatasToLabelValues(){
 		}catch(e){}
 	};
 
-// set label and ximfvalue of ximf linked element 
-function ComputeXimfElementLinked(ximfelement,idPanel){
+/*
+ * Set label and ximfvalue of ximf linked element 
+ * 
+ * @ximfMesssage : ximfmailMesssage object
+ */
+function ComputeXimfElementLinked(ximfelement,idPanel,ximfMessage){
 	try{
 		var xHeader = $("label[id='"+$(ximfelement).attr("refheader")+"']").attr("ximfheader");
-		var ximfValue = gXimfHeaders.getValue(xHeader);
+		var ximfValue = ximfMessage.getHeaderValue(xHeader);
 		if(ximfValue){
 			// search for value and comlete display box
 			$(ximfelement).attr("refpanel",idPanel);			
@@ -281,7 +261,7 @@ function ComputeXimfElementLinked(ximfelement,idPanel){
 					if(linkpopup){					
 						var targetpopup = $("panel[id='"+linkpopup+"']");
 						$("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']").attr("refpanel",linkpopup);						
-						ComputeXimfElementLinked($("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']"),targetpopup[0].id);																
+						ComputeXimfElementLinked($("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']"),targetpopup[0].id,ximfMessage);																
 					}	
 				}
 			}
@@ -292,31 +272,30 @@ function ComputeXimfElementLinked(ximfelement,idPanel){
 }
 
 // load ximf headers in DOM documents	
-function ShowXimfmailPanel(){			
-	if(!gXimfHeaders._instanceMsgXimf){ return false; }		
+function ShowXimfmailPanel(ximfmailMesssage){
 	try{
 		// create DOM panel using compose message template xslt				
 		if(gXimfCatalog){
-			$("#ximfmailMailPanelTitle").attr("value",gXimfCatalog.getNameInstance(gXimfHeaders._instanceMsgXimf));
+			$("#ximfmailMailPanelTitle").attr("value",gXimfCatalog.getNameInstance(ximfmailMesssage._instanceMsgXimf));
 		}else{ 			
 			$("#ximfmailMailPanelTitle").attr("value","XIMFMAIL");
 		}				
 		$("#ximfmailMailHeadersTablist").empty();
-		var composeDom = CreateDOMWithXimfInstance(gXimfHeaders._instanceMsgXimf,"chrome://theme_ximfmail/content/messengerCompose-ximfmail.xsl");
+		var composeDom = CreateDOMWithXimfInstance(ximfmailMesssage._instanceMsgXimf,"chrome://theme_ximfmail/content/messengerCompose-ximfmail.xsl");
 		$("#ximfmailMailHeadersTablist").append(composeDom);
 		$("#ximfmailMailPanel").attr("hidden","true");
-		
+		$("#ximfmail-custom-panel").attr("collapsed",true); // Dom element of preview panel
 		// compute datas to message
 		try{
 			var xheader_dom = $("label[ximfheader]");			
 			for(var idx_xheader_dom=0; idx_xheader_dom<xheader_dom.length; ++idx_xheader_dom){
 				try{
 					//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for textbox : " + xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));		
-					var ximfValue = gXimfHeaders.getValue(xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));
-					if(ximfValue){													
+					var ximfValue = ximfmailMesssage.getHeaderValue(xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));
+					if(ximfValue){						
 						// search for value and comlete display box
 						var display_box = $("textbox[refheader='" + xheader_dom[idx_xheader_dom].getAttribute("id") + "']");
-						if(display_box.length > 0){					
+						if(display_box.length > 0){
 							try{
 								// ximfValue is in Array
 								if(ximfValue.constructor == Array){											
@@ -345,7 +324,7 @@ function ShowXimfmailPanel(){
 									if(linkpopup){
 										var targetpopup = $("panel[id='"+linkpopup+"']");
 																				
-										ComputeXimfElementLinked($("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']"),targetpopup[0].id);																	
+										ComputeXimfElementLinked($("textbox[id='" + targetpopup[0].getAttribute("ximfreftextbox")+"']"),targetpopup[0].id,ximfmailMesssage);																	
 									}	
 								}
 							}
@@ -364,7 +343,7 @@ function ShowXimfmailPanel(){
 					var ximfLabelId = $("textbox[id='"+oriTxtboxId+"']").attr("refheader");
 					if(ximfLabelId){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = gXimfHeaders.getValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
+						var ximfValue = ximfmailMesssage.getHeaderValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
 						if(ximfValue){
 							try{
 								// ximfValue is in Array								
@@ -392,8 +371,8 @@ function ShowXimfmailPanel(){
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute("refheader");								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = gXimfHeaders.getValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
-						if(ximfValue){												
+						var ximfValue = ximfmailMesssage.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
+						if(ximfValue){
 							try{
 								// ximfValue is in Array								
 								if(ximfValue.constructor == Array){
@@ -420,7 +399,7 @@ function ShowXimfmailPanel(){
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute("refheader");								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = gXimfHeaders.getValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
+						var ximfValue = ximfmailMesssage.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
 						if(ximfValue){
 							//alert($("label[id='"+refHeader+"']").attr("ximfheader")+" :: "+ximfValue)
 							xheader_dom[idx_xheader_dom].setAttribute("ximfvalue", ximfValue);	
@@ -440,7 +419,7 @@ function ShowXimfmailPanel(){
 
 		// replace values with international labels
 		ConvertMimeDatasToLabelValues();			
-		
+
 		// modify DOM to create readable ihm
 		//replace textbox elements with labels elements 		
 		xheader_dom = $("textbox[class='XimfTextboxDisplay']");  	
@@ -513,29 +492,33 @@ function ReplaceTxtboxWithLabel(element){
 }		
 
 // insert security pictures...
-function ShowExpandedHeaders(){
-	try{
+function ShowExpandedHeaders(ximfmailMesssage){
+	try{		
+		// raz ximf pictures elements
+		try{
+			$(".ximfImgCategory").remove();
+			$("#ximfSecurityClassificationLabelImg").attr("src","");
+			$("#ximfCategoryClassificationLabelImg").attr("src","");
+		}catch(e){}
+		
+		// selected message has no XIMF headers 
+		if(!ximfmailMesssage._instanceMsgXimf){			
+			return false; 
+		}
+		
 		// ximfmail elements to display pictures
 		var imgClassification = document.getElementById("ximfSecurityClassificationLabelImg");
 		var imgCategory = document.getElementById("ximfCategoryClassificationLabelImg");
 		
-		// selected message has no XIMF headers 
-		if(!gXimfHeaders._instanceMsgXimf){			
-			// remove all ximfmail pictures
-			if(imgClassification)	imgClassification.setAttribute("src","");
-			if(imgCategory)	imgCategory.setAttribute("src","");	
-			return false; 
-		}	
-	
 		//display security labels pictures
 		//gConsole.logStringMessage("[ximfmail - showExpandedHeaders ] \n search for labels to display... ");		
 		if(imgClassification){						
 			imgClassification.setAttribute("src","");					
 			var reg=new RegExp("[&]+", "g");				
-			var picturesClassifArray = CreateRulesArray(gXimfHeaders._instanceMsgXimf,"ximf:classificationPictures");				
+			var picturesClassifArray = CreateRulesArray(ximfmailMesssage._instanceMsgXimf,"ximf:classificationPictures");				
 			for(var iHdr=0; iHdr<picturesClassifArray.length ; ++iHdr){
 				var headerRef = picturesClassifArray[iHdr]._headerRef;
-				var valueRef = gXimfHeaders.getValue(headerRef);
+				var valueRef = ximfmailMesssage.getHeaderValue(headerRef);
 				if(valueRef){
 					for(var idxPix = 0 ; idxPix < picturesClassifArray.length ; ++idxPix){
 						var tabPictureValueRef =picturesClassifArray[idxPix]._valueRef.split(reg);
@@ -545,7 +528,7 @@ function ShowExpandedHeaders(){
 							var valuemsg = valueRef.toLowerCase();
 							var valueref = tabPictureValueRef[iPict].toLowerCase();						
 							if( valuemsg.indexOf(valueref, 0) != -1 ){
-								imgClassification.setAttribute("src",tabPictureValueName[iPict]);
+								imgClassification.setAttribute("src",tabPictureValueName[iPict]);								
 							}	
 						}								
 					}				
@@ -554,12 +537,13 @@ function ShowExpandedHeaders(){
 		}	
 							
 		if(imgCategory){
-			imgCategory.setAttribute("src","");			
+			imgCategory.setAttribute("src","");		
+			$(".ximfImgCategory").remove();
 			var reg=new RegExp("[&]+", "g");					
-			var picturesCategorArray = CreateRulesArray(gXimfHeaders._instanceMsgXimf,"ximf:categoryPictures");
+			var picturesCategorArray = CreateRulesArray(ximfmailMesssage._instanceMsgXimf,"ximf:categoryPictures");
 			for(var iHdr=0; iHdr<picturesCategorArray.length ; ++iHdr){
 				var headerRef = picturesCategorArray[iHdr]._headerRef;
-				var valueRef = gXimfHeaders.getValue(headerRef);
+				var valueRef = ximfmailMesssage.getHeaderValue(headerRef);
 				if(valueRef){
 					for(var idxPix = 0 ; idxPix < picturesCategorArray.length ; ++idxPix){
 						var tabPictureValueRef = picturesCategorArray[idxPix]._valueRef.split(reg);
@@ -568,8 +552,17 @@ function ShowExpandedHeaders(){
 							//alert("picturesClassifArray[idxPix]._valueRef : "+picturesClassifArray[idxPix]._valueRef + " & " + valueRef );
 							var valuemsg = valueRef.toLowerCase();
 							var valueref = tabPictureValueRef[iPict].toLowerCase();						
+							var container = document.getElementById("ximfHeadBox");
 							if( valuemsg.indexOf(valueref, 0) != -1 ){
-								imgCategory.setAttribute("src",tabPictureValueName[iPict]);
+								//imgCategory.setAttribute("src",tabPictureValueName[iPict]);
+								try{
+									var img = document.createElement("image");
+									img.setAttribute("class","ximfImgCategory");
+									img.setAttribute("src",tabPictureValueName[iPict]);
+									container.appendChild(img);									
+								}catch(e){
+									gConsole.logStringMessage("[ximfmail - showExpandedHeaders ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
+								}
 							}	
 						}								
 					}			
@@ -583,7 +576,7 @@ function ShowExpandedHeaders(){
 	// secure headers signature are present in message, isn't it?
 	// this rule is applied only on ximf messages with same instance of current account
 	try{			
-		secureHdrsArray = CreateRulesArray(gXimfHeaders._instanceMsgXimf,"ximfsecureHeaders");				
+		secureHdrsArray = CreateRulesArray(ximfmailMesssage._instanceMsgXimf,"ximfsecureHeaders");				
 		if(secureHdrsArray.length > 0){							
 			var smimeBox = document.getElementById("smimeBox")
 			if(smimeBox.hasAttribute("collapsed")){					
@@ -596,6 +589,8 @@ function ShowExpandedHeaders(){
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - showExpandedHeaders ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);
 	}
+	
+	$("#ximfHeadBox").removeAttr("collapsed");
 	return true;
 }
 		

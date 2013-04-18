@@ -54,7 +54,7 @@ function onclosepanel(){
 	//var a = document.getElementById("search");
 	var lisitem = $("#search-panel checkbox");
 	var resString = "";	
-	for(i=0;i<lisitem.length;++i){
+	for(var i=0;i<lisitem.length;++i){
 		if(lisitem[i].hasAttribute("checked"))
 		resString += $(lisitem[i]).attr("label")+ " | ";
 	}
@@ -64,7 +64,6 @@ function onclosepanel(){
 		alert("e = " + e)
 	}	
 }
-
 
 var gXimfHdrs = null;		
 //			
@@ -112,7 +111,13 @@ function XimfmailInstanceHeaders(){
 		};
 		//		
 		XimfmailInstanceHeaders.prototype.loadXimfSecurityRules = function(){
-			var isSigned = false;
+			var isToogleSigned = false;
+			// get secure state from prefs
+			if(!gSMFields){
+				// use Trustedbird function to initialize gSMFields
+				onComposerReOpen();				
+			}
+
 			// secure headers			
 			try{
 				// create XMLFile at temp directory with rules datas
@@ -130,22 +135,30 @@ function XimfmailInstanceHeaders(){
 						serializer.serializeToStream(signHeaders, foStream, "");   // rememeber, doc is the DOM tree
 						foStream.close();
 						
-						// set folder datas					
+						// set folder datas
 						gCurrentIdentity.setCharAttribute("secureheaders.folderdata",file.path);
 						
-						// sign message with secure headers
+						// message with secure headers : force sign message
 						gCurrentIdentity.setBoolAttribute("secureheaders.checked",true);
 						$("#idItemSecureHeaders_1").attr("checked","true");					
 						$("#idItemSecureHeaders_2").attr("checked","true");					
 						$("#idItemSecureHeaders_1").attr("disabled","true");
-						$("#idItemSecureHeaders_2").attr("disabled","true");										
-						if(!isSigned){
-							toggleSignMessage();// signMessage(); // from file msgCompSMIMIEOverlay.js
-							isSigned = true
-						}				
-						$("#menu_securitySign1").attr("disabled","true");
-						$("#menu_securitySign2").attr("disabled","true");	
+						$("#idItemSecureHeaders_2").attr("disabled","true");								
 						
+						$("#menu_securitySign1").attr("checked","true");
+						$("#menu_securitySign2").attr("checked","true");
+						$("#menu_securitySign1").attr("disabled","true");
+						$("#menu_securitySign2").attr("disabled","true");
+						
+						if(!gSMFields.signMessage){
+							toggleSignMessage();
+							isToogleSigned = true;
+							// if certificate problem resolved, try to load ui signature
+							if (gCurrentIdentity.getUnicharAttribute("signing_cert_name")&&!gSMFields.signMessage){
+								toggleSignMessage();// certificate is set by user
+							}
+							
+						}
 						gConsole.logStringMessage("ximfmail - loadSecurityRules - secureHeaders on ");					
 					}
 				}else{
@@ -160,19 +173,29 @@ function XimfmailInstanceHeaders(){
 				_eSSSecurityLabelHdrArray = CreateRulesArray(_instance,"ximf:securityLabel");
 				if(_eSSSecurityLabelHdrArray.length > 0){					
 					$("#menu_securityLabelDialog1").attr("checked","true");					
-					$("#menu_securityLabelDialog2").attr("checked","true");					
 					$("#menu_securityLabelDialog1").attr("disabled","true");
+					$("#menu_securityLabelDialog2").attr("checked","true");	
 					$("#menu_securityLabelDialog2").attr("disabled","true");
 					
-					if(!isSigned){
-						toggleSignMessage(); // from file msgCompSMIMIEOverlay.js
-						isSigned = true;
-					}
-					if(gSMFields){
-						gSMFields.securityClassification = -1;
-						gSMFields.privacyMark = "";
-						gSMFields.securityCategories = "";
-					}
+					$("#menu_securitySign1").attr("checked","true");					
+					$("#menu_securitySign1").attr("disabled","true");
+					$("#menu_securitySign2").attr("checked","true");
+					$("#menu_securitySign2").attr("disabled","true");
+					
+					if(!gSMFields.signMessage){
+						if(!isToogleSigned){
+							toggleSignMessage();
+							// if certificate problem resolved, try to load ui signature
+							if (gCurrentIdentity.getUnicharAttribute("signing_cert_name")&&!gSMFields.signMessage){
+								toggleSignMessage();// certificate is set by user
+							}
+						}
+					}					
+					
+					// 
+					gSMFields.securityClassification = -1;
+					gSMFields.privacyMark = "";
+					gSMFields.securityCategories = "";					
 					gConsole.logStringMessage("ximfmail - loadSecurityRules - securityLabels on ");	
 				}else{
 					gConsole.logStringMessage("ximfmail - loadSecurityRules - securityLabels off ");	
@@ -197,13 +220,11 @@ function XimfDataSource(){
 function InsertXimfmailComposer(currentInstance){
 	try{
 		if(gXimfHdrs){gXimfHdrs = null;}
-	
 		gXimfHdrs = new XimfmailInstanceHeaders();
 		gXimfHdrs.init(currentInstance);
 		gXimfHdrs.loadXimfSecurityRules();
 		
 		// ihm init		
-		ResetXimfhdrsDom();
 		InsertXimfhdrsDom(gXimfHdrs.getXimfInstanceResource(), gChromeXslMsgCompose);
 		
 		// controler init		
@@ -220,8 +241,12 @@ function InsertXimfmailComposer(currentInstance){
  * DOM MANIPULATIONS OF XIMFMAIL ELEMENTS
  */
 function ResetXimfhdrsDom(){
-	// delete old ximf items
-	$("#ximfmailComposeMessageHeadersTablist").empty();
+	try{
+		// delete old ximf items
+		$("#ximfmailComposeMessageHeadersTablist").empty();
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - ResetXimfhdrsDom ] " + e +"\nline : " + e.lineNumber + " : "+ e + "\nfile : "+ Error().fileName);
+	}
 }
 		
 function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
@@ -230,8 +255,7 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 				$("#isUsingXimfail").attr("hidden","true");
 			 	return;
 			}
-			$("#isUsingXimfail").attr("hidden","false");
-							
+
 			if(gXimfCatalog){
 				$("#ximfmailComposeMessageTitle").attr("value",gXimfCatalog.getLabelInstance(ximfInstanceResource));
 			}else{
@@ -244,12 +268,12 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 				$("#ximfmailComposeMessageHeadersTablist").append(CreateDOMWithXimfInstance(ximfInstanceResource, urlXslTemplate));
 			}catch(e){
 				// TODO : alert user of xslt problem
-				("#isUsingXimfail").attr("hidden","false");
+				("#isUsingXimfail").attr("hidden","true");
 			}	
 			
 			// custom panels where maxitem=1 and contains composed elements
 			var arrPanel = $("panel[ximfmaxitem='1']");
-			for(i=0;i<arrPanel.length;++i){				
+			for(var i=0;i<arrPanel.length;++i){				
 				// checkboxes are used
 				var chkboxes = $("panel[id='"+arrPanel[i].id+"'] checkbox");				
 				if(chkboxes.length>=1){					
@@ -257,6 +281,7 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 					for(j=0;j<mnuitems.length;++j){
 						var chkbx = document.createElement("checkbox");
 						$(chkbx).attr("id",$(mnuitems[j]).attr("id"));
+						$(chkbx).attr("class","ximfCheckbox");
 						$(chkbx).attr("label",$(mnuitems[j]).attr("label"));
 						$(chkbx).attr("ximfvalue",$(mnuitems[j]).attr("ximfvalue"));
 						$(chkbx).attr("ximftextbox",$(mnuitems[j]).attr("ximftextbox"));
@@ -297,7 +322,10 @@ function InsertXimfhdrsDom(ximfInstanceResource, urlXslTemplate){
 		// Custom Ximf Headers Dom
 		CustomXimfhdrsInputBox();	
 		CustomXimfhdrsButton();	
-		CustomXimfhdrsTreeDialog();	// append DOM elements to access external datas	
+		CustomXimfhdrsTreeDialog();	// append DOM elements to access external datas
+		
+		// display Ximf elements
+		$("#isUsingXimfail").attr("hidden","false");
 }		
 
 /*
@@ -307,24 +335,24 @@ function CustomXimfhdrsInputBox(){
 	var listEditorClass = $("popup > textbox[class='ximfInputbox']");
 	for(var i = 0 ; i<listEditorClass.length ; ++i){	
 		try{
-			var idTxtBox = listEditorClass[i].getAttribute("ximfreftextbox");
-			var inputbox = $("textbox[id='"+idTxtBox+"'][class]");
-			if(inputbox[0].getAttribute("class") != "ximfDatetime"){									
-				var editor_button = $("textbox[id='"+idTxtBox+"']>button");
-				editor_button[0].setAttribute("class","ximfmailButtonTxt ximfEditor");					
-				editor_button[0].setAttribute("tooltiptext",getIlkProperties("ximfmail.composer.editor.image"));
-				editor_button[0].setAttribute("refbox",inputbox[0].getAttribute("id"));						
+			var idTxtBox = $(listEditorClass[i]).attr("ximfreftextbox");
+			var inputbox = $("textbox[id='"+idTxtBox+"']");
+			if($(inputbox).attr("class") != "ximfDatetime"){									
+				var editor_button = $("textbox[id='"+idTxtBox+"']>button");				
+				$(editor_button).attr("class","ximfmailButtonTxt ximfEditor");					
+				$(editor_button).attr("tooltiptext",getIlkProperties("ximfmail.composer.editor.image"));
+				$(editor_button).attr("refbox",$(inputbox).attr("id"));
 					
-				inputbox[0].setAttribute("ximfmaxitems", listEditorClass[i].getAttribute("ximfmaxitems"));
-				inputbox[0].setAttribute("ximfminitems", listEditorClass[i].getAttribute("ximfminitems"));
-				inputbox[0].setAttribute("ximseparator", listEditorClass[i].getAttribute("ximseparator"));
-				inputbox[0].setAttribute("tabindex",parseInt(i)+100);
-				inputbox[0].setAttribute("class","ximfEditor");							
-				inputbox[0].removeAttribute("popup");
-				inputbox[0].removeAttribute("readonly");
+				$(inputbox).attr("ximfmaxitems", $(listEditorClass[i]).attr("ximfmaxitems"));
+				$(inputbox).attr("ximfminitems", $(listEditorClass[i]).attr("ximfminitems"));
+				$(inputbox).attr("ximseparator", $(listEditorClass[i]).attr("ximseparator"));
+				$(inputbox).attr("tabindex",parseInt(i, 10)+100);
+				$(inputbox).attr("class","ximfEditor");
+				$(inputbox).removeAttr("popup");
+				$(inputbox).removeAttr("readonly");
 			}
 		}catch(e){
-			gConsole.logStringMessage("[ximfmail - modifyEditorBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);			
+			gConsole.logStringMessage("[ximfmail - CustomXimfhdrsInputBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);			
 		}				
 	}
 	
@@ -459,7 +487,7 @@ function HideSendMessageElements(isToSend){
 			rdfdataSource = _dataSourceArray[idxDatasSource]._dataSource;
 			refRdfdataSource = _dataSourceArray[idxDatasSource]._refDataSource;
 		}else{							
-			// get xml schema from profile instance directory				
+			// get xml schema from profile instance directory
 			var sCompletePath = getFilePathInProfile("extensions/"+gXimfCatalog.getSchemaInstance(gXimfHdrs.getXimfInstanceResource()));
 			sCompletePath = sCompletePath.substring(0, sCompletePath.lastIndexOf("\\")+1) + keyCat;	  			
 			var dir = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
@@ -567,7 +595,7 @@ function OpenCalendarDialog(button){
 		var idBox = button.getAttribute("refBox");
 		var ebox = document.getElementById(idBox);
 		args.push(idBox); // args[0] : id de la textbox a enrichir
-		args.push(ebox.getAttribute("value")); // displayed date
+		args.push(ebox.value); // displayed date
 		args.push($("label[id='"+ebox.getAttribute("refheader")+"']").attr("value"));
 
 		// open dialog		
@@ -576,6 +604,7 @@ function OpenCalendarDialog(button){
 		gConsole.logStringMessage("[ximfmail - openCalendarDialogBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+ e.lineNumber);		
 	}	
 }
+
 
 /*
  * Open window text editor
@@ -637,9 +666,14 @@ function LoadXimfhdrsEventObserver(){
 	$("button[class*='ximfEraser']").bind("command",OnClickEraser);	
 	$("button[class*='ximfTreeDialog']").bind("command",OnClickTreeDialogButton);
 	$("button[class*='ximfDatepicker']").bind("command",OnClickDatepicker);	
-	$("textbox[class='ximfEditor']").click(OnXimfhdrsEditor);		
+	$("textbox[class='ximfEditor']").click(OnXimfhdrsEditor);
 	$("textbox[class='ximfEditor']").bind("change",OnCheckXimfhdrsEditor);		
 	$("button[class*='ximfEditor']").bind("command",OnClickEditorButton);
+	
+	// check for mandatory ximf headers when editor texbox has changed
+	$("#ximfmailComposeMessageHeadersTablist textbox").bind("change",function(e){
+		e.currentTarget.setAttribute("ximfvalue",e.currentTarget.value);
+		CheckXimfhdrsSelection();});
 	
 	// get complete information of ximf hdr
 	$("button[class*='ximfDetail']").bind("command",function(evt){
@@ -666,7 +700,7 @@ function LoadXimfhdrsEventObserver(){
 		if(evt.keyCode == 13){			
 			var panel = evt.currentTarget;			
 			var richlistitem = $("#" + evt.currentTarget.id + " richlistitem");
-			for(i=0;i<richlistitem.length;++i){
+			for(var i=0;i<richlistitem.length;++i){
 				if(richlistitem[i].selected){
 					var nodes = richlistitem[i].childNodes;
 					for(j=0;j<nodes.length;++j){
@@ -691,7 +725,7 @@ function LoadXimfhdrsEventObserver(){
 	// check richlistitem where ximfchild=true (ximf computestring)
 	$("panel").bind("popuphiding",function(evt){
 		var CompstringItem = $("#" + evt.currentTarget.id + " richlistitem[ximfchild='true']");
-		for(i=0; i<CompstringItem.length; ++i){
+		for(var i=0; i<CompstringItem.length; i++){
 			var chk1 = CompstringItem[i].firstElementChild;
 			if(chk1.localName == "checkbox"){
 				if(chk1.checked){				
@@ -708,7 +742,7 @@ function LoadXimfhdrsEventObserver(){
 	
 	// panel can accept more than 1 entry for header
 	$("panel").bind("popuphidden",function(evt){
-		if(parseInt($(evt.currentTarget).attr("ximfmaxitem")) > 1 ){
+		if(parseInt($(evt.currentTarget).attr("ximfmaxitem"), 10) > 1 ){
 			// if panel has XIMF multiset implementation, don't compute it
 			var multisetPanel = $("#" + evt.currentTarget.id + " button[class='ximfButton']");
 			if(multisetPanel.length <=0){
@@ -723,9 +757,9 @@ function LoadXimfhdrsEventObserver(){
 	
 	// panel - first entry must be selected before selecting composed item
 	$("panel").bind("popupshown",function(evt){
-		if(parseInt($(evt.currentTarget).attr("ximfmaxitem")) <= 1 ) return;
+		if(parseInt($(evt.currentTarget).attr("ximfmaxitem"), 10) <= 1 ) return;
 		var richitems = $("#" + evt.currentTarget.id + " richlistbox" ).children("richlistitem");			
-		for(i=0 ; i<richitems.length; ++i){
+		for(var i=0 ; i<richitems.length; ++i){
 			var chk1 = richitems[i].firstElementChild;
 			if(chk1.localName == "checkbox"){
 				if(!chk1.checked){
@@ -821,7 +855,7 @@ function OnSelectContextBox(evt){
 	try{		
 		idBox = evt.currentTarget.getAttribute("idbox"); 
 	 	var eltTextbox = document.getElementById(idBox);
-	 	switch(parseInt(evt.currentTarget.getAttribute("idx"))){ 	 			 		
+	 	switch(parseInt(evt.currentTarget.getAttribute("idx"), 10)){ 	 			 		
 	 		case 1:
 	 			// erase all selected values
 	 			EraseAndComputeXimfhdrsTextbox(eltTextbox.id, true);
@@ -839,8 +873,8 @@ function OnSelectContextBox(evt){
 	}catch(e){
 		gConsole.logStringMessage("[ximfmail - OnSelectXimfmailContextBox ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);		
 	}
-}		
-
+}
+		
 function OnCheckXimfhdrsEditor(evt){
 	try{
 		//alert(evt.currentTarget.id)
@@ -852,8 +886,8 @@ function OnCheckXimfhdrsEditor(evt){
 		var dlgEditorXimf_maxItem_alert = maxItems + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");	
 		var arrayItem = domElt.value.split(separatorItem);	
 		var nbItems = arrayItem.length;
-		if(parseInt(maxItems)<arrayItem.length){
-			nbItems = parseInt(maxItems);
+		if(parseInt(maxItems, 10)<arrayItem.length){
+			nbItems = parseInt(maxItems, 10);
 			ximfAlert(labelHeader,dlgEditorXimf_maxItem_alert);	
 			var newvalue = "";		
 			for(var i=0 ; i<nbItems ; ++i){
@@ -1261,7 +1295,7 @@ function ComputeXimfhdrsCheckPopup(xulElement){
 			var arrayCheckedbox = null;
 			while(nextElt){
 				if(nextElt.localName == "popup"){				
-					arrayCheckedbox = $("popup[id='"+nextElt.id+"'] checkbox[class='ximCheckbox'][checked]" );			
+					arrayCheckedbox = $("popup[id='"+nextElt.id+"'] checkbox[class='ximfCheckbox'][checked]" );			
 					//alert("checklist OK !!" + nextElt.id + arrayCheckbox.length);
 					// id of parent node
 					idTextBox = nextElt.getAttribute('ximfreftextbox'); 				
@@ -1453,7 +1487,7 @@ function ComputePanelOfCheckboxSelection(idCheckbox){
 		var nbItems = $(pnl).attr("ximfmaxitem");			
 		var richitems = $("#" + pnl.id + " richlistbox" ).children("richlistitem");			
 		var nbchkedboxes = 0;			
-		for(i=0 ; i<richitems.length; ++i){
+		for(var i=0 ; i<richitems.length; ++i){
 			var chk1 = richitems[i].firstElementChild;						
 			if(chk1.localName == "checkbox"){					
 				if(chk1.checked){
@@ -1481,7 +1515,7 @@ function ComputePanelOfCheckboxSelection(idCheckbox){
 		if(nbchkedboxes < nbItems){
 			// other items can be selected				
 			$(chkboxes).attr("disabled","false");//.removeAttr("disabled");	
-			for(i=0 ; i<richitems.length; ++i){
+			for(var i=0 ; i<richitems.length; ++i){
 				var chk1 = richitems[i].firstElementChild;
 				if(chk1.localName == "checkbox"){
 					if(!chk1.checked){
@@ -1497,7 +1531,7 @@ function ComputePanelOfCheckboxSelection(idCheckbox){
 			}
 		}else{
 			// max selection is selected, disable others items 
-			for(i=0 ; i<richitems.length; ++i){
+			for(var i=0 ; i<richitems.length; ++i){
 				var chk1 = richitems[i].firstElementChild;
 				if(chk1.localName == "checkbox"){
 					var eltsChild = richitems[i].getElementsByTagName("checkbox");					
@@ -1554,7 +1588,7 @@ function IsAcceptableXimfCompstring(idCompstring){
 			}else{
 				// search for textboxes
 				var childTxtboxList = siblingElement.getElementsByTagName("textbox");
-				for(i=0 ; i<childTxtboxList.length ; ++i){
+				for(var i=0 ; i<childTxtboxList.length ; ++i){
 					if(childTxtboxList[i].value !=""){
 						isAcceptableCompstring = true;
 						break;
@@ -1562,9 +1596,9 @@ function IsAcceptableXimfCompstring(idCompstring){
 				}
 				
 				if(!isAcceptableCompstring){
-				// search for checkboxes
-				var childCheckBoxList = siblingElement.getElementsByTagName("checkbox");
-					for(i=0 ; i<childCheckBoxList.length ; ++i){
+					// search for checkboxes
+					var childCheckBoxList = siblingElement.getElementsByTagName("checkbox");
+					for(var i=0 ; i<childCheckBoxList.length ; ++i){
 						if(childCheckBoxList[i].checked){
 							isAcceptableCompstring = true;
 							break;
@@ -1603,12 +1637,12 @@ function IsAcceptableXimfCompstring(idCompstring){
 		$("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] checkbox").removeAttr("checked");
 		$("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] checkbox").removeAttr("disabled");
 		var listTxtbox = $("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] textbox");
-		for(i=0;i<listTxtbox.length;++i)listTxtbox[i].value="";
+		for(var i=0;i<listTxtbox.length;++i)listTxtbox[i].value="";
 				
 		// delete repanel of linked values		
 		menu_link = $("panel[id='"+ eltTextbox.getAttribute("refpanel")+"'] menuitem[linkpopupbox]");
 		if(menu_link.length > 0){
-			for(i=0 ; i<menu_link.length ; ++i)	{	
+			for(var i=0 ; i<menu_link.length ; ++i)	{	
 				try{
 					var popupset = document.getElementById($(menu_link[i]).attr("linkpopupbox"));
 					var txtbox = document.getElementById(popupset.getAttribute(_XIMF_ATT_REF_BOX));
@@ -1626,9 +1660,9 @@ function IsAcceptableXimfCompstring(idCompstring){
 /*
  *  Compute DOM with datas (used to load draft or template message)
 */
-function ComputeWithForm(ximfMessageAnalyser){
-	if (!ximfMessageAnalyser instanceof XimfMessageAnalyser){
-		gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - refreshDatas] \n parameter of refreshDatas ust be a XimfMessageAnalyser object");
+function ComputeWithForm(ximfMessage){	
+	if (!ximfMessage instanceof XimfmailMesssage){
+		gConsole.logStringMessage("[ximfmail - ComputeWithForm ] \n parameter of refreshDatas must be a ximfMessage object");
 		return false;			
 	}
 	
@@ -1642,7 +1676,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 			var display_box = null;
 			try{
 				//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for textbox : " + xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));		
-				var ximfValue = ximfMessageAnalyser.getHeaderValue(xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));
+				var ximfValue = ximfMessage.getHeaderValue(xheader_dom[idx_xheader_dom].getAttribute("ximfheader"));
 				if(ximfValue){						
 					// search for value and complete display box
 					var display_box_list = $("textbox[refheader='" + xheader_dom[idx_xheader_dom].getAttribute("id") + "']");
@@ -1842,7 +1876,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 					var ximfLabelId = $("textbox[id='"+oriTxtboxId+"']").attr("refheader");
 					if(ximfLabelId){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = ximfMessageAnalyser.getHeaderValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
+						var ximfValue = ximfMessage.getHeaderValue($("label[id='"+ximfLabelId+"']").attr("ximfheader"));							
 						if(ximfValue){								
 							xheader_dom[idx_xheader_dom].setAttribute("value",ximfValue);
 						}								
@@ -1859,7 +1893,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute(_XIMF_ATT_REF_HEADER);								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = ximfMessageAnalyser.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
+						var ximfValue = ximfMessage.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
 						if(ximfValue){												
 							xheader_dom[idx_xheader_dom].listaddress = ximfValue;
 							//alert("load address values \n"+ximfValue+"\n"+xheader_dom[idx_xheader_dom].listaddress);									
@@ -1877,7 +1911,7 @@ function ComputeWithForm(ximfMessageAnalyser){
 					var refHeader = xheader_dom[idx_xheader_dom].getAttribute(_XIMF_ATT_REF_HEADER);								
 					if(refHeader){
 						//gConsole.logStringMessage("[ximfmail - XimfMsgComposeView - search value for freetext :" + $("label[id='"+ximfLabelId+"']").attr("ximfheader")+"\nid ="+ximfLabelId);		
-						var ximfValue = ximfMessageAnalyser.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
+						var ximfValue = ximfMessage.getHeaderValue($("label[id='"+refHeader+"']").attr("ximfheader"));							
 						if(ximfValue){
 							//alert($("label[id='"+refHeader+"']").attr("ximfheader")+" :: "+ximfValue)
 							var thisDate = ConvertZTimeToLocal(ximfValue);	
@@ -2023,9 +2057,9 @@ function ExecuteXimfHdrsDefaultValuesRule(){
 		var textboxXimfHdrs = $("textbox[class='XimfTextboxDisplay']");		
 		for(var i=0; i<textboxXimfHdrs.length; ++i){
 			try{
-				var refDefaultItemHdr = $("panel[id='" + $(textboxXimfHdrs[i]).attr("refpanel") + "']").attr("ximfdefault");			
-				if(refDefaultItemHdr && $(textboxXimfHdrs[i]).attr("ximfvalue") == "" ){
-					var item = $("#"+refDefaultItemHdr);
+				var refDefaultItemXimfHdr = $("panel[id='" + $(textboxXimfHdrs[i]).attr("refpanel") + "']").attr("ximfdefault");			
+				if(refDefaultItemXimfHdr && $(textboxXimfHdrs[i]).attr("ximfvalue") == "" ){
+					var item = $("#"+refDefaultItemXimfHdr);
 					if(item.length > 0){
 						$(textboxXimfHdrs[i]).attr("ximfvalue",$(item[0]).attr("ximfvalue"));
 						textboxXimfHdrs[i].value = $(item[0]).attr("label");					
@@ -2034,8 +2068,8 @@ function ExecuteXimfHdrsDefaultValuesRule(){
 							$(textboxXimfHdrs[i]).attr("ximftecvalue",techvalue);
 						}
 					}else{
-						$(textboxXimfHdrs[i]).attr("ximfvalue",refDefaultItemHdr);
-						textboxXimfHdrs[i].value = refDefaultItemHdr;
+						$(textboxXimfHdrs[i]).attr("ximfvalue",refDefaultItemXimfHdr);
+						textboxXimfHdrs[i].value = refDefaultItemXimfHdr;
 					}
 				}
 			}catch(err){}
@@ -2342,7 +2376,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	// send hidden headers elements
 	var arrayValues = $("label[class='ximfHiddenHeader']");
 	if(arrayValues){						
-		for(var idx=0; idx<=arrayValues.length; idx++){
+		for(var idx=0; idx<arrayValues.length; idx++){
 			try {	
 				if(arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE)){					
 					sCompleteList += EncodeMimeXimfheader($(arrayValues[idx]).attr("ximfheader"), $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;											
@@ -2356,7 +2390,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	// send textbox elements
 	arrayValues = $("textbox[class='XimfTextboxDisplay']");
 	if(arrayValues){						
-		for(var idx=0; idx<=arrayValues.length; idx++){
+		for(var idx=0; idx<arrayValues.length; idx++){
 			try {	
 				if($(arrayValues[idx]).attr(_XIMF_ATT_XVALUE)){
 					sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), $(arrayValues[idx]).attr(_XIMF_ATT_XVALUE), charSet) + headersSeparator;
@@ -2374,7 +2408,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	try{									
 		arrayValues = $("textbox[class='ximfEditor']");
 		if(arrayValues){
-			for( idx=0; idx<=arrayValues.length; idx++){					
+			for( idx=0; idx<arrayValues.length; idx++){					
 				if(arrayValues[idx].value){
 					try{
 						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].value, charSet) + headersSeparator;							
@@ -2393,7 +2427,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 		//arrayValues = $("#ximfmailComposeMessagePanel " + _XIMF_ELT_DATEPICKER);						
 		arrayValues = $("textbox[class='ximfDatetime']");	
 		if(arrayValues){			
-			for( idx=0; idx<=arrayValues.length; idx++){					
+			for( idx=0; idx<arrayValues.length; idx++){					
 				if(arrayValues[idx].value){						
 					try{
 						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].getAttribute(_XIMF_ATT_XVALUE), charSet) + headersSeparator;							
@@ -2410,7 +2444,7 @@ function ReadMimeHeadersSelection( headersSeparator, charSet){
 	try{
 		arrayValues = $("#ximfmailComposeMessagePanel ximfaddress");
 		if(arrayValues){						
-			for( idx=0; idx<=arrayValues.length; idx++){				
+			for( idx=0; idx<arrayValues.length; idx++){				
 				if(arrayValues[idx].listaddress != ""){
 					try{
 						sCompleteList += EncodeMimeXimfheader($("#"+$(arrayValues[idx]).attr(_XIMF_ATT_REF_HEADER)).attr("ximfheader"), arrayValues[idx].listaddress, charSet) + headersSeparator;

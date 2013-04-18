@@ -1,3 +1,4 @@
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Copyright (c) 2008-2009 EADS DEFENCE AND SECURITY - All rights reserved.
  * ximfmail is under the triple license  MPL 1.1/GPL 2.0/LGPL 2.1.
@@ -78,7 +79,7 @@ $(document).ready(function(){
 	gEditorElt = document.getElementById("textbox-editor");		
 	gConsole.logStringMessage("[ximfmail - dialogEditor ] \n id of textbox :" + gArgs[0][0] + "\n separator value: " + gArgs[0][2] + "\n max items to write: "+ gArgs[0][3] + "\n min items to write: " +gArgs[0][4]);		
 	
-	if(parseInt(gXimfMaxItems) > 1){
+	if(parseInt(gXimfMaxItems, 10) > 1){
 		gDlgEditorXimf_maxItem_alert = gXimfMaxItems + " "+ getIlkProperties("ximfmail.dialog.editor.warning.nbrows");	
 		$("#textbox-editor").attr("style","width:400px;height:100px");
 	}else{		
@@ -98,7 +99,7 @@ function doOK()
 {
   if(!gEditorElt) return false;
   if(gXimfMinItems){
-	  if( getWritedRowsCount() < parseInt(gXimfMinItems)){
+	  if( getWritedRowsCount() < parseInt(gXimfMinItems, 10)){
 			ximfAlert("not enough item");
 	  }
   }
@@ -111,8 +112,8 @@ function doOK()
 		//newvalue = gEditorElt.value.replace(reg , gXimfSeparator);
 		var arrayValue = gEditorElt.value.split(reg);	
 		var nbElements = arrayValue.length;
-		if(parseInt(gXimfMaxItems)<arrayValue.length){
-			nbElements = parseInt(gXimfMaxItems);
+		if(parseInt(gXimfMaxItems, 10)<arrayValue.length){
+			nbElements = parseInt(gXimfMaxItems, 10);
 			ximfAlert(gDlgEditorXimf_maxItem_alert);
 		}	
 		for(var i=0 ; i<nbElements ; ++i){
@@ -126,10 +127,10 @@ function doOK()
 	}
 	
 		
-		//remove last separator		
-		if(newvalue.lastIndexOf(gXimfSeparator)+1 == newvalue.length){
-			newvalue = newvalue.substring(0,newvalue.lastIndexOf(gXimfSeparator));
-		}
+	//remove last separator		
+	if(newvalue.lastIndexOf(gXimfSeparator)+1 == newvalue.length){
+		newvalue = newvalue.substring(0,newvalue.lastIndexOf(gXimfSeparator));
+	}	
 	
   window.opener.document.getElementById(gBoxOpener).value = newvalue;
   window.opener.document.getElementById(gBoxOpener).setAttribute("ximfvalue", newvalue);    
@@ -152,7 +153,7 @@ function onCheck(aEvent){
 	var key = aEvent.which;	
 	switch(key){
 		case 13: // key=="\n"			
-		if( getWritedRowsCount() >= parseInt(gXimfMaxItems)){
+		if( getWritedRowsCount() >= parseInt(gXimfMaxItems, 10)){
 			ximfAlert(gDlgEditorXimf_maxItem_alert);	
 			var reg = new RegExp("\n", "g");
 			var artxt = gEditorElt.value.split(reg);
@@ -172,7 +173,7 @@ function onCheck(aEvent){
 		case 0: // delete
 			break;
 		default:
-			if( getWritedRowsCount() > parseInt(gXimfMaxItems)){
+			if( getWritedRowsCount() > parseInt(gXimfMaxItems, 10)){
 				ximfAlert(gDlgEditorXimf_maxItem_alert);	
 				return false;
 			}
@@ -180,7 +181,7 @@ function onCheck(aEvent){
 	/*
 	// check for entries items
 	if(key == 13){ // key=="\n"		
-		if( getWritedRowsCount() >= parseInt(gXimfMaxItems)){
+		if( getWritedRowsCount() >= parseInt(gXimfMaxItems, 10)){
 			alert(gDlgEditorXimf_maxItem_alert);	
 			var reg = new RegExp("\n", "g");
 			var artxt = gEditorElt.value.split(reg);
@@ -198,7 +199,7 @@ function onCheck(aEvent){
 		}
 	}
 	else{
-		if( getWritedRowsCount() > parseInt(gXimfMaxItems)){
+		if( getWritedRowsCount() > parseInt(gXimfMaxItems, 10)){
 			alert(gDlgEditorXimf_maxItem_alert);	
 			return false;
 		}

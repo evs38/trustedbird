@@ -94,7 +94,7 @@ function onLoad()
 		var canonizcell=document.createElement("treecell");		
 		var valueMimecell=document.createElement("treecell");
 		//var encryptedcell=document.createElement("treecell");
-			
+		
 		//set the header name, value and status
 		namecell.setAttribute("label",cSecureHeadersArray[headerName].hdrName);
 		valuecell.setAttribute("label",cSecureHeadersArray[headerName].hdrSecureValue); // signed value

@@ -110,7 +110,7 @@ function adjustCurrentDate(){
 	gSelectedDate = new Date();
 	
 	// minutes %5	
-	gSelectedDate.setMinutes(parseInt(Math.round(gSelectedDate.getMinutes()/5)*5));	
+	gSelectedDate.setMinutes(parseInt(Math.round(gSelectedDate.getMinutes()/5)*5, 10));	
 	UpdateCalendar();	
 }
 
@@ -400,11 +400,11 @@ function parseDate(datestr){
 				//return new Date(parseInt(parts[1]-1),parseInt(parts[0]),parseInt(parts[2]),parseInt(parts[3]),parseInt(parts[4]),0);
 				//alert("SPLIT DATE\nmonth : "+parts[1] + "\n day : " + parts[0] +"\n year : "+ parts[2] +"\n hour : "+ parts[3] +"\n min : "+ parts[4]);
 				var new_date = new Date();
-				new_date.setDate(parseInt(parts[0]));
-				new_date.setMonth(parseInt(parts[1]-1));
-				new_date.setFullYear(parseInt(parts[2]));
-				new_date.setHours(parseInt(parts[3]));
-				new_date.setMinutes(parseInt(parts[4]));
+				new_date.setDate(parseInt(parts[0], 10));
+				new_date.setMonth(parseInt(parts[1]-1, 10));
+				new_date.setFullYear(parseInt(parts[2], 10));
+				new_date.setHours(parseInt(parts[3], 10));
+				new_date.setMinutes(parseInt(parts[4], 10));
 				new_date.setSeconds(0);
 				return new_date;								
 			}
@@ -428,7 +428,7 @@ function clickHour(newHoursItem,newHourItemNumber){
 		gSelectedHourItem = newHoursItem;
 		*/
 		
-		gSelectedDate.setHours(parseInt(newHourItemNumber));			
+		gSelectedDate.setHours(parseInt(newHourItemNumber, 10));			
 }
 
 /*
@@ -462,7 +462,7 @@ function clickMin(newMinItem,newMinItemNumber){
 		}
 		gSelectedMinItem = newMinItem;
 		*/
-		gSelectedDate.setMinutes(parseInt(newMinItemNumber));
+		gSelectedDate.setMinutes(parseInt(newMinItemNumber, 10));
 		
 }
 

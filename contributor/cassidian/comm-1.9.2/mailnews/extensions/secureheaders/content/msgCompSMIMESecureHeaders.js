@@ -252,7 +252,7 @@ var secureheaders_OnSend = {
 			if(arrayHeaderToSign){
 				var secHeader = null;
 				
-				for(i=0;i<arrayHeaderToSign.length;++i){ 					
+				for(i=0;i<arrayHeaderToSign.length;++i){
 					if(arrayHeaderToSign[i]._name == "canonalgo"){
 						// is canonalgo value
 						msgSMimeCompFields.canonAlgorithme = parseInt(arrayHeaderToSign[i]._status,10);

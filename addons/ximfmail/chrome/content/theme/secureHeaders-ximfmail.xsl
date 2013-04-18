@@ -51,7 +51,7 @@
 	<xsl:template match="/">		
 		<xsl:for-each select="/ximf:instance/ximf:rule/ximf:secureHeaders">		
 			<ximf:signed_headers id="{generate-id(.)}">
-				<ximf:headers identity="XIMF_BASIC">								
+				<ximf:headers identity="XIMF_BASIC">
 					<xsl:if test="@canonalgo">
 	        			<xsl:attribute name="canonalgo"><xsl:value-of select="@canonalgo" /></xsl:attribute>
 	        		</xsl:if>								

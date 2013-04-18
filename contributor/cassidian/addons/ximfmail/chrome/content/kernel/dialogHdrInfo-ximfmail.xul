@@ -43,7 +43,9 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximfmail.dtd">
 <?xml-stylesheet href="chrome://ximfmail/skin" type="text/css"?>
-<dialog id="ximfmail-dialog-hdrInfo" title="&dlgheader.hdrInfo.descr;"  
+<!-- title="&dlgheader.hdrInfo.descr;"  -->
+<dialog id="ximfmail-dialog-hdrInfo" 
+  
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"	 
 	buttons="accept"	 
 	buttonlabelaccept="OK"

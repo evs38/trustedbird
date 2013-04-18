@@ -47,17 +47,16 @@ var gCurrentInstance = "";
 
 /* Init ximfmail document */ 
 window.addEventListener("compose-window-init", XimfmailComposeInit, true);
-//window.addEventListener("compose-window-reopen", XimfmailReOpen, true); function XimfmailReOpen(){alert("compose-window-reopen")}
 
 /*
  * (Re)open message composer with XIMF instance
  */
-function XimfmailComposeInit(){
+function XimfmailComposeInit(){	
 	// ximfmail not requested
+	ResetXimfhdrsDom();
 	if(!gPrefBranch) gPrefBranch = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch(null);
 	if(!gPrefBranch.getBoolPref("mailnews.headers.showXimfmail")){ 
-		$("#isUsingXimfail").attr("hidden","true");
-		$("#ximfmailComposeMessageHeadersTablist").empty();	
+		$("#isUsingXimfail").attr("hidden","true");		
 		try{
 			//remove ximf events ...
 			HideSendMessageElements(true);
@@ -65,15 +64,14 @@ function XimfmailComposeInit(){
 			ReloadSecurityAccess();
 		}catch(e){}
 	}else{
-		CreateXimfmailCatalog();	
+		if(!gXimfCatalog) CreateXimfmailCatalog();
 		$("#isUsingXimfail").attr("hidden","false");
 		
 		// observer on sending message
 		var ximfmailObserverSvc = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
 		ximfmailObserverSvc.addObserver(ximfmailOnSend, "mail:composeOnSend", false);	
-		
-		// I can't catch event on completely initialized compose message, so loop on gCurrentIdentity loaded
-		setTimeout("XimfmailStartup()", 50);
+				
+		XimfmailStartup();
 	}	
 }
 
@@ -81,16 +79,17 @@ function XimfmailComposeInit(){
 var gMaxTimeoutXimfmail=0;
 function XimfmailStartup(){
 	if(!gCurrentIdentity){ 
+		// I can't catch event on completely initialized compose message, so loop on gCurrentIdentity loaded
 		if(gMaxTimeoutXimfmail<20){
 			setTimeout("XimfmailStartup()", 100);
 			++gMaxTimeoutXimfmail;
 		}
 		return;
-	}
+	}	
 	
 	var currentInstance = null;
 	var current_definition = null;
-	//is Template or Draft message
+	// is Template or Draft message
 	var typeMsg = -1;
 	try{
 		// get current definition and default instance of account loaded		
@@ -137,13 +136,13 @@ function XimfmailStartup(){
  * Get Extended headers of messages and display known instances
  */
 function XimfmailParseAndUpdateComposeMesssage(msgSrc,uriSrc){
+	
 	var currentXimfHdrArray = XimfmailParseMessage(msgSrc);
 	var ximfMsg = new XimfmailMesssage();
 	if(ximfMsg.init(uriSrc,currentXimfHdrArray)){
 		LoadXimfmailPanel(ximfMsg._instanceMsgXimf);
 		ComputeWithForm(ximfMsg);
-	}else{
-		$("#ximfmailComposeMessageHeadersTablist").empty();
+	}else{		
 		$("#ximfmailComposeMessageTitle").attr("value","");
 		$("#isUsingXimfail").attr("hidden","false");
 		//remove ximf events ...
@@ -156,10 +155,8 @@ function XimfmailParseAndUpdateComposeMesssage(msgSrc,uriSrc){
 /*
  * 
  */
-function LoadXimfmailPanel(currentInstance){	
+function LoadXimfmailPanel(currentInstance){
 	try{
-		//reset old ihm
-		$("#ximfmailComposeMessageHeadersTablist").empty();
 		ReloadSecurityAccess(); // reload security user functions
 	}catch(e){}
 	gConsole.logStringMessage("DBG [ximfmail - messengerCompose - LoadXimfmailPanel ] \n XIMF instance : "+ currentInstance);
@@ -173,13 +170,56 @@ function LoadXimfmailPanel(currentInstance){
 	}		
 }
 
+// overload Trustedbird function : add verifications on security message
+SendMessage = function(){
+	if(CheckIfMustBSigned()){ return false;}
+	dump("SendMessage from XUL\n");
+	GenericSendMessage(nsIMsgCompDeliverMode.Now);
+};
+
+// overload Trustedbird function : add verifications on security message
+SendMessageLater = function(){
+	if(CheckIfMustBSigned()){ return false;}
+	dump("SendMessageLater from XUL\n");
+	GenericSendMessage(nsIMsgCompDeliverMode.Later);
+};
+
+/*
+ * is XIMFMAIL message ?
+ * yes : check if message must be signed
+ * no : continue
+ */
+function CheckIfMustBSigned(){ 
+	try{
+
+		var arrSecureHdrs = CreateRulesArray(gCurrentInstance,"ximf:secureHeaders");				
+		var arrSecurityLabelHdrs = CreateRulesArray(gCurrentInstance,"ximf:securityLabel");
+		if(arrSecureHdrs.length > 0 || arrSecurityLabelHdrs.length > 0){			
+			if(!gSMFields.signMessage){				
+				// current message must be secured
+				toggleSignMessage();					
+				if (!gCurrentIdentity.getUnicharAttribute("signing_cert_name")){					
+					return true;
+				}else{					
+					if(!gSMFields.signMessage){
+						// certificate is set by user
+						toggleSignMessage();
+					}
+				}
+			}
+		}
+	}catch(e){
+		gConsole.logStringMessage("[ximfmail - SendMessage_Ximf ]  not a ximf message... \n " + e + "\nfile : " + Error().fileName+"\nline : "+e.lineNumber);
+	}
+	return false;
+}
 
 /*
  * 
  */
-var ximfmailOnSend = {	
-	observe: function(subject, topic, data) {		
-		if(!gCurrentIdentity) return;							
+var ximfmailOnSend = {
+	observe: function(subject, topic, data) {
+		if(!gCurrentIdentity) return;			
 		try{
 			var msgCompFields = gMsgCompose.compFields;		
 			var charSet = null;
@@ -246,9 +286,9 @@ var ximfmailOnSend = {
 			}
 			
 			// append Security labels
-			AppendESSSecuityLabel();	
+			AppendESSSecuityLabel();
 		}catch(e){
-		gConsole.logStringMessage("[ximfmail - XimfmailStartup ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
+		gConsole.logStringMessage("[ximfmail - ximfmailOnSend ] \n " + e + "\nfile : " + Error().fileName+"\nline : "+Error().lineNumber);		
 	}	
   	}
 };

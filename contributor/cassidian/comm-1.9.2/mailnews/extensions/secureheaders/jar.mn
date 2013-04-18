@@ -11,5 +11,7 @@ messenger.jar:
 classic.jar:
     skin/classic/messenger/smime/msgReadSecureHeaders.css            (resources/CSS/msgReadSecureHeaders.css)
     skin/classic/messenger/smime/icons/check_sign.png                (resources/icons/check_sign.png)
-    skin/classic/messenger/smime/icons/cross_sign.png                (resources/icons/cross_sign.png)
+    skin/classic/messenger/smime/icons/cross_sign.png				 (resources/icons/cross_sign.png)
+    skin/classic/messenger/smime/icons/unsign.png                	 (resources/icons/unsign.png)
+   
 

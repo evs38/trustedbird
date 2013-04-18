@@ -190,7 +190,7 @@ function fillSettings()
     document.getElementById("hostname").value = ldapUrl.host;
     document.getElementById("basedn").value = ldapUrl.dn;
     document.getElementById("search").value = ldapUrl.filter;
-    
+
     var sub = document.getElementById("sub");
     switch(ldapUrl.scope) {
     case Components.interfaces.nsILDAPURL.SCOPE_ONELEVEL:

@@ -35,30 +35,38 @@ EADS Defence and Security - 1 Boulevard Jean Moulin -  ZAC de la Clef Saint Pier
 
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-treechildren::-moz-tree-row(selected){	
+#secHeader_treechild_id::-moz-tree-row(selected){	
 	background-color: DarkGray;
 }
 
-treechildren::-moz-tree-row(odd){ 
+#secHeader_treechild_id::-moz-tree-row(odd){ 
 	background-color: #EEEEEE;
 }
 
-treechildren::-moz-tree-row(odd, selected){ 
+#secHeader_treechild_id::-moz-tree-row(odd, selected){ 
 	background-color: DarkGray;
 }
 
-treechildren::-moz-tree-cell-text(valid){ 
+#secHeader_treechild_id::-moz-tree-cell-text(valid){ 
 	color: green;
 }
-treechildren::-moz-tree-cell-text(invalid){ 
+#secHeader_treechild_id::-moz-tree-cell-text(invalid){ 
 	color: #b10000;
 	font-weight: bold;
 }
 
-treechildren::-moz-tree-image(valid){
+#secHeader_treechild_id::-moz-tree-cell-text(unsigned){ 
+	color: #E76914;	
+}
+
+#secHeader_treechild_id::-moz-tree-image(valid){
 	list-style-image: url("chrome://messenger/skin/smime/icons/check_sign.png");
 }
 
-treechildren::-moz-tree-image(invalid){
+#secHeader_treechild_id::-moz-tree-image(invalid){
 	list-style-image: url("chrome://messenger/skin/smime/icons/cross_sign.png");
+}
+
+#secHeader_treechild_id::-moz-tree-image(unsigned){
+	list-style-image: url("chrome://messenger/skin/smime/icons/unsign.png");
 }
