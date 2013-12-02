@@ -21,11 +21,11 @@ var gSivExtUtils =
   {
     
  
-    var windowManager = Components.classes['@mozilla.org/appshell/window-mediator;1'].
-                            getService(Components.interfaces.nsIWindowMediator);
+    var windowManager = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator);
 
-    var existingAccountManager = 
-           windowManager.getMostRecentWindow("mailnews:accountmanager");
+	Components.utils.import('resource://gre/modules/Services.jsm');
+
+    var existingAccountManager = Services.wm.getMostRecentWindow("mailnews:accountmanager");
 
     if (existingAccountManager)
     {
@@ -56,6 +56,8 @@ var gSivExtUtils =
    */
   GetActiveServer : function()
   {
+
+
     // this function depends on funtions of the overlayed message window...
     if (typeof(GetFirstSelectedMsgFolder) == "undefined")
       return null;

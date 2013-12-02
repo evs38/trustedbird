@@ -873,11 +873,32 @@ SieveAccount.prototype.setEnabledOutOfOffice
 /******************************************************************************/
 function SieveAccounts()
 {
+	Components.utils.import("resource://gre/modules/iteratorUtils.jsm");
+	Components.utils.import("resource://gre/modules/Services.jsm");
+	Components.utils.import("resource:///modules/mailServices.js");
+
 	var accountManager = Components.classes['@mozilla.org/messenger/account-manager;1']
 	                        .getService(Components.interfaces.nsIMsgAccountManager);
                           
 	this.accounts = new Array();
-	
+
+	for (let account in fixIterator(MailServices.accounts.allServers, Components.interfaces.nsIMsgIncomingServer)) {
+		
+	    if (account.type != "imap")
+	      continue;
+
+	    // pass the key if the imap account, not the account! This ensures, that... 
+	    // ... we always use the most recent settings.
+	    this.accounts.push(
+	      new SieveAccount(
+		account.rootMsgFolder.baseMessageURI.slice(15),
+		account.key,
+		account.prettyName));
+
+	}
+}
+
+/*	
   for (var i = 0; i < accountManager.allServers.Count(); i++)
   {
     var account = accountManager.allServers.GetElementAt(i)
@@ -894,7 +915,9 @@ function SieveAccounts()
         account.key,
         account.prettyName));
   }
-}
+*/
+
+
 
 /**
  * Returns all SieveAccounts of the currently active Thunderbrid profile.  

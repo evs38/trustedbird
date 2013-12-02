@@ -42,7 +42,7 @@
 
 		<em:id>out.of.office@milimail.org</em:id>
 		<em:name>Out Of Office</em:name>
-		<em:version>1.0.3</em:version>
+		<em:version>1.0.5</em:version>
 
 		<em:creator>Trustedbird/Milimail project</em:creator>
 		<em:developer>Olivier Brun</em:developer>
@@ -56,7 +56,7 @@
 				<!-- Thunderbird -->
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
 				<em:minVersion>2.0</em:minVersion>
-				<em:maxVersion>8.0</em:maxVersion>
+				<em:maxVersion>28.0</em:maxVersion>
 			</rdf:Description>
 		</em:targetApplication>
 

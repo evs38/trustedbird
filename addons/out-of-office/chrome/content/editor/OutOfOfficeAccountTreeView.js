@@ -71,7 +71,7 @@ function OutOfOfficeAccountTreeView(listener)
 	 * 
 	 * @type SieveAccounts
 	 */
-	this.sieveAccounts = new SieveAccounts();    
+	this.sieveAccounts = new SieveAccounts(); 
 	/**
 	 * SieveAccounts list
 	 * 
@@ -90,6 +90,7 @@ function OutOfOfficeAccountTreeView(listener)
 	 * @type object
 	 */
 	this.listener = listener;
+
 }
 /**
  * Return the name of the class initialized in CONST_HEADER variable.

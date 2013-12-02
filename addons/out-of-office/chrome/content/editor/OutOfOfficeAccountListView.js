@@ -71,7 +71,7 @@ function onWindowLoad()
 	
 	jsLoader.loadSubScript("chrome://out_of_office/content/editor/OutOfOfficeAccountTreeView.js");
 
-	// Retrieve selected account and create OutOfOffice manager 
+	// Retrieve selected account and create OutOfOffice manager
  	gOutOfOfficeManager = new OutOfOfficeManager(null);
 
 	// Retrieve out of office settings from server Cyrus for the out of office file
@@ -96,6 +96,9 @@ function onWindowLoad()
 	if ((tree.currentIndex == -1) && (tree.view.rowCount > 0)){
 		tree.currentIndex = 0;
 		onTreeSelect(tree);
+	}
+	else {
+		globalServices.errorSrv( OOOALV_FILE_HEADER + "No tree available" );
 	}
 }
 

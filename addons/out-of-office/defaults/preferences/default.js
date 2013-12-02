@@ -43,7 +43,7 @@
 /**
  * the latest configured out_of_office version
  */
-pref("extensions.out_of_office.version","1.0.3");
+pref("extensions.out_of_office.version","1.0.5");
 
 /**
  * Debug activation

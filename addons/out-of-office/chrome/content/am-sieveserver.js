@@ -157,7 +157,7 @@ function hideControlNotUsed()
 function onDialogLoad()
 {
 	// Require
-	if( gAccount == null ){
+	if( gAccount == undefined || gAccount == null ){
 		throw "onDialogLoad(): Sieve Server Account cannot be null (gAccount)!";
 	}
 
