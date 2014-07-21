@@ -1,0 +1,21 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * Contributor(s):
+ *   Copyright (c) 2008-2009 EADS DEFENCE AND SECURITY - All rights reserved. */
+
+#include "nsISupports.idl"
+
+// {A1BBE613-DA57-4766-84F0-343DAAFF6EB2}
+//static const GUID <<name>> = 
+//{ 0xa1bbe613, 0xda57, 0x4766, { 0x84, 0xf0, 0x34, 0x3d, 0xaa, 0xff, 0x6e, 0xb2 } };
+
+[scriptable, uuid(A1BBE613-DA57-4766-84F0-343DAAFF6EB2)]
+interface nsIMsgSMIMESecureHeader : nsISupports 
+{
+  attribute AString headerName;
+  attribute AString headerValue;
+  attribute long headerStatus;
+  attribute long headerEncrypted;
+};

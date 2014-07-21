@@ -1,0 +1,52 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * Contributor(s):
+ *   Scott MacGregor         <mscott@netscape.com>
+ *   Copyright (c) 2011 CASSIDIAN - All rights reserved */
+
+
+/* This is a private interface used exclusively by SMIME. NO ONE outside of extensions/smime
+   or the hard coded smime decryption files in mime/src should have any knowledge nor should 
+   be referring to this interface. 
+*/
+
+#include "nsISupports.idl"
+
+interface nsIX509Cert;
+interface nsIMutableArray; 
+
+[scriptable, uuid(25380FA1-E70C-4e82-B0BC-F31C2F41C470)]
+interface nsIMsgSMIMEHeaderSink : nsISupports 
+{
+  void signedStatus(in long aNestingLevel, in long aSignatureStatus, in nsIX509Cert aSignerCert);
+  void encryptionStatus(in long aNestingLevel, in long aEncryptionStatus, in nsIX509Cert aReceipientCert);
+  void SMIMEReceiptRequestStatus([const,array,size_is(aSignedContentIdentifierLen)] in octet aSignedContentIdentifier,
+                                 in unsigned long aSignedContentIdentifierLen,
+                                 in unsigned long aReceiptsFrom,
+                                 in AString aReceiptsTo,
+                                 [const,array,size_is(aOriginatorSignatureValueLen)] in octet aOriginatorSignatureValue,
+                                 in unsigned long aOriginatorSignatureValueLen,
+                                 [const,array,size_is(aOriginatorContentTypeLen)] in octet aOriginatorContentType,
+                                 in unsigned long aOriginatorContentTypeLen,
+                                 [const,array,size_is(aMsgSigDigestLen)] in octet aMsgSigDigest,
+                                 in unsigned long aMsgSigDigestLen);
+  void SMIMEReceiptStatus([const,array,size_is(aSignedContentIdentifierLen)] in octet aSignedContentIdentifier,
+                          in unsigned long aSignedContentIdentifierLen,
+                          [const,array,size_is(aOriginatorSignatureValueLen)] in octet aOriginatorSignatureValue,
+                          in unsigned long aOriginatorSignatureValueLen,
+                          [const,array,size_is(aOriginatorContentTypeLen)] in octet aOriginatorContentType,
+                          in unsigned long aOriginatorContentTypeLen,
+                          [const,array,size_is(aMsgSigDigestLen)] in octet aMsgSigDigest,
+                          in unsigned long aMsgSigDigestLen);
+
+  void secureHeadersStatus(in nsIMutableArray aSecureHeaders, in long canonAlgo);
+
+  void securityLabelStatus(in AString aSecurityPolicyIdentifier,
+                           in long aSecurityClassification,
+                           in AString aPrivacyMark,
+                           in AString aSecurityCategories);
+
+  long maxWantedNesting(); // 1 == only info on outermost nesting level wanted
+};

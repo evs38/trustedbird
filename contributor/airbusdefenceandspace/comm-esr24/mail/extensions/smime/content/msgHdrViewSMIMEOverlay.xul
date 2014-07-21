@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+   - Contributor(s):
+   -   Copyright(c) Airbus Defence and Space 2014 - All rights reserved -->
+
+<?xml-stylesheet href="chrome://messenger/skin/smime/msgHdrViewSMIMEOverlay.css" type="text/css"?>
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/javascript" src="chrome://messenger-smime/content/msgHdrViewSMIMEOverlay.js"/>
+<!-- These stringbundles are already defined in msgReadSMIMEOverlay.xul!
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="bundle_read_smime" src="chrome://messenger-smime/locale/msgReadSMIMEOverlay.properties"/>
+    <stringbundle id="bundle_brand" src="chrome://branding/locale/brand.properties"/>
+  </stringbundleset>
+-->
+
+  <hbox id="dateValueBox">
+    <hbox id="smimeBox" insertbefore="dateLabel" collapsed="true">
+      <image id="signedHdrIcon"
+             onclick="showMessageReadSecurityInfo();" collapsed="true"/>
+      <image id="encryptedHdrIcon"
+             onclick="showMessageReadSecurityInfo();" collapsed="true"/>
+    </hbox>
+  </hbox>
+  
+  <vbox id="singlemessage">
+		<vbox id="secureinfomsg" insertafter="msgNotificationBar" collapsed="true">
+			<hbox id="secureinfomsgh">				
+				<vbox>					
+					<label id="secureinfomsgl" onclick="showMessageReadSecurityInfo();"/>
+					<description id="secureinfomsgd" />						
+				</vbox>
+			</hbox>		
+		</vbox>
+	</vbox>
+	<vbox id="messagepanebox">
+		<vbox id="secureinfomsg2" insertafter="msgNotificationBar" collapsed="true">
+			<hbox id="secureinfomsgh2">
+				<vbox>
+					<label id="secureinfomsgl2" onclick="showMessageReadSecurityInfo();"/>
+					<!-- <html:div id="secureinfomsgd2" /> -->
+					<description id="secureinfomsgd2" />
+				</vbox>
+			</hbox>		
+		</vbox>
+	</vbox>
+</overlay>
+
