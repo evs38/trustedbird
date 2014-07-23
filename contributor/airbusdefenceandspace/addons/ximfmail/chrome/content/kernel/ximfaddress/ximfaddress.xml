@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings 
+[
+    <!ENTITY % dtd1 SYSTEM "chrome://ximfmail/locale/datepicker.dtd" > %dtd1;    
+  
+]>
+<bindings 
+	xmlns="http://www.mozilla.org/xbl"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:xbl="http://www.mozilla.org/xbl">
+
+	<binding id="ximfaddress">
+		<resources>
+			<stylesheet src="chrome://ximfmail/content/ximfaddress/ximfaddress.css"/>			
+			<script src="util.js"/>
+		</resources>
+		<content>			
+			 <xul:listbox xbl:inherits="id,readonly" rows="3" flex="1" >
+				<xul:listcols>      
+      				<xul:listcol id="textcol-addressingXimfmail" flex="1"/>
+    			</xul:listcols>
+				<xul:listitem id="addressingXimfmailItem" allowevents="true" index="0" flex="1">
+	                <xul:listcell class="addressingXimfmailCell">
+						<xul:textbox id="addressingXimfmailTextbox" class="plain textbox-addressingWidget uri-element"
+                       		type="autocomplete" flex="1" 
+                       		 searchSessions="addrbook" timeout="300" maxrows="4" 
+                       		 autoFill="true" autoFillAfterMatch="true" forceComplete="true"
+                       		 minResultsForPopup="3" ignoreBlurWhileSearching="true">
+                  			<xul:image class="ximfmail-person-icon" onclick="this.parentNode.select();"/>
+                		</xul:textbox> 
+					</xul:listcell>         
+           		 </xul:listitem>           		        		       		
+            </xul:listbox>			
+		</content>
+
+		<implementation>
+			<constructor>
+				<![CDATA[				
+				this.gItemCount = 0;
+				this.appendListItem();
+				this.appendListItem();				
+				]]>
+			</constructor>			
+			<!-- append item cell in addresses listbox -->
+			<property name="listaddress">
+				  <getter>
+				  	  return this.getListAddress();
+				  </getter>
+				  <setter>				   
+				  	return this.setListAddress(val);				  	
+				 </setter>
+			</property>	 
+			<method name="appendListItem">				
+				<body><![CDATA[
+					var n = document.getAnonymousNodes(this);
+					var n1 = n[0].childNodes;
+					for(var i=0; i<n1.length; ++i){				
+						if(n1[i].nodeName == "xul:listitem"){
+							var newItem = n1[i].cloneNode(true);
+							++this.gItemCount; 
+							newItem.setAttribute("index",this.gItemCount);
+							n[0].appendChild(newItem);						
+							break;
+						}
+					}							
+				]]>
+				</body>
+			</method>
+			<method name="getListAddress">				
+				<body><![CDATA[
+					var sListAddress = "";
+					var n = document.getAnonymousNodes(this);
+					var n1 = n[0].childNodes;
+					for(var i=0; i<n1.length; ++i){				
+						if(n1[i].nodeName == "xul:listitem"){
+							var n2 = n1[i].childNodes;
+							for(var j=0; j<n2.length; ++j){
+								if(n2[j].nodeName == "xul:listcell"){
+									var n3 = n2[j].childNodes;
+									for(var k=0; k<n3.length; ++k){
+										if(n3[k].nodeName == "xul:textbox"){
+											if(sListAddress !="" && n3[k].value!="")
+												sListAddress += ",";	
+											sListAddress += n3[k].value;
+										}
+									}
+									
+								}
+							}
+						}
+					}
+					//alert("XBL Addresses : \n" + sListAddress);
+					return	sListAddress;			
+				]]>
+				</body>
+			</method>
+			<method name="insertItem">	
+				<parameter name="value"/>					
+				<body><![CDATA[
+					//alert("XBL insertItem " + value);					
+					var n = document.getAnonymousNodes(this);
+					var n1 = n[0].childNodes;
+					for(var i=0; i < n1.length ; ++i){
+						if(n1[i].nodeName == "xul:listitem"){
+							var n2 = n1[i].childNodes;
+							for(var j=0; j < n2.length; ++j){
+								if(n2[j].nodeName == "xul:listcell"){
+									var n3 = n2[j].childNodes;
+									for(var k=0; k<n3.length; ++k){
+										if(n3[k].nodeName == "xul:textbox"){
+											if(n3[k].value == ""){
+												n3[k].value = value;
+												return;														
+											}
+										}
+									}									
+								}
+							}
+						}
+					}					
+					
+				]]>		
+				</body>
+			</method>
+			<method name="setListAddress">	
+				<parameter name="completeList"/>			
+				<body><![CDATA[
+					//alert("XBL setListAddress : \n" + completeList);
+								
+				  	var reg=new RegExp("[,]+", "g"); 
+					var arrayDest = completeList.split(reg);			
+					
+					// create missing cells
+					for(var nbCell = this.gItemCount ; nbCell <= arrayDest.length ; ++nbCell){
+						this.appendListItem();
+					}
+					
+					// insert adresses in cells
+					for(var idx_arrayDest = 0; idx_arrayDest < arrayDest.length; ++idx_arrayDest){						
+						this.insertItem(arrayDest[idx_arrayDest]);
+					}										
+				]]>				
+				</body>
+			</method>
+			<!-- see keypress example from mozilla/toolkit/content/widgets/autocomplete.xml -->
+			<method name="onKeyPress">
+				<parameter name="aEvent"/>
+				<body><![CDATA[
+					//XXX: this is so bogus...
+					if (aEvent.getPreventDefault())
+						return false;
+					
+					switch(aEvent.keyCode) {
+  						case KeyEvent.DOM_VK_UP:
+    						//awArrowHit(element, -1);
+    						break;
+  						case KeyEvent.DOM_VK_DOWN:
+    						//awArrowHit(element, 1);
+    						break;
+  						case KeyEvent.DOM_VK_RETURN:
+  						case KeyEvent.DOM_VK_TAB:
+    						// if the user text contains a comma or a line return, ignore 
+    						/*if (element.value.search(',') != -1){
+      							var addresses = element.value;
+      							element.value = ""; // clear out the current line so we don't try to autocomplete it..
+      							//parseAndAddAddresses(addresses, awGetPopupElement(awGetRowByInputElement(element)).selectedItem.getAttribute("value"));
+    						}else if (event.keyCode == KeyEvent.DOM_VK_TAB){}
+      							awTabFromRecipient(element, event);  */ 
+      						this.appendListItem();
+    						break;
+  					}
+  										
+					/*
+					if(aEvent.keyCode || aEvent.charCode <= 32 || aEvent.altKey || 
+							aEvent.ctrlKey || aEvent.metaKey)
+						return true;  // No printable char pressed, not a potential accesskey
+
+					var key = aEvent.which;
+					var keychar = String.fromCharCode( aEvent.which );//String.fromCharCode(key);
+
+					// control keys
+					if ((key==null) || (key==0) || (key==8) || 
+							(key==9) || (key==13) || (key==27) ){
+						return true;
+					}
+
+					// numbers and a single decimal
+					if ((("-/0123456789").indexOf(keychar) > -1)){
+						return true;
+					}
+					
+					// blocking event
+					aEvent.stopPropagation();
+					aEvent.preventDefault();
+					
+					return false;
+					*/
+					]]>
+				</body>
+			</method>
+
+		</implementation>		
+		<handlers>		
+			<handler event="keypress" phase="capturing" action="return this.onKeyPress(event);"/>
+		</handlers>
+	</binding>
+</bindings>

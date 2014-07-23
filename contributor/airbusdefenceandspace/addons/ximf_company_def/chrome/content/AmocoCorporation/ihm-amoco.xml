@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ximf:instance name="Amoco" version="1.0" ximfVersion="2.0" xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eads.org/ximf/ ximf.xsd">
+<ximf:ihm xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ximf:panel id="pane_security" ilk="ilk-classification-panel">
+		<ximf:groupbox id="group-classification" ilk="ilk-security-panel">
+			<ximf:headerRef>header-classification</ximf:headerRef>			
+			<ximf:headerRef>header-privacy-mark</ximf:headerRef>
+		</ximf:groupbox>		
+		<ximf:groupbox id="group-info" ilk="ilk-info-box">			
+			<ximf:headerRef>header-originator-reference</ximf:headerRef>	
+			<ximf:headerRef>header-reply-before</ximf:headerRef>			
+		</ximf:groupbox>				
+	</ximf:panel>	
+	<ximf:treeRcv>
+		<ximf:headerRef>header-classification</ximf:headerRef>	
+		<ximf:headerRef>header-privacy-mark</ximf:headerRef>
+	</ximf:treeRcv>
+</ximf:ihm>
+</ximf:instance>
