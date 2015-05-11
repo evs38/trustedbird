@@ -1,0 +1,11 @@
+<!--LOCALIZATION NOTE msgReadSecurityInfo.dtd UI for viewing security status when reading a received message -->
+<!ENTITY secureHeaders.name "Secure Headers">
+<!ENTITY secureHeaders.field "Secure Headers :">
+<!ENTITY secureHeadersView.label "View Secure Headers">
+<!ENTITY secureHeadersList.label "Secure Headers List">
+<!ENTITY headername.label "Header">
+<!ENTITY headervalue.label "Signed value">
+<!ENTITY headerstatus.label "Status">
+<!ENTITY headerencrypted.label "Encrypted">
+<!ENTITY headermimevalue.label "Displayed value">
+<!ENTITY headercanonisation.label "Canonicalization">

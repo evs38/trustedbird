@@ -1,0 +1,47 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * Contributor(s):
+ *   Scott MacGregor         <mscott@netscape.com>
+ *   Copyright (c) 2011 CASSIDIAN - All rights reserved */
+
+
+/* This is a private interface used exclusively by SMIME. NO ONE outside of extensions/smime
+   should have any knowledge nor should be referring to this interface. 
+*/
+
+#include "nsISupports.idl"
+
+[ptr] native UnsignedCharPtr(unsigned char);
+
+interface nsIMsgSMIMESecureHeader;
+interface nsIMutableArray;
+
+[scriptable, uuid(338E91F9-5970-4f81-B771-0822A32B1161)]
+interface nsIMsgSMIMECompFields : nsISupports 
+{
+  attribute boolean signMessage;
+  attribute boolean requireEncryptMessage;
+  attribute boolean SMIMEReceiptRequest;
+  attribute boolean SMIMEReceipt;
+  [noscript] attribute UnsignedCharPtr SMIMEReceiptSignedContentIdentifier;
+  attribute unsigned long SMIMEReceiptSignedContentIdentifierLen;
+  [noscript] attribute UnsignedCharPtr SMIMEReceiptOriginatorSignatureValue;
+  attribute unsigned long SMIMEReceiptOriginatorSignatureValueLen;
+  [noscript] attribute UnsignedCharPtr SMIMEReceiptOriginatorContentType;
+  attribute unsigned long SMIMEReceiptOriginatorContentTypeLen;
+  [noscript] attribute UnsignedCharPtr SMIMEReceiptMsgSigDigest;
+  attribute unsigned long SMIMEReceiptMsgSigDigestLen;
+
+  attribute AString securityPolicyIdentifier;
+  attribute long securityClassification;
+  attribute AString privacyMark;
+  attribute AString securityCategories;
+  
+  attribute long canonAlgorithme;
+  void addSecureHeader(in nsIMsgSMIMESecureHeader secureHeader);
+  void clearSecureHeaders();
+  void getSecureHeadersList(out nsIMutableArray secureHeadersList);
+
+};

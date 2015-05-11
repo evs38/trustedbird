@@ -1,0 +1,11 @@
+ximf_mdn.jar:
+%  content ximf_mdn %content/
+%  locale ximf_mdn fr %locale/fr_FR/ 
+%  locale ximf_mdn us %locale/en_US/
+%  skin ximf_mdn %classic/1.0 skin/
+%  overlay chrome://messenger/content/messenger.xul		chrome://ximf_mdn/content/messenger_ov_ximfmdn.xul
+%  overlay chrome://messenger/content/messageWindow.xul	chrome://ximf_mdn/content/messageWindow_ov_ximfmdn.xul
+	content/ximfmdn_extended.js 			(chrome/content/ximfmdn_extended.js)
+	content/messenger_ov_ximfmdn.xul		(chrome/content/messenger_ov_ximfmdn.xul)
+	content/messageWindow_ov_ximfmdn.xul 	(chrome/content/messageWindow_ov_ximfmdn.xul)
+
