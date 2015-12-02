@@ -1,0 +1,6 @@
+?package(trustedbird3.1):needs="X11" \
+	section="Applications/Network/Communication" \
+	title="Trustedbird 24" \
+	icon="/usr/share/pixmaps/trustedbird24.xpm" \
+	command="/opt/trustedbird24/trustedbird" \
+	hints="Mail"
