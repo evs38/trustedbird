@@ -1,5 +1,5 @@
-content ximfmail chrome/content/kernel/ xpcnativewrappers=yes
-content theme_ximfmail chrome/content/theme/ xpcnativewrappers=yes
+content ximfmail chrome/content/kernel/ 
+content theme_ximfmail chrome/content/theme/ 
 locale ximfmail fr chrome/locale/fr-FR/
 locale ximfmail us chrome/locale/en-US/
 skin ximfmail classic/1.0 chrome/skin/
@@ -7,3 +7,8 @@ overlay chrome://messenger/content/messenger.xul chrome://ximfmail/content/messe
 overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://ximfmail/content/messengerCompose-ov-ximfmail.xul
 overlay chrome://messenger/content/messageWindow.xul chrome://ximfmail/content/messageWindow-ov-ximfmail.xul
 overlay chrome://messenger-smime/content/msgReadSecurityInfo.xul chrome://ximfmail/content/msgReadSecurityInfo-ov-ximfmail.xul
+
+# Preference Service
+component {4B539696-E605-4663-B9E9-CB6D44B6FFEB} components/ximfmail-service.js
+contract @mozilla.org/accountmanager/extension;1?name=ximfmail-account {4B539696-E605-4663-B9E9-CB6D44B6FFEB}
+category mailnews-accountmanager-extensions ximfmail-account-manager-extension @mozilla.org/accountmanager/extension;1?name=ximfmail-account

@@ -1,0 +1,85 @@
+trustedbird (24.3.0.0.1.0)
+  * Upgrade to Thunderbird 24.3.0
+--06 Mai 2014
+
+trustedbird (3.1.15+0.5.3)
+  * Upgrade to Thunderbird 3.1.15
+
+trustedbird (3.1.14+0.5.3)
+  * Corrective on blocking TrustedBird on downloading messages with big attachments 
+  * Correctives on security informations of signed messages function
+
+trustedbird (3.1.14+0.5.1)
+  * Upgrade to Thunderbird 3.1.14
+  * Changes on SecureHeader policy
+-- Sep 12 2011
+
+trustedbird (3.1.10+0.5.1)
+  * Upgrade to Thunderbird 3.1.10
+  *
+-- Mar 08 2011
+
+trustedbird (3.1.9+0.4.3)
+  * Upgrade to Thunderbird 3.1.9
+-- Mar 08 2011
+
+trustedbird (3.1.8+0.4.3)
+  * Upgrade to Thunderbird 3.1.8
+-- Mar 03 2011
+
+trustedbird (3.1.7+0.4.3)
+  * Upgrade to Thunderbird 3.1.7
+  * Add SASL external (IMAPS - LDAPS)
+  * Add Secured Headers (based on RFC 5652)
+-- Feb 23 2011
+
+trustedbird (3.1.7+0.2.0)
+  * Upgrade to Thunderbird 3.1.7
+-- Dec 13 2010
+
+trustedbird (3.1.6+0.4.0)
+  * Upgrade to Thunderbird 3.1.6
+  * Add LDAPS  
+-- Nov 24 2010
+
+trustedbird (3.1.6+0.2.0)
+  * Upgrade to Thunderbird 3.1.6
+-- Nov 4 2010
+
+trustedbird (3.1.5+0.3.0)
+  * Add SASL external
+  * Add Secured Headers (based on RFC 5652)
+  * Add XIMFMAIL
+-- 28 Oct 2010
+
+trustedbird (3.1.5+0.2.0)
+  * Upgrade to Thunderbird 3.1.5
+-- Oct 20 2010
+
+trustedbird (3.1.4+0.2.0)
+  * Add S/MIME security labels (RFC 2634)
+-- Sep 20 2010
+
+trustedbird (3.1.4+0.1.0)
+  * Upgrade to Thunderbird 3.1.4
+-- Sep 17 2010
+
+trustedbird (3.1.3+0.1.0)
+  * Upgrade to Thunderbird 3.1.3
+-- Sep 10 2010
+
+trustedbird (3.1.2+0.1.0)
+  * Add S/MIME signed receipts (RFC 2634)
+-- Aug 30 2010
+
+trustedbird (3.1.2+0.0.1)
+  * Upgrade to Thunderbird 3.1.2
+-- Aug 17 2010
+
+trustedbird (3.1.1+0.0.1)
+  * Upgrade to Thunderbird 3.1.1
+-- Jul 29 2010
+
+trustedbird (3.1.0+0.0.1)
+  * Thunderbird 3.1 rebranding
+-- Jul 12 2010

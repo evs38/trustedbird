@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+         xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:install-manifest"
+                   em:id="{A9FAF6FB-7786-4a66-AE31-9D4E5A22E445}"
+                   em:name="XIMF MDN extented"
+                   em:version="24.3.0.1.0"
+                   em:description="Message Disposition Notification extended"
+				   em:creator="Airbus Defence and Space"
+                   em:homepageURL="http://www.airbusdefenceandspace.com">
+        <em:targetApplication>
+            <!-- Thunderbird -->
+            <Description>
+                <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+                <em:minVersion>24.3.0</em:minVersion>
+                <em:maxVersion>24.3.*</em:maxVersion>
+            </Description>
+        </em:targetApplication>
+    </RDF:Description> 
+</RDF:RDF>

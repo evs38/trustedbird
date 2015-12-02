@@ -4,6 +4,7 @@ CVS/
 /.project
 /.settings
 /packager/build/
+/packager/build-mach/
 /packager/dist/
 /packager/updateKey
 /packager/*.bz2

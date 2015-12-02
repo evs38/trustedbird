@@ -714,6 +714,9 @@
 				<xsl:if test="@contentPositionEnd">
 					<xsl:attribute name="ximfcompositionend"><xsl:value-of select="@contentPositionEnd" /></xsl:attribute>
 				</xsl:if>
+				<xsl:if test="@contentFactorise">
+					<xsl:attribute name="ximffactorise"><xsl:value-of select="@contentFactorise" /></xsl:attribute>
+				</xsl:if>
 			</xsl:element>				
 				<xsl:for-each select="*">
 					<xsl:choose>

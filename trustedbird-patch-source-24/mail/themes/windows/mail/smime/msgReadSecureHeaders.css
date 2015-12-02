@@ -1,0 +1,49 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * Contributor(s): 
+ *   Copyright(c) Airbus Defence and Space 2014 - All rights reserved */
+
+/* ===== msgReadSecureHeaders.css ========================================
+  == Styles for the secure headers info window when displaying received mail.
+  ======================================================================= */
+
+@import url("chrome://messenger/skin/");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#secHeader_treechild_id::-moz-tree-row(selected){	
+	background-color: DarkGray;
+}
+
+#secHeader_treechild_id::-moz-tree-row(odd){ 
+	background-color: #EEEEEE;
+}
+
+#secHeader_treechild_id::-moz-tree-row(odd, selected){ 
+	background-color: DarkGray;
+}
+
+#secHeader_treechild_id::-moz-tree-cell-text(valid){ 
+	color: green;
+}
+#secHeader_treechild_id::-moz-tree-cell-text(invalid){ 
+	color: #b10000;
+	font-weight: bold;
+}
+
+#secHeader_treechild_id::-moz-tree-cell-text(unsigned){ 
+	color: #E76914;	
+}
+
+#secHeader_treechild_id::-moz-tree-image(valid){
+	list-style-image: url("chrome://messenger/skin/smime/icons/check_sign.png");
+}
+
+#secHeader_treechild_id::-moz-tree-image(invalid){
+	list-style-image: url("chrome://messenger/skin/smime/icons/cross_sign.png");
+}
+
+#secHeader_treechild_id::-moz-tree-image(unsigned){
+	list-style-image: url("chrome://messenger/skin/smime/icons/unsign.png");
+}

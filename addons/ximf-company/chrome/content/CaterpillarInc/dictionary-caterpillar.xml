@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<ximf:instance name="caterpillar" version="1.0" ximfVersion="2.0" xmlns:ximf="http://eads.org/ximf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eads.org/ximf/ ximf.xsd">
+	<ximf:dictionary id="OneDico">
+		<ximf:locale lang="fr">
+			<ximf:ilk entity="ilk-akw">Attribution</ximf:ilk>
+			<ximf:ilk entity="ilk-security-box">Sécurité</ximf:ilk>
+			<ximf:ilk entity="ilk-precedence-panel">Urgence</ximf:ilk>
+			<ximf:ilk entity="ilk-public">PUBLIC</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential-green">CONFIDENTIEL VERT</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential-yellow">CONFIDENTIEL JAUNE</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential-red">CONFIDENTIEL ROUGE</ximf:ilk>
+			<ximf:ilk entity="ilk-routine">Routine</ximf:ilk>
+			<ximf:ilk entity="ilk-urgent">Urgent</ximf:ilk>
+			<ximf:ilk entity="ilk-immediat">Immédiat</ximf:ilk>
+			<ximf:ilk entity="ilk-flash">Flash</ximf:ilk>	
+			<ximf:ilk entity="header-akw">Attribution</ximf:ilk>
+			<ximf:ilk entity="ilk-primary-precedence">Urgence pour action</ximf:ilk>
+			<ximf:ilk entity="ilk-copy-precedence">Urgence pour information</ximf:ilk>
+			<ximf:ilk entity="ilk-advanced-panel">Avancé</ximf:ilk>
+			<ximf:ilk entity="ilk-originator-reference">Réferences d'origine</ximf:ilk>	
+			<ximf:ilk entity="ilk-reply-before">Répondre avant</ximf:ilk>
+			<ximf:ilk entity="ilk-classification-panel">Classification</ximf:ilk>
+			<ximf:ilk entity="ilk-classification">Classification de sécurité</ximf:ilk>
+			<ximf:ilk entity="ilk-privacy-mark">Marque privée</ximf:ilk>			
+			<ximf:ilk entity="ilk-general">Général</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential">Confidentiel</ximf:ilk>			
+			<ximf:ilk entity="ilk-highly-confidential">Très confidentiel</ximf:ilk>
+			<ximf:ilk entity="ilk-minimum">Minimum</ximf:ilk>
+			<ximf:ilk entity="ilk-medium">Moyen</ximf:ilk>
+			<ximf:ilk entity="ilk-maximum">Maximum</ximf:ilk>
+			<ximf:ilk entity="ilk-critical">Critique</ximf:ilk>			
+		</ximf:locale>
+		<ximf:locale lang="en-US">
+			<ximf:ilk entity="ilk-akw">Attribution</ximf:ilk>
+			<ximf:ilk entity="ilk-security-box">Security</ximf:ilk>
+			<ximf:ilk entity="ilk-precedence-panel">Precedence</ximf:ilk>
+			<ximf:ilk entity="ilk-public">PUBLIC</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential-green">CONFIDENTIAL GREEN</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential-yellow">CONFIDENTIAL YELLOW</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential-red">CONFIDENTIAL RED</ximf:ilk>
+			<ximf:ilk entity="ilk-routine">Routine</ximf:ilk>
+			<ximf:ilk entity="ilk-urgent">Urgent</ximf:ilk>
+			<ximf:ilk entity="ilk-immediat">Immediate</ximf:ilk>
+			<ximf:ilk entity="ilk-flash">Flash</ximf:ilk>
+			<ximf:ilk entity="header-akw">Attribution</ximf:ilk>
+			<ximf:ilk entity="ilk-primary-precedence">Primary precedence</ximf:ilk>
+			<ximf:ilk entity="ilk-copy-precedence">Copy precedence</ximf:ilk>
+			<ximf:ilk entity="ilk-advanced-panel">Advanced</ximf:ilk>
+			<ximf:ilk entity="ilk-reply-before">Reply before</ximf:ilk>
+			<ximf:ilk entity="ilk-originator-reference">Origin references</ximf:ilk>
+			<ximf:ilk entity="ilk-classification-panel">Classification</ximf:ilk>
+			<ximf:ilk entity="ilk-classification">Security classification</ximf:ilk>
+			<ximf:ilk entity="ilk-privacy-mark">Privacy mark</ximf:ilk>
+			<ximf:ilk entity="ilk-general">General</ximf:ilk>
+			<ximf:ilk entity="ilk-confidential">Confidential</ximf:ilk>			
+			<ximf:ilk entity="ilk-highly-confidential">Highly Confidential</ximf:ilk>
+			<ximf:ilk entity="ilk-minimum">Minimum</ximf:ilk>
+			<ximf:ilk entity="ilk-medium">Medium</ximf:ilk>
+			<ximf:ilk entity="ilk-maximum">Maximum</ximf:ilk>
+			<ximf:ilk entity="ilk-critical">Critical</ximf:ilk>			
+		</ximf:locale>
+	</ximf:dictionary>
+</ximf:instance>

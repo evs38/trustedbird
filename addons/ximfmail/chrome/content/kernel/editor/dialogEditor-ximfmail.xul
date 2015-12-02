@@ -3,7 +3,6 @@
    - Copyright (c) 2008-2009 EADS DEFENCE AND SECURITY - All rights reserved.
    - ximfmail is under the triple license  MPL 1.1/GPL 2.0/LGPL 2.1.
    - 
-   -
    - Redistribution and use, in source and binary forms, with or without modification, 
    - are permitted provided that the following conditons are met :
    -
@@ -38,7 +37,10 @@
    - IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    -  
    - EADS Defence and Security - 1 Boulevard Jean Moulin -  
-   - ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000) 
+   - ZAC de la Clef Saint Pierre - 78990 Elancourt - FRANCE (IDDN.FR.001.480012.002.S.P.2008.000.10000)
+   -   
+   - Contributor(s):
+   -   Copyright(c) Airbus Defence and Space 2014 - All rights reserved
    - ***** END LICENSE BLOCK ***** -->
 
 <!DOCTYPE overlay SYSTEM "chrome://ximfmail/locale/ximfmail.dtd">

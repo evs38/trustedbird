@@ -1,0 +1,79 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * Contributor(s): 
+ *   David Drinan <ddrinan@netscape.com>
+ *   Copyright (c) 2011 CASSIDIAN - All rights reserved */
+
+#include "nsISupports.idl"
+
+%{ C++
+#define NS_CMSMESSAGE_CONTRACTID "@mozilla.org/nsCMSMessage;1"
+%}
+
+[ptr] native UnsignedCharPtr(unsigned char);
+
+interface nsIX509Cert;
+interface nsIArray;
+interface nsIMutableArray;
+/**
+ * nsICMSMessage
+ *  Interface to a CMS Message
+ */
+[uuid(a4557478-ae16-11d5-ba4b-00108303b117)]
+interface nsICMSMessage : nsISupports
+{
+  void contentIsSigned(out boolean aSigned);
+  void contentIsEncrypted(out boolean aEncrypted);
+  void getSignerCommonName(out string aName);
+  void getSignerEmailAddress(out string aEmail);
+  void getSignerCert(out nsIX509Cert scert);
+  void getEncryptionCert(out nsIX509Cert ecert);
+  void setReceiptRequest(in ACString aSignedContentIdentifier, in ACString aReceiptsTo);
+  void getReceiptRequest(out boolean aHasReceiptRequest,
+                         [const,array,size_is(aSignedContentIdentifierLen)] out octet aSignedContentIdentifier,
+                         out unsigned long aSignedContentIdentifierLen,
+                         out unsigned long aReceiptsFrom,
+                         out ACString aReceiptsTo,
+                         [const,array,size_is(aOriginatorSignatureValueLen)] out octet aOriginatorSignatureValue,
+                         out unsigned long aOriginatorSignatureValueLen,
+                         [const,array,size_is(aOriginatorContentTypeLen)] out octet aOriginatorContentType,
+                         out unsigned long aOriginatorContentTypeLen,
+                         [const,array,size_is(aMsgSigDigestLen)] out octet aMsgSigDigest,
+                         out unsigned long aMsgSigDigestLen);
+  void setReceipt([array,size_is(aSignedContentIdentifierLen)] in octet aSignedContentIdentifier,
+                  in unsigned long aSignedContentIdentifierLen,
+                  [array,size_is(aOriginatorSignatureValueLen)] in octet aOriginatorSignatureValue,
+                  in unsigned long aOriginatorSignatureValueLen,
+                  [array,size_is(aOriginatorContentTypeLen)] in octet aOriginatorContentType,
+                  in unsigned long aOriginatorContentTypeLen,
+                  [array,size_is(aMsgSigDigestLen)] in octet aMsgSigDigest,
+                  in unsigned long aMsgSigDigestLen);
+  void createReceipt([const,array,size_is(encodedReceiptLen)] out octet encodedReceipt,
+                     out unsigned long encodedReceiptLen);
+  void getReceipt(out boolean aHasReceipt,
+                  [const,array,size_is(aSignedContentIdentifierLen)] out octet aSignedContentIdentifier,
+                  out unsigned long aSignedContentIdentifierLen,
+                  [const,array,size_is(aOriginatorSignatureValueLen)] out octet aOriginatorSignatureValue,
+                  out unsigned long aOriginatorSignatureValueLen,
+                  [const,array,size_is(aOriginatorContentTypeLen)] out octet aOriginatorContentType,
+                  out unsigned long aOriginatorContentTypeLen,
+                  [const,array,size_is(aMsgSigDigestLen)] out octet aMsgSigDigest,
+                  out unsigned long aMsgSigDigestLen);
+  void setSecurityLabel(in ACString aSecurityPolicyIdentifier,
+                        in long aSecurityClassification,
+                        in ACString aPrivacyMark,
+                        in ACString aSecurityCategories);
+  void getSecurityLabel(out boolean aHasSecurityLabel,
+                        out ACString aSecurityPolicyIdentifier,
+                        out long aSecurityClassification,
+                        out ACString aPrivacyMark,
+                        out ACString aSecurityCategories);
+  void verifySignature();
+  void verifyDetachedSignature(in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen);
+  void CreateEncrypted(in nsIArray aRecipientCerts);
+  void CreateSigned(in nsIX509Cert scert, in nsIX509Cert ecert, in UnsignedCharPtr aDigestData, in unsigned long aDigestDataLen, in nsIArray secureHeaders, in long canonAlgo);
+  void getSecureHeader(out nsIMutableArray secureHeaders, out long canonAlgo);
+};
+
