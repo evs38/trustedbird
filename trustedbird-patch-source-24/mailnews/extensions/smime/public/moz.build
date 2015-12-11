@@ -12,5 +12,10 @@ XPIDL_SOURCES += [
 	'nsISMimeJSHelper.idl',
 ]
 
+XPIDL_FLAGS += [
+    '-I$(topsrcdir)/mailnews/base/public',
+]
+
+
 MODULE = 'msgsmime'
 

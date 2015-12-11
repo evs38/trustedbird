@@ -252,8 +252,8 @@ $ ant -Damo=1 package-addons
 
   <!-- Target: package-trustedbird -->
   <target name="package-trustedbird" description="Create Trustedbird package" depends="-define-trustedbird-config">
-    <available file="${local.build.dir}/${local.source.directory}/obj-trustedbird/${local.source.dist.directory}/bin/${local.checkbuild.file}" property="build.success" />
-    <fail message="File ${local.build.dir}/${local.source.directory}/obj-trustedbird/${local.source.dist.directory}/bin/${local.checkbuild.file} not found! Build Trustedbird first." unless="build.success" />
+    <available file="${local.build.dir}/${local.source.directory}/obj/${local.source.dist.directory}/bin/${local.checkbuild.file}" property="build.success" />
+    <fail message="File ${local.build.dir}/${local.source.directory}/obj/${local.source.dist.directory}/bin/${local.checkbuild.file} not found! Build Trustedbird first." unless="build.success" />
 
     <mkdir dir="${local.dist.dir}" />
 
@@ -261,20 +261,20 @@ $ ant -Damo=1 package-addons
       <isset property="isUnix" />
       <then>
         <!-- Create package -->
-        <exec executable="make" dir="${local.build.dir}/${local.source.directory}/obj-trustedbird" failonerror="true">
+        <exec executable="make" dir="${local.build.dir}/${local.source.directory}/obj" failonerror="true">
           <arg value="-C" />
           <arg value="mail/installer" />
         </exec>
 
         <!-- Rename and copy package -->
         <copy todir="${local.dist.dir}/">
-          <fileset dir="${local.build.dir}/${local.source.directory}/obj-trustedbird/${local.source.dist.directory}">
+          <fileset dir="${local.build.dir}/${local.source.directory}/obj/${local.source.dist.directory}">
             <include name="*.tar.gz" />
           </fileset>
           <mapper type="regexp" from=".*\.([^\.]+)\.tar\.gz$" to="trustedbird_${local.mozilla.version}+${local.trustedbird.version}_i686.tar.gz" />
         </copy>
         <copy todir="${local.dist.dir}/">
-          <fileset dir="${local.build.dir}/${local.source.directory}/obj-trustedbird/${local.source.dist.directory}">
+          <fileset dir="${local.build.dir}/${local.source.directory}/obj/${local.source.dist.directory}">
             <include name="*.tar.bz2" />
           </fileset>
           <mapper type="regexp" from=".*\.([^\.]+)\.tar\.bz2$" to="trustedbird_${local.mozilla.version}+${local.trustedbird.version}_i686.tar.bz2" />
@@ -285,13 +285,13 @@ $ ant -Damo=1 package-addons
           <available file="/usr/bin/dpkg-deb" />
           <then>
             <copy todir="${local.build.dir}/">
-              <fileset dir="${local.build.dir}/${local.source.directory}/obj-trustedbird/${local.source.dist.directory}">
+              <fileset dir="${local.build.dir}/${local.source.directory}/obj/${local.source.dist.directory}">
                 <include name="*.tar.gz" />
               </fileset>
               <mapper type="regexp" from="(.*)$" to="trustedbird.tar.gz" />
             </copy>
             <copy todir="${local.build.dir}/">
-              <fileset dir="${local.build.dir}/${local.source.directory}/obj-trustedbird/${local.source.dist.directory}">
+              <fileset dir="${local.build.dir}/${local.source.directory}/obj/${local.source.dist.directory}">
                 <include name="*.tar.bz2" />
               </fileset>
               <mapper type="regexp" from="(.*)$" to="trustedbird.tar.bz2" />
@@ -310,7 +310,7 @@ $ ant -Damo=1 package-addons
       </then>
       <else>
         <!-- Create package -->
-        <exec executable="make" dir="${local.build.dir}/${local.source.directory}/obj-trustedbird" failonerror="true">
+        <exec executable="make" dir="${local.build.dir}/${local.source.directory}/obj" failonerror="true">
           <arg value="-C" />
           <arg value="mail/installer" />
           <arg value="installer" />
@@ -318,7 +318,7 @@ $ ant -Damo=1 package-addons
 
         <!-- Rename and copy package -->
         <copy todir="${local.dist.dir}/">
-          <fileset dir="${local.build.dir}/${local.source.directory}/obj-trustedbird/${local.source.dist.directory}/install/sea">
+          <fileset dir="${local.build.dir}/${local.source.directory}/obj/${local.source.dist.directory}/install/sea">
             <include name="*.exe" />
           </fileset>
           <mapper type="regexp" from="(.*)$" to="trustedbird_${local.mozilla.version}+${local.trustedbird.version}_win32.installer.exe" />
