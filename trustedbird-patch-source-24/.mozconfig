@@ -1,8 +1,6 @@
 # Trustedbird Configuration File
 mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj
 
-###############################################
-# Linux debug configuration
 ac_add_options --disable-tests
 ac_add_options --enable-application=mail
 #ac_add_options --enable-debug
@@ -17,10 +15,16 @@ ac_add_options --enable-optimize="-Os"
 # For NSS symbols
 export MOZ_DEBUG_SYMBOLS=1
 
-# Enable parallel compiling
-CONCURRENCY=$(( `grep processor /proc/cpuinfo | wc -l` + 2 ))
-mk_add_options MOZ_MAKE_FLAGS="-j$CONCURRENCY"
+# Enable parallel compiling on both Linux and macOS
+if [ "$(uname -s)" = "Darwin" ]; then
+  CONCURRENCY="$(sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+else
+  CONCURRENCY="$(grep -c processor /proc/cpuinfo 2>/dev/null || echo 4)"
+fi
+CONCURRENCY=$((CONCURRENCY + 2))
+mk_add_options MOZ_MAKE_FLAGS="-j${CONCURRENCY}"
 
-# Use ccache
-ac_add_options --with-ccache=/usr/bin/ccache
-################################################
+# Use ccache if available
+if command -v ccache >/dev/null 2>&1; then
+  ac_add_options --with-ccache="$(command -v ccache)"
+fi
